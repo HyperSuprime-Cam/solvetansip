@@ -1,0 +1,11 @@
+# -*- python -*-
+#
+#
+Import("env")
+import glob, os
+
+env.SharedLibrary(
+    'solvetansip', glob.glob('../src/*.cc'), LIBS=filter(lambda p: p != "solvetansip", env.getlibs("solvetansip"))
+)
+
+env.Append(CPPPATH = ['#include/hsc/meas/tansip'])
