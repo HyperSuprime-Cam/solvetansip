@@ -194,7 +194,7 @@ def main(frameList=None, datadir='.', writeMatchList=False, readMatchList=False)
 
 
     # identify the root policy file
-    ppPolicy = pipeUtils.getPolicyFile("core", "protoPipe.paf")
+    ppPolicy = pipeUtils.getPolicyFile("hscProtopipe", "protoPipe.paf")
 
 
     nccd = len(frameList)

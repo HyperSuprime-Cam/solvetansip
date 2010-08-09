@@ -14,14 +14,15 @@
 #define PI (2*atan(1.0))
 using namespace std;
 namespace afwdetect = lsst::afw::detection;
-void    F_MAKEPAIR(vector< vector<afwdetect::SourceMatch> > const &matchlist,CL_APROP APROP,CL_CPROP* CPROP,CL_PAIR* PAIR){
+void    F_MAKEPAIR(vector< vector<afwdetect::SourceMatch> > const &matchlist,CL_APROP *APROP,CL_CPROP* CPROP,CL_PAIR* PAIR){
     int CID,NUM,ALLNUM;
 ofstream PAIRout("data/PAIR.dat");//temp
 
     ALLNUM=0;
-    for(CID=0;CID<APROP.CCDNUM;CID++)
+    for(CID=0;CID<APROP->CCDNUM;CID++)
     for(NUM=0;NUM<CPROP[CID].NUM;NUM++){
         PAIR->refID[ALLNUM] =matchlist[CID][NUM].first->getId();
+        PAIR->CHIPID[ALLNUM]=CID;
         PAIR->FLAG[ALLNUM]  =1;
         PAIR->RA[ALLNUM]    =matchlist[CID][NUM].first->getRa();
         PAIR->DEC[ALLNUM]   =matchlist[CID][NUM].first->getDec();
@@ -34,6 +35,7 @@ ofstream PAIRout("data/PAIR.dat");//temp
 PAIRout << PAIR->refID[ALLNUM] << "	" << PAIR->FLAG[ALLNUM] << "	" << PAIR->x[ALLNUM] << "	" << PAIR->y[ALLNUM] << "	" << PAIR->RA[ALLNUM] << "	" << PAIR->DEC[ALLNUM] << endl;//temp
         ALLNUM+=1;
     }
+    APROP->refNUM=ALLNUM;
 PAIRout.close();//temp
 }
 #undef PI

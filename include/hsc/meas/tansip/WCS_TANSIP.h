@@ -18,7 +18,6 @@
   //namespace meas {
     //namespace tansip {
 
-//lsst::afw::image::TanWcs::Ptr    F_WCS_TANSIP(std::vector< std::vector<lsst::afw::detection::SourceMatch> > const &,lsst::pex::policy::Policy::Ptr &,lsst::afw::cameraGeom::Camera::Ptr &);
 std::vector <lsst::afw::image::TanWcs::Ptr>    F_WCS_TANSIP_V(std::vector< std::vector<lsst::afw::detection::SourceMatch> > const &,lsst::pex::policy::Policy::Ptr &,lsst::afw::cameraGeom::Camera::Ptr &,lsst::daf::base::PropertySet::Ptr &,bool);
 void    F_WCS_TANSIP_TEST(std::vector <lsst::afw::image::TanWcs::Ptr>);
 //}}}

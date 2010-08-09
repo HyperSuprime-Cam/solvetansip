@@ -4,8 +4,11 @@
 //Last modification : 2010/08/03
 //------------------------------------------------------------
 #include<iostream>//temp
+#include<fstream>
 #include<cmath>
 #include<string>
+#include<sstream>
+#include<iomanip>//temp
 #include "hsc/meas/tansip/WCS_APROP.h"
 #include "hsc/meas/tansip/WCS_CPROP.h"
 #include "hsc/meas/tansip/WCS_PAIR.h"
@@ -19,6 +22,7 @@ void    F_SIP(int FR,int Order,double x[],double xSIP[],double CR[],double *SIP[
 void    F_FLAG(CL_APROP,CL_PAIR*,CL_CSIP*);
 void    F_DISP(CL_APROP,CL_PAIR,CL_CSIP*);
 void    F_LS2(int dataNUM,int Order,double (*data)[3],double *Coef);
+void    F_CHECK(CL_APROP,CL_PAIR,CL_CSIP*);
 
 
 void    F_WCS_FIT(CL_APROP APROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
@@ -30,11 +34,16 @@ cout << "--- F_WCS_TANSIP:FIT:rejection  ---" << endl;
 cout << "--- F_WCS_TANSIP:FIT:re-fitting ---" << endl;
     F_CDSIP(APROP,*PAIR,CSIP);
     F_DISP (APROP,*PAIR,CSIP);
+    if(APROP.CHECKFILE==0){
+    }else{
+    F_CHECK(APROP,*PAIR,CSIP);
+    }
 
 }
 void    F_CDSIP(CL_APROP APROP,CL_PAIR PAIR,CL_CSIP *CSIP){
     int i,j,ij,FNUM;
     double xi[4],CR[4],InvCD[2][2],CRPIXAVE[2]={0};
+    double x[4],xSIP[4],SUM[2][2]={0};
     double *Coef1,*Coef2,*CoefP1,*CoefP2,(*dx1)[3],(*dx2)[3];
 
     Coef1 = new double[APROP.SIP_ORDER*APROP.SIP_ORDER+1];
@@ -172,6 +181,33 @@ void    F_CDSIP(CL_APROP APROP,CL_PAIR PAIR,CL_CSIP *CSIP){
 
     CSIP->SIP_ABP[0][1*(APROP.SIP_ORDER+1)+0]-=1.0;
     CSIP->SIP_ABP[1][0*(APROP.SIP_ORDER+1)+1]-=1.0;
+
+//fitting value --------------------------------------------------
+
+    FNUM=0;
+    for(i=0;i<APROP.refNUM;i++)
+    if(PAIR.FLAG[i]==1){
+        x[0]=PAIR.x[i];
+        x[1]=PAIR.y[i];
+        x[2]=PAIR.RA[i];
+        x[3]=PAIR.DEC[i];
+        F_SIP(0,APROP.SIP_ORDER,x,xSIP,CR,CSIP->SIP_AB);
+        PAIR.xSIP[i]=xSIP[0];
+        PAIR.ySIP[i]=xSIP[1];
+        F_PIXWCS_TAN(xSIP,CR,CSIP->CD);
+        PAIR.RAfit[i] =xSIP[2];
+        PAIR.DECfit[i]=xSIP[3];
+        F_WCSPIX_TAN(x,CR,CSIP->CD);
+        SUM[0][0]+=(xSIP[0]-x[0]);
+        SUM[1][0]+=(xSIP[1]-x[1]);
+        SUM[0][1]+=(xSIP[0]-x[0])*(xSIP[0]-x[0]);
+        SUM[1][1]+=(xSIP[1]-x[1])*(xSIP[1]-x[1]);
+        FNUM+=1;
+    }
+    CSIP->SIP_AB_AVE[0]=SUM[0][0]/FNUM;
+    CSIP->SIP_AB_AVE[1]=SUM[1][0]/FNUM;
+    CSIP->SIP_AB_SIGMA[0]=sqrt((SUM[0][1]-SUM[0][0]*SUM[0][0]/FNUM)/(FNUM-1));
+    CSIP->SIP_AB_SIGMA[1]=sqrt((SUM[1][1]-SUM[1][0]*SUM[1][0]/FNUM)/(FNUM-1));
 
     delete [] Coef1;
     delete [] Coef2;
@@ -347,10 +383,48 @@ void    F_DISP(CL_APROP APROP,CL_PAIR PAIR,CL_CSIP *CSIP){
     delete [] DIFFi[1];
 }
 #define PI (2*atan(1.0))
-void    F_WSC_eachCHIP(CL_APROP APROP,CL_CPROP *CPROP,CL_CSIP* CSIP){
-    int ID,i,j,ij;
+void    F_WSC_eachCHIP(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR PAIR,CL_CSIP* CSIP){
+    int ID,i,j,ij,*NUM;
+    double *SUM[2][2],x[4],CR[4];
+
+    NUM = new int[APROP.CCDNUM];
+    SUM[0][0] = new double[APROP.CCDNUM];
+    SUM[0][1] = new double[APROP.CCDNUM];
+    SUM[1][0] = new double[APROP.CCDNUM];
+    SUM[1][1] = new double[APROP.CCDNUM];
+
+    CR[0]=CSIP[APROP.CCDNUM].CRPIX[0];
+    CR[1]=CSIP[APROP.CCDNUM].CRPIX[1];
+    CR[2]=CSIP[APROP.CCDNUM].CRVAL[0];
+    CR[3]=CSIP[APROP.CCDNUM].CRVAL[1];
+    for(ID=0;ID<APROP.CCDNUM;ID++)
+    NUM[ID]=SUM[0][0][ID]=SUM[0][1][ID]=SUM[1][0][ID]=SUM[1][1][ID]=0;
+
+    for(i=0;i<APROP.refNUM;i++)
+    if(PAIR.FLAG[i]==1){
+        x[2]=PAIR.RA[i];
+        x[3]=PAIR.DEC[i];
+        F_WCSPIX_TAN(x,CR,CSIP[APROP.CCDNUM].CD);
+        SUM[0][0][PAIR.CHIPID[i]]+=(PAIR.xSIP[i]-x[0]);
+        SUM[1][0][PAIR.CHIPID[i]]+=(PAIR.ySIP[i]-x[1]);
+        SUM[0][1][PAIR.CHIPID[i]]+=(PAIR.xSIP[i]-x[0])*(PAIR.xSIP[i]-x[0]);
+        SUM[1][1][PAIR.CHIPID[i]]+=(PAIR.ySIP[i]-x[1])*(PAIR.ySIP[i]-x[1]);
+//        SUM[0][0][PAIR.CHIPID[i]]+=(PAIR.RAfit[i]-PAIR.RA[i]);
+  //      SUM[1][0][PAIR.CHIPID[i]]+=(PAIR.DECfit[i]-PAIR.DEC[i]);
+    //    SUM[0][1][PAIR.CHIPID[i]]+=(PAIR.RAfit[i]-PAIR.RA[i])*(PAIR.RAfit[i]-PAIR.RA[i]);
+      //  SUM[1][1][PAIR.CHIPID[i]]+=(PAIR.DECfit[i]-PAIR.DEC[i])*(PAIR.DECfit[i]-PAIR.DEC[i]);
+        NUM[PAIR.CHIPID[i]]+=1;
+    }
+    for(ID=0;ID<APROP.CCDNUM;ID++){
+cout << ID << " : " << NUM[ID] << endl;
+        CSIP[ID].SIP_AB_AVE[0]  =SUM[0][0][ID]/NUM[ID];
+        CSIP[ID].SIP_AB_AVE[1]  =SUM[1][0][ID]/NUM[ID];
+        CSIP[ID].SIP_AB_SIGMA[0]=sqrt((SUM[0][1][ID]-SUM[0][0][ID]*SUM[0][0][ID]/NUM[ID])/(NUM[ID]-1));
+        CSIP[ID].SIP_AB_SIGMA[1]=sqrt((SUM[1][1][ID]-SUM[1][0][ID]*SUM[1][0][ID]/NUM[ID])/(NUM[ID]-1));
+    }
 
     for(ID=0;ID<APROP.CCDNUM;ID++){
+
         CSIP[ID].FITNUM=CSIP[APROP.CCDNUM].FITNUM;
         CSIP[ID].CRVAL[0]=CSIP[APROP.CCDNUM].CRVAL[0];
         CSIP[ID].CRVAL[1]=CSIP[APROP.CCDNUM].CRVAL[1];
@@ -381,5 +455,46 @@ void    F_WSC_eachCHIP(CL_APROP APROP,CL_CPROP *CPROP,CL_CSIP* CSIP){
             ij+=1;
         }        
     }
+
+    delete [] NUM;
+    delete [] SUM[0][0];
+    delete [] SUM[0][1];
+    delete [] SUM[1][0];
+    delete [] SUM[1][1];
 }
 #undef PI
+void    F_CHECK(CL_APROP APROP ,CL_PAIR PAIR ,CL_CSIP *CSIP){
+    int i,CID;
+    string outname, outname_global;
+    ostringstream oss, oss_global;
+    ofstream outcheckfile, outcheckfile_global;
+
+cout << "--- F_WCS_TANSIP:FIT:output checkfile ---" << endl;
+    for(i=0;i<APROP.CCDNUM;i++){
+        oss.str("");
+        oss << "temp/TANSIPFIT_checkfile_" << setfill('0') << setw(3) << i << ".dat";
+        outname = oss.str();
+cout << "checkfile : " << outname << endl;
+        outcheckfile.open(outname.c_str(), ios::out);
+        outcheckfile.close();
+    }
+    oss_global.str("");
+    oss_global << "temp/TANSIPFIT_checkfile_global.dat";
+    outname_global = oss_global.str();
+cout << "checkfile : " << outname_global << endl;
+    outcheckfile_global.open(outname_global.c_str(), ios::out);
+    for(i=0;i<APROP.refNUM;i++)
+    if(PAIR.FLAG[i]==1){
+        oss.str("");
+        CID=PAIR.CHIPID[i];
+        oss << "temp/TANSIPFIT_checkfile_" << setfill('0') << setw(3) << CID << ".dat";
+        outname = oss.str();
+        outcheckfile.open(outname.c_str(), ios::app);
+        outcheckfile        << setprecision(6) << fixed << PAIR.x[i] << "\t" << PAIR.y[i] << "\t" << PAIR.RA[i] << "\t" << PAIR.DEC[i] << "\t" << PAIR.xSIP[i] << "\t" << PAIR.ySIP[i] << "\t" << PAIR.RAfit[i] << "\t" << PAIR.DECfit[i] << endl;
+        outcheckfile_global << setprecision(6) << fixed << PAIR.x[i] << "\t" << PAIR.y[i] << "\t" << PAIR.RA[i] << "\t" << PAIR.DEC[i] << "\t" << PAIR.xSIP[i] << "\t" << PAIR.ySIP[i] << "\t" << PAIR.RAfit[i] << "\t" << PAIR.DECfit[i] << endl;
+        outcheckfile.close();
+    }
+    outcheckfile_global.close();
+
+
+}

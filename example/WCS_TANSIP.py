@@ -108,7 +108,7 @@ def main(frameList=None, datadir='.', writeMatchList=False, readMatchList=False)
     print "--- Policy ---" # check
     print "--- Policy:APROP ---" # check
 
-    ppPolicy = pipeUtils.getPolicyFile("core", "protoPipe.paf")
+    ppPolicy = pipeUtils.getPolicyFile("hscProtopipe", "protoPipe.paf")
 #    print ppPolicy # check
 
     ppPolicy = pipeUtils.getPolicyFromFile(ppPolicy, None)
