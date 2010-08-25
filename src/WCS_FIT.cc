@@ -469,32 +469,25 @@ void    F_CHECK(CL_APROP APROP ,CL_PAIR PAIR ,CL_CSIP *CSIP){
     ostringstream oss, oss_global;
     ofstream outcheckfile, outcheckfile_global;
 
-cout << "--- F_WCS_TANSIP:FIT:output checkfile ---" << endl;
-    for(i=0;i<APROP.CCDNUM;i++){
-        oss.str("");
-        oss << "temp/TANSIPFIT_checkfile_" << setfill('0') << setw(3) << i << ".dat";
-        outname = oss.str();
-cout << "checkfile : " << outname << endl;
-        outcheckfile.open(outname.c_str(), ios::out);
-        outcheckfile.close();
-    }
     oss_global.str("");
     oss_global << "temp/TANSIPFIT_checkfile_global.dat";
     outname_global = oss_global.str();
-cout << "checkfile : " << outname_global << endl;
+
+    cout << "checkfile : " << outname_global << endl;
     outcheckfile_global.open(outname_global.c_str(), ios::out);
-    for(i=0;i<APROP.refNUM;i++)
-    if(PAIR.FLAG[i]==1){
-        oss.str("");
-        CID=PAIR.CHIPID[i];
-        oss << "temp/TANSIPFIT_checkfile_" << setfill('0') << setw(3) << CID << ".dat";
-        outname = oss.str();
-        outcheckfile.open(outname.c_str(), ios::app);
-        outcheckfile        << setprecision(6) << fixed << PAIR.x[i] << "\t" << PAIR.y[i] << "\t" << PAIR.RA[i] << "\t" << PAIR.DEC[i] << "\t" << PAIR.xSIP[i] << "\t" << PAIR.ySIP[i] << "\t" << PAIR.RAfit[i] << "\t" << PAIR.DECfit[i] << endl;
-        outcheckfile_global << setprecision(6) << fixed << PAIR.x[i] << "\t" << PAIR.y[i] << "\t" << PAIR.RA[i] << "\t" << PAIR.DEC[i] << "\t" << PAIR.xSIP[i] << "\t" << PAIR.ySIP[i] << "\t" << PAIR.RAfit[i] << "\t" << PAIR.DECfit[i] << endl;
-        outcheckfile.close();
+
+    for(i=0;i<APROP.CCDNUM;i++){
+      // Loop over all the pairs for each ccd, to 
+      for(i=0;i<APROP.refNUM;i++) {
+	if(PAIR.FLAG[i]==1){
+	  outcheckfile_global << setprecision(6) << fixed << PAIR.CHIPID[i] << "\t" 
+			      << PAIR.x[i] << "\t" << PAIR.y[i] << "\t" 
+			      << PAIR.RA[i] << "\t" << PAIR.DEC[i] << "\t" 
+			      << PAIR.xSIP[i] << "\t" << PAIR.ySIP[i] << "\t" 
+			      << PAIR.RAfit[i] << "\t" << PAIR.DECfit[i] << endl;
+	}
+      }
     }
     outcheckfile_global.close();
-
-
+    cout << "checkfiles done. " << endl;
 }
