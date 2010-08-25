@@ -32,7 +32,6 @@ env = scons.makeEnv(
     ],
 )
 
-#env.libs["hscastrom"] += env.getlibs("gsl gslcblas afw daf_base")
 env.libs["solvetansip"] += env.getlibs("pex_exceptions afw boost utils daf_base daf_data daf_persistence pex_logging pex_policy security")
 
 for d in (
@@ -46,10 +45,8 @@ scons.CleanTree(r"*~ core *.so *.os *.o *.pyc config.log")
 
 env['IgnoreFiles'] = r"(~$|\.pyc$|^\.svn$|\.o$)"
 
-Alias("install", env.Install(env['prefix'], "example"))
-Alias("install", env.Install(env['prefix'], "policy"))
-Alias("install", env.Install(env['prefix'], "python"))
-Alias("install", env.Install(env['prefix'], "lib"))
+for d in ('example', 'include', 'lib', 'policy', 'python', 'src'):
+    Alias("install", env.Install(env['prefix'], d))
 Alias("install", env.InstallEups(os.path.join(env['prefix'], "ups")))
 
 env.Declare()
