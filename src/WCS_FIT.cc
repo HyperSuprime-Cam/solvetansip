@@ -476,16 +476,13 @@ void    F_CHECK(CL_APROP APROP ,CL_PAIR PAIR ,CL_CSIP *CSIP){
     cout << "checkfile : " << outname_global << endl;
     outcheckfile_global.open(outname_global.c_str(), ios::out);
 
-    for(i=0;i<APROP.CCDNUM;i++){
-      // Loop over all the pairs for each ccd, to 
-      for(i=0;i<APROP.refNUM;i++) {
-	if(PAIR.FLAG[i]==1){
-	  outcheckfile_global << setprecision(6) << fixed << PAIR.CHIPID[i] << "\t" 
-			      << PAIR.x[i] << "\t" << PAIR.y[i] << "\t" 
-			      << PAIR.RA[i] << "\t" << PAIR.DEC[i] << "\t" 
-			      << PAIR.xSIP[i] << "\t" << PAIR.ySIP[i] << "\t" 
-			      << PAIR.RAfit[i] << "\t" << PAIR.DECfit[i] << endl;
-	}
+    for(i=0;i<APROP.refNUM;i++) {
+      if(PAIR.FLAG[i]==1){
+	outcheckfile_global << setprecision(6) << fixed << PAIR.CHIPID[i] << "\t" 
+			    << PAIR.x[i] << "\t" << PAIR.y[i] << "\t" 
+			    << PAIR.RA[i] << "\t" << PAIR.DEC[i] << "\t" 
+			    << PAIR.xSIP[i] << "\t" << PAIR.ySIP[i] << "\t" 
+			    << PAIR.RAfit[i] << "\t" << PAIR.DECfit[i] << endl;
       }
     }
     outcheckfile_global.close();
