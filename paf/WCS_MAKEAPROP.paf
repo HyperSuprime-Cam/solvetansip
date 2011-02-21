@@ -1,0 +1,15 @@
+#Analysis Property
+CRPIXMODE:    MANUAL#AUTO for AUTO MODE, MANUAL for MANUAL MODE
+NCCD     :       104#NUMBER of CCD for analysis
+#NCCD     :       104#NUMBER of CCD for analysis
+#NCCD     :        10#NUMBER of CCD for analysis
+#CRPIXMODE:     AUTO#
+SIPORDER :         5
+#SIPORDER :         5#SIP ORDER of A and B 
+PSIPORDER:         5
+#PSIPORDER:         5#SIP ORDER of AP and BP
+CLIPSIGMA:       3.0#
+CRPIX1   :       0.0#CRPIX VALUE OF AXIS 1(MANUAL MODE)
+CRPIX2   :       0.0#CRPIX VALUE OF AXIS 2(MANUAL MODE)
+CHECKFILE:         1#1=out put fitting check file
+
