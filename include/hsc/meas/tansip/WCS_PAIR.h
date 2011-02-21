@@ -3,22 +3,37 @@
 //
 //Last modification : 2010/07/23
 //------------------------------------------------------------
+#ifndef WCS_PAIR_H
+#define WCS_PAIR_H
 class CL_PAIR{
 private:
 public:
-    int *refID;
-    int *CHIPID;
-    int *FLAG;
-    double *x;
-    double *y;
-    double *RA;
-    double *DEC;
-    double *xSIP;
-    double *ySIP;
-    double *RAfit;
-    double *DECfit;
-    double *xErr;
-    double *yErr;
-    double *RAErr;
-    double *DECErr;
+    int ID;
+    int CHIPID;
+    int FLAG;
+    double xL;//Local
+    double yL;
+    double RA;
+    double DEC;
+    double xI;//Inter
+    double yI;
+    double xG;//Global
+    double yG;
+    double dxLdxI;
+    double dxLdyI;
+    double dyLdxI;
+    double dyLdyI;
+    double dxGdxI;
+    double dxGdyI;
+    double dyGdxI;
+    double dyGdyI;
+    double xSIP;
+    double ySIP;
+    double RAfit;
+    double DECfit;
+    double xErr;
+    double yErr;
+    double RAErr;
+    double DECErr;
 };
+#endif
