@@ -7,10 +7,10 @@
 #ifndef WCS_MAINCC_H
 #define WCS_MAINCC_H
 
-#include "../include/WCS_APROP.h"
-#include "../include/WCS_CPROP.h"
-#include "../include/WCS_PAIR.h"
-#include "../include/WCS_CSIP.h"
+#include "../include/hsc/meas/tansip/WCS_APROP.h"
+#include "../include/hsc/meas/tansip/WCS_CPROP.h"
+#include "../include/hsc/meas/tansip/WCS_PAIR.h"
+#include "../include/hsc/meas/tansip/WCS_CSIP.h"
 
 void    F_WCS_SETCC_APROPfromFILE(char *,CL_APROP *);
 void    F_WCS_SETCC_CPROPfromFILE(char *,CL_CPROP *);
