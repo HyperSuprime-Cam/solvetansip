@@ -243,6 +243,7 @@ def main(frameList=None, datadir='.', writeMatchList=False, readMatchList=False)
     # Preparing policy for TanSip fitting
 
     # load the protoPipe policy file
+    # test 
     print "--- Policy ---" # check
     print "--- Policy:APROP ---" # check
 #    ppPolicy = pipeUtils.getPolicyFile("core", "protoPipe.paf")
