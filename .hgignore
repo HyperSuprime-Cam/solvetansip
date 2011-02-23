@@ -2,7 +2,6 @@ syntax: glob
 *~
 *.pyo
 *.pyc
-*.dat
 *.fits
 *.lis
 *.log
