@@ -1,0 +1,13 @@
+tansip: {
+    package: solvetansip
+    file: /data/work/okura/HSC/DC2/solvetansip/policy/WCS_MAKEAPROP.paf
+}
+defaultFileInfo: {
+    frameID: 100525
+    ccdId: 100525
+    progId: Fio
+    X0: 0
+    Y0: 0
+    DX: 0
+    DY: 0
+}

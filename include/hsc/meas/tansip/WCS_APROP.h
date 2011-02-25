@@ -1,7 +1,7 @@
 //------------------------------------------------------------
 //WCS_APROP.h
 //
-//Last modification : 2010/09/15
+//Last modification : 2011/02/22
 //------------------------------------------------------------
 #ifndef WCS_APROP_H
 #define WCS_APROP_H
@@ -12,6 +12,7 @@ private:
 public:
 //    std::string CRPIXMODE;//AUTO or MANUAL	
     char CRPIXMODE[11];//AUTO or MANUAL	
+    int  CCDPOSMODE;
     int  CCDNUM;
     int  NUMREFALL;
     int  SIP_L_ORDER;

@@ -10,7 +10,7 @@ Python interface to hsc::meas::tansip
 
 """
 
-import _tansip
+import _WCS_PL_MAIN
 import new
 new_instancemethod = new.instancemethod
 try:
@@ -62,79 +62,79 @@ class PySwigIterator(_object):
     __getattr__ = lambda self, name: _swig_getattr(self, PySwigIterator, name)
     def __init__(self, *args, **kwargs): raise AttributeError, "No constructor defined"
     __repr__ = _swig_repr
-    __swig_destroy__ = _tansip.delete_PySwigIterator
+    __swig_destroy__ = _WCS_PL_MAIN.delete_PySwigIterator
     __del__ = lambda self : None;
     def value(*args):
         """value(self) -> PyObject"""
-        return _tansip.PySwigIterator_value(*args)
+        return _WCS_PL_MAIN.PySwigIterator_value(*args)
 
     def incr(*args):
         """
         incr(self, size_t n=1) -> PySwigIterator
         incr(self) -> PySwigIterator
         """
-        return _tansip.PySwigIterator_incr(*args)
+        return _WCS_PL_MAIN.PySwigIterator_incr(*args)
 
     def decr(*args):
         """
         decr(self, size_t n=1) -> PySwigIterator
         decr(self) -> PySwigIterator
         """
-        return _tansip.PySwigIterator_decr(*args)
+        return _WCS_PL_MAIN.PySwigIterator_decr(*args)
 
     def distance(*args):
         """distance(self, PySwigIterator x) -> ptrdiff_t"""
-        return _tansip.PySwigIterator_distance(*args)
+        return _WCS_PL_MAIN.PySwigIterator_distance(*args)
 
     def equal(*args):
         """equal(self, PySwigIterator x) -> bool"""
-        return _tansip.PySwigIterator_equal(*args)
+        return _WCS_PL_MAIN.PySwigIterator_equal(*args)
 
     def copy(*args):
         """copy(self) -> PySwigIterator"""
-        return _tansip.PySwigIterator_copy(*args)
+        return _WCS_PL_MAIN.PySwigIterator_copy(*args)
 
     def next(*args):
         """next(self) -> PyObject"""
-        return _tansip.PySwigIterator_next(*args)
+        return _WCS_PL_MAIN.PySwigIterator_next(*args)
 
     def previous(*args):
         """previous(self) -> PyObject"""
-        return _tansip.PySwigIterator_previous(*args)
+        return _WCS_PL_MAIN.PySwigIterator_previous(*args)
 
     def advance(*args):
         """advance(self, ptrdiff_t n) -> PySwigIterator"""
-        return _tansip.PySwigIterator_advance(*args)
+        return _WCS_PL_MAIN.PySwigIterator_advance(*args)
 
     def __eq__(*args):
         """__eq__(self, PySwigIterator x) -> bool"""
-        return _tansip.PySwigIterator___eq__(*args)
+        return _WCS_PL_MAIN.PySwigIterator___eq__(*args)
 
     def __ne__(*args):
         """__ne__(self, PySwigIterator x) -> bool"""
-        return _tansip.PySwigIterator___ne__(*args)
+        return _WCS_PL_MAIN.PySwigIterator___ne__(*args)
 
     def __iadd__(*args):
         """__iadd__(self, ptrdiff_t n) -> PySwigIterator"""
-        return _tansip.PySwigIterator___iadd__(*args)
+        return _WCS_PL_MAIN.PySwigIterator___iadd__(*args)
 
     def __isub__(*args):
         """__isub__(self, ptrdiff_t n) -> PySwigIterator"""
-        return _tansip.PySwigIterator___isub__(*args)
+        return _WCS_PL_MAIN.PySwigIterator___isub__(*args)
 
     def __add__(*args):
         """__add__(self, ptrdiff_t n) -> PySwigIterator"""
-        return _tansip.PySwigIterator___add__(*args)
+        return _WCS_PL_MAIN.PySwigIterator___add__(*args)
 
     def __sub__(*args):
         """
         __sub__(self, ptrdiff_t n) -> PySwigIterator
         __sub__(self, PySwigIterator x) -> ptrdiff_t
         """
-        return _tansip.PySwigIterator___sub__(*args)
+        return _WCS_PL_MAIN.PySwigIterator___sub__(*args)
 
     def __iter__(self): return self
-PySwigIterator_swigregister = _tansip.PySwigIterator_swigregister
+PySwigIterator_swigregister = _WCS_PL_MAIN.PySwigIterator_swigregister
 PySwigIterator_swigregister(PySwigIterator)
 
 class ios_base(_object):
@@ -145,123 +145,123 @@ class ios_base(_object):
     __getattr__ = lambda self, name: _swig_getattr(self, ios_base, name)
     def __init__(self, *args, **kwargs): raise AttributeError, "No constructor defined"
     __repr__ = _swig_repr
-    erase_event = _tansip.ios_base_erase_event
-    imbue_event = _tansip.ios_base_imbue_event
-    copyfmt_event = _tansip.ios_base_copyfmt_event
+    erase_event = _WCS_PL_MAIN.ios_base_erase_event
+    imbue_event = _WCS_PL_MAIN.ios_base_imbue_event
+    copyfmt_event = _WCS_PL_MAIN.ios_base_copyfmt_event
     def register_callback(*args):
         """register_callback(self, event_callback __fn, int __index)"""
-        return _tansip.ios_base_register_callback(*args)
+        return _WCS_PL_MAIN.ios_base_register_callback(*args)
 
     def flags(*args):
         """
         flags(self) -> fmtflags
         flags(self, fmtflags __fmtfl) -> fmtflags
         """
-        return _tansip.ios_base_flags(*args)
+        return _WCS_PL_MAIN.ios_base_flags(*args)
 
     def setf(*args):
         """
         setf(self, fmtflags __fmtfl) -> fmtflags
         setf(self, fmtflags __fmtfl, fmtflags __mask) -> fmtflags
         """
-        return _tansip.ios_base_setf(*args)
+        return _WCS_PL_MAIN.ios_base_setf(*args)
 
     def unsetf(*args):
         """unsetf(self, fmtflags __mask)"""
-        return _tansip.ios_base_unsetf(*args)
+        return _WCS_PL_MAIN.ios_base_unsetf(*args)
 
     def precision(*args):
         """
         precision(self) -> streamsize
         precision(self, streamsize __prec) -> streamsize
         """
-        return _tansip.ios_base_precision(*args)
+        return _WCS_PL_MAIN.ios_base_precision(*args)
 
     def width(*args):
         """
         width(self) -> streamsize
         width(self, streamsize __wide) -> streamsize
         """
-        return _tansip.ios_base_width(*args)
+        return _WCS_PL_MAIN.ios_base_width(*args)
 
     def sync_with_stdio(*args):
         """
         sync_with_stdio(bool __sync=True) -> bool
         sync_with_stdio() -> bool
         """
-        return _tansip.ios_base_sync_with_stdio(*args)
+        return _WCS_PL_MAIN.ios_base_sync_with_stdio(*args)
 
     if _newclass:sync_with_stdio = staticmethod(sync_with_stdio)
     __swig_getmethods__["sync_with_stdio"] = lambda x: sync_with_stdio
     def imbue(*args):
         """imbue(self, locale __loc) -> locale"""
-        return _tansip.ios_base_imbue(*args)
+        return _WCS_PL_MAIN.ios_base_imbue(*args)
 
     def getloc(*args):
         """getloc(self) -> locale"""
-        return _tansip.ios_base_getloc(*args)
+        return _WCS_PL_MAIN.ios_base_getloc(*args)
 
     def xalloc(*args):
         """xalloc() -> int"""
-        return _tansip.ios_base_xalloc(*args)
+        return _WCS_PL_MAIN.ios_base_xalloc(*args)
 
     if _newclass:xalloc = staticmethod(xalloc)
     __swig_getmethods__["xalloc"] = lambda x: xalloc
     def iword(*args):
         """iword(self, int __ix) -> long"""
-        return _tansip.ios_base_iword(*args)
+        return _WCS_PL_MAIN.ios_base_iword(*args)
 
     def pword(*args):
         """pword(self, int __ix) -> void"""
-        return _tansip.ios_base_pword(*args)
+        return _WCS_PL_MAIN.ios_base_pword(*args)
 
-    __swig_destroy__ = _tansip.delete_ios_base
+    __swig_destroy__ = _WCS_PL_MAIN.delete_ios_base
     __del__ = lambda self : None;
-ios_base_swigregister = _tansip.ios_base_swigregister
+ios_base_swigregister = _WCS_PL_MAIN.ios_base_swigregister
 ios_base_swigregister(ios_base)
-cvar = _tansip.cvar
-ios_base.boolalpha = _tansip.cvar.ios_base_boolalpha
-ios_base.dec = _tansip.cvar.ios_base_dec
-ios_base.fixed = _tansip.cvar.ios_base_fixed
-ios_base.hex = _tansip.cvar.ios_base_hex
-ios_base.internal = _tansip.cvar.ios_base_internal
-ios_base.left = _tansip.cvar.ios_base_left
-ios_base.oct = _tansip.cvar.ios_base_oct
-ios_base.right = _tansip.cvar.ios_base_right
-ios_base.scientific = _tansip.cvar.ios_base_scientific
-ios_base.showbase = _tansip.cvar.ios_base_showbase
-ios_base.showpoint = _tansip.cvar.ios_base_showpoint
-ios_base.showpos = _tansip.cvar.ios_base_showpos
-ios_base.skipws = _tansip.cvar.ios_base_skipws
-ios_base.unitbuf = _tansip.cvar.ios_base_unitbuf
-ios_base.uppercase = _tansip.cvar.ios_base_uppercase
-ios_base.adjustfield = _tansip.cvar.ios_base_adjustfield
-ios_base.basefield = _tansip.cvar.ios_base_basefield
-ios_base.floatfield = _tansip.cvar.ios_base_floatfield
-ios_base.badbit = _tansip.cvar.ios_base_badbit
-ios_base.eofbit = _tansip.cvar.ios_base_eofbit
-ios_base.failbit = _tansip.cvar.ios_base_failbit
-ios_base.goodbit = _tansip.cvar.ios_base_goodbit
-ios_base.app = _tansip.cvar.ios_base_app
-ios_base.ate = _tansip.cvar.ios_base_ate
-ios_base.binary = _tansip.cvar.ios_base_binary
-ios_base.ios_base_in = _tansip.cvar.ios_base_ios_base_in
-ios_base.out = _tansip.cvar.ios_base_out
-ios_base.trunc = _tansip.cvar.ios_base_trunc
-ios_base.beg = _tansip.cvar.ios_base_beg
-ios_base.cur = _tansip.cvar.ios_base_cur
-ios_base.end = _tansip.cvar.ios_base_end
+cvar = _WCS_PL_MAIN.cvar
+ios_base.boolalpha = _WCS_PL_MAIN.cvar.ios_base_boolalpha
+ios_base.dec = _WCS_PL_MAIN.cvar.ios_base_dec
+ios_base.fixed = _WCS_PL_MAIN.cvar.ios_base_fixed
+ios_base.hex = _WCS_PL_MAIN.cvar.ios_base_hex
+ios_base.internal = _WCS_PL_MAIN.cvar.ios_base_internal
+ios_base.left = _WCS_PL_MAIN.cvar.ios_base_left
+ios_base.oct = _WCS_PL_MAIN.cvar.ios_base_oct
+ios_base.right = _WCS_PL_MAIN.cvar.ios_base_right
+ios_base.scientific = _WCS_PL_MAIN.cvar.ios_base_scientific
+ios_base.showbase = _WCS_PL_MAIN.cvar.ios_base_showbase
+ios_base.showpoint = _WCS_PL_MAIN.cvar.ios_base_showpoint
+ios_base.showpos = _WCS_PL_MAIN.cvar.ios_base_showpos
+ios_base.skipws = _WCS_PL_MAIN.cvar.ios_base_skipws
+ios_base.unitbuf = _WCS_PL_MAIN.cvar.ios_base_unitbuf
+ios_base.uppercase = _WCS_PL_MAIN.cvar.ios_base_uppercase
+ios_base.adjustfield = _WCS_PL_MAIN.cvar.ios_base_adjustfield
+ios_base.basefield = _WCS_PL_MAIN.cvar.ios_base_basefield
+ios_base.floatfield = _WCS_PL_MAIN.cvar.ios_base_floatfield
+ios_base.badbit = _WCS_PL_MAIN.cvar.ios_base_badbit
+ios_base.eofbit = _WCS_PL_MAIN.cvar.ios_base_eofbit
+ios_base.failbit = _WCS_PL_MAIN.cvar.ios_base_failbit
+ios_base.goodbit = _WCS_PL_MAIN.cvar.ios_base_goodbit
+ios_base.app = _WCS_PL_MAIN.cvar.ios_base_app
+ios_base.ate = _WCS_PL_MAIN.cvar.ios_base_ate
+ios_base.binary = _WCS_PL_MAIN.cvar.ios_base_binary
+ios_base.ios_base_in = _WCS_PL_MAIN.cvar.ios_base_ios_base_in
+ios_base.out = _WCS_PL_MAIN.cvar.ios_base_out
+ios_base.trunc = _WCS_PL_MAIN.cvar.ios_base_trunc
+ios_base.beg = _WCS_PL_MAIN.cvar.ios_base_beg
+ios_base.cur = _WCS_PL_MAIN.cvar.ios_base_cur
+ios_base.end = _WCS_PL_MAIN.cvar.ios_base_end
 
 def ios_base_sync_with_stdio(*args):
   """
     sync_with_stdio(bool __sync=True) -> bool
     ios_base_sync_with_stdio() -> bool
     """
-  return _tansip.ios_base_sync_with_stdio(*args)
+  return _WCS_PL_MAIN.ios_base_sync_with_stdio(*args)
 
 def ios_base_xalloc(*args):
   """ios_base_xalloc() -> int"""
-  return _tansip.ios_base_xalloc(*args)
+  return _WCS_PL_MAIN.ios_base_xalloc(*args)
 
 class ios(ios_base):
     """Proxy of C++ ios class"""
@@ -274,87 +274,87 @@ class ios(ios_base):
     __repr__ = _swig_repr
     def rdstate(*args):
         """rdstate(self) -> iostate"""
-        return _tansip.ios_rdstate(*args)
+        return _WCS_PL_MAIN.ios_rdstate(*args)
 
     def clear(*args):
         """
         clear(self, iostate __state=goodbit)
         clear(self)
         """
-        return _tansip.ios_clear(*args)
+        return _WCS_PL_MAIN.ios_clear(*args)
 
     def setstate(*args):
         """setstate(self, iostate __state)"""
-        return _tansip.ios_setstate(*args)
+        return _WCS_PL_MAIN.ios_setstate(*args)
 
     def good(*args):
         """good(self) -> bool"""
-        return _tansip.ios_good(*args)
+        return _WCS_PL_MAIN.ios_good(*args)
 
     def eof(*args):
         """eof(self) -> bool"""
-        return _tansip.ios_eof(*args)
+        return _WCS_PL_MAIN.ios_eof(*args)
 
     def fail(*args):
         """fail(self) -> bool"""
-        return _tansip.ios_fail(*args)
+        return _WCS_PL_MAIN.ios_fail(*args)
 
     def bad(*args):
         """bad(self) -> bool"""
-        return _tansip.ios_bad(*args)
+        return _WCS_PL_MAIN.ios_bad(*args)
 
     def exceptions(*args):
         """
         exceptions(self) -> iostate
         exceptions(self, iostate __except)
         """
-        return _tansip.ios_exceptions(*args)
+        return _WCS_PL_MAIN.ios_exceptions(*args)
 
     def __init__(self, *args): 
         """__init__(self, std::basic_streambuf<(char,std::char_traits<(char)>)> __sb) -> ios"""
-        this = _tansip.new_ios(*args)
+        this = _WCS_PL_MAIN.new_ios(*args)
         try: self.this.append(this)
         except: self.this = this
-    __swig_destroy__ = _tansip.delete_ios
+    __swig_destroy__ = _WCS_PL_MAIN.delete_ios
     __del__ = lambda self : None;
     def tie(*args):
         """
         tie(self) -> ostream
         tie(self, ostream __tiestr) -> ostream
         """
-        return _tansip.ios_tie(*args)
+        return _WCS_PL_MAIN.ios_tie(*args)
 
     def rdbuf(*args):
         """
         rdbuf(self) -> std::basic_streambuf<(char,std::char_traits<(char)>)>
         rdbuf(self, std::basic_streambuf<(char,std::char_traits<(char)>)> __sb) -> std::basic_streambuf<(char,std::char_traits<(char)>)>
         """
-        return _tansip.ios_rdbuf(*args)
+        return _WCS_PL_MAIN.ios_rdbuf(*args)
 
     def copyfmt(*args):
         """copyfmt(self, ios __rhs) -> ios"""
-        return _tansip.ios_copyfmt(*args)
+        return _WCS_PL_MAIN.ios_copyfmt(*args)
 
     def fill(*args):
         """
         fill(self) -> char_type
         fill(self, char_type __ch) -> char_type
         """
-        return _tansip.ios_fill(*args)
+        return _WCS_PL_MAIN.ios_fill(*args)
 
     def imbue(*args):
         """imbue(self, locale __loc) -> locale"""
-        return _tansip.ios_imbue(*args)
+        return _WCS_PL_MAIN.ios_imbue(*args)
 
     def narrow(*args):
         """narrow(self, char_type __c, char __dfault) -> char"""
-        return _tansip.ios_narrow(*args)
+        return _WCS_PL_MAIN.ios_narrow(*args)
 
     def widen(*args):
         """widen(self, char __c) -> char_type"""
-        return _tansip.ios_widen(*args)
+        return _WCS_PL_MAIN.ios_widen(*args)
 
-ios_swigregister = _tansip.ios_swigregister
+ios_swigregister = _WCS_PL_MAIN.ios_swigregister
 ios_swigregister(ios)
 
 class ostream(ios):
@@ -368,10 +368,10 @@ class ostream(ios):
     __repr__ = _swig_repr
     def __init__(self, *args): 
         """__init__(self, std::basic_streambuf<(char,std::char_traits<(char)>)> __sb) -> ostream"""
-        this = _tansip.new_ostream(*args)
+        this = _WCS_PL_MAIN.new_ostream(*args)
         try: self.this.append(this)
         except: self.this = this
-    __swig_destroy__ = _tansip.delete_ostream
+    __swig_destroy__ = _WCS_PL_MAIN.delete_ostream
     __del__ = lambda self : None;
     def __lshift__(*args):
         """
@@ -394,32 +394,32 @@ class ostream(ios):
         __lshift__(self, std::basic_streambuf<(char,std::char_traits<(char)>)> __sb) -> ostream
         __lshift__(self, std::basic_string<(char,std::char_traits<(char)>,std::allocator<(char)>)> s) -> ostream
         """
-        return _tansip.ostream___lshift__(*args)
+        return _WCS_PL_MAIN.ostream___lshift__(*args)
 
     def put(*args):
         """put(self, char_type __c) -> ostream"""
-        return _tansip.ostream_put(*args)
+        return _WCS_PL_MAIN.ostream_put(*args)
 
     def write(*args):
         """write(self, char_type __s, streamsize __n) -> ostream"""
-        return _tansip.ostream_write(*args)
+        return _WCS_PL_MAIN.ostream_write(*args)
 
     def flush(*args):
         """flush(self) -> ostream"""
-        return _tansip.ostream_flush(*args)
+        return _WCS_PL_MAIN.ostream_flush(*args)
 
     def tellp(*args):
         """tellp(self) -> pos_type"""
-        return _tansip.ostream_tellp(*args)
+        return _WCS_PL_MAIN.ostream_tellp(*args)
 
     def seekp(*args):
         """
         seekp(self, pos_type ?) -> ostream
         seekp(self, off_type ?, seekdir ?) -> ostream
         """
-        return _tansip.ostream_seekp(*args)
+        return _WCS_PL_MAIN.ostream_seekp(*args)
 
-ostream_swigregister = _tansip.ostream_swigregister
+ostream_swigregister = _WCS_PL_MAIN.ostream_swigregister
 ostream_swigregister(ostream)
 cin = cvar.cin
 cout = cvar.cout
@@ -437,10 +437,10 @@ class istream(ios):
     __repr__ = _swig_repr
     def __init__(self, *args): 
         """__init__(self, std::basic_streambuf<(char,std::char_traits<(char)>)> __sb) -> istream"""
-        this = _tansip.new_istream(*args)
+        this = _WCS_PL_MAIN.new_istream(*args)
         try: self.this.append(this)
         except: self.this = this
-    __swig_destroy__ = _tansip.delete_istream
+    __swig_destroy__ = _WCS_PL_MAIN.delete_istream
     __del__ = lambda self : None;
     def __rshift__(*args):
         """
@@ -462,11 +462,11 @@ class istream(ios):
         __rshift__(self, void __p) -> istream
         __rshift__(self, std::basic_streambuf<(char,std::char_traits<(char)>)> __sb) -> istream
         """
-        return _tansip.istream___rshift__(*args)
+        return _WCS_PL_MAIN.istream___rshift__(*args)
 
     def gcount(*args):
         """gcount(self) -> streamsize"""
-        return _tansip.istream_gcount(*args)
+        return _WCS_PL_MAIN.istream_gcount(*args)
 
     def get(*args):
         """
@@ -478,14 +478,14 @@ class istream(ios):
             char_type __delim) -> istream
         get(self, std::basic_streambuf<(char,std::char_traits<(char)>)> __sb) -> istream
         """
-        return _tansip.istream_get(*args)
+        return _WCS_PL_MAIN.istream_get(*args)
 
     def getline(*args):
         """
         getline(self, char_type __s, streamsize __n, char_type __delim) -> istream
         getline(self, char_type __s, streamsize __n) -> istream
         """
-        return _tansip.istream_getline(*args)
+        return _WCS_PL_MAIN.istream_getline(*args)
 
     def ignore(*args):
         """
@@ -493,44 +493,44 @@ class istream(ios):
         ignore(self, streamsize __n=1) -> istream
         ignore(self) -> istream
         """
-        return _tansip.istream_ignore(*args)
+        return _WCS_PL_MAIN.istream_ignore(*args)
 
     def peek(*args):
         """peek(self) -> int_type"""
-        return _tansip.istream_peek(*args)
+        return _WCS_PL_MAIN.istream_peek(*args)
 
     def read(*args):
         """read(self, char_type __s, streamsize __n) -> istream"""
-        return _tansip.istream_read(*args)
+        return _WCS_PL_MAIN.istream_read(*args)
 
     def readsome(*args):
         """readsome(self, char_type __s, streamsize __n) -> streamsize"""
-        return _tansip.istream_readsome(*args)
+        return _WCS_PL_MAIN.istream_readsome(*args)
 
     def putback(*args):
         """putback(self, char_type __c) -> istream"""
-        return _tansip.istream_putback(*args)
+        return _WCS_PL_MAIN.istream_putback(*args)
 
     def unget(*args):
         """unget(self) -> istream"""
-        return _tansip.istream_unget(*args)
+        return _WCS_PL_MAIN.istream_unget(*args)
 
     def sync(*args):
         """sync(self) -> int"""
-        return _tansip.istream_sync(*args)
+        return _WCS_PL_MAIN.istream_sync(*args)
 
     def tellg(*args):
         """tellg(self) -> pos_type"""
-        return _tansip.istream_tellg(*args)
+        return _WCS_PL_MAIN.istream_tellg(*args)
 
     def seekg(*args):
         """
         seekg(self, pos_type ?) -> istream
         seekg(self, off_type ?, seekdir ?) -> istream
         """
-        return _tansip.istream_seekg(*args)
+        return _WCS_PL_MAIN.istream_seekg(*args)
 
-istream_swigregister = _tansip.istream_swigregister
+istream_swigregister = _WCS_PL_MAIN.istream_swigregister
 istream_swigregister(istream)
 
 class iostream(istream,ostream):
@@ -544,20 +544,20 @@ class iostream(istream,ostream):
     __repr__ = _swig_repr
     def __init__(self, *args): 
         """__init__(self, std::basic_streambuf<(char,std::char_traits<(char)>)> __sb) -> iostream"""
-        this = _tansip.new_iostream(*args)
+        this = _WCS_PL_MAIN.new_iostream(*args)
         try: self.this.append(this)
         except: self.this = this
-    __swig_destroy__ = _tansip.delete_iostream
+    __swig_destroy__ = _WCS_PL_MAIN.delete_iostream
     __del__ = lambda self : None;
-iostream_swigregister = _tansip.iostream_swigregister
+iostream_swigregister = _WCS_PL_MAIN.iostream_swigregister
 iostream_swigregister(iostream)
 
-endl_cb_ptr = _tansip.endl_cb_ptr
-endl = _tansip.endl
-ends_cb_ptr = _tansip.ends_cb_ptr
-ends = _tansip.ends
-flush_cb_ptr = _tansip.flush_cb_ptr
-flush = _tansip.flush
+endl_cb_ptr = _WCS_PL_MAIN.endl_cb_ptr
+endl = _WCS_PL_MAIN.endl
+ends_cb_ptr = _WCS_PL_MAIN.ends_cb_ptr
+ends = _WCS_PL_MAIN.ends
+flush_cb_ptr = _WCS_PL_MAIN.flush_cb_ptr
+flush = _WCS_PL_MAIN.flush
 import lsst.pex.exceptions
 
 import lsst.utils
@@ -592,6 +592,7 @@ import lsst.afw.geom.geomLib
 import lsst.afw.coord.coordLib
 import lsst.afw.cameraGeom.cameraGeomLib
 import lsst.afw.detection.detectionLib
+import lsst.afw.math.mathLib
 class SourceGroup(_object):
     """Proxy of C++ SourceGroup class"""
     __swig_setmethods__ = {}
@@ -601,27 +602,27 @@ class SourceGroup(_object):
     __repr__ = _swig_repr
     def iterator(*args):
         """iterator(self, PyObject PYTHON_SELF) -> PySwigIterator"""
-        return _tansip.SourceGroup_iterator(*args)
+        return _WCS_PL_MAIN.SourceGroup_iterator(*args)
 
     def __iter__(self): return self.iterator()
     def __nonzero__(*args):
         """__nonzero__(self) -> bool"""
-        return _tansip.SourceGroup___nonzero__(*args)
+        return _WCS_PL_MAIN.SourceGroup___nonzero__(*args)
 
     def __len__(*args):
         """__len__(self) -> std::vector<(std::vector<(boost::shared_ptr<(lsst::afw::detection::Source)>,std::allocator<(boost::shared_ptr<(lsst::afw::detection::Source)>)>)>)>::size_type"""
-        return _tansip.SourceGroup___len__(*args)
+        return _WCS_PL_MAIN.SourceGroup___len__(*args)
 
     def pop(*args):
         """pop(self) -> std::vector<(std::vector<(boost::shared_ptr<(lsst::afw::detection::Source)>,std::allocator<(boost::shared_ptr<(lsst::afw::detection::Source)>)>)>)>::value_type"""
-        return _tansip.SourceGroup_pop(*args)
+        return _WCS_PL_MAIN.SourceGroup_pop(*args)
 
     def __getslice__(*args):
         """
         __getslice__(self, std::vector<(std::vector<(boost::shared_ptr<(lsst::afw::detection::Source)>,std::allocator<(boost::shared_ptr<(lsst::afw::detection::Source)>)>)>)>::difference_type i, 
             std::vector<(std::vector<(boost::shared_ptr<(lsst::afw::detection::Source)>,std::allocator<(boost::shared_ptr<(lsst::afw::detection::Source)>)>)>)>::difference_type j) -> SourceGroup
         """
-        return _tansip.SourceGroup___getslice__(*args)
+        return _WCS_PL_MAIN.SourceGroup___getslice__(*args)
 
     def __setslice__(*args):
         """
@@ -629,73 +630,73 @@ class SourceGroup(_object):
             std::vector<(std::vector<(boost::shared_ptr<(lsst::afw::detection::Source)>,std::allocator<(boost::shared_ptr<(lsst::afw::detection::Source)>)>)>)>::difference_type j, 
             SourceGroup v)
         """
-        return _tansip.SourceGroup___setslice__(*args)
+        return _WCS_PL_MAIN.SourceGroup___setslice__(*args)
 
     def __delslice__(*args):
         """
         __delslice__(self, std::vector<(std::vector<(boost::shared_ptr<(lsst::afw::detection::Source)>,std::allocator<(boost::shared_ptr<(lsst::afw::detection::Source)>)>)>)>::difference_type i, 
             std::vector<(std::vector<(boost::shared_ptr<(lsst::afw::detection::Source)>,std::allocator<(boost::shared_ptr<(lsst::afw::detection::Source)>)>)>)>::difference_type j)
         """
-        return _tansip.SourceGroup___delslice__(*args)
+        return _WCS_PL_MAIN.SourceGroup___delslice__(*args)
 
     def __delitem__(*args):
         """__delitem__(self, std::vector<(std::vector<(boost::shared_ptr<(lsst::afw::detection::Source)>,std::allocator<(boost::shared_ptr<(lsst::afw::detection::Source)>)>)>)>::difference_type i)"""
-        return _tansip.SourceGroup___delitem__(*args)
+        return _WCS_PL_MAIN.SourceGroup___delitem__(*args)
 
     def __getitem__(*args):
         """__getitem__(self, std::vector<(std::vector<(boost::shared_ptr<(lsst::afw::detection::Source)>,std::allocator<(boost::shared_ptr<(lsst::afw::detection::Source)>)>)>)>::difference_type i) -> std::vector<(std::vector<(boost::shared_ptr<(lsst::afw::detection::Source)>,std::allocator<(boost::shared_ptr<(lsst::afw::detection::Source)>)>)>)>::value_type"""
-        return _tansip.SourceGroup___getitem__(*args)
+        return _WCS_PL_MAIN.SourceGroup___getitem__(*args)
 
     def __setitem__(*args):
         """
         __setitem__(self, std::vector<(std::vector<(boost::shared_ptr<(lsst::afw::detection::Source)>,std::allocator<(boost::shared_ptr<(lsst::afw::detection::Source)>)>)>)>::difference_type i, 
             std::vector<(std::vector<(boost::shared_ptr<(lsst::afw::detection::Source)>,std::allocator<(boost::shared_ptr<(lsst::afw::detection::Source)>)>)>)>::value_type x)
         """
-        return _tansip.SourceGroup___setitem__(*args)
+        return _WCS_PL_MAIN.SourceGroup___setitem__(*args)
 
     def append(*args):
         """append(self, std::vector<(std::vector<(boost::shared_ptr<(lsst::afw::detection::Source)>,std::allocator<(boost::shared_ptr<(lsst::afw::detection::Source)>)>)>)>::value_type x)"""
-        return _tansip.SourceGroup_append(*args)
+        return _WCS_PL_MAIN.SourceGroup_append(*args)
 
     def empty(*args):
         """empty(self) -> bool"""
-        return _tansip.SourceGroup_empty(*args)
+        return _WCS_PL_MAIN.SourceGroup_empty(*args)
 
     def size(*args):
         """size(self) -> std::vector<(std::vector<(boost::shared_ptr<(lsst::afw::detection::Source)>,std::allocator<(boost::shared_ptr<(lsst::afw::detection::Source)>)>)>)>::size_type"""
-        return _tansip.SourceGroup_size(*args)
+        return _WCS_PL_MAIN.SourceGroup_size(*args)
 
     def clear(*args):
         """clear(self)"""
-        return _tansip.SourceGroup_clear(*args)
+        return _WCS_PL_MAIN.SourceGroup_clear(*args)
 
     def swap(*args):
         """swap(self, SourceGroup v)"""
-        return _tansip.SourceGroup_swap(*args)
+        return _WCS_PL_MAIN.SourceGroup_swap(*args)
 
     def get_allocator(*args):
         """get_allocator(self) -> std::vector<(std::vector<(boost::shared_ptr<(lsst::afw::detection::Source)>,std::allocator<(boost::shared_ptr<(lsst::afw::detection::Source)>)>)>)>::allocator_type"""
-        return _tansip.SourceGroup_get_allocator(*args)
+        return _WCS_PL_MAIN.SourceGroup_get_allocator(*args)
 
     def begin(*args):
         """begin(self) -> std::vector<(std::vector<(boost::shared_ptr<(lsst::afw::detection::Source)>,std::allocator<(boost::shared_ptr<(lsst::afw::detection::Source)>)>)>)>::const_iterator"""
-        return _tansip.SourceGroup_begin(*args)
+        return _WCS_PL_MAIN.SourceGroup_begin(*args)
 
     def end(*args):
         """end(self) -> std::vector<(std::vector<(boost::shared_ptr<(lsst::afw::detection::Source)>,std::allocator<(boost::shared_ptr<(lsst::afw::detection::Source)>)>)>)>::const_iterator"""
-        return _tansip.SourceGroup_end(*args)
+        return _WCS_PL_MAIN.SourceGroup_end(*args)
 
     def rbegin(*args):
         """rbegin(self) -> std::vector<(std::vector<(boost::shared_ptr<(lsst::afw::detection::Source)>,std::allocator<(boost::shared_ptr<(lsst::afw::detection::Source)>)>)>)>::const_reverse_iterator"""
-        return _tansip.SourceGroup_rbegin(*args)
+        return _WCS_PL_MAIN.SourceGroup_rbegin(*args)
 
     def rend(*args):
         """rend(self) -> std::vector<(std::vector<(boost::shared_ptr<(lsst::afw::detection::Source)>,std::allocator<(boost::shared_ptr<(lsst::afw::detection::Source)>)>)>)>::const_reverse_iterator"""
-        return _tansip.SourceGroup_rend(*args)
+        return _WCS_PL_MAIN.SourceGroup_rend(*args)
 
     def pop_back(*args):
         """pop_back(self)"""
-        return _tansip.SourceGroup_pop_back(*args)
+        return _WCS_PL_MAIN.SourceGroup_pop_back(*args)
 
     def erase(*args):
         """
@@ -703,7 +704,7 @@ class SourceGroup(_object):
         erase(self, std::vector<(std::vector<(boost::shared_ptr<(lsst::afw::detection::Source)>,std::allocator<(boost::shared_ptr<(lsst::afw::detection::Source)>)>)>)>::iterator first, 
             std::vector<(std::vector<(boost::shared_ptr<(lsst::afw::detection::Source)>,std::allocator<(boost::shared_ptr<(lsst::afw::detection::Source)>)>)>)>::iterator last) -> std::vector<(std::vector<(boost::shared_ptr<(lsst::afw::detection::Source)>,std::allocator<(boost::shared_ptr<(lsst::afw::detection::Source)>)>)>)>::iterator
         """
-        return _tansip.SourceGroup_erase(*args)
+        return _WCS_PL_MAIN.SourceGroup_erase(*args)
 
     def __init__(self, *args): 
         """
@@ -713,27 +714,27 @@ class SourceGroup(_object):
         __init__(self, std::vector<(std::vector<(boost::shared_ptr<(lsst::afw::detection::Source)>,std::allocator<(boost::shared_ptr<(lsst::afw::detection::Source)>)>)>)>::size_type size, 
             std::vector<(std::vector<(boost::shared_ptr<(lsst::afw::detection::Source)>,std::allocator<(boost::shared_ptr<(lsst::afw::detection::Source)>)>)>)>::value_type value) -> SourceGroup
         """
-        this = _tansip.new_SourceGroup(*args)
+        this = _WCS_PL_MAIN.new_SourceGroup(*args)
         try: self.this.append(this)
         except: self.this = this
     def push_back(*args):
         """push_back(self, std::vector<(std::vector<(boost::shared_ptr<(lsst::afw::detection::Source)>,std::allocator<(boost::shared_ptr<(lsst::afw::detection::Source)>)>)>)>::value_type x)"""
-        return _tansip.SourceGroup_push_back(*args)
+        return _WCS_PL_MAIN.SourceGroup_push_back(*args)
 
     def front(*args):
         """front(self) -> std::vector<(std::vector<(boost::shared_ptr<(lsst::afw::detection::Source)>,std::allocator<(boost::shared_ptr<(lsst::afw::detection::Source)>)>)>)>::value_type"""
-        return _tansip.SourceGroup_front(*args)
+        return _WCS_PL_MAIN.SourceGroup_front(*args)
 
     def back(*args):
         """back(self) -> std::vector<(std::vector<(boost::shared_ptr<(lsst::afw::detection::Source)>,std::allocator<(boost::shared_ptr<(lsst::afw::detection::Source)>)>)>)>::value_type"""
-        return _tansip.SourceGroup_back(*args)
+        return _WCS_PL_MAIN.SourceGroup_back(*args)
 
     def assign(*args):
         """
         assign(self, std::vector<(std::vector<(boost::shared_ptr<(lsst::afw::detection::Source)>,std::allocator<(boost::shared_ptr<(lsst::afw::detection::Source)>)>)>)>::size_type n, 
             std::vector<(std::vector<(boost::shared_ptr<(lsst::afw::detection::Source)>,std::allocator<(boost::shared_ptr<(lsst::afw::detection::Source)>)>)>)>::value_type x)
         """
-        return _tansip.SourceGroup_assign(*args)
+        return _WCS_PL_MAIN.SourceGroup_assign(*args)
 
     def resize(*args):
         """
@@ -741,7 +742,7 @@ class SourceGroup(_object):
         resize(self, std::vector<(std::vector<(boost::shared_ptr<(lsst::afw::detection::Source)>,std::allocator<(boost::shared_ptr<(lsst::afw::detection::Source)>)>)>)>::size_type new_size, 
             std::vector<(std::vector<(boost::shared_ptr<(lsst::afw::detection::Source)>,std::allocator<(boost::shared_ptr<(lsst::afw::detection::Source)>)>)>)>::value_type x)
         """
-        return _tansip.SourceGroup_resize(*args)
+        return _WCS_PL_MAIN.SourceGroup_resize(*args)
 
     def insert(*args):
         """
@@ -751,19 +752,19 @@ class SourceGroup(_object):
             std::vector<(std::vector<(boost::shared_ptr<(lsst::afw::detection::Source)>,std::allocator<(boost::shared_ptr<(lsst::afw::detection::Source)>)>)>)>::size_type n, 
             std::vector<(std::vector<(boost::shared_ptr<(lsst::afw::detection::Source)>,std::allocator<(boost::shared_ptr<(lsst::afw::detection::Source)>)>)>)>::value_type x)
         """
-        return _tansip.SourceGroup_insert(*args)
+        return _WCS_PL_MAIN.SourceGroup_insert(*args)
 
     def reserve(*args):
         """reserve(self, std::vector<(std::vector<(boost::shared_ptr<(lsst::afw::detection::Source)>,std::allocator<(boost::shared_ptr<(lsst::afw::detection::Source)>)>)>)>::size_type n)"""
-        return _tansip.SourceGroup_reserve(*args)
+        return _WCS_PL_MAIN.SourceGroup_reserve(*args)
 
     def capacity(*args):
         """capacity(self) -> std::vector<(std::vector<(boost::shared_ptr<(lsst::afw::detection::Source)>,std::allocator<(boost::shared_ptr<(lsst::afw::detection::Source)>)>)>)>::size_type"""
-        return _tansip.SourceGroup_capacity(*args)
+        return _WCS_PL_MAIN.SourceGroup_capacity(*args)
 
-    __swig_destroy__ = _tansip.delete_SourceGroup
+    __swig_destroy__ = _WCS_PL_MAIN.delete_SourceGroup
     __del__ = lambda self : None;
-SourceGroup_swigregister = _tansip.SourceGroup_swigregister
+SourceGroup_swigregister = _WCS_PL_MAIN.SourceGroup_swigregister
 SourceGroup_swigregister(SourceGroup)
 
 class vvSourceMatch(_object):
@@ -775,95 +776,95 @@ class vvSourceMatch(_object):
     __repr__ = _swig_repr
     def iterator(*args):
         """iterator(self, PyObject PYTHON_SELF) -> PySwigIterator"""
-        return _tansip.vvSourceMatch_iterator(*args)
+        return _WCS_PL_MAIN.vvSourceMatch_iterator(*args)
 
     def __iter__(self): return self.iterator()
     def __nonzero__(*args):
         """__nonzero__(self) -> bool"""
-        return _tansip.vvSourceMatch___nonzero__(*args)
+        return _WCS_PL_MAIN.vvSourceMatch___nonzero__(*args)
 
     def __len__(*args):
         """__len__(self) -> size_type"""
-        return _tansip.vvSourceMatch___len__(*args)
+        return _WCS_PL_MAIN.vvSourceMatch___len__(*args)
 
     def pop(*args):
         """pop(self) -> value_type"""
-        return _tansip.vvSourceMatch_pop(*args)
+        return _WCS_PL_MAIN.vvSourceMatch_pop(*args)
 
     def __getslice__(*args):
         """__getslice__(self, difference_type i, difference_type j) -> vvSourceMatch"""
-        return _tansip.vvSourceMatch___getslice__(*args)
+        return _WCS_PL_MAIN.vvSourceMatch___getslice__(*args)
 
     def __setslice__(*args):
         """__setslice__(self, difference_type i, difference_type j, vvSourceMatch v)"""
-        return _tansip.vvSourceMatch___setslice__(*args)
+        return _WCS_PL_MAIN.vvSourceMatch___setslice__(*args)
 
     def __delslice__(*args):
         """__delslice__(self, difference_type i, difference_type j)"""
-        return _tansip.vvSourceMatch___delslice__(*args)
+        return _WCS_PL_MAIN.vvSourceMatch___delslice__(*args)
 
     def __delitem__(*args):
         """__delitem__(self, difference_type i)"""
-        return _tansip.vvSourceMatch___delitem__(*args)
+        return _WCS_PL_MAIN.vvSourceMatch___delitem__(*args)
 
     def __getitem__(*args):
         """__getitem__(self, difference_type i) -> value_type"""
-        return _tansip.vvSourceMatch___getitem__(*args)
+        return _WCS_PL_MAIN.vvSourceMatch___getitem__(*args)
 
     def __setitem__(*args):
         """__setitem__(self, difference_type i, value_type x)"""
-        return _tansip.vvSourceMatch___setitem__(*args)
+        return _WCS_PL_MAIN.vvSourceMatch___setitem__(*args)
 
     def append(*args):
         """append(self, value_type x)"""
-        return _tansip.vvSourceMatch_append(*args)
+        return _WCS_PL_MAIN.vvSourceMatch_append(*args)
 
     def empty(*args):
         """empty(self) -> bool"""
-        return _tansip.vvSourceMatch_empty(*args)
+        return _WCS_PL_MAIN.vvSourceMatch_empty(*args)
 
     def size(*args):
         """size(self) -> size_type"""
-        return _tansip.vvSourceMatch_size(*args)
+        return _WCS_PL_MAIN.vvSourceMatch_size(*args)
 
     def clear(*args):
         """clear(self)"""
-        return _tansip.vvSourceMatch_clear(*args)
+        return _WCS_PL_MAIN.vvSourceMatch_clear(*args)
 
     def swap(*args):
         """swap(self, vvSourceMatch v)"""
-        return _tansip.vvSourceMatch_swap(*args)
+        return _WCS_PL_MAIN.vvSourceMatch_swap(*args)
 
     def get_allocator(*args):
         """get_allocator(self) -> allocator_type"""
-        return _tansip.vvSourceMatch_get_allocator(*args)
+        return _WCS_PL_MAIN.vvSourceMatch_get_allocator(*args)
 
     def begin(*args):
         """begin(self) -> const_iterator"""
-        return _tansip.vvSourceMatch_begin(*args)
+        return _WCS_PL_MAIN.vvSourceMatch_begin(*args)
 
     def end(*args):
         """end(self) -> const_iterator"""
-        return _tansip.vvSourceMatch_end(*args)
+        return _WCS_PL_MAIN.vvSourceMatch_end(*args)
 
     def rbegin(*args):
         """rbegin(self) -> const_reverse_iterator"""
-        return _tansip.vvSourceMatch_rbegin(*args)
+        return _WCS_PL_MAIN.vvSourceMatch_rbegin(*args)
 
     def rend(*args):
         """rend(self) -> const_reverse_iterator"""
-        return _tansip.vvSourceMatch_rend(*args)
+        return _WCS_PL_MAIN.vvSourceMatch_rend(*args)
 
     def pop_back(*args):
         """pop_back(self)"""
-        return _tansip.vvSourceMatch_pop_back(*args)
+        return _WCS_PL_MAIN.vvSourceMatch_pop_back(*args)
 
     def erase(*args):
         """
         erase(self, iterator pos) -> iterator
         erase(self, iterator first, iterator last) -> iterator
         """
-        return _tansip.vvSourceMatch_erase(*args)
+        return _WCS_PL_MAIN.vvSourceMatch_erase(*args)
 
     def __init__(self, *args): 
         """
@@ -872,50 +873,50 @@ class vvSourceMatch(_object):
         __init__(self, size_type size) -> vvSourceMatch
         __init__(self, size_type size, value_type value) -> vvSourceMatch
         """
-        this = _tansip.new_vvSourceMatch(*args)
+        this = _WCS_PL_MAIN.new_vvSourceMatch(*args)
         try: self.this.append(this)
         except: self.this = this
     def push_back(*args):
         """push_back(self, value_type x)"""
-        return _tansip.vvSourceMatch_push_back(*args)
+        return _WCS_PL_MAIN.vvSourceMatch_push_back(*args)
 
     def front(*args):
         """front(self) -> value_type"""
-        return _tansip.vvSourceMatch_front(*args)
+        return _WCS_PL_MAIN.vvSourceMatch_front(*args)
 
     def back(*args):
         """back(self) -> value_type"""
-        return _tansip.vvSourceMatch_back(*args)
+        return _WCS_PL_MAIN.vvSourceMatch_back(*args)
 
     def assign(*args):
         """assign(self, size_type n, value_type x)"""
-        return _tansip.vvSourceMatch_assign(*args)
+        return _WCS_PL_MAIN.vvSourceMatch_assign(*args)
 
     def resize(*args):
         """
         resize(self, size_type new_size)
         resize(self, size_type new_size, value_type x)
         """
-        return _tansip.vvSourceMatch_resize(*args)
+        return _WCS_PL_MAIN.vvSourceMatch_resize(*args)
 
     def insert(*args):
         """
         insert(self, iterator pos, value_type x) -> iterator
         insert(self, iterator pos, size_type n, value_type x)
         """
-        return _tansip.vvSourceMatch_insert(*args)
+        return _WCS_PL_MAIN.vvSourceMatch_insert(*args)
 
     def reserve(*args):
         """reserve(self, size_type n)"""
-        return _tansip.vvSourceMatch_reserve(*args)
+        return _WCS_PL_MAIN.vvSourceMatch_reserve(*args)
 
     def capacity(*args):
         """capacity(self) -> size_type"""
-        return _tansip.vvSourceMatch_capacity(*args)
+        return _WCS_PL_MAIN.vvSourceMatch_capacity(*args)
 
-    __swig_destroy__ = _tansip.delete_vvSourceMatch
+    __swig_destroy__ = _WCS_PL_MAIN.delete_vvSourceMatch
     __del__ = lambda self : None;
-vvSourceMatch_swigregister = _tansip.vvSourceMatch_swigregister
+vvSourceMatch_swigregister = _WCS_PL_MAIN.vvSourceMatch_swigregister
 vvSourceMatch_swigregister(vvSourceMatch)
 
 class resultWcs_V(_object):
@@ -927,27 +928,27 @@ class resultWcs_V(_object):
     __repr__ = _swig_repr
     def iterator(*args):
         """iterator(self, PyObject PYTHON_SELF) -> PySwigIterator"""
-        return _tansip.resultWcs_V_iterator(*args)
+        return _WCS_PL_MAIN.resultWcs_V_iterator(*args)
 
     def __iter__(self): return self.iterator()
     def __nonzero__(*args):
         """__nonzero__(self) -> bool"""
-        return _tansip.resultWcs_V___nonzero__(*args)
+        return _WCS_PL_MAIN.resultWcs_V___nonzero__(*args)
 
     def __len__(*args):
         """__len__(self) -> std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::size_type"""
-        return _tansip.resultWcs_V___len__(*args)
+        return _WCS_PL_MAIN.resultWcs_V___len__(*args)
 
     def pop(*args):
         """pop(self) -> std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::value_type"""
-        return _tansip.resultWcs_V_pop(*args)
+        return _WCS_PL_MAIN.resultWcs_V_pop(*args)
 
     def __getslice__(*args):
         """
         __getslice__(self, std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::difference_type i, 
             std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::difference_type j) -> resultWcs_V
         """
-        return _tansip.resultWcs_V___getslice__(*args)
+        return _WCS_PL_MAIN.resultWcs_V___getslice__(*args)
 
     def __setslice__(*args):
         """
@@ -955,73 +956,73 @@ class resultWcs_V(_object):
             std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::difference_type j, 
             resultWcs_V v)
         """
-        return _tansip.resultWcs_V___setslice__(*args)
+        return _WCS_PL_MAIN.resultWcs_V___setslice__(*args)
 
     def __delslice__(*args):
         """
         __delslice__(self, std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::difference_type i, 
             std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::difference_type j)
         """
-        return _tansip.resultWcs_V___delslice__(*args)
+        return _WCS_PL_MAIN.resultWcs_V___delslice__(*args)
 
     def __delitem__(*args):
         """__delitem__(self, std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::difference_type i)"""
-        return _tansip.resultWcs_V___delitem__(*args)
+        return _WCS_PL_MAIN.resultWcs_V___delitem__(*args)
 
     def __getitem__(*args):
         """__getitem__(self, std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::difference_type i) -> std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::value_type"""
-        return _tansip.resultWcs_V___getitem__(*args)
+        return _WCS_PL_MAIN.resultWcs_V___getitem__(*args)
 
     def __setitem__(*args):
         """
         __setitem__(self, std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::difference_type i, 
             std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::value_type x)
         """
-        return _tansip.resultWcs_V___setitem__(*args)
+        return _WCS_PL_MAIN.resultWcs_V___setitem__(*args)
 
     def append(*args):
         """append(self, std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::value_type x)"""
-        return _tansip.resultWcs_V_append(*args)
+        return _WCS_PL_MAIN.resultWcs_V_append(*args)
 
     def empty(*args):
         """empty(self) -> bool"""
-        return _tansip.resultWcs_V_empty(*args)
+        return _WCS_PL_MAIN.resultWcs_V_empty(*args)
 
     def size(*args):
         """size(self) -> std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::size_type"""
-        return _tansip.resultWcs_V_size(*args)
+        return _WCS_PL_MAIN.resultWcs_V_size(*args)
 
     def clear(*args):
         """clear(self)"""
-        return _tansip.resultWcs_V_clear(*args)
+        return _WCS_PL_MAIN.resultWcs_V_clear(*args)
 
     def swap(*args):
         """swap(self, resultWcs_V v)"""
-        return _tansip.resultWcs_V_swap(*args)
+        return _WCS_PL_MAIN.resultWcs_V_swap(*args)
 
     def get_allocator(*args):
         """get_allocator(self) -> std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::allocator_type"""
-        return _tansip.resultWcs_V_get_allocator(*args)
+        return _WCS_PL_MAIN.resultWcs_V_get_allocator(*args)
 
     def begin(*args):
         """begin(self) -> std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::const_iterator"""
-        return _tansip.resultWcs_V_begin(*args)
+        return _WCS_PL_MAIN.resultWcs_V_begin(*args)
 
     def end(*args):
         """end(self) -> std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::const_iterator"""
-        return _tansip.resultWcs_V_end(*args)
+        return _WCS_PL_MAIN.resultWcs_V_end(*args)
 
     def rbegin(*args):
         """rbegin(self) -> std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::const_reverse_iterator"""
-        return _tansip.resultWcs_V_rbegin(*args)
+        return _WCS_PL_MAIN.resultWcs_V_rbegin(*args)
 
     def rend(*args):
         """rend(self) -> std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::const_reverse_iterator"""
-        return _tansip.resultWcs_V_rend(*args)
+        return _WCS_PL_MAIN.resultWcs_V_rend(*args)
 
     def pop_back(*args):
         """pop_back(self)"""
-        return _tansip.resultWcs_V_pop_back(*args)
+        return _WCS_PL_MAIN.resultWcs_V_pop_back(*args)
 
     def erase(*args):
         """
@@ -1029,7 +1030,7 @@ class resultWcs_V(_object):
         erase(self, std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::iterator first, 
             std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::iterator last) -> std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::iterator
         """
-        return _tansip.resultWcs_V_erase(*args)
+        return _WCS_PL_MAIN.resultWcs_V_erase(*args)
 
     def __init__(self, *args): 
         """
@@ -1039,27 +1040,27 @@ class resultWcs_V(_object):
         __init__(self, std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::size_type size, 
             std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::value_type value) -> resultWcs_V
         """
-        this = _tansip.new_resultWcs_V(*args)
+        this = _WCS_PL_MAIN.new_resultWcs_V(*args)
         try: self.this.append(this)
         except: self.this = this
     def push_back(*args):
         """push_back(self, std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::value_type x)"""
-        return _tansip.resultWcs_V_push_back(*args)
+        return _WCS_PL_MAIN.resultWcs_V_push_back(*args)
 
     def front(*args):
         """front(self) -> std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::value_type"""
-        return _tansip.resultWcs_V_front(*args)
+        return _WCS_PL_MAIN.resultWcs_V_front(*args)
 
     def back(*args):
         """back(self) -> std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::value_type"""
-        return _tansip.resultWcs_V_back(*args)
+        return _WCS_PL_MAIN.resultWcs_V_back(*args)
 
     def assign(*args):
         """
         assign(self, std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::size_type n, 
             std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::value_type x)
         """
-        return _tansip.resultWcs_V_assign(*args)
+        return _WCS_PL_MAIN.resultWcs_V_assign(*args)
 
     def resize(*args):
         """
@@ -1067,7 +1068,7 @@ class resultWcs_V(_object):
         resize(self, std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::size_type new_size, 
             std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::value_type x)
         """
-        return _tansip.resultWcs_V_resize(*args)
+        return _WCS_PL_MAIN.resultWcs_V_resize(*args)
 
     def insert(*args):
         """
@@ -1077,28 +1078,24 @@ class resultWcs_V(_object):
             std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::size_type n, 
             std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::value_type x)
         """
-        return _tansip.resultWcs_V_insert(*args)
+        return _WCS_PL_MAIN.resultWcs_V_insert(*args)
 
     def reserve(*args):
         """reserve(self, std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::size_type n)"""
-        return _tansip.resultWcs_V_reserve(*args)
+        return _WCS_PL_MAIN.resultWcs_V_reserve(*args)
 
     def capacity(*args):
         """capacity(self) -> std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::size_type"""
-        return _tansip.resultWcs_V_capacity(*args)
+        return _WCS_PL_MAIN.resultWcs_V_capacity(*args)
 
-    __swig_destroy__ = _tansip.delete_resultWcs_V
+    __swig_destroy__ = _WCS_PL_MAIN.delete_resultWcs_V
     __del__ = lambda self : None;
-resultWcs_V_swigregister = _tansip.resultWcs_V_swigregister
+resultWcs_V_swigregister = _WCS_PL_MAIN.resultWcs_V_swigregister
 resultWcs_V_swigregister(resultWcs_V)
 
 
 def F_WCS_TANSIP_V(*args):
-  """F_WCS_TANSIP_V(vvSourceMatch ?, Ptr ?, Ptr ?, Ptr ?, bool ?) -> resultWcs_V"""
-  return _tansip.F_WCS_TANSIP_V(*args)
-
-def F_WCS_TANSIP_TEST(*args):
-  """F_WCS_TANSIP_TEST(resultWcs_V ?)"""
-  return _tansip.F_WCS_TANSIP_TEST(*args)
+  """F_WCS_TANSIP_V(vvSourceMatch ?, Ptr ?, Ptr ?) -> resultWcs_V"""
+  return _WCS_PL_MAIN.F_WCS_TANSIP_V(*args)
 
 

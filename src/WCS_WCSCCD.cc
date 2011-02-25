@@ -1,12 +1,13 @@
 //------------------------------------------------------------
-//WCS_TANSIP.cc
+//WCS_WCSCCD.cc
 //main program for wcs in pipeline
 //
-//Last modification : 2010/10/01
+//Last modification : 2011/02/22
 //------------------------------------------------------------
 #include<iostream>
 #include<fstream>//test
 #include<cmath>
+#include "hsc/meas/tansip/WCS_PL_MAIN.h"
 #include "hsc/meas/tansip/WCS_TANSIP.h"
 
 #define PI (4*atan(1.0))
@@ -15,7 +16,7 @@ void    F_SIPROT(CL_APROP,CL_CPROP *,CL_CSIP *,double **Coef[2],double **CoefP[2
 void    F_SIP(int FR,int Order,double x[],double xSIP[],double CR[],double *SIP[2]);
 void    F_PIXWCS_TAN(double x[],double CR[],double CD[][2]);
 void    F_WCSPIX_TAN(double x[],double CR[],double CD[][2]);
-void    F_WSC_WCSCCD(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP* CSIP){
+void    F_WCS_WCSCCD(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP* CSIP){
     int i,j,ij,ID;
     double **Coef[2],**CoefP[2];
 
@@ -43,7 +44,7 @@ void    F_WSC_WCSCCD(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP* CSIP)
 
 // SIP -> Polynomial --------------------------------------------------
 cout << endl;
-cout << "--- Global SIP -> Polynomial ---" << endl;
+cout << "--- F_WCS_TANSIP : Global SIP TO Polynomial ---" << endl;
     ij=0;
     for(i=0;i<APROP.SIP_ORDER+1;i++)
     for(j=0;j<APROP.SIP_ORDER+1;j++)
@@ -67,7 +68,7 @@ cout << "--- Global SIP -> Polynomial ---" << endl;
     CoefP[1][0][1]+=CSIP[APROP.CCDNUM].CD[1][1];
 
 // WCS CCD --------------------------------------------------
-cout << "--- Polynomial -> each SIP ---" << endl;
+cout << "--- F_WCS_TANSIP : Polynomial TO CCD's SIP ---" << endl;
 
     for(ID=0;ID<APROP.CCDNUM;ID++){
         F_SIPROT(APROP,&CPROP[ID],&CSIP[ID],Coef,CoefP);
@@ -82,7 +83,7 @@ cout << "--- Polynomial -> each SIP ---" << endl;
         CSIP[ID].SIP_ABP_ORDER=CSIP[APROP.CCDNUM].SIP_ABP_ORDER;
     }
 // AVE RMS --------------------------------------------------
-cout << "--- calc. RMS ---" << endl;
+cout << "--- CALC. RMS ---" << endl;
     int k,l;
     double ****SUM;
     double x[4],Lx[4],xSIP[4],LxSIP[4],CR[4],RADEC[4],LRADEC[4];
@@ -101,10 +102,10 @@ cout << "--- calc. RMS ---" << endl;
     for(l=0;l<3;l++)
     SUM[i][j][k][l]=0;
 
-ofstream fout,fLout,f1out;
-fout.open("test/fit.dat");
-fLout.open("test/fitL.dat");
-f1out.open("test/fit1.dat");
+//ofstream fout,fLout,f1out;
+//fout.open("test/fit.dat");
+//fLout.open("test/fitL.dat");
+//f1out.open("test/fit1.dat");
 double *SIP1[2];
 SIP1[0] = new double[3];
 SIP1[1] = new double[3];
@@ -137,21 +138,21 @@ SIPN[0][i]=SIPN[1][i]=0;
         CR[3]=CSIP[APROP.CCDNUM].CRVAL[1];
         F_SIP(0,APROP.SIP_ORDER,x,xSIP,CR,CSIP[APROP.CCDNUM].SIP_AB);//Global
         F_WCSPIX_TAN(RADEC,CR,CSIP[APROP.CCDNUM].CD);
-if(PAIR[i].FLAG == 1)
-fout << fixed << x[0] << "	" << x[1] << "	" << xSIP[0]-RADEC[0] << "	" << xSIP[1]-RADEC[1] << "	" << xSIP[0] << "	" << xSIP[1] << "	" << RADEC[0] << "	" << RADEC[1] << endl;
+//if(PAIR[i].FLAG == 1)
+//fout << fixed << x[0] << "	" << x[1] << "	" << xSIP[0]-RADEC[0] << "	" << xSIP[1]-RADEC[1] << "	" << xSIP[0] << "	" << xSIP[1] << "	" << RADEC[0] << "	" << RADEC[1] << endl;
         F_SIP(0,1,x,xSIP,CR,SIP1);//Global
 //        F_SIP(0,APROP.SIP_ORDER,x,xSIP,CR,SIPN);//Global
         F_WCSPIX_TAN(RADEC,CR,CSIP[APROP.CCDNUM].CD);
-if(PAIR[i].FLAG == 1)
-f1out << fixed << x[0] << "	" << x[1] << "	" << xSIP[0]-RADEC[0] << "	" << xSIP[1]-RADEC[1] << "	" << xSIP[0] << "	" << xSIP[1] << "	" << RADEC[0] << "	" << RADEC[1] << endl;
+//if(PAIR[i].FLAG == 1)
+//f1out << fixed << x[0] << "	" << x[1] << "	" << xSIP[0]-RADEC[0] << "	" << xSIP[1]-RADEC[1] << "	" << xSIP[0] << "	" << xSIP[1] << "	" << RADEC[0] << "	" << RADEC[1] << endl;
         CR[0]=CSIP[PAIR[i].CHIPID].CRPIX[0];
         CR[1]=CSIP[PAIR[i].CHIPID].CRPIX[1];
         CR[2]=CSIP[PAIR[i].CHIPID].CRVAL[0];
         CR[3]=CSIP[PAIR[i].CHIPID].CRVAL[1];
         F_SIP(0,APROP.SIP_ORDER,Lx,LxSIP,CR,CSIP[PAIR[i].CHIPID].SIP_AB);//Global
         F_WCSPIX_TAN(LRADEC,CR,CSIP[PAIR[i].CHIPID].CD);
-if(PAIR[i].FLAG == 1)
-fLout << x[0] << "	" << x[1] << "	" << LxSIP[0]-LRADEC[0] << "	" << LxSIP[1]-LRADEC[1] << endl;
+//if(PAIR[i].FLAG == 1)
+//fLout << x[0] << "	" << x[1] << "	" << LxSIP[0]-LRADEC[0] << "	" << LxSIP[1]-LRADEC[1] << endl;
 
         SUM[PAIR[i].CHIPID][0][0][0]+=1;//Local
         SUM[PAIR[i].CHIPID][0][0][1]+=(LxSIP[0]-LRADEC[0]);

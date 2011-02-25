@@ -1,10 +1,10 @@
-%module  tansip
+%module  WCS_PL_MAIN
 %{
 #include<iostream>
 #include<fstream>
 #include<cstring>
 #include<iomanip>
-#include "hsc/meas/tansip/WCS_TANSIP.h"
+#include "hsc/meas/tansip/WCS_PL_MAIN.h"
 %}
 
 %include "std_vector.i"
@@ -16,4 +16,4 @@
 %template(vvSourceMatch) std::vector<std::vector<lsst::afw::detection::SourceMatch> >;
 %template(resultWcs_V) std::vector<lsst::afw::image::TanWcs::Ptr>;
 
-%include "hsc/meas/tansip/WCS_TANSIP.h"
+%include "hsc/meas/tansip/WCS_PL_MAIN.h"

@@ -6,7 +6,7 @@ Python interface to hsc::meas::tansip
 %enddef
 
 %feature("autodoc", "1");
-%module(package="hsc.meas.tansip", docstring=tansip_DOCSTRING) tansip
+%module(package="hsc.meas.tansip", docstring=tansip_DOCSTRING) WCS_PL_MAIN
 
 %{
 #include "lsst/afw/image.h"
@@ -40,5 +40,5 @@ def version(HeadURL = r"$HeadURL: ssh://hsc-gw2.mtk.nao.ac.jp/ana/hgrepo/hscAstr
 %import "lsst/afw/geom/geomLib.i"
 %import "lsst/afw/detection/detectionLib.i"
 
-%include "WCS_TANSIP.i"
+%include "WCS_PL_MAIN.i"
 

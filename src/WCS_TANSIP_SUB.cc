@@ -1,10 +1,11 @@
 //------------------------------------------------------------
 //WCS_TANSIP_SUB.cc
 //
-//Last modification : 2010/11/15
+//Last modification : 2011/02/22
 //------------------------------------------------------------
 #include<iostream>
 #include<cmath>
+#include "hsc/meas/tansip/WCS_PL_MAIN.h"
 #include "hsc/meas/tansip/WCS_TANSIP.h"
 
 #define PI (4*atan(1.0))
@@ -13,7 +14,7 @@ using namespace std;
 void    F_CDSIP(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
     int i,j,ij,FNUM;
     double xi[4],CR[4],InvCD[2][2],CRPIXAVE[2]={0};
-    double x[4],xSIP[4],SUM[2][2]={0};
+//    double x[4],xSIP[4],SUM[2][2]={0};
     double *Coef1,*Coef2,*CoefP1,*CoefP2,**dx1,**dx2;
 
     Coef1 = new double[(APROP.SIP_ORDER+2)*(APROP.SIP_ORDER+1)];
@@ -46,14 +47,14 @@ void    F_CDSIP(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
         dx1[FNUM][1]=dx2[FNUM][1]=PAIR[i].yG; 
         dx1[FNUM][2]=PAIR[i].RA;
         dx2[FNUM][2]=PAIR[i].DEC;
-        if(APROP.CRPIXMODE == "AUTO"){
+        if(strcmp(APROP.CRPIXMODE,"AUTO")==0){
             CRPIXAVE[0]+=PAIR[i].xG;
             CRPIXAVE[1]+=PAIR[i].yG;
         }  
         FNUM++;
     } 
 
-    if(APROP.CRPIXMODE == "AUTO"){
+    if(strcmp(APROP.CRPIXMODE,"AUTO")==0){
         CRPIXAVE[0]/=FNUM;
         CRPIXAVE[1]/=FNUM;
         CSIP->CRPIX[0]=CRPIXAVE[0];

@@ -1,14 +1,13 @@
 //------------------------------------------------------------
 //WCS_TANSIP_SUB.cc
 //
-//Last modification : 2010/11/15
+//Last modification : 2011/02/22
 //------------------------------------------------------------
 #include<iostream>
-//#include<fstream>
 #include<cmath>
+#include "hsc/meas/tansip/WCS_PL_MAIN.h"
 #include "hsc/meas/tansip/WCS_TANSIP.h"
 
-#define  SAMPLENUM 27
 #define PI (4*atan(1.0))
 #define INFMIN pow(10,-10)
 using namespace std;
@@ -17,7 +16,7 @@ void    F_PROJECTIONPOINT(CL_APROP APROP,CL_CPROP CPROP,CL_PAIR *PAIR,CL_CSIP *C
 	int i,NUM=0;
 	double RA=0,DEC=0;
 
-	cout << endl << "--- F_WCS_TANSIP:GLOBAL POSITION:SET PROJECTIONPOINT ---\n";
+	cout << endl << "--- F_WCS_TANSIP : GLOBAL POSITION : SET PROJECTIONPOINT ---\n";
 	CSIP->CRPIX[0]=0;
 	CSIP->CRPIX[1]=0;
 	for(i=0;i<APROP.NUMREFALL;i++){
@@ -34,7 +33,7 @@ void    F_PROJECTION(CL_APROP APROP,CL_CPROP CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
     int i;
     double CR[4],RADEC[4];
 	
-    cout << endl << "--- F_WCS_TANSIP:GLOBAL POSITION:PROJECTION ---\n";
+    cout << endl << "--- F_WCS_TANSIP : GLOBAL POSITION : PROJECTION ---\n";
     CR[0]=CSIP->CRPIX[0];
     CR[1]=CSIP->CRPIX[1];
     CR[2]=CSIP->CRVAL[0];
@@ -52,12 +51,6 @@ void    F_PROJECTION(CL_APROP APROP,CL_CPROP CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
         PAIR[i].xI=RADEC[0];
         PAIR[i].yI=RADEC[1];
     }
-
-/*ofstream out;
-out.open("Y.dat");
-for(i=0;i<APROP.NUMREFALL;i++)
-out << PAIR[i].ID << "	" <<PAIR[i].CHIPID<< "	"<< PAIR[i].xL << "	" << PAIR[i].yL << "	" << PAIR[i].xI << "	" << PAIR[i].yI << "	" <<PAIR[i].RA<<"	" << PAIR[i].DEC<<endl;
-*/
 }
 void    F_LPFITTING_DIFFPAIR(CL_APROP APROP,CL_CPROP CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
     int i,j,ij,CID,NUM;
@@ -66,7 +59,7 @@ void    F_LPFITTING_DIFFPAIR(CL_APROP APROP,CL_CPROP CPROP,CL_PAIR *PAIR,CL_CSIP
     double **PSIPXY;
     double ***DIFFPSIP[4];
 
-    cout << endl << "--- F_WCS_TANSIP:GLOBAL POSITION:LOCAL P FITTING ---\n";
+    cout << endl << "--- F_WCS_TANSIP:GLOBAL POSITION : LOCAL ABP SIP FITTING ---\n";
 
     for(i=0;i<3;i++){
     dx[i] = new double**[APROP.CCDNUM];
@@ -153,6 +146,7 @@ void    F_LPFITTING_DIFFPAIR(CL_APROP APROP,CL_CPROP CPROP,CL_PAIR *PAIR,CL_CSIP
     }
 
     for(ij=0;ij<APROP.NUMREFALL;ij++){
+//cout << PAIR[ij].ID << "	" << PAIR[ij].CHIPID << "	" << PAIR[ij].xL << "	" << PAIR[ij].yL << endl;
         CID=PAIR[ij].CHIPID;
         PAIR[ij].dxLdxI=PAIR[ij].dxLdyI=PAIR[ij].dyLdxI=PAIR[ij].dyLdyI=0;
         for(i=0;i<(APROP.SIP_L_ORDER+1);i++)
@@ -162,7 +156,6 @@ void    F_LPFITTING_DIFFPAIR(CL_APROP APROP,CL_CPROP CPROP,CL_PAIR *PAIR,CL_CSIP
             PAIR[ij].dyLdxI+=DIFFPSIP[2][CID][i][j]*pow(PAIR[ij].xI,i)*pow(PAIR[ij].yI,j);
             PAIR[ij].dyLdyI+=DIFFPSIP[3][CID][i][j]*pow(PAIR[ij].xI,i)*pow(PAIR[ij].yI,j);
         }
-//cout << PAIR[ij].xI << "	" << PAIR[ij].yI << "	" << PAIR[ij].dxLdxI << "	" << PAIR[ij].dxLdyI << "	" << PAIR[ij].dyLdxI << "	" << PAIR[ij].dyLdyI << endl;
     }
 //--------------------------------------------------
     for(i=0;i<3;i++){
@@ -197,7 +190,7 @@ void    F_LPFITTING_DIFFPAIR(CL_APROP APROP,CL_CPROP CPROP,CL_PAIR *PAIR,CL_CSIP
 void    F_CHANGEdxLtodxG(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
     int i,j,CID,NUM,PHASE;
     double **dGdI[4],*dPSIP[4];
-    cout << endl << "--- F_WCS_TANSIP:GLOBAL POSITION:DETERMINING dxG FROM dxL ---\n";
+    cout << endl << "--- F_WCS_TANSIP : GLOBAL POSITION : DETERMINING dxG FROM dxL ---\n";
 
     for(i=0;i<4;i++){
     dGdI[i] = new double*[APROP.NUMREFALL];
@@ -218,7 +211,6 @@ void    F_CHANGEdxLtodxG(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *C
     for(PHASE=0;PHASE<APROP.CCDNUM;PHASE++)
     for(CID=0;CID<APROP.CCDNUM;CID++)
     if(CPROP[CID].PHASE==PHASE){
-cout << CID<<endl;
 //fitting
         for(NUM=0;NUM<APROP.NUMREFALL;NUM++){
             dGdI[0][NUM][0]=dGdI[1][NUM][0]=dGdI[2][NUM][0]=dGdI[3][NUM][0]=PAIR[NUM].xI;
@@ -258,7 +250,7 @@ cout << CID<<endl;
 
 }
 void    F_MINT(int order,int CID,CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,double **dPSIP){
-    int i,j,ix,iy,ixy,NUM,ID;
+    int i,ix,iy,ixy,NUM;
     double A;
     double RMS,RMSMIN;
     double dT,dTMIN;
@@ -314,12 +306,11 @@ void    F_MINT(int order,int CID,CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,do
             dTMIN=dT;
         }
     }
-//cout << CID << " : " << dTMIN << endl;
     CPROP[CID].GLOB_POS[2]=dTMIN;
 }
 void    F_CHANGEdxLtodxGNOROT(CL_APROP APROP,CL_CPROP CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
     int NUM;
-    cout << endl << "--- F_WCS_TANSIP:GLOBAL POSITION:DETERMINING dxG FROM dxL without rotation---\n";
+    cout << endl << "--- F_WCS_TANSIP : GLOBAL POSITION : DETERMINING dxG FROM dxL without rotation---\n";
     for(NUM=0;NUM<APROP.NUMREFALL;NUM++){
         PAIR[NUM].dxGdxI=PAIR[NUM].dxLdxI;
         PAIR[NUM].dxGdyI=PAIR[NUM].dxLdyI;
@@ -332,7 +323,7 @@ void    F_FITINTdxGdxI(CL_APROP APROP,CL_CPROP CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP
     int i,j,k,ij,NUM;
     double **dx[4],*PSIP[4],**PSIPXY[4],**INTPSIPXY[4];
 
-    cout << endl << "--- F_WCS_TANSIP:GLOBAL POSITION:FITTING NAD INTEGRATING dxG ---\n";
+    cout << endl << "--- F_WCS_TANSIP : GLOBAL POSITION : FITTING AND INTEGRATING dxG ---\n";
     for(i=0;i<4;i++){
     dx[i]=new double*[APROP.NUMREFALL];
     for(NUM=0;NUM<APROP.NUMREFALL;NUM++){
@@ -392,10 +383,6 @@ void    F_FITINTdxGdxI(CL_APROP APROP,CL_CPROP CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP
         INTPSIPXY[3][i][j]=1.0/j*PSIPXY[3][i][j-1];
         }
     }
-/*    for(i=0;i<(APROP.SIP_P_ORDER+1);i++)
-    for(j=0;j<(APROP.SIP_P_ORDER+1);j++){
-cout << i << "	" << j << "	" << INTPSIPXY[0][i][j] << "	" << INTPSIPXY[1][i][j] << "	" << INTPSIPXY[2][i][j] << "	" << INTPSIPXY[3][i][j]<<endl;
-    }*/
     for(k=0;k<4;k++)
     for(i=0;i<(APROP.SIP_P_ORDER+1);i++)
     for(j=0;j<(APROP.SIP_P_ORDER+1);j++)
@@ -429,7 +416,6 @@ cout << i << "	" << j << "	" << INTPSIPXY[0][i][j] << "	" << INTPSIPXY[1][i][j] 
         PAIR[NUM].xG+=PSIPXY[0][i][j]*pow(PAIR[NUM].xI,i)*pow(PAIR[NUM].yI,j);
         PAIR[NUM].yG+=PSIPXY[1][i][j]*pow(PAIR[NUM].xI,i)*pow(PAIR[NUM].yI,j);
         }
-//cout << fixed << PAIR[NUM].xI << "	" << PAIR[NUM].yI << "	" << PAIR[NUM].xG <<  "	" << PAIR[NUM].yG <<endl;
     }
 //--------------------------------------------------
     for(i=0;i<4;i++){
@@ -446,7 +432,7 @@ cout << i << "	" << j << "	" << INTPSIPXY[0][i][j] << "	" << INTPSIPXY[1][i][j] 
     }
 }
 void    F_FITGPOS(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
-    cout << endl << "--- F_WCS_TANSIP:GLOBAL POSITION:FITTING GLOBAL POSITION ---\n";
+    cout << endl << "--- F_WCS_TANSIP : GLOBAL POSITION : FITTING GLOBAL POSITION ---\n";
     int i,CID,NUM;
     double **dX;
 
@@ -458,7 +444,6 @@ void    F_FITGPOS(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
     }
 
     for(NUM=0;NUM<APROP.NUMREFALL;NUM++){
-//cout << PAIR[NUM].CHIPID << "	" << PAIR[NUM].xG-PAIR[NUM].xL << "	" << PAIR[NUM].yG-PAIR[NUM].yL << endl;
         dX[PAIR[NUM].CHIPID][0]+=1;
         dX[PAIR[NUM].CHIPID][1]+=PAIR[NUM].xG-(PAIR[NUM].xL*cos(CPROP[PAIR[NUM].CHIPID].GLOB_POS[2])-PAIR[NUM].yL*sin(CPROP[PAIR[NUM].CHIPID].GLOB_POS[2]));
         dX[PAIR[NUM].CHIPID][2]+=PAIR[NUM].yG-(PAIR[NUM].yL*cos(CPROP[PAIR[NUM].CHIPID].GLOB_POS[2])+PAIR[NUM].xL*sin(CPROP[PAIR[NUM].CHIPID].GLOB_POS[2]));
@@ -468,15 +453,19 @@ void    F_FITGPOS(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
     cout <<fixed<< CID << " : " << dX[CID][1]/dX[CID][0] << "	"  << dX[CID][2]/dX[CID][0] << endl;
 
 double BASE[2]={0};
-BASE[0]=-1011.594-dX[5][1]/dX[5][0];
-BASE[1]=    9.080-dX[5][2]/dX[5][0];
+/*
+//BASE[0]=-1011.594-dX[5][1]/dX[5][0];
+//BASE[1]=    9.080-dX[5][2]/dX[5][0];
+BASE[0]= 0.0000-dX[5][1]/dX[5][0];
+BASE[1]= 0.0000-dX[5][2]/dX[5][0];
 for(CID=0;CID<APROP.CCDNUM;CID++)
 cout <<fixed<< CID << " : " << dX[CID][1]/dX[CID][0]+BASE[0] << "	"  << dX[CID][2]/dX[CID][0]+BASE[1] << endl;
-
+*/
     for(CID=0;CID<APROP.CCDNUM;CID++){
         CPROP[CID].GLOB_POS[0]=dX[CID][1]/dX[CID][0]+BASE[0];
         CPROP[CID].GLOB_POS[1]=dX[CID][2]/dX[CID][0]+BASE[1];
-    }/*
+    }
+/*
 //YAGISAN
 CPROP[0].GLOB_POS[0]= 3197;
 CPROP[0].GLOB_POS[1]=   82;
@@ -549,235 +538,4 @@ CPROP[9].GLOB_POS[2]=    0.0002277;
     delete [] dX[CID];
     delete [] dX;    
 }
-/*void    F_GPOS(int PHASE,CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
-    int i,iPHASE,CID,NUMREFBASE,NUMREFGPOS;
-    double *DX;
-    CL_PAIR *PAIRBASE,*PAIRGPOS;
-    CL_APROP GPOSAPROP;
-
-    DX = new double[3];
-// set BASE--------------------------------------------------
-    GPOSAPROP=APROP;
-
-    NUMREFBASE=0;
-    for(iPHASE=0;iPHASE<PHASE;iPHASE++)
-    for(CID=0;CID<APROP.CCDNUM;CID++)
-    if(CPROP[CID].PHASE==iPHASE){
-cout << "BASE CHIP : " << CID << endl;
-        for(i=0;i<APROP.NUMREFALL;i++)
-        if(PAIR[i].CHIPID==CID)
-        if(PAIR[i].FLAG==1)
-        NUMREFBASE++;
-    }
-
-    cout << "BASENUM   : " << NUMREFBASE << endl;
-    PAIRBASE = new CL_PAIR[NUMREFBASE];
-
-    NUMREFBASE=0;
-    for(iPHASE=0;iPHASE<PHASE;iPHASE++)
-    for(CID=0;CID<APROP.CCDNUM;CID++)
-    if(CPROP[CID].PHASE==iPHASE)
-    for(i=0;i<APROP.NUMREFALL;i++)
-    if(PAIR[i].CHIPID==CID)
-    if(PAIR[i].FLAG==1){
-        PAIRBASE[NUMREFBASE]=PAIR[i];
-        PAIRBASE[NUMREFBASE].x=CPROP[CID].GLOB_POS[0]+PAIRBASE[NUMREFBASE].Lx*cos(CPROP[CID].GLOB_POS[2]/180.0*PI)-PAIRBASE[NUMREFBASE].Ly*sin(CPROP[CID].GLOB_POS[2]/180.0*PI);
-        PAIRBASE[NUMREFBASE].y=CPROP[CID].GLOB_POS[1]+PAIRBASE[NUMREFBASE].Lx*sin(CPROP[CID].GLOB_POS[2]/180.0*PI)+PAIRBASE[NUMREFBASE].Ly*cos(CPROP[CID].GLOB_POS[2]/180.0*PI);
-        NUMREFBASE++;
-    }
-// set GPOS--------------------------------------------------
-    for(CID=0;CID<APROP.CCDNUM;CID++)
-    if(CPROP[CID].PHASE==PHASE){
-cout << "GPOS CHIP : " << CID;
-        NUMREFGPOS=0;
-        for(i=0;i<APROP.NUMREFALL;i++)
-        if(PAIR[i].CHIPID==CID)
-        if(PAIR[i].FLAG==1)
-        NUMREFGPOS++;
-cout << " :NUM: " << NUMREFGPOS << endl;
-
-        PAIRGPOS = new CL_PAIR[NUMREFGPOS];
-
-        NUMREFGPOS=0;
-        for(i=0;i<APROP.NUMREFALL;i++)
-        if(PAIR[i].CHIPID==CID)
-        if(PAIR[i].FLAG==1){
-            PAIRGPOS[NUMREFGPOS]=PAIR[i];
-            NUMREFGPOS++;
-        }
-        GPOSAPROP.NUMREFALL=NUMREFBASE+NUMREFGPOS;
-
-//--------------------------------------------------
-        DX = F_CALCGPOS(10.0,NUMREFBASE,NUMREFGPOS,GPOSAPROP,CPROP,PAIRBASE,PAIRGPOS,CSIP);
-        CPROP[CID].GLOB_POS[0]+=DX[0];
-        CPROP[CID].GLOB_POS[1]+=DX[1];
-        CPROP[CID].GLOB_POS[2]+=DX[2];
-        DX = F_CALCGPOS(5.0,NUMREFBASE,NUMREFGPOS,GPOSAPROP,CPROP,PAIRBASE,PAIRGPOS,CSIP);
-        CPROP[CID].GLOB_POS[0]+=DX[0];
-        CPROP[CID].GLOB_POS[1]+=DX[1];
-        CPROP[CID].GLOB_POS[2]+=DX[2];
-        DX = F_CALCGPOS(2.0,NUMREFBASE,NUMREFGPOS,GPOSAPROP,CPROP,PAIRBASE,PAIRGPOS,CSIP);
-        CPROP[CID].GLOB_POS[0]+=DX[0];
-        CPROP[CID].GLOB_POS[1]+=DX[1];
-        CPROP[CID].GLOB_POS[2]+=DX[2];
-        DX = F_CALCGPOS(1.0,NUMREFBASE,NUMREFGPOS,GPOSAPROP,CPROP,PAIRBASE,PAIRGPOS,CSIP);
-        CPROP[CID].GLOB_POS[0]+=DX[0];
-        CPROP[CID].GLOB_POS[1]+=DX[1];
-        CPROP[CID].GLOB_POS[2]+=DX[2];
-        DX = F_CALCGPOS(0.5,NUMREFBASE,NUMREFGPOS,GPOSAPROP,CPROP,PAIRBASE,PAIRGPOS,CSIP);
-        CPROP[CID].GLOB_POS[0]+=DX[0];
-        CPROP[CID].GLOB_POS[1]+=DX[1];
-        CPROP[CID].GLOB_POS[2]+=DX[2];
-        DX = F_CALCGPOS(0.2,NUMREFBASE,NUMREFGPOS,GPOSAPROP,CPROP,PAIRBASE,PAIRGPOS,CSIP);
-        CPROP[CID].GLOB_POS[0]+=DX[0];
-        CPROP[CID].GLOB_POS[1]+=DX[1];
-        CPROP[CID].GLOB_POS[2]+=DX[2];
-        DX = F_CALCGPOS(0.1,NUMREFBASE,NUMREFGPOS,GPOSAPROP,CPROP,PAIRBASE,PAIRGPOS,CSIP);
-        CPROP[CID].GLOB_POS[0]+=DX[0];
-        CPROP[CID].GLOB_POS[1]+=DX[1];
-        CPROP[CID].GLOB_POS[2]+=DX[2];
-        DX = F_CALCGPOS(0.05,NUMREFBASE,NUMREFGPOS,GPOSAPROP,CPROP,PAIRBASE,PAIRGPOS,CSIP);
-        CPROP[CID].GLOB_POS[0]+=DX[0];
-        CPROP[CID].GLOB_POS[1]+=DX[1];
-        CPROP[CID].GLOB_POS[2]+=DX[2];
-        DX = F_CALCGPOS(0.02,NUMREFBASE,NUMREFGPOS,GPOSAPROP,CPROP,PAIRBASE,PAIRGPOS,CSIP);
-        CPROP[CID].GLOB_POS[0]+=DX[0];
-        CPROP[CID].GLOB_POS[1]+=DX[1];
-        CPROP[CID].GLOB_POS[2]+=DX[2];
-        DX = F_CALCGPOS(0.01,NUMREFBASE,NUMREFGPOS,GPOSAPROP,CPROP,PAIRBASE,PAIRGPOS,CSIP);
-        CPROP[CID].GLOB_POS[0]+=DX[0];
-        CPROP[CID].GLOB_POS[1]+=DX[1];
-        CPROP[CID].GLOB_POS[2]+=DX[2];
-//--------------------------------------------------
-        delete [] PAIRGPOS;
-    }
-//--------------------------------------------------
-    for(i=0;i<APROP.NUMREFALL;i++)
-    if(CPROP[PAIR[i].CHIPID].PHASE==PHASE){
-        PAIR[i].x=CPROP[PAIR[i].CHIPID].GLOB_POS[0]+PAIR[i].Lx*cos(CPROP[PAIR[i].CHIPID].GLOB_POS[2]/180.0*PI)-PAIR[i].Ly*sin(CPROP[PAIR[i].CHIPID].GLOB_POS[2]/180.0*PI);
-        PAIR[i].y=CPROP[PAIR[i].CHIPID].GLOB_POS[1]+PAIR[i].Lx*sin(CPROP[PAIR[i].CHIPID].GLOB_POS[2]/180.0*PI)+PAIR[i].Ly*cos(CPROP[PAIR[i].CHIPID].GLOB_POS[2]/180.0*PI);
-    }
-//--------------------------------------------------
-    delete [] PAIRBASE;
-    delete [] DX;
-}
-double* F_CALCGPOS(double scale,int NUMREFBASE,int NUMREFGPOS,CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIRBASE,CL_PAIR *PAIRGPOS,CL_CSIP *CSIP){
-    int i,ix,iy,it,xyt;
-    double Gx,Gy,Gt,*DX,**M,**InvM,C[3];
-    double *chi2_XY,**chi2,*Coef;
-    CL_PAIR *PAIR;
-
-    chi2_XY = new double[2];
-    chi2 = new double*[SAMPLENUM];
-    for(i=0;i<SAMPLENUM;i++)
-    chi2[i] = new double[4];
-
-       M = new double*[3];
-    InvM = new double*[3];
-    for(i=0;i<3;i++){
-        M[i] = new double[3];
-     InvM[i] = new double[3];
-    }
-    Coef = new double[10];
-    PAIR = new CL_PAIR[NUMREFBASE+NUMREFGPOS];
-
-    DX = new double[3];
-//--------------------------------------------------
-    double Tscale=0.0001;
-    xyt=0;
-    for(ix=-1;ix<2;ix++)
-    for(iy=-1;iy<2;iy++)
-    for(it=-1;it<2;it++){
-        for(i=0;i<NUMREFBASE;i++)
-        PAIR[i]=PAIRBASE[i];
-        for(i=0;i<NUMREFGPOS;i++){
-            PAIR[i+NUMREFBASE]=PAIRGPOS[i];
-            Gx=CPROP[PAIRGPOS[i].CHIPID].GLOB_POS[0];
-            Gy=CPROP[PAIRGPOS[i].CHIPID].GLOB_POS[1];
-            Gt=CPROP[PAIRGPOS[i].CHIPID].GLOB_POS[2];
-            PAIR[i+NUMREFBASE].x=(Gx+scale*ix)+PAIRGPOS[i].Lx*cos(Gt/180.0*PI+scale*it*Tscale)-PAIRGPOS[i].Ly*sin(Gt/180.0*PI+scale*it*Tscale);
-            PAIR[i+NUMREFBASE].y=(Gy+scale*iy)+PAIRGPOS[i].Lx*sin(Gt/180.0*PI+scale*it*Tscale)+PAIRGPOS[i].Ly*cos(Gt/180.0*PI+scale*it*Tscale);
-        }
-        F_CDSIP(APROP,CPROP,PAIR,CSIP);
-
-        chi2_XY = F_chi(APROP,CPROP,PAIR,CSIP);
-        chi2[xyt][0]=ix*scale;
-        chi2[xyt][1]=iy*scale;
-        chi2[xyt][2]=it*scale*Tscale*180/PI;
-        chi2[xyt][3]=hypot(chi2_XY[0],chi2_XY[1]);
-//cout << ix << iy << it << "	" << chi2_XY[0] << " , " << chi2_XY[1] << " , " << chi2[xyt][3] << endl;
-        xyt++;
-    }
-
-//--------------------------------------------------
-    F_LS3(SAMPLENUM,2,chi2,Coef);
-    M[0][0]=2*Coef[9];
-    M[0][1]=  Coef[8];
-    M[0][2]=  Coef[7];
-    M[1][0]=  Coef[8];
-    M[1][1]=2*Coef[5];
-    M[1][2]=  Coef[4];
-    M[2][0]=  Coef[7];
-    M[2][1]=  Coef[4];
-    M[2][2]=2*Coef[2];
-    C[0]=-Coef[6];
-    C[1]=-Coef[3];
-    C[2]=-Coef[1];
-    F_InvM(3,M,InvM);
-    DX[0]=InvM[0][0]*C[0]+InvM[0][1]*C[1]+InvM[0][2]*C[2];
-    DX[1]=InvM[1][0]*C[0]+InvM[1][1]*C[1]+InvM[1][2]*C[2];
-    DX[2]=InvM[2][0]*C[0]+InvM[2][1]*C[1]+InvM[2][2]*C[2];
-cout << DX[0] << "	" << DX[1] << "	" << DX[2] << endl;
-//--------------------------------------------------
-
-    delete [] Coef;
-    delete [] PAIR;
-    delete [] chi2_XY;
-    for(i=0;i<SAMPLENUM;i++)
-    delete [] chi2[i];
-    delete [] chi2;
-    for(i=0;i<3;i++){
-    delete []    M[i];
-    delete [] InvM[i];
-    }
-    delete []    M;
-    delete [] InvM;
-//--------------------------------------------------
-    return DX;
-    delete [] DX;
-//--------------------------------------------------
-
-}
-double* F_chi(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
-    int i;
-    double *chi2;
-    double CR[4],dataSi[4],dataSIPi[4];
-
-    chi2 = new double[2];
-    chi2[0]=0;
-    chi2[1]=0;
-//--------------------------------------------------
-    CR[0]=CSIP->CRPIX[0];
-    CR[1]=CSIP->CRPIX[1];
-    CR[2]=CSIP->CRVAL[0];
-    CR[3]=CSIP->CRVAL[1];
-
-    for(i=0;i<APROP.NUMREFALL;i++)
-    if(PAIR[i].FLAG==1){
-        dataSi[0]=PAIR[i].x;
-        dataSi[1]=PAIR[i].y;
-        dataSi[2]=PAIR[i].RA;
-        dataSi[3]=PAIR[i].DEC;
-
-        F_SIP(0,CSIP->SIP_AB_ORDER,dataSi,dataSIPi,CR,CSIP->SIP_AB); 
-        F_WCSPIX_TAN(dataSi,CR,CSIP->CD);     
-        chi2[0]+=(dataSi[0]-dataSIPi[0])*(dataSi[0]-dataSIPi[0]);
-        chi2[1]+=(dataSi[1]-dataSIPi[1])*(dataSi[1]-dataSIPi[1]);
-    }
-
-//--------------------------------------------------
-    return chi2;
-    delete [] chi2;
-}
-*/
 #undef PI
