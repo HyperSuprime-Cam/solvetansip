@@ -1,4 +1,5 @@
 syntax: glob
+WCS_PL_MAINLib_wrap.cc
 *~
 *.pyo
 *.pyc
@@ -23,7 +24,6 @@ tmp*
 */summ.*
 submit.condor
 eups*
-
 *.o
 *.so
 *.dylib
