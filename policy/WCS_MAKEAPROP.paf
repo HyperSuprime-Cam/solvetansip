@@ -2,13 +2,13 @@
 CRPIXMODE:    MANUAL#AUTO for AUTO MODE, MANUAL for MANUAL MODE
 CCDPMODE :         1#1=DETERMINING CCD POSITION
 #NCCD     :       104#NUMBER of CCD for analysis
-NCCD     :        10#NUMBER of CCD for analysis
+NCCD     :        100#NUMBER of CCD for analysis
 #CRPIXMODE:     AUTO#
-LSIPORDER:         5
+LSIPORDER:         3
 #SIPORDER :         5#SIP ORDER of A and B 
 SIPORDER :         7
 #SIPORDER :         5#SIP ORDER of A and B 
-PSIPORDER:         7
+PSIPORDER:         9
 #PSIPORDER:         5#SIP ORDER of AP and BP
 CLIPSIGMA:       3.0#
 CRPIX1   :       0.0#CRPIX VALUE OF AXIS 1(MANUAL MODE)
