@@ -23,7 +23,7 @@ for d in (
 #    "etc",
     "lib",
     "python/hsc/meas/tansip",
-    "example",
+    "examples",
 ):
     SConscript(os.path.join(d, "SConscript"))
 
