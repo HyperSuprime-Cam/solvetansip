@@ -6,7 +6,7 @@ NCCD     :        100#NUMBER of CCD for analysis
 #CRPIXMODE:     AUTO#
 LSIPORDER:         3
 #SIPORDER :         5#SIP ORDER of A and B 
-SIPORDER :         7
+SIPORDER :         9
 #SIPORDER :         5#SIP ORDER of A and B 
 PSIPORDER:         9
 #PSIPORDER:         5#SIP ORDER of AP and BP
