@@ -115,7 +115,8 @@ SIPN[0] = new double[10];
 SIPN[1] = new double[10];
 for(i=0;i<10;i++)
 SIPN[0][i]=SIPN[1][i]=0;
-    for(i=0;i<APROP.NUMREFALL;i++){
+    for(i=0;i<APROP.NUMREFALL;i++)
+    if(PAIR[i].FLAG==1){
         Lx[0]=PAIR[i].xL;
         Lx[1]=PAIR[i].yL;
         Lx[2]=0;
@@ -140,9 +141,9 @@ SIPN[0][i]=SIPN[1][i]=0;
         F_WCSPIX_TAN(RADEC,CR,CSIP[APROP.CCDNUM].CD);
 if(PAIR[i].FLAG == 1)
 fout << fixed << x[0] << "	" << x[1] << "	" << xSIP[0]-RADEC[0] << "	" << xSIP[1]-RADEC[1] << "	" << xSIP[0] << "	" << xSIP[1] << "	" << RADEC[0] << "	" << RADEC[1] << endl;
-        F_SIP(0,1,x,xSIP,CR,SIP1);//Global
+//        F_SIP(0,1,x,xSIP,CR,SIP1);//Global
 //        F_SIP(0,APROP.SIP_ORDER,x,xSIP,CR,SIPN);//Global
-        F_WCSPIX_TAN(RADEC,CR,CSIP[APROP.CCDNUM].CD);
+//        F_WCSPIX_TAN(RADEC,CR,CSIP[APROP.CCDNUM].CD);
 //if(PAIR[i].FLAG == 1)
 //f1out << fixed << x[0] << "	" << x[1] << "	" << xSIP[0]-RADEC[0] << "	" << xSIP[1]-RADEC[1] << "	" << xSIP[0] << "	" << xSIP[1] << "	" << RADEC[0] << "	" << RADEC[1] << endl;
         CR[0]=CSIP[PAIR[i].CHIPID].CRPIX[0];

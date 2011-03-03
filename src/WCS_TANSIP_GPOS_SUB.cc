@@ -208,9 +208,9 @@ void    F_CHANGEdxLtodxG(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *C
         PAIR[NUM].dyGdyI=PAIR[NUM].dyLdyI*cos(CPROP[PAIR[NUM].CHIPID].GLOB_POS[2])+PAIR[NUM].dxLdyI*sin(CPROP[PAIR[NUM].CHIPID].GLOB_POS[2]);
     }
 
-    for(PHASE=0;PHASE<APROP.CCDNUM;PHASE++)
-    for(CID=0;CID<APROP.CCDNUM;CID++)
-    if(CPROP[CID].PHASE==PHASE){
+//    for(PHASE=0;PHASE<APROP.CCDNUM;PHASE++)
+//    for(CID=0;CID<APROP.CCDNUM;CID++){
+//    if(CPROP[CID].PHASE==PHASE){
 //fitting
         for(NUM=0;NUM<APROP.NUMREFALL;NUM++){
             dGdI[0][NUM][0]=dGdI[1][NUM][0]=dGdI[2][NUM][0]=dGdI[3][NUM][0]=PAIR[NUM].xI;
@@ -223,12 +223,14 @@ void    F_CHANGEdxLtodxG(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *C
         for(i=0;i<4;i++)
         F_LS2(APROP.NUMREFALL,APROP.SIP_P_ORDER-1,dGdI[i],dPSIP[i]);
 //minimum RMS
+        for(CID=0;CID<APROP.CCDNUM;CID++){
         F_MINT(-1,CID,APROP,CPROP,PAIR,dPSIP);
         F_MINT(-2,CID,APROP,CPROP,PAIR,dPSIP);
         F_MINT(-3,CID,APROP,CPROP,PAIR,dPSIP);
         F_MINT(-4,CID,APROP,CPROP,PAIR,dPSIP);
         F_MINT(-5,CID,APROP,CPROP,PAIR,dPSIP);
         F_MINT(-6,CID,APROP,CPROP,PAIR,dPSIP);
+        }
 
 //dtheta
 //dxG
@@ -238,8 +240,9 @@ void    F_CHANGEdxLtodxG(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *C
             PAIR[NUM].dyGdxI=PAIR[NUM].dyLdxI*cos(CPROP[PAIR[NUM].CHIPID].GLOB_POS[2])+PAIR[NUM].dxLdxI*sin(CPROP[PAIR[NUM].CHIPID].GLOB_POS[2]);
             PAIR[NUM].dyGdyI=PAIR[NUM].dyLdyI*cos(CPROP[PAIR[NUM].CHIPID].GLOB_POS[2])+PAIR[NUM].dxLdyI*sin(CPROP[PAIR[NUM].CHIPID].GLOB_POS[2]);
         }
-        break;
-    }
+//        break;
+//    }
+//    }
 
     for(i=0;i<4;i++){
     delete [] dPSIP[i];

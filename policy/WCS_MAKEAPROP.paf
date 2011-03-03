@@ -4,13 +4,13 @@ CCDPMODE :         1#1=DETERMINING CCD POSITION
 #NCCD     :       104#NUMBER of CCD for analysis
 NCCD     :        100#NUMBER of CCD for analysis
 #CRPIXMODE:     AUTO#
-LSIPORDER:         5
+LSIPORDER:         3
 #SIPORDER :         5#SIP ORDER of A and B 
 SIPORDER :         9
 #SIPORDER :         5#SIP ORDER of A and B 
 PSIPORDER:         9
 #PSIPORDER:         5#SIP ORDER of AP and BP
-CLIPSIGMA:       5.0#
+CLIPSIGMA:       3.0#
 CRPIX1   :       0.0#CRPIX VALUE OF AXIS 1(MANUAL MODE)
 CRPIX2   :       0.0#CRPIX VALUE OF AXIS 2(MANUAL MODE)
 CHECKFILE:         1#1=out put fitting check file
