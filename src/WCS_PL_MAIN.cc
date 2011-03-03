@@ -69,7 +69,7 @@ vector<afwImage::TanWcs::Ptr>    F_WCS_TANSIP_V(vector< vector<afwdetect::Source
     F_WCS_MAKEPAIR(matchlist, &APROP, CPROP, PAIR);
 
     cout <<endl<< "--- WCS_PL_MAIN : MAKE_CSIP ---" << endl;
-    int CID;
+    int ID,CID;
     CSIP = new CL_CSIP[APROP.CCDNUM+1];
     for(CID=0;CID<APROP.CCDNUM+1;CID++){
         CSIP[CID].SIP_AB[0]  = new double[APROP.SIP_ORDER*APROP.SIP_ORDER+1];
@@ -86,6 +86,25 @@ vector<afwImage::TanWcs::Ptr>    F_WCS_TANSIP_V(vector< vector<afwdetect::Source
     F_WCS_TANSIP_GPOS(APROP,CPROP,PAIR,&CSIP[APROP.CCDNUM]);
     }else{
     cout << "-- USING DEFAULT CCD POSITIONS (APROP.CCDPOSMODE=!1) --" << endl;
+//for(CID=0;CID<APROP.CCDNUM;CID++)
+//cout << CID << "	" << CPROP[CID].GLOB_POS[0] << "	" << CPROP[CID].GLOB_POS[1] << "	" << CPROP[CID].GLOB_POS[2] << endl;
+/*        for(camGeom::Camera::const_iterator iter(camera->begin());iter != camera->end();++iter){
+        camGeom::DetectorMosaic::Ptr detMosaic = boost::shared_dynamic_cast<camGeom::DetectorMosaic>(*iter);
+        for(CID=0;CID<APROP.CCDNUM;CID++){
+            camGeom::Id detId = camGeom::Id(CID);
+            camGeom::Detector::Ptr det = detMosaic->findDetector(detId);
+            afwGeom::Point2D offsetXY = det->getCenter();
+            
+//            CPROP[CID].ID=detId.getSerial();
+            CPROP[CID].GLOB_POS[0]=offsetXY[0];
+            CPROP[CID].GLOB_POS[1]=offsetXY[2];
+            CPROP[CID].GLOB_POS[2]=0;
+        }}
+*/  
+        for(ID=0;ID<APROP.NUMREFALL;ID++){
+            PAIR[ID].xG=CPROP[PAIR[ID].CHIPID].GLOB_POS[0]+PAIR[ID].xL*cos(CPROP[PAIR[ID].CHIPID].GLOB_POS[2])-PAIR[ID].yL*sin(CPROP[PAIR[ID].CHIPID].GLOB_POS[2]);
+            PAIR[ID].yG=CPROP[PAIR[ID].CHIPID].GLOB_POS[1]+PAIR[ID].yL*cos(CPROP[PAIR[ID].CHIPID].GLOB_POS[2])+PAIR[ID].xL*sin(CPROP[PAIR[ID].CHIPID].GLOB_POS[2]);
+        }  
     }
     cout << "-- CCD POSITION CHECK --" << endl;
     cout << "- CCD : " << setw(3) << setfill('0') << CPROP[0].ID << " -" << endl;

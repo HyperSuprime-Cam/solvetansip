@@ -59,7 +59,7 @@ void    F_LPFITTING_DIFFPAIR(CL_APROP APROP,CL_CPROP CPROP,CL_PAIR *PAIR,CL_CSIP
     double **PSIPXY;
     double ***DIFFPSIP[4];
 
-    cout << endl << "--- F_WCS_TANSIP:GLOBAL POSITION : LOCAL ABP SIP FITTING ---\n";
+    cout << endl << "--- F_WCS_TANSIP : GLOBAL POSITION : LOCAL ABP SIP FITTING ---\n";
 
     for(i=0;i<3;i++){
     dx[i] = new double**[APROP.CCDNUM];

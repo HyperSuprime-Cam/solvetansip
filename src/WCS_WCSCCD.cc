@@ -102,8 +102,8 @@ cout << "--- CALC. RMS ---" << endl;
     for(l=0;l<3;l++)
     SUM[i][j][k][l]=0;
 
-//ofstream fout,fLout,f1out;
-//fout.open("test/fit.dat");
+ofstream fout,fLout,f1out;
+fout.open("test/fit.dat");
 //fLout.open("test/fitL.dat");
 //f1out.open("test/fit1.dat");
 double *SIP1[2];
@@ -138,8 +138,8 @@ SIPN[0][i]=SIPN[1][i]=0;
         CR[3]=CSIP[APROP.CCDNUM].CRVAL[1];
         F_SIP(0,APROP.SIP_ORDER,x,xSIP,CR,CSIP[APROP.CCDNUM].SIP_AB);//Global
         F_WCSPIX_TAN(RADEC,CR,CSIP[APROP.CCDNUM].CD);
-//if(PAIR[i].FLAG == 1)
-//fout << fixed << x[0] << "	" << x[1] << "	" << xSIP[0]-RADEC[0] << "	" << xSIP[1]-RADEC[1] << "	" << xSIP[0] << "	" << xSIP[1] << "	" << RADEC[0] << "	" << RADEC[1] << endl;
+if(PAIR[i].FLAG == 1)
+fout << fixed << x[0] << "	" << x[1] << "	" << xSIP[0]-RADEC[0] << "	" << xSIP[1]-RADEC[1] << "	" << xSIP[0] << "	" << xSIP[1] << "	" << RADEC[0] << "	" << RADEC[1] << endl;
         F_SIP(0,1,x,xSIP,CR,SIP1);//Global
 //        F_SIP(0,APROP.SIP_ORDER,x,xSIP,CR,SIPN);//Global
         F_WCSPIX_TAN(RADEC,CR,CSIP[APROP.CCDNUM].CD);
@@ -179,7 +179,10 @@ SIPN[0][i]=SIPN[1][i]=0;
         CSIP[ID].SIP_AB_AVE[1]=SUM[ID][1][1][1]/SUM[ID][1][1][0];
         CSIP[ID].SIP_AB_RMS[0]=sqrt((SUM[ID][1][0][2]-SUM[ID][1][0][1]*SUM[ID][1][0][1]/SUM[ID][1][0][0])/(SUM[ID][1][0][0]-1));
         CSIP[ID].SIP_AB_RMS[1]=sqrt((SUM[ID][1][0][2]-SUM[ID][1][1][1]*SUM[ID][1][1][1]/SUM[ID][1][1][0])/(SUM[ID][1][1][0]-1));
-
+cout << "AVE of RESIDUAL x : " << CSIP[ID].SIP_AB_AVE[0] << " (pix)" <<endl;
+cout << "AVE of RESIDUAL y : " << CSIP[ID].SIP_AB_AVE[1] << " (pix)" <<endl;
+cout << "RMS of RESIDUAL x : " << CSIP[ID].SIP_AB_RMS[0] << " (pix)" <<endl;
+cout << "RMS of RESIDUAL y : " << CSIP[ID].SIP_AB_RMS[1] << " (pix)" <<endl;   
     for(i=0;i<APROP.CCDNUM+1;i++)
     for(j=0;j<2;j++)
     for(k=0;k<2;k++)

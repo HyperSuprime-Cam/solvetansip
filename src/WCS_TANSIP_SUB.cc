@@ -106,6 +106,8 @@ void    F_CDSIP(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
     for(i=0;i<(APROP.SIP_ORDER+2)*(APROP.SIP_ORDER+1);i++)
     Coef1[i]=Coef2[i]=0;
 
+    cout << "FITNUM  SIP : " << FNUM << endl;
+
     F_LS2(FNUM,APROP.SIP_ORDER,dx1,Coef1);
     F_LS2(FNUM,APROP.SIP_ORDER,dx2,Coef2);
 
@@ -150,6 +152,9 @@ void    F_CDSIP(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
 
     for(i=0;i<(APROP.SIP_P_ORDER+2)*(APROP.SIP_P_ORDER+1);i++)
     CoefP1[i]=CoefP2[i]=0;
+
+    cout << "FITNUM PSIP : " << FNUM << endl;
+
     F_LS2(FNUM,APROP.SIP_P_ORDER,dx1,CoefP1);
     F_LS2(FNUM,APROP.SIP_P_ORDER,dx2,CoefP2);
 

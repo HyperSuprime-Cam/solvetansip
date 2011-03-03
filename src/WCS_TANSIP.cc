@@ -15,7 +15,7 @@ void    F_WCS_TANSIP(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP)
 cout << endl;
 cout << "--- F_WCS_TANSIP : SIP FITTING : FITTING    ---" << endl;
     F_CDSIP(APROP,CPROP,PAIR,CSIP);
-cout << "--- F_WCS_TANSIP : SIP FITTING * REJECTION  ---" << endl;
+cout << "--- F_WCS_TANSIP : SIP FITTING : REJECTION  ---" << endl;
     F_FLAG (APROP, PAIR,CSIP);
 cout << "--- F_WCS_TANSIP : SIP FITTING : RE-FITTING ---" << endl;
     F_CDSIP(APROP,CPROP,PAIR,CSIP);
