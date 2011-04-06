@@ -396,7 +396,7 @@ CoefPCCD[i][j][ij]=CoefP[i][j][ij];
 
 // 6 -----
         if(APROP.SIP_ORDER   >  5.5){
-            Z[2][0]=(15*Coef[xy][6][0]+  Coef[xy][4][2]-  Coef[xy][2][4]-15*Coef[xy][0][6])/32.0*2.0;
+            Z[2][0]=(15*Coef[xy][6][0]+  Coef[xy][4][2]-  Coef[xy][2][4]-15*Coef[xy][0][6])/32.0;
             Z[2][1]=( 5*Coef[xy][5][1]+3*Coef[xy][3][3]+5*Coef[xy][1][5])/32.0;
             Z[4][0]=( 3*Coef[xy][6][0]-  Coef[xy][4][2]-  Coef[xy][2][4]+ 3*Coef[xy][0][6])/32.0*2.0;
             Z[4][1]=( 4*Coef[xy][5][1]+0*Coef[xy][3][3]-4*Coef[xy][1][5])/32.0;
@@ -411,15 +411,15 @@ CoefPCCD[i][j][ij]=CoefP[i][j][ij];
             PHI[6]=atan2(Z[6][1],Z[6][0]);
             CoefCCD[xy][6][0]=1*ABS[0]+1*ABS[2]*cos(PHI[2]-2*THETA)+1*ABS[4]*cos(PHI[4]-4*THETA)+ 1*ABS[6]*cos(PHI[6]-6*THETA);
             CoefCCD[xy][5][1]=0*ABS[0]+2*ABS[2]*sin(PHI[2]-2*THETA)+4*ABS[4]*sin(PHI[4]-4*THETA)+ 6*ABS[6]*sin(PHI[6]-6*THETA);
-            CoefCCD[xy][4][2]=3*ABS[0]+0*ABS[2]*cos(PHI[2]-2*THETA)-5*ABS[4]*cos(PHI[4]-4*THETA)-15*ABS[6]*cos(PHI[6]-6*THETA);
+            CoefCCD[xy][4][2]=3*ABS[0]+1*ABS[2]*cos(PHI[2]-2*THETA)-5*ABS[4]*cos(PHI[4]-4*THETA)-15*ABS[6]*cos(PHI[6]-6*THETA);
             CoefCCD[xy][3][3]=0*ABS[0]+4*ABS[2]*sin(PHI[2]-2*THETA)+0*ABS[4]*sin(PHI[4]-4*THETA)-20*ABS[6]*sin(PHI[6]-6*THETA);
             CoefCCD[xy][2][4]=3*ABS[0]-1*ABS[2]*cos(PHI[2]-2*THETA)-5*ABS[4]*cos(PHI[4]-4*THETA)+15*ABS[6]*cos(PHI[6]-6*THETA);
             CoefCCD[xy][1][5]=0*ABS[0]+2*ABS[2]*sin(PHI[2]-2*THETA)-4*ABS[4]*sin(PHI[4]-4*THETA)+ 6*ABS[6]*sin(PHI[6]-6*THETA);
-            CoefCCD[xy][0][6]=1*ABS[0]-1*ABS[2]*cos(PHI[2]-2*THETA)+1*ABS[4]*cos(PHI[4]-4*THETA)+ 1*ABS[6]*cos(PHI[6]-6*THETA);
+            CoefCCD[xy][0][6]=1*ABS[0]-1*ABS[2]*cos(PHI[2]-2*THETA)+1*ABS[4]*cos(PHI[4]-4*THETA)- 1*ABS[6]*cos(PHI[6]-6*THETA);
         }
 
         if(APROP.SIP_P_ORDER >  5.5){
-            Z[2][0]=(15*CoefP[xy][6][0]+  CoefP[xy][4][2]-  CoefP[xy][2][4]-15*CoefP[xy][0][6])/32.0*2.0;
+            Z[2][0]=(15*CoefP[xy][6][0]+  CoefP[xy][4][2]-  CoefP[xy][2][4]-15*CoefP[xy][0][6])/32.0;
             Z[2][1]=( 5*CoefP[xy][5][1]+3*CoefP[xy][3][3]+5*CoefP[xy][1][5])/32.0;
             Z[4][0]=( 3*CoefP[xy][6][0]-  CoefP[xy][4][2]-  CoefP[xy][2][4]+ 3*CoefP[xy][0][6])/32.0*2.0;
             Z[4][1]=( 4*CoefP[xy][5][1]+0*CoefP[xy][3][3]-4*CoefP[xy][1][5])/32.0;
@@ -434,11 +434,11 @@ CoefPCCD[i][j][ij]=CoefP[i][j][ij];
             PHI[6]=atan2(Z[6][1],Z[6][0]);
             CoefPCCD[xy][6][0]=1*ABS[0]+1*ABS[2]*cos(PHI[2]-2*THETA)+1*ABS[4]*cos(PHI[4]-4*THETA)+ 1*ABS[6]*cos(PHI[6]-6*THETA);
             CoefPCCD[xy][5][1]=0*ABS[0]+2*ABS[2]*sin(PHI[2]-2*THETA)+4*ABS[4]*sin(PHI[4]-4*THETA)+ 6*ABS[6]*sin(PHI[6]-6*THETA);
-            CoefPCCD[xy][4][2]=3*ABS[0]+0*ABS[2]*cos(PHI[2]-2*THETA)-5*ABS[4]*cos(PHI[4]-4*THETA)-15*ABS[6]*cos(PHI[6]-6*THETA);
+            CoefPCCD[xy][4][2]=3*ABS[0]+1*ABS[2]*cos(PHI[2]-2*THETA)-5*ABS[4]*cos(PHI[4]-4*THETA)-15*ABS[6]*cos(PHI[6]-6*THETA);
             CoefPCCD[xy][3][3]=0*ABS[0]+4*ABS[2]*sin(PHI[2]-2*THETA)+0*ABS[4]*sin(PHI[4]-4*THETA)-20*ABS[6]*sin(PHI[6]-6*THETA);
             CoefPCCD[xy][2][4]=3*ABS[0]-1*ABS[2]*cos(PHI[2]-2*THETA)-5*ABS[4]*cos(PHI[4]-4*THETA)+15*ABS[6]*cos(PHI[6]-6*THETA);
             CoefPCCD[xy][1][5]=0*ABS[0]+2*ABS[2]*sin(PHI[2]-2*THETA)-4*ABS[4]*sin(PHI[4]-4*THETA)+ 6*ABS[6]*sin(PHI[6]-6*THETA);
-            CoefPCCD[xy][0][6]=1*ABS[0]-1*ABS[2]*cos(PHI[2]-2*THETA)+1*ABS[4]*cos(PHI[4]-4*THETA)+ 1*ABS[6]*cos(PHI[6]-6*THETA);
+            CoefPCCD[xy][0][6]=1*ABS[0]-1*ABS[2]*cos(PHI[2]-2*THETA)+1*ABS[4]*cos(PHI[4]-4*THETA)- 1*ABS[6]*cos(PHI[6]-6*THETA);
         }
 
 // 7 -----
@@ -556,16 +556,16 @@ CoefPCCD[i][j][ij]=CoefP[i][j][ij];
         }
 // 9 -----
         if(APROP.SIP_ORDER   >  8.5){
-            Z[1][0]=(126*Coef[xy][9][0]+14*Coef[xy][7][2]+6*Coef[xy][5][4]+ 6*Coef[xy][3][6]+  6*Coef[xy][1][8])/256.0;
-            Z[1][1]=( 14*Coef[xy][9][0]+ 6*Coef[xy][7][2]+6*Coef[xy][5][4]+14*Coef[xy][3][6]+126*Coef[xy][1][8])/256.0;
+            Z[1][0]=(126*Coef[xy][9][0]+14*Coef[xy][7][2]+6*Coef[xy][5][4]+ 6*Coef[xy][3][6]+ 14*Coef[xy][1][8])/256.0;
+            Z[1][1]=( 14*Coef[xy][8][1]+ 6*Coef[xy][6][3]+6*Coef[xy][4][5]+14*Coef[xy][2][7]+126*Coef[xy][0][9])/256.0;
             Z[3][0]=( 84*Coef[xy][9][0]+ 0*Coef[xy][7][2]-4*Coef[xy][5][4]- 8*Coef[xy][3][6]- 28*Coef[xy][1][8])/256.0;
-            Z[3][1]=( 28*Coef[xy][9][0]+ 8*Coef[xy][7][2]+8*Coef[xy][5][4]+ 0*Coef[xy][3][6]- 84*Coef[xy][1][8])/256.0;
+            Z[3][1]=( 28*Coef[xy][8][1]+ 8*Coef[xy][6][3]+4*Coef[xy][4][5]+ 0*Coef[xy][2][7]- 84*Coef[xy][0][9])/256.0;
             Z[5][0]=( 36*Coef[xy][9][0]- 8*Coef[xy][7][2]-4*Coef[xy][5][4]+ 0*Coef[xy][3][6]+ 20*Coef[xy][1][8])/256.0;
-            Z[5][1]=( 20*Coef[xy][9][0]- 4*Coef[xy][7][2]+0*Coef[xy][5][4]- 8*Coef[xy][3][6]+ 36*Coef[xy][1][8])/256.0;
+            Z[5][1]=( 20*Coef[xy][8][1]- 4*Coef[xy][6][3]+0*Coef[xy][4][5]- 8*Coef[xy][2][7]+ 36*Coef[xy][0][9])/256.0;
             Z[7][0]=(  9*Coef[xy][9][0]- 5*Coef[xy][7][2]+1*Coef[xy][5][4]+ 3*Coef[xy][3][6]-  7*Coef[xy][1][8])/256.0;
-            Z[7][1]=(  7*Coef[xy][9][0]- 3*Coef[xy][7][2]-1*Coef[xy][5][4]+ 5*Coef[xy][3][6]-  9*Coef[xy][1][8])/256.0;
+            Z[7][1]=(  7*Coef[xy][8][1]- 3*Coef[xy][6][3]-1*Coef[xy][4][5]+ 5*Coef[xy][2][7]-  9*Coef[xy][0][9])/256.0;
             Z[9][0]=(  1*Coef[xy][9][0]- 1*Coef[xy][7][2]+1*Coef[xy][5][4]- 1*Coef[xy][3][6]+  1*Coef[xy][1][8])/256.0;
-            Z[9][1]=(  1*Coef[xy][9][0]- 1*Coef[xy][7][2]+1*Coef[xy][5][4]- 1*Coef[xy][3][6]+  1*Coef[xy][1][8])/256.0;
+            Z[9][1]=(  1*Coef[xy][8][1]- 1*Coef[xy][6][3]+1*Coef[xy][4][5]- 1*Coef[xy][2][7]+  1*Coef[xy][0][9])/256.0;
             ABS[1]=hypot(Z[1][1],Z[1][0]);
             ABS[3]=hypot(Z[3][1],Z[3][0]);
             ABS[5]=hypot(Z[5][1],Z[5][0]);
@@ -589,16 +589,16 @@ CoefPCCD[i][j][ij]=CoefP[i][j][ij];
         }
 
         if(APROP.SIP_P_ORDER   >  8.5){
-            Z[1][0]=(126*CoefP[xy][9][0]+14*CoefP[xy][7][2]+6*CoefP[xy][5][4]+ 6*CoefP[xy][3][6]+  6*CoefP[xy][1][8])/256.0;
-            Z[1][1]=( 14*CoefP[xy][9][0]+ 6*CoefP[xy][7][2]+6*CoefP[xy][5][4]+14*CoefP[xy][3][6]+126*CoefP[xy][1][8])/256.0;
+            Z[1][0]=(126*CoefP[xy][9][0]+14*CoefP[xy][7][2]+6*CoefP[xy][5][4]+ 6*CoefP[xy][3][6]+ 14*CoefP[xy][1][8])/256.0;
+            Z[1][1]=( 14*CoefP[xy][8][1]+ 6*CoefP[xy][6][3]+6*CoefP[xy][4][5]+14*CoefP[xy][2][7]+126*CoefP[xy][0][9])/256.0;
             Z[3][0]=( 84*CoefP[xy][9][0]+ 0*CoefP[xy][7][2]-4*CoefP[xy][5][4]- 8*CoefP[xy][3][6]- 28*CoefP[xy][1][8])/256.0;
-            Z[3][1]=( 28*CoefP[xy][9][0]+ 8*CoefP[xy][7][2]+8*CoefP[xy][5][4]+ 0*CoefP[xy][3][6]- 84*CoefP[xy][1][8])/256.0;
+            Z[3][1]=( 28*CoefP[xy][8][1]+ 8*CoefP[xy][6][3]+4*CoefP[xy][4][5]+ 0*CoefP[xy][2][7]- 84*CoefP[xy][0][9])/256.0;
             Z[5][0]=( 36*CoefP[xy][9][0]- 8*CoefP[xy][7][2]-4*CoefP[xy][5][4]+ 0*CoefP[xy][3][6]+ 20*CoefP[xy][1][8])/256.0;
-            Z[5][1]=( 20*CoefP[xy][9][0]- 4*CoefP[xy][7][2]+0*CoefP[xy][5][4]- 8*CoefP[xy][3][6]+ 36*CoefP[xy][1][8])/256.0;
+            Z[5][1]=( 20*CoefP[xy][8][1]- 0*CoefP[xy][6][3]-4*CoefP[xy][4][5]- 8*CoefP[xy][2][7]+ 36*CoefP[xy][0][9])/256.0;
             Z[7][0]=(  9*CoefP[xy][9][0]- 5*CoefP[xy][7][2]+1*CoefP[xy][5][4]+ 3*CoefP[xy][3][6]-  7*CoefP[xy][1][8])/256.0;
-            Z[7][1]=(  7*CoefP[xy][9][0]- 3*CoefP[xy][7][2]-1*CoefP[xy][5][4]+ 5*CoefP[xy][3][6]-  9*CoefP[xy][1][8])/256.0;
+            Z[7][1]=(  7*CoefP[xy][8][1]- 3*CoefP[xy][6][3]-1*CoefP[xy][4][5]+ 5*CoefP[xy][2][7]-  9*CoefP[xy][0][9])/256.0;
             Z[9][0]=(  1*CoefP[xy][9][0]- 1*CoefP[xy][7][2]+1*CoefP[xy][5][4]- 1*CoefP[xy][3][6]+  1*CoefP[xy][1][8])/256.0;
-            Z[9][1]=(  1*CoefP[xy][9][0]- 1*CoefP[xy][7][2]+1*CoefP[xy][5][4]- 1*CoefP[xy][3][6]+  1*CoefP[xy][1][8])/256.0;
+            Z[9][1]=(  1*CoefP[xy][8][1]- 1*CoefP[xy][6][3]+1*CoefP[xy][4][5]- 1*CoefP[xy][2][7]+  1*CoefP[xy][0][9])/256.0;
             ABS[1]=hypot(Z[1][1],Z[1][0]);
             ABS[3]=hypot(Z[3][1],Z[3][0]);
             ABS[5]=hypot(Z[5][1],Z[5][0]);
