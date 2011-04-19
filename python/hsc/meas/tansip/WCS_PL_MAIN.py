@@ -592,7 +592,9 @@ import lsst.afw.geom.geomLib
 import lsst.afw.coord.coordLib
 import lsst.afw.cameraGeom.cameraGeomLib
 import lsst.afw.detection.detectionLib
+import lsst.afw.geom.ellipses.ellipsesLib
 import lsst.afw.math.mathLib
+import lsst.afw.math.shapelets.shapeletsLib
 class SourceGroup(_object):
     """Proxy of C++ SourceGroup class"""
     __swig_setmethods__ = {}

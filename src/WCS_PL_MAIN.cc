@@ -213,8 +213,8 @@ PAIRout.close();//temp
 afwImage::TanWcs::Ptr    F_WCS_MAKERESULTWCS(CL_CSIP *CSIP){
     int i,j;
 
-    afwGeom::PointD crpix = afwGeom::makePointD(CSIP->CRPIX[0], CSIP->CRPIX[1]);
-    afwGeom::PointD crval = afwGeom::makePointD(CSIP->CRVAL[0], CSIP->CRVAL[1]);
+    afwGeom::PointD crpix = afwGeom::Point2D(CSIP->CRPIX[0], CSIP->CRPIX[1]);
+    afwGeom::PointD crval = afwGeom::Point2D(CSIP->CRVAL[0], CSIP->CRVAL[1]);
 
     Eigen::Matrix2d cdMatrix;
     cdMatrix << CSIP->CD[0][0], CSIP->CD[0][1], CSIP->CD[1][0], CSIP->CD[1][1];
