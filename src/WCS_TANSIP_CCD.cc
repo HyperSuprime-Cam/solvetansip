@@ -1,22 +1,24 @@
 //------------------------------------------------------------
-//WCS_WCSCCD.cc
-//main program for wcs in pipeline
+//WCS_TANSIP_CCD.cc
+//Calculating WCS of each CCD from global
 //
-//Last modification : 2011/02/22
+//Last modification : 2010/04/01
 //------------------------------------------------------------
 #include<iostream>
-#include<fstream>//test
 #include<cmath>
-#include "hsc/meas/tansip/WCS_PL_MAIN.h"
 #include "hsc/meas/tansip/WCS_TANSIP.h"
 
 #define PI (4*atan(1.0))
 using namespace std;
 void    F_SIPROT(CL_APROP,CL_CPROP *,CL_CSIP *,double **Coef[2],double **CoefP[2]);
-void    F_SIP(int FR,int Order,double x[],double xSIP[],double CR[],double *SIP[2]);
-void    F_PIXWCS_TAN(double x[],double CR[],double CD[][2]);
-void    F_WCSPIX_TAN(double x[],double CR[],double CD[][2]);
-void    F_WCS_WCSCCD(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP* CSIP){
+void    F_WCS_TANSIP_CCD_LSIP(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
+void    F_WCS_TANSIP_CCD_LCHECK(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
+void    F_WCS_TANSIP_CCD(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
+
+    F_WCS_TANSIP_CCD_LSIP(APROP,CPROP,PAIR,CSIP);
+    F_WCS_TANSIP_CCD_LCHECK(APROP,CPROP,PAIR,CSIP);
+}
+void    F_WCS_TANSIP_CCD_LSIP(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
     int i,j,ij,ID;
     double **Coef[2],**CoefP[2];
 
@@ -41,10 +43,9 @@ void    F_WCS_WCSCCD(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP* CSIP)
     for(j=0;j<APROP.SIP_P_ORDER+1;j++)
     CoefP[0][i][j]=CoefP[1][i][j]=0;
 
-
 // SIP -> Polynomial --------------------------------------------------
-cout << endl;
-cout << "--- F_WCS_TANSIP : Global SIP TO Polynomial ---" << endl;
+    cout << "--- WCS_TANSIP : CALCULATING LOCAL CCD : GLOBAL SIP to POLYNOMIAL ---" << endl;
+
     ij=0;
     for(i=0;i<APROP.SIP_ORDER+1;i++)
     for(j=0;j<APROP.SIP_ORDER+1;j++)
@@ -54,21 +55,23 @@ cout << "--- F_WCS_TANSIP : Global SIP TO Polynomial ---" << endl;
         ij++;
     }
     Coef[0][1][0]+=CSIP[APROP.CCDNUM].CD[0][0];
+    Coef[0][0][1]+=CSIP[APROP.CCDNUM].CD[0][1];
+    Coef[1][1][0]+=CSIP[APROP.CCDNUM].CD[1][0];
     Coef[1][0][1]+=CSIP[APROP.CCDNUM].CD[1][1];
 
     ij=0;
     for(i=0;i<APROP.SIP_P_ORDER+1;i++)
     for(j=0;j<APROP.SIP_P_ORDER+1;j++)
     if(i+j<APROP.SIP_P_ORDER+1){
-        CoefP[0][i][j]=CSIP[APROP.CCDNUM].CD[0][0]*CSIP[APROP.CCDNUM].SIP_ABP[0][ij]+CSIP[APROP.CCDNUM].CD[0][1]*CSIP[APROP.CCDNUM].SIP_ABP[1][ij];
-        CoefP[1][i][j]=CSIP[APROP.CCDNUM].CD[1][0]*CSIP[APROP.CCDNUM].SIP_ABP[0][ij]+CSIP[APROP.CCDNUM].CD[1][1]*CSIP[APROP.CCDNUM].SIP_ABP[1][ij];
+        CoefP[0][i][j]=CSIP[APROP.CCDNUM].SIP_ABP[0][ij];
+        CoefP[1][i][j]=CSIP[APROP.CCDNUM].SIP_ABP[1][ij];
         ij++;	
     }
-    CoefP[0][1][0]+=CSIP[APROP.CCDNUM].CD[0][0];
-    CoefP[1][0][1]+=CSIP[APROP.CCDNUM].CD[1][1];
+    CoefP[0][1][0]+=1;
+    CoefP[1][0][1]+=1;
 
 // WCS CCD --------------------------------------------------
-cout << "--- F_WCS_TANSIP : Polynomial TO CCD's SIP ---" << endl;
+    cout << "--- WCS_TANSIP : CALCULATING LOCAL CCD : POLYNOMIAL to EACH CCD's SIP ---" << endl;
 
     for(ID=0;ID<APROP.CCDNUM;ID++){
         F_SIPROT(APROP,&CPROP[ID],&CSIP[ID],Coef,CoefP);
@@ -77,123 +80,13 @@ cout << "--- F_WCS_TANSIP : Polynomial TO CCD's SIP ---" << endl;
         CSIP[ID].FITNUM=CPROP[ID].NUMREF;
         CSIP[ID].CRVAL[0]=CSIP[APROP.CCDNUM].CRVAL[0];
         CSIP[ID].CRVAL[1]=CSIP[APROP.CCDNUM].CRVAL[1];
-        CSIP[ID].CRPIX[0]=-(CPROP[ID].GLOB_POS[0]-CSIP[APROP.CCDNUM].CRPIX[0])*cos(CPROP[ID].GLOB_POS[2]/180.0*PI)-(CPROP[ID].GLOB_POS[1]-CSIP[APROP.CCDNUM].CRPIX[1])*sin(CPROP[ID].GLOB_POS[2]/180.0*PI);
-        CSIP[ID].CRPIX[1]=-(CPROP[ID].GLOB_POS[1]-CSIP[APROP.CCDNUM].CRPIX[1])*cos(CPROP[ID].GLOB_POS[2]/180.0*PI)+(CPROP[ID].GLOB_POS[0]-CSIP[APROP.CCDNUM].CRPIX[0])*sin(CPROP[ID].GLOB_POS[2]/180.0*PI);
+        CSIP[ID].CRPIX[0]=-(CPROP[ID].GLOB_POS[0]-CSIP[APROP.CCDNUM].CRPIX[0])*cos(CPROP[ID].GLOB_POS[2])-(CPROP[ID].GLOB_POS[1]-CSIP[APROP.CCDNUM].CRPIX[1])*sin(CPROP[ID].GLOB_POS[2]);
+        CSIP[ID].CRPIX[1]=-(CPROP[ID].GLOB_POS[1]-CSIP[APROP.CCDNUM].CRPIX[1])*cos(CPROP[ID].GLOB_POS[2])+(CPROP[ID].GLOB_POS[0]-CSIP[APROP.CCDNUM].CRPIX[0])*sin(CPROP[ID].GLOB_POS[2]);
         CSIP[ID].SIP_AB_ORDER =CSIP[APROP.CCDNUM].SIP_AB_ORDER;
         CSIP[ID].SIP_ABP_ORDER=CSIP[APROP.CCDNUM].SIP_ABP_ORDER;
+//cout << ID << " " << CSIP[ID].FITNUM << " " << CSIP[ID].CRPIX[0] << " " << CSIP[ID].CRPIX[1] << " " << CSIP[ID].CRVAL[0] << " " << CSIP[ID].CRVAL[1] << endl;
+//cout << ID << " " << CSIP[ID].SIP_AB[0][0] << " " << CSIP[ID].SIP_AB[0][2] << " " << CSIP[ID].SIP_AB[0][17] << endl;
     }
-// AVE RMS --------------------------------------------------
-cout << "--- CALC. RMS ---" << endl;
-    int k,l;
-    double ****SUM;
-    double x[4],Lx[4],xSIP[4],LxSIP[4],CR[4],RADEC[4],LRADEC[4];
-    SUM = new double***[APROP.CCDNUM+1];
-    for(i=0;i<APROP.CCDNUM+1;i++){
-    SUM[i] = new double**[2];
-    for(j=0;j<2;j++){
-    SUM[i][j] = new double*[2];
-    for(k=0;k<2;k++)
-    SUM[i][j][k] = new double[3];
-    }}
-
-    for(i=0;i<APROP.CCDNUM+1;i++)
-    for(j=0;j<2;j++)
-    for(k=0;k<2;k++)
-    for(l=0;l<3;l++)
-    SUM[i][j][k][l]=0;
-
-//ofstream fout,fLout,f1out;
-//fout.open("test/fit.dat");
-//fLout.open("test/fitL.dat");
-//f1out.open("test/fit1.dat");
-double *SIP1[2];
-SIP1[0] = new double[3];
-SIP1[1] = new double[3];
-SIP1[0][0]=SIP1[0][1]=SIP1[0][2]=SIP1[1][0]=SIP1[1][1]=SIP1[1][2]=0;
-double *SIPN[2];
-SIPN[0] = new double[10];
-SIPN[1] = new double[10];
-for(i=0;i<10;i++)
-SIPN[0][i]=SIPN[1][i]=0;
-    for(i=0;i<APROP.NUMREFALL;i++)
-    if(PAIR[i].FLAG==1){
-        Lx[0]=PAIR[i].xL;
-        Lx[1]=PAIR[i].yL;
-        Lx[2]=0;
-        Lx[3]=0;
-        x[0]=PAIR[i].xG;
-        x[1]=PAIR[i].yG;
-        x[2]=0;
-        x[3]=0;
-        LRADEC[0]=0;
-        LRADEC[1]=0;
-        LRADEC[2]=PAIR[i].RA;
-        LRADEC[3]=PAIR[i].DEC;
-        RADEC[0]=0;
-        RADEC[1]=0;
-        RADEC[2]=PAIR[i].RA;
-        RADEC[3]=PAIR[i].DEC;
-        CR[0]=CSIP[APROP.CCDNUM].CRPIX[0];
-        CR[1]=CSIP[APROP.CCDNUM].CRPIX[1];
-        CR[2]=CSIP[APROP.CCDNUM].CRVAL[0];
-        CR[3]=CSIP[APROP.CCDNUM].CRVAL[1];
-        F_SIP(0,APROP.SIP_ORDER,x,xSIP,CR,CSIP[APROP.CCDNUM].SIP_AB);//Global
-        F_WCSPIX_TAN(RADEC,CR,CSIP[APROP.CCDNUM].CD);
-//if(PAIR[i].FLAG == 1)
-//fout << fixed << x[0] << "	" << x[1] << "	" << xSIP[0]-RADEC[0] << "	" << xSIP[1]-RADEC[1] << "	" << xSIP[0] << "	" << xSIP[1] << "	" << RADEC[0] << "	" << RADEC[1] << endl;
-//        F_SIP(0,1,x,xSIP,CR,SIP1);//Global
-//        F_SIP(0,APROP.SIP_ORDER,x,xSIP,CR,SIPN);//Global
-//        F_WCSPIX_TAN(RADEC,CR,CSIP[APROP.CCDNUM].CD);
-//if(PAIR[i].FLAG == 1)
-//f1out << fixed << x[0] << "	" << x[1] << "	" << xSIP[0]-RADEC[0] << "	" << xSIP[1]-RADEC[1] << "	" << xSIP[0] << "	" << xSIP[1] << "	" << RADEC[0] << "	" << RADEC[1] << endl;
-        CR[0]=CSIP[PAIR[i].CHIPID].CRPIX[0];
-        CR[1]=CSIP[PAIR[i].CHIPID].CRPIX[1];
-        CR[2]=CSIP[PAIR[i].CHIPID].CRVAL[0];
-        CR[3]=CSIP[PAIR[i].CHIPID].CRVAL[1];
-        F_SIP(0,APROP.SIP_ORDER,Lx,LxSIP,CR,CSIP[PAIR[i].CHIPID].SIP_AB);//Global
-        F_WCSPIX_TAN(LRADEC,CR,CSIP[PAIR[i].CHIPID].CD);
-//if(PAIR[i].FLAG == 1)
-//fLout << x[0] << "	" << x[1] << "	" << LxSIP[0]-LRADEC[0] << "	" << LxSIP[1]-LRADEC[1] << endl;
-
-        SUM[PAIR[i].CHIPID][0][0][0]+=1;//Local
-        SUM[PAIR[i].CHIPID][0][0][1]+=(LxSIP[0]-LRADEC[0]);
-        SUM[PAIR[i].CHIPID][0][0][2]+=(LxSIP[0]-LRADEC[0])*(LxSIP[0]-LRADEC[0]);
-        SUM[PAIR[i].CHIPID][0][1][0]+=1;
-        SUM[PAIR[i].CHIPID][0][1][1]+=(LxSIP[1]-LRADEC[1]);
-        SUM[PAIR[i].CHIPID][0][1][2]+=(LxSIP[1]-LRADEC[1])*(LxSIP[1]-LRADEC[1]);
-        SUM[APROP.CCDNUM][1][0][0]+=1;//Global
-        SUM[APROP.CCDNUM][1][0][1]+=(xSIP[0]-RADEC[0]);
-        SUM[APROP.CCDNUM][1][0][2]+=(xSIP[0]-RADEC[0])*(xSIP[0]-RADEC[0]);
-        SUM[APROP.CCDNUM][1][1][0]+=1;
-        SUM[APROP.CCDNUM][1][1][1]+=(xSIP[1]-RADEC[1]);
-        SUM[APROP.CCDNUM][1][1][2]+=(xSIP[1]-RADEC[1])*(xSIP[1]-RADEC[1]);
-    }
-
-    for(ID=0;ID<APROP.CCDNUM;ID++){
-        CSIP[ID].SIP_AB_AVE[0]=SUM[ID][0][0][1]/SUM[ID][0][0][0];
-        CSIP[ID].SIP_AB_AVE[1]=SUM[ID][0][1][1]/SUM[ID][0][1][0];
-        CSIP[ID].SIP_AB_RMS[0]=sqrt((SUM[ID][0][0][2]-SUM[ID][0][0][1]*SUM[ID][0][0][1]/SUM[ID][0][0][0])/(SUM[ID][0][0][0]-1));
-        CSIP[ID].SIP_AB_RMS[1]=sqrt((SUM[ID][0][0][2]-SUM[ID][0][1][1]*SUM[ID][0][1][1]/SUM[ID][0][1][0])/(SUM[ID][0][1][0]-1));
-    }
-        ID=APROP.CCDNUM;
-        CSIP[ID].SIP_AB_AVE[0]=SUM[ID][1][0][1]/SUM[ID][1][0][0];
-        CSIP[ID].SIP_AB_AVE[1]=SUM[ID][1][1][1]/SUM[ID][1][1][0];
-        CSIP[ID].SIP_AB_RMS[0]=sqrt((SUM[ID][1][0][2]-SUM[ID][1][0][1]*SUM[ID][1][0][1]/SUM[ID][1][0][0])/(SUM[ID][1][0][0]-1));
-        CSIP[ID].SIP_AB_RMS[1]=sqrt((SUM[ID][1][0][2]-SUM[ID][1][1][1]*SUM[ID][1][1][1]/SUM[ID][1][1][0])/(SUM[ID][1][1][0]-1));
-cout << "AVE of RESIDUAL x : " << CSIP[ID].SIP_AB_AVE[0] << " (pix)" <<endl;
-cout << "AVE of RESIDUAL y : " << CSIP[ID].SIP_AB_AVE[1] << " (pix)" <<endl;
-cout << "RMS of RESIDUAL x : " << CSIP[ID].SIP_AB_RMS[0] << " (pix)" <<endl;
-cout << "RMS of RESIDUAL y : " << CSIP[ID].SIP_AB_RMS[1] << " (pix)" <<endl;   
-    for(i=0;i<APROP.CCDNUM+1;i++)
-    for(j=0;j<2;j++)
-    for(k=0;k<2;k++)
-    delete [] SUM[i][j][k];
-    for(i=0;i<APROP.CCDNUM+1;i++)
-    for(j=0;j<2;j++)
-    delete [] SUM[i][j];
-    for(i=0;i<APROP.CCDNUM+1;i++)
-    delete [] SUM[i];
-    delete [] SUM;
 //--------------------------------------------------
     for(i=0;i<APROP.SIP_ORDER+1;i++){
          delete [] Coef[0][i];
@@ -207,7 +100,6 @@ cout << "RMS of RESIDUAL y : " << CSIP[ID].SIP_AB_RMS[1] << " (pix)" <<endl;
     delete [] Coef[1];
     delete [] CoefP[0];
     delete [] CoefP[1];
-
 }
 void    F_SIPROT(CL_APROP APROP,CL_CPROP *CPROP,CL_CSIP *CSIP,double **Coef[2],double **CoefP[2]){
     int i,j,ij,xy;
@@ -230,14 +122,17 @@ void    F_SIPROT(CL_APROP APROP,CL_CPROP *CPROP,CL_CSIP *CSIP,double **Coef[2],d
 //--------------------------------------------------
 
     double ABS[10],PHI[10],Z[10][2],THETA;
-    THETA=(CPROP->GLOB_POS[2])*PI/180;
+    THETA=CPROP->GLOB_POS[2];
 
 for(i=0;i<2;i++)
 for(j=0;j<APROP.SIP_ORDER+1;j++)
-for(ij=0;ij<APROP.SIP_ORDER+1;ij++){
+for(ij=0;ij<APROP.SIP_ORDER+1;ij++)
 CoefCCD[i][j][ij]=Coef[i][j][ij];
+for(i=0;i<2;i++)
+for(j=0;j<APROP.SIP_P_ORDER+1;j++)
+for(ij=0;ij<APROP.SIP_P_ORDER+1;ij++)
 CoefPCCD[i][j][ij]=CoefP[i][j][ij];
-}   
+   
 
    for(xy=0;xy<2;xy++){
 // 0 -----
@@ -561,7 +456,7 @@ CoefPCCD[i][j][ij]=CoefP[i][j][ij];
             Z[3][0]=( 84*Coef[xy][9][0]+ 0*Coef[xy][7][2]-4*Coef[xy][5][4]- 8*Coef[xy][3][6]- 28*Coef[xy][1][8])/256.0;
             Z[3][1]=( 28*Coef[xy][8][1]+ 8*Coef[xy][6][3]+4*Coef[xy][4][5]+ 0*Coef[xy][2][7]- 84*Coef[xy][0][9])/256.0;
             Z[5][0]=( 36*Coef[xy][9][0]- 8*Coef[xy][7][2]-4*Coef[xy][5][4]+ 0*Coef[xy][3][6]+ 20*Coef[xy][1][8])/256.0;
-            Z[5][1]=( 20*Coef[xy][8][1]- 4*Coef[xy][6][3]+0*Coef[xy][4][5]- 8*Coef[xy][2][7]+ 36*Coef[xy][0][9])/256.0;
+            Z[5][1]=( 20*Coef[xy][8][1]- 0*Coef[xy][6][3]-4*Coef[xy][4][5]- 8*Coef[xy][2][7]+ 36*Coef[xy][0][9])/256.0;
             Z[7][0]=(  9*Coef[xy][9][0]- 5*Coef[xy][7][2]+1*Coef[xy][5][4]+ 3*Coef[xy][3][6]-  7*Coef[xy][1][8])/256.0;
             Z[7][1]=(  7*Coef[xy][8][1]- 3*Coef[xy][6][3]-1*Coef[xy][4][5]+ 5*Coef[xy][2][7]-  9*Coef[xy][0][9])/256.0;
             Z[9][0]=(  1*Coef[xy][9][0]- 1*Coef[xy][7][2]+1*Coef[xy][5][4]- 1*Coef[xy][3][6]+  1*Coef[xy][1][8])/256.0;
@@ -624,37 +519,21 @@ CoefPCCD[i][j][ij]=CoefP[i][j][ij];
 
 
 // Polynial -> SIP --------------------------------------------------
-    double *SIP1,*SIP2,*PSIP1,*PSIP2,InvCD[2][2];
-
-    SIP1 = new double[(APROP.SIP_ORDER+2)*(APROP.SIP_ORDER+1)];
-    SIP2 = new double[(APROP.SIP_ORDER+2)*(APROP.SIP_ORDER+1)];
-    PSIP1= new double[(APROP.SIP_P_ORDER+2)*(APROP.SIP_P_ORDER+1)];
-    PSIP2= new double[(APROP.SIP_P_ORDER+2)*(APROP.SIP_P_ORDER+1)];
-
-    ij=0;
-    for(i=0;i<APROP.SIP_ORDER+1;i++)
-    for(j=0;j<APROP.SIP_ORDER+1;j++)
-    if(i+j<APROP.SIP_ORDER+1){
-        SIP1[ij]=CoefCCD[0][i][j];
-        SIP2[ij]=CoefCCD[1][i][j];
-        ij++;
-    }
-
-    CSIP->CD[0][0]=SIP1[1*(APROP.SIP_ORDER+1)+0];
-    CSIP->CD[0][1]=SIP1[0*(APROP.SIP_ORDER+1)+1];
-    CSIP->CD[1][0]=SIP2[1*(APROP.SIP_ORDER+1)+0];
-    CSIP->CD[1][1]=SIP2[0*(APROP.SIP_ORDER+1)+1];
-    InvCD[0][0]= CSIP->CD[1][1]/(CSIP->CD[0][0]*CSIP->CD[1][1]-CSIP->CD[1][0]*CSIP->CD[0][1]);
-    InvCD[0][1]=-CSIP->CD[0][1]/(CSIP->CD[0][0]*CSIP->CD[1][1]-CSIP->CD[1][0]*CSIP->CD[0][1]);
-    InvCD[1][0]=-CSIP->CD[1][0]/(CSIP->CD[0][0]*CSIP->CD[1][1]-CSIP->CD[1][0]*CSIP->CD[0][1]);
-    InvCD[1][1]= CSIP->CD[0][0]/(CSIP->CD[0][0]*CSIP->CD[1][1]-CSIP->CD[1][0]*CSIP->CD[0][1]);
+    CSIP->CD[0][0]=CoefCCD[0][1][0];
+    CSIP->CD[0][1]=CoefCCD[0][0][1];
+    CSIP->CD[1][0]=CoefCCD[1][1][0];
+    CSIP->CD[1][1]=CoefCCD[1][0][1];
+    CSIP->InvCD[0][0]= CSIP->CD[1][1]/(CSIP->CD[0][0]*CSIP->CD[1][1]-CSIP->CD[1][0]*CSIP->CD[0][1]);
+    CSIP->InvCD[0][1]=-CSIP->CD[0][1]/(CSIP->CD[0][0]*CSIP->CD[1][1]-CSIP->CD[1][0]*CSIP->CD[0][1]);
+    CSIP->InvCD[1][0]=-CSIP->CD[1][0]/(CSIP->CD[0][0]*CSIP->CD[1][1]-CSIP->CD[1][0]*CSIP->CD[0][1]);
+    CSIP->InvCD[1][1]= CSIP->CD[0][0]/(CSIP->CD[0][0]*CSIP->CD[1][1]-CSIP->CD[1][0]*CSIP->CD[0][1]);
 
     ij=0;
     for(i=0;i<APROP.SIP_ORDER+1;i++)
     for(j=0;j<APROP.SIP_ORDER+1;j++)
     if(i+j<APROP.SIP_ORDER+1){
-        CSIP->SIP_AB[0][ij]=InvCD[0][0]*SIP1[ij]+InvCD[0][1]*SIP2[ij];
-        CSIP->SIP_AB[1][ij]=InvCD[1][0]*SIP1[ij]+InvCD[1][1]*SIP2[ij];
+        CSIP->SIP_AB[0][ij]=CSIP->InvCD[0][0]*CoefCCD[0][i][j]+CSIP->InvCD[0][1]*CoefCCD[1][i][j];
+        CSIP->SIP_AB[1][ij]=CSIP->InvCD[1][0]*CoefCCD[0][i][j]+CSIP->InvCD[1][1]*CoefCCD[1][i][j];
         ij++;	
     }
     CSIP->SIP_AB[0][1*(APROP.SIP_ORDER+1)+0]-=1;
@@ -664,24 +543,11 @@ CoefPCCD[i][j][ij]=CoefP[i][j][ij];
     for(i=0;i<APROP.SIP_P_ORDER+1;i++)
     for(j=0;j<APROP.SIP_P_ORDER+1;j++)
     if(i+j<APROP.SIP_P_ORDER+1){
-        PSIP1[ij]=CoefPCCD[0][i][j];
-        PSIP2[ij]=CoefPCCD[1][i][j];
-        ij++;
-    }
-
-    InvCD[0][0]= CSIP->CD[1][1]/(CSIP->CD[0][0]*CSIP->CD[1][1]-CSIP->CD[1][0]*CSIP->CD[0][1]);
-    InvCD[0][1]=-CSIP->CD[0][1]/(CSIP->CD[0][0]*CSIP->CD[1][1]-CSIP->CD[1][0]*CSIP->CD[0][1]);
-    InvCD[1][0]=-CSIP->CD[1][0]/(CSIP->CD[0][0]*CSIP->CD[1][1]-CSIP->CD[1][0]*CSIP->CD[0][1]);
-    InvCD[1][1]= CSIP->CD[0][0]/(CSIP->CD[0][0]*CSIP->CD[1][1]-CSIP->CD[1][0]*CSIP->CD[0][1]);
-
-    ij=0;
-    for(i=0;i<APROP.SIP_P_ORDER+1;i++)
-    for(j=0;j<APROP.SIP_P_ORDER+1;j++)
-    if(i+j<APROP.SIP_P_ORDER+1){
-        CSIP->SIP_ABP[0][ij]=InvCD[0][0]*PSIP1[ij]+InvCD[0][1]*PSIP2[ij];
-        CSIP->SIP_ABP[1][ij]=InvCD[1][0]*PSIP1[ij]+InvCD[1][1]*PSIP2[ij];
+        CSIP->SIP_ABP[0][ij]=CoefPCCD[0][i][j];
+        CSIP->SIP_ABP[1][ij]=CoefPCCD[1][i][j];
         ij++;	
     }
+
     CSIP->SIP_ABP[0][1*(APROP.SIP_ORDER+1)+0]-=1;
     CSIP->SIP_ABP[1][0*(APROP.SIP_ORDER+1)+1]-=1;
 //--------------------------------------------------
@@ -697,9 +563,213 @@ CoefPCCD[i][j][ij]=CoefP[i][j][ij];
     delete [] CoefCCD[1];
     delete [] CoefPCCD[0];
     delete [] CoefPCCD[1];
-    delete [] SIP1;
-    delete [] SIP2;
-    delete [] PSIP1;
-    delete [] PSIP2;
+}
+
+void    F_WCS_TANSIP_CCD_LCHECK(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
+    int ID,NUM,*STNUM;
+    double **RMS[4];
+
+    cout << "--- WCS_TANSIP : CALCULATING LOCAL CCD : CALCULATING Err STATISTICS ---" << endl;    
+//--------------------------------------------------
+//Global Statictics of each CCD
+    RMS[0] = new double*[APROP.CCDNUM+1];
+    RMS[1] = new double*[APROP.CCDNUM+1];
+    RMS[2] = new double*[APROP.CCDNUM+1];
+    RMS[3] = new double*[APROP.CCDNUM+1];
+    for(ID=0;ID<APROP.CCDNUM+1;ID++){
+        RMS[0][ID] = new double[APROP.NUMREFALL];
+        RMS[1][ID] = new double[APROP.NUMREFALL];
+        RMS[2][ID] = new double[APROP.NUMREFALL];
+        RMS[3][ID] = new double[APROP.NUMREFALL];
+    }
+    STNUM = new int[APROP.CCDNUM+1];
+    for(ID=0;ID<APROP.CCDNUM+1;ID++)
+    STNUM[ID]=0;
+
+    for(NUM=0;NUM<APROP.NUMREFALL;NUM++){
+        ID=PAIR[NUM].CHIPID;
+        RMS[0][ID][STNUM[ID]]=PAIR[NUM].GxSIPErr;
+        RMS[1][ID][STNUM[ID]]=PAIR[NUM].GySIPErr;
+        RMS[2][ID][STNUM[ID]]=PAIR[NUM].GxPSIPErr;
+        RMS[3][ID][STNUM[ID]]=PAIR[NUM].GyPSIPErr;
+        STNUM[ID]++;
+    }
+    for(ID=0;ID<APROP.CCDNUM;ID++){
+        F_RMS(STNUM[ID],RMS[0][ID],CSIP[ID].SIP_AB_GErr[0]);
+        F_RMS(STNUM[ID],RMS[1][ID],CSIP[ID].SIP_AB_GErr[1]);
+        F_RMS(STNUM[ID],RMS[2][ID],CSIP[ID].SIP_ABP_GErr[0]);
+        F_RMS(STNUM[ID],RMS[3][ID],CSIP[ID].SIP_ABP_GErr[1]);    
+//cout << "  SIPxErr AVE : " << ID << " , "<< CSIP[ID].SIP_AB_GErr[0][0] << "	" << CSIP[ID].SIP_AB_GErr[0][1] << endl;
+//cout << " PSIPxGErrAVE : " << ID << " , "<< CSIP[ID].SIP_ABP_GErr[0][0] << "	" << CSIP[ID].SIP_ABP_GErr[0][1] << endl;
+    }
+//--------------------------------------------------
+//Err of local fitting
+    double X[2],Y[2],Z[2];
+    for(NUM=0;NUM<APROP.NUMREFALL;NUM++)
+    if(PAIR[NUM].FLAG == 1){
+        ID=PAIR[NUM].CHIPID;
+        X[0]=PAIR[NUM].xL-CSIP[ID].CRPIX[0];
+        X[1]=PAIR[NUM].yL-CSIP[ID].CRPIX[1];
+        Y[0]=CSIP[ID].CD[0][0]*(F_CALCVALUE(APROP.SIP_ORDER,CSIP[ID].SIP_AB[0],X)+X[0])+CSIP[ID].CD[0][1]*(F_CALCVALUE(APROP.SIP_ORDER,CSIP[ID].SIP_AB[1],X)+X[1]);
+        Y[1]=CSIP[ID].CD[1][0]*(F_CALCVALUE(APROP.SIP_ORDER,CSIP[ID].SIP_AB[0],X)+X[0])+CSIP[ID].CD[1][1]*(F_CALCVALUE(APROP.SIP_ORDER,CSIP[ID].SIP_AB[1],X)+X[1]);
+        PAIR[NUM].LxSIPErr=Y[0]-PAIR[NUM].xI;
+        PAIR[NUM].LySIPErr=Y[1]-PAIR[NUM].yI;
+        Z[0]=CSIP[ID].InvCD[0][0]*Y[0]+CSIP[ID].InvCD[0][1]*Y[1];
+        Z[1]=CSIP[ID].InvCD[1][0]*Y[0]+CSIP[ID].InvCD[1][1]*Y[1];
+        PAIR[NUM].LxLErr=F_CALCVALUE(APROP.SIP_P_ORDER,CSIP[ID].SIP_ABP[0],Z)+Z[0]-X[0];
+        PAIR[NUM].LyLErr=F_CALCVALUE(APROP.SIP_P_ORDER,CSIP[ID].SIP_ABP[1],Z)+Z[1]-X[1];
+//
+        X[0]=CSIP[ID].InvCD[0][0]*PAIR[NUM].xI+CSIP[ID].InvCD[0][1]*PAIR[NUM].yI;
+        X[1]=CSIP[ID].InvCD[1][0]*PAIR[NUM].xI+CSIP[ID].InvCD[1][1]*PAIR[NUM].yI;
+        Y[0]=F_CALCVALUE(APROP.SIP_P_ORDER,CSIP[ID].SIP_ABP[0],X)+X[0];
+        Y[1]=F_CALCVALUE(APROP.SIP_P_ORDER,CSIP[ID].SIP_ABP[1],X)+X[1];
+        PAIR[NUM].LxPSIPErr=Y[0]-PAIR[NUM].xCRPIX;
+        PAIR[NUM].LyPSIPErr=Y[1]-PAIR[NUM].yCRPIX;
+        Z[0]=CSIP[ID].CD[0][0]*(F_CALCVALUE(APROP.SIP_ORDER,CSIP[ID].SIP_AB[0],Y)+Y[0])+CSIP[ID].CD[0][1]*(F_CALCVALUE(APROP.SIP_ORDER,CSIP[ID].SIP_AB[1],Y)+Y[1]);
+        Z[1]=CSIP[ID].CD[1][0]*(F_CALCVALUE(APROP.SIP_ORDER,CSIP[ID].SIP_AB[0],Y)+Y[0])+CSIP[ID].CD[1][1]*(F_CALCVALUE(APROP.SIP_ORDER,CSIP[ID].SIP_AB[1],Y)+Y[1]);
+        PAIR[NUM].LxIErr=Z[0]-PAIR[NUM].xI;
+        PAIR[NUM].LyIErr=Z[1]-PAIR[NUM].yI;
+//
+//cout << Y[0] << "	" << PAIR[NUM].xCRPIX << endl;
+//cout << "A:"<< PAIR[NUM].LxSIPErr << "	"  << PAIR[NUM].LySIPErr << "	"  << PAIR[NUM].LxPSIPErr << "	"  << PAIR[NUM].LyPSIPErr << endl;
+//cout << "B:"<< PAIR[NUM].LxLErr << "	"  << PAIR[NUM].LyLErr << "	"  << PAIR[NUM].LxIErr << "	"  << PAIR[NUM].LyIErr << endl;
+    }
+//--------------------------------------------------
+//ALL and EACH Local Statistics
+    for(ID=0;ID<APROP.CCDNUM+1;ID++)
+    STNUM[ID]=0;
+    for(NUM=0;NUM<APROP.NUMREFALL;NUM++)
+    if(PAIR[NUM].FLAG == 1){
+        ID=PAIR[NUM].CHIPID;
+        RMS[0][ID][STNUM[ID]]=PAIR[NUM].LxSIPErr;
+        RMS[1][ID][STNUM[ID]]=PAIR[NUM].LySIPErr;
+        RMS[2][ID][STNUM[ID]]=PAIR[NUM].LxPSIPErr;
+        RMS[3][ID][STNUM[ID]]=PAIR[NUM].LyPSIPErr;
+        STNUM[ID]++;
+        RMS[0][APROP.CCDNUM][STNUM[APROP.CCDNUM]]=PAIR[NUM].LxSIPErr;
+        RMS[1][APROP.CCDNUM][STNUM[APROP.CCDNUM]]=PAIR[NUM].LySIPErr;
+        RMS[2][APROP.CCDNUM][STNUM[APROP.CCDNUM]]=PAIR[NUM].LxPSIPErr;
+        RMS[3][APROP.CCDNUM][STNUM[APROP.CCDNUM]]=PAIR[NUM].LyPSIPErr;
+        STNUM[APROP.CCDNUM]++;
+    }
+    for(ID=0;ID<APROP.CCDNUM+1;ID++){
+        F_RMS(STNUM[ID],RMS[0][ID],CSIP[ID].SIP_AB_LErr[0]);
+        F_RMS(STNUM[ID],RMS[1][ID],CSIP[ID].SIP_AB_LErr[1]);
+        F_RMS(STNUM[ID],RMS[2][ID],CSIP[ID].SIP_ABP_LErr[0]);
+        F_RMS(STNUM[ID],RMS[3][ID],CSIP[ID].SIP_ABP_LErr[1]);    
+//cout << " PSIPxLErrAVE : " << ID << " , "<< CSIP[ID].SIP_ABP_LErr[0][0] << "	" << CSIP[ID].SIP_ABP_LErr[0][1] << endl;
+    }
+//--------------------------------------------------
+    ID=0;
+    cout << "--- LOCAL FITTING STATISTICS --------------------" <<endl;
+    cout << "CHIPID       : " << ID << endl;
+    cout << "REFERENCE NUM: " << STNUM[ID]<< endl;
+    cout << "CRPIX(pix)   : " << CSIP[ID].CRPIX[0] << " , " << CSIP[ID].CRPIX[1]<< endl;
+    cout << "CRVAL(dec)   : " << CSIP[ID].CRVAL[0] << " , " << CSIP[ID].CRVAL[1]<< endl;
+    cout << "CD_1_1       : " << CSIP[ID].CD[0][0] << endl;
+    cout << "CD_1_2       : " << CSIP[ID].CD[0][1] << endl;
+    cout << "CD_2_1       : " << CSIP[ID].CD[1][0] << endl;
+    cout << "CD_2_2       : " << CSIP[ID].CD[1][1] << endl;
+    cout << "InvCD_1_1    : " << CSIP[ID].InvCD[0][0] << endl;
+    cout << "InvCD_1_2    : " << CSIP[ID].InvCD[0][1] << endl;
+    cout << "InvCD_2_1    : " << CSIP[ID].InvCD[1][0] << endl;
+    cout << "InvCD_2_2    : " << CSIP[ID].InvCD[1][1] << endl;
+    cout << "  SIPx[0][0] : " << CSIP[ID].SIP_AB[0][0] << endl;
+    cout << "  SIPx[0][1] : " << CSIP[ID].SIP_AB[0][1] << endl;
+    cout << "  SIPx[1][0] : " << CSIP[ID].SIP_AB[0][APROP.SIP_ORDER+1] << endl;
+    cout << "  SIPx[1][1] : " << CSIP[ID].SIP_AB[0][APROP.SIP_ORDER+2] << endl;
+    cout << "  SIPy[0][0] : " << CSIP[ID].SIP_AB[1][0] << endl;
+    cout << "  SIPy[0][1] : " << CSIP[ID].SIP_AB[1][1] << endl;
+    cout << "  SIPy[1][0] : " << CSIP[ID].SIP_AB[1][APROP.SIP_ORDER+1] << endl;
+    cout << "  SIPy[1][1] : " << CSIP[ID].SIP_AB[1][APROP.SIP_ORDER+2] << endl;
+    cout << " PSIPx[0][0] : " << CSIP[ID].SIP_ABP[0][0] << endl;
+    cout << " PSIPx[0][1] : " << CSIP[ID].SIP_ABP[0][1] << endl;
+    cout << " PSIPx[1][0] : " << CSIP[ID].SIP_ABP[0][APROP.SIP_ORDER+1] << endl;
+    cout << " PSIPx[1][1] : " << CSIP[ID].SIP_ABP[0][APROP.SIP_ORDER+2] << endl;
+    cout << " PSIPy[0][0] : " << CSIP[ID].SIP_ABP[1][0] << endl;
+    cout << " PSIPy[0][1] : " << CSIP[ID].SIP_ABP[1][1] << endl;
+    cout << " PSIPy[1][0] : " << CSIP[ID].SIP_ABP[1][APROP.SIP_ORDER+1] << endl;
+    cout << " PSIPy[1][1] : " << CSIP[ID].SIP_ABP[1][APROP.SIP_ORDER+2] << endl;
+    cout << " SIPGxErrAVE : " << CSIP[ID].SIP_AB_GErr[0][0] << "	(dec)"<< endl;
+    cout << " SIPGxErrRMS : " << CSIP[ID].SIP_AB_GErr[0][1] << "	(dec)" << endl;
+    cout << " SIPGyErrAVE : " << CSIP[ID].SIP_AB_GErr[1][0] << "	(dec)" << endl;
+    cout << " SIPGyErrRMS : " << CSIP[ID].SIP_AB_GErr[1][1] << "	(dec)" << endl;
+    cout << "PSIPGxErrAVE : " << CSIP[ID].SIP_ABP_GErr[0][0] << "	(pix)" << endl;
+    cout << "PSIPGxErrRMS : " << CSIP[ID].SIP_ABP_GErr[0][1] << "	(pix)" << endl;
+    cout << "PSIPGyErrAVE : " << CSIP[ID].SIP_ABP_GErr[1][0] << "	(pix)" << endl;
+    cout << "PSIPGyErrRMS : " << CSIP[ID].SIP_ABP_GErr[1][1] << "	(pix)" << endl;
+    cout << " SIPLxErrAVE : " << CSIP[ID].SIP_AB_LErr[0][0] << "	(dec)"<< endl;
+    cout << " SIPLxErrRMS : " << CSIP[ID].SIP_AB_LErr[0][1] << "	(dec)" << endl;
+    cout << " SIPLyErrAVE : " << CSIP[ID].SIP_AB_LErr[1][0] << "	(dec)" << endl;
+    cout << " SIPLyErrRMS : " << CSIP[ID].SIP_AB_LErr[1][1] << "	(dec)" << endl;
+    cout << "PSIPLxErrAVE : " << CSIP[ID].SIP_ABP_LErr[0][0] << "	(pix)" << endl;
+    cout << "PSIPLxErrRMS : " << CSIP[ID].SIP_ABP_LErr[0][1] << "	(pix)" << endl;
+    cout << "PSIPLyErrAVE : " << CSIP[ID].SIP_ABP_LErr[1][0] << "	(pix)" << endl;
+    cout << "PSIPLyErrRMS : " << CSIP[ID].SIP_ABP_LErr[1][1] << "	(pix)" << endl;
+    cout << "--------------------------------------------------" <<endl;
+    cout << endl;
+//--------------------------------------------------
+    ID=APROP.CCDNUM-1;
+    cout << "--- LOCAL FITTING STATISTICS --------------------" <<endl;
+    cout << "CHIPID       : " << ID << endl;
+    cout << "REFERENCE NUM: " << STNUM[ID]<< endl;
+    cout << "CRPIX(pix)   : " << CSIP[ID].CRPIX[0] << " , " << CSIP[ID].CRPIX[1]<< endl;
+    cout << "CRVAL(dec)   : " << CSIP[ID].CRVAL[0] << " , " << CSIP[ID].CRVAL[1]<< endl;
+    cout << "CD_1_1       : " << CSIP[ID].CD[0][0] << endl;
+    cout << "CD_1_2       : " << CSIP[ID].CD[0][1] << endl;
+    cout << "CD_2_1       : " << CSIP[ID].CD[1][0] << endl;
+    cout << "CD_2_2       : " << CSIP[ID].CD[1][1] << endl;
+    cout << "InvCD_1_1    : " << CSIP[ID].InvCD[0][0] << endl;
+    cout << "InvCD_1_2    : " << CSIP[ID].InvCD[0][1] << endl;
+    cout << "InvCD_2_1    : " << CSIP[ID].InvCD[1][0] << endl;
+    cout << "InvCD_2_2    : " << CSIP[ID].InvCD[1][1] << endl;
+    cout << "  SIPx[0][0] : " << CSIP[ID].SIP_AB[0][0] << endl;
+    cout << "  SIPx[0][1] : " << CSIP[ID].SIP_AB[0][1] << endl;
+    cout << "  SIPx[1][0] : " << CSIP[ID].SIP_AB[0][APROP.SIP_ORDER+1] << endl;
+    cout << "  SIPx[1][1] : " << CSIP[ID].SIP_AB[0][APROP.SIP_ORDER+2] << endl;
+    cout << "  SIPy[0][0] : " << CSIP[ID].SIP_AB[1][0] << endl;
+    cout << "  SIPy[0][1] : " << CSIP[ID].SIP_AB[1][1] << endl;
+    cout << "  SIPy[1][0] : " << CSIP[ID].SIP_AB[1][APROP.SIP_ORDER+1] << endl;
+    cout << "  SIPy[1][1] : " << CSIP[ID].SIP_AB[1][APROP.SIP_ORDER+2] << endl;
+    cout << " PSIPx[0][0] : " << CSIP[ID].SIP_ABP[0][0] << endl;
+    cout << " PSIPx[0][1] : " << CSIP[ID].SIP_ABP[0][1] << endl;
+    cout << " PSIPx[1][0] : " << CSIP[ID].SIP_ABP[0][APROP.SIP_ORDER+1] << endl;
+    cout << " PSIPx[1][1] : " << CSIP[ID].SIP_ABP[0][APROP.SIP_ORDER+2] << endl;
+    cout << " PSIPy[0][0] : " << CSIP[ID].SIP_ABP[1][0] << endl;
+    cout << " PSIPy[0][1] : " << CSIP[ID].SIP_ABP[1][1] << endl;
+    cout << " PSIPy[1][0] : " << CSIP[ID].SIP_ABP[1][APROP.SIP_ORDER+1] << endl;
+    cout << " PSIPy[1][1] : " << CSIP[ID].SIP_ABP[1][APROP.SIP_ORDER+2] << endl;
+    cout << " SIPGxErrAVE : " << CSIP[ID].SIP_AB_GErr[0][0] << "	(dec)"<< endl;
+    cout << " SIPGxErrRMS : " << CSIP[ID].SIP_AB_GErr[0][1] << "	(dec)" << endl;
+    cout << " SIPGyErrAVE : " << CSIP[ID].SIP_AB_GErr[1][0] << "	(dec)" << endl;
+    cout << " SIPGyErrRMS : " << CSIP[ID].SIP_AB_GErr[1][1] << "	(dec)" << endl;
+    cout << "PSIPGxErrAVE : " << CSIP[ID].SIP_ABP_GErr[0][0] << "	(pix)" << endl;
+    cout << "PSIPGxErrRMS : " << CSIP[ID].SIP_ABP_GErr[0][1] << "	(pix)" << endl;
+    cout << "PSIPGyErrAVE : " << CSIP[ID].SIP_ABP_GErr[1][0] << "	(pix)" << endl;
+    cout << "PSIPGyErrRMS : " << CSIP[ID].SIP_ABP_GErr[1][1] << "	(pix)" << endl;
+    cout << " SIPLxErrAVE : " << CSIP[ID].SIP_AB_LErr[0][0] << "	(dec)"<< endl;
+    cout << " SIPLxErrRMS : " << CSIP[ID].SIP_AB_LErr[0][1] << "	(dec)" << endl;
+    cout << " SIPLyErrAVE : " << CSIP[ID].SIP_AB_LErr[1][0] << "	(dec)" << endl;
+    cout << " SIPLyErrRMS : " << CSIP[ID].SIP_AB_LErr[1][1] << "	(dec)" << endl;
+    cout << "PSIPLxErrAVE : " << CSIP[ID].SIP_ABP_LErr[0][0] << "	(pix)" << endl;
+    cout << "PSIPLxErrRMS : " << CSIP[ID].SIP_ABP_LErr[0][1] << "	(pix)" << endl;
+    cout << "PSIPLyErrAVE : " << CSIP[ID].SIP_ABP_LErr[1][0] << "	(pix)" << endl;
+    cout << "PSIPLyErrRMS : " << CSIP[ID].SIP_ABP_LErr[1][1] << "	(pix)" << endl;
+    cout << "--------------------------------------------------" <<endl;
+    cout << endl;
+//--------------------------------------------------
+    for(ID=0;ID<APROP.CCDNUM+1;ID++){
+        delete [] RMS[0][ID];
+        delete [] RMS[1][ID];
+        delete [] RMS[2][ID];
+        delete [] RMS[3][ID];
+    }
+    delete [] RMS[0];
+    delete [] RMS[1];
+    delete [] RMS[2];
+    delete [] RMS[3];
+
+    delete [] STNUM;
 }
 #undef PI
+

@@ -2,43 +2,34 @@
 //WCS_TANSIP.cc
 //main program for wcs in pipeline
 //
-//Last modification : 2010/10/01
+//Last modification : 2010/04/01
 //------------------------------------------------------------
 #include<iostream>
-#include<cmath>
-#include "hsc/meas/tansip/WCS_PL_MAIN.h"
 #include "hsc/meas/tansip/WCS_TANSIP.h"
 
 using namespace std;
-
 void    F_WCS_TANSIP(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
-cout << endl;
-cout << "--- F_WCS_TANSIP : SIP FITTING : FITTING    ---" << endl;
-    F_CDSIP(APROP,CPROP,PAIR,CSIP);
-cout << "--- F_WCS_TANSIP : SIP FITTING : REJECTION  ---" << endl;
-    F_FLAG (APROP, PAIR,CSIP);
-cout << "--- F_WCS_TANSIP : SIP FITTING : RE-FITTING ---" << endl;
-    F_CDSIP(APROP,CPROP,PAIR,CSIP);
-//cout << "--- F_WCS_TANSIP : SIP FITTING : DONE ---" << endl;
-//    F_DISP (APROP, PAIR,CSIP);
-}
-void    F_WCS_TANSIP_GPOS(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
+    cout << "--------------------------------------------------" << endl;
+    cout << "--- WCS_TANSIP ---" << endl;
 
-/*    int PHASE;
+//--------------------------------------------------
+    cout << "--- WCS_TANSIP : SET ---" << endl;
+    F_WCS_TANSIP_SET(&APROP,CPROP,PAIR,CSIP);
+    if(APROP.CHECKPARAM == 1){
+    cout << "Error : in parameters" << endl;
+    }else{
+//--------------------------------------------------
+    cout << "--- WCS_TANSIP : DETERMINING CCD POSITION ---" << endl;
+    F_WCS_TANSIP_GPOS(APROP,CPROP,PAIR,CSIP);
 
-cout << endl;
-    for(PHASE=1;PHASE<10;PHASE++){
-cout << "--- F_WCS_TANSIP:GLOVAL POSITION:Phase "<<PHASE<<"    ---" << endl;
-    F_GPOS(PHASE,APROP,CPROP,PAIR,CSIP);
-    }*/
-cout << "--- F_WCS_TANSIP : GLOBAL POSITION ---" << endl;
-    F_PROJECTIONPOINT(APROP,*CPROP,PAIR,CSIP);
-    F_PROJECTION(APROP,*CPROP,PAIR,CSIP);
-    F_LPFITTING_DIFFPAIR(APROP,*CPROP,PAIR,CSIP);
-    F_CHANGEdxLtodxG(APROP,CPROP,PAIR,CSIP);
-//    F_CHANGEdxLtodxG(APROP,CPROP,PAIR,CSIP);
-  //  F_CHANGEdxLtodxG(APROP,CPROP,PAIR,CSIP);
-//    F_CHANGEdxLtodxGNOROT(APROP,*CPROP,PAIR,CSIP);
-    F_FITINTdxGdxI(APROP,*CPROP,PAIR,CSIP);
-    F_FITGPOS(APROP,CPROP,PAIR,CSIP);
+//--------------------------------------------------
+    cout << "--- WCS_TANSIP : CALCULATING GLOVAL WCS ---" << endl;
+    F_WCS_TANSIP_WCS(APROP,CPROP,PAIR,CSIP);
+
+//--------------------------------------------------
+    cout << "--- WCS_TANSIP : CALCULATING LOCAL CCD ---" << endl;
+    F_WCS_TANSIP_CCD(APROP,CPROP,PAIR,CSIP);
+
+//--------------------------------------------------
+    }
 }

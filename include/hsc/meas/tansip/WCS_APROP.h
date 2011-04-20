@@ -5,22 +5,26 @@
 //------------------------------------------------------------
 #ifndef WCS_APROP_H
 #define WCS_APROP_H
-#include<string>
 
 class CL_APROP{//Analysis property
 private:
 public:
-//    std::string CRPIXMODE;//AUTO or MANUAL	
-    char CRPIXMODE[11];//AUTO or MANUAL	
+    char CRPIXMODE[11];//AUTO or PIX or VAL
     int  CCDPOSMODE;
     int  CCDNUM;
+    int  BASISCID;
     int  NUMREFALL;
     int  SIP_L_ORDER;
     int  SIP_ORDER;
     int  SIP_P_ORDER;
+    int  PREDICT_SIP_P_ORDER;
+    int  ALIGNAXIS;//0=x,1=y
     int  CHECKFILE;
+    int  CHECKPARAM;
     double CRPIX[2];//for Manual MODE
+    double CRVAL[2];//for Manual MODE
     double CLIP_SIGMA;
+    double BASIS_POS[3];
 };
 
 #endif
