@@ -1,5 +1,6 @@
 syntax: glob
 WCS_PL_MAINLib_wrap.cc
+WCS_PL_MAIN.py
 *~
 *.pyo
 *.pyc
