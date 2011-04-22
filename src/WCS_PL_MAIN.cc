@@ -14,6 +14,7 @@ using namespace std;
 namespace afwdetect = lsst::afw::detection;
 namespace afwImage = lsst::afw::image;
 namespace afwGeom = lsst::afw::geom; 
+namespace afwCoord = lsst::afw::coord;
 namespace camGeom = lsst::afw::cameraGeom;
 
 void    F_WCS_MAKEAPROP(lsst::pex::policy::Policy::Ptr &,CL_APROP*);
@@ -194,8 +195,9 @@ ofstream PAIRout("supa_cfhqs/PAIR.dat");//temp
         PAIR[ALLNUM].ID    =matchlist[CID][NUM].first->getId();
         PAIR[ALLNUM].CHIPID=CID;
         PAIR[ALLNUM].FLAG  =1;
-        PAIR[ALLNUM].RA    =matchlist[CID][NUM].first->getRa();
-        PAIR[ALLNUM].DEC   =matchlist[CID][NUM].first->getDec();
+        afwCoord::Coord::Ptr radec = matchlist[CID][NUM].first->getRaDec();
+        PAIR[ALLNUM].RA    = radec->getLongitude(afwCoord::DEGREES);
+        PAIR[ALLNUM].DEC   = radec->getLatitude(afwCoord::DEGREES);
         PAIR[ALLNUM].xL    =matchlist[CID][NUM].second->getXAstrom();
         PAIR[ALLNUM].yL    =matchlist[CID][NUM].second->getYAstrom();
         PAIR[ALLNUM].xErr  =matchlist[CID][NUM].second->getXAstromErr();
