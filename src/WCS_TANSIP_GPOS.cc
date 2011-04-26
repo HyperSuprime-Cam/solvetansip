@@ -15,8 +15,8 @@
 #define CHECKstdout 1
 
 using namespace std;
-void    F_WCS_TANSIP_GPOS_PROJECTIONPOINT (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
-void    F_WCS_TANSIP_GPOS_PROJECTION      (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
+void    F_WCS_TANSIP_WCS_PROJECTIONPOINT  (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
+void    F_WCS_TANSIP_WCS_PROJECTION       (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
 void    F_WCS_TANSIP_GPOS_CCDPOSITIONS    (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
 void    F_WCS_TANSIP_GPOS_LDIFFVALUES     (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
 void    F_WCS_TANSIP_GPOS_A_GDIFFVALUES   (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
@@ -24,88 +24,28 @@ void    F_WCS_TANSIP_GPOS_A_CCDPOSITIONS_T(CL_APROP APROP,CL_CPROP *CPROP,CL_PAI
 void    F_WCS_TANSIP_GPOS_CCDPOSITIONS_XY (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
 void    F_WCS_TANSIP_GPOS_ALIGN           (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
 void    F_WCS_TANSIP_GPOS(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
+    int ID;
 
     if(strcmp(APROP.CRPIXMODE,"VAL")==0){
+    cout << "ASSIGNED CRVAL ( " << APROP.CRVAL[0] << " , " << APROP.CRVAL[1] << " )"<< endl;
     CSIP[APROP.CCDNUM].CRVAL[0]=APROP.CRVAL[0];
     CSIP[APROP.CCDNUM].CRVAL[1]=APROP.CRVAL[1];
     }else{
-    F_WCS_TANSIP_GPOS_PROJECTIONPOINT(APROP,CPROP,PAIR,CSIP);
+    F_WCS_TANSIP_WCS_PROJECTIONPOINT(APROP,CPROP,PAIR,CSIP);
     }
 
-    F_WCS_TANSIP_GPOS_PROJECTION(APROP,CPROP,PAIR,CSIP);
+    F_WCS_TANSIP_WCS_PROJECTION(APROP,CPROP,PAIR,CSIP);
 
     if(APROP.CCDPOSMODE==1){
     F_WCS_TANSIP_GPOS_CCDPOSITIONS(APROP,CPROP,PAIR,CSIP);
     }else{
-    cout << "--- WCS_TANSIP : DETERMINING CCD POSITION : USING INITIAL VALUES for CCD POSITIONS ---" << endl;
+        cout << "--- WCS_TANSIP : DETERMINING CCD POSITION : USING INITIAL VALUES for CCD POSITIONS ---" << endl;
+        for(ID=0;ID<APROP.CCDNUM;ID++){
+        CPROP[ID].GLOB_POS[0]=CPROP[ID].GLOB_POS_Init[0];
+        CPROP[ID].GLOB_POS[1]=CPROP[ID].GLOB_POS_Init[1];
+        CPROP[ID].GLOB_POS[2]=CPROP[ID].GLOB_POS_Init[2];
+         }
     }
-}
-void    F_WCS_TANSIP_GPOS_PROJECTIONPOINT(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
-//Using average point for projection point
-//Projection Point should be light axis, but there no affects so much.
-    int i,NUM,FNUM;
-    double **dx[2],*Coef[2];
-//--------------------------------------------------
-    Coef[0]=new double[(APROP.SIP_ORDER+1)*(APROP.SIP_ORDER+2)];
-    Coef[1]=new double[(APROP.SIP_ORDER+1)*(APROP.SIP_ORDER+2)];
-    for(i=0;i<(APROP.SIP_ORDER+1)*(APROP.SIP_ORDER+2);i++)
-    Coef[0][i]=Coef[1][i]=0;
-    dx[0]=new double*[APROP.NUMREFALL];
-    dx[1]=new double*[APROP.NUMREFALL];
-    for(NUM=0;NUM<APROP.NUMREFALL;NUM++){
-    dx[0][NUM]=new double[3];
-    dx[1][NUM]=new double[3];
-    }
-//--------------------------------------------------
-    CSIP[APROP.CCDNUM].CRPIX[0]=APROP.CRPIX[0];
-    CSIP[APROP.CCDNUM].CRPIX[1]=APROP.CRPIX[1];
-
-    FNUM=0;
-    for(NUM=0;NUM<APROP.NUMREFALL;NUM++)
-    if(PAIR[NUM].FLAG == 1){
-        PAIR[NUM].xCRPIX=PAIR[NUM].xG-CSIP[APROP.CCDNUM].CRPIX[0];
-        PAIR[NUM].yCRPIX=PAIR[NUM].yG-CSIP[APROP.CCDNUM].CRPIX[1];
-        dx[0][FNUM][0]=dx[1][FNUM][0]=PAIR[NUM].xCRPIX;
-        dx[0][FNUM][1]=dx[1][FNUM][1]=PAIR[NUM].yCRPIX;
-        dx[0][FNUM][2]=PAIR[NUM].RA;
-        dx[1][FNUM][2]=PAIR[NUM].DEC;
-        FNUM++;
-    }
-    F_LS2(FNUM,APROP.SIP_ORDER,dx[0],Coef[0]);
-    F_LS2(FNUM,APROP.SIP_ORDER,dx[1],Coef[1]);
-
-    cout << "RA and DEC at CRPIX : ( " << Coef[0][0] << " , " << Coef[1][0] << " )\n";
-    CSIP[APROP.CCDNUM].CRVAL[0]=Coef[0][0];
-    CSIP[APROP.CCDNUM].CRVAL[1]=Coef[1][0];
-    cout << "CRVAL      at CRPIX : ( " << CSIP[APROP.CCDNUM].CRVAL[0] << " , " << CSIP[APROP.CCDNUM].CRVAL[1] << " )\n";
-    cout << endl;
-//--------------------------------------------------
-    for(NUM=0;NUM<APROP.NUMREFALL;NUM++){
-    delete [] dx[0][NUM];
-    delete [] dx[1][NUM];
-    }
-    delete [] dx[0];
-    delete [] dx[1];
-}
-void    F_WCS_TANSIP_GPOS_PROJECTION(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
-    int NUM;
-    double PPOINT[2],Pdeg[2],Cdeg[2];
-    cout << "--- WCS_TANSIP : DETERMINING CCD POSITION : PROJECTION ---" << endl;
-
-//    cout << "PROJECTION : CRPIX : ( " << CSIP[APROP.CCDNUM].CRPIX[0] << " , " << CSIP[APROP.CCDNUM].CRPIX[1] << " )(pix)\n";
-    cout << "PROJECTION : CRVAL : ( " << CSIP[APROP.CCDNUM].CRVAL[0] << " , " << CSIP[APROP.CCDNUM].CRVAL[1] << " )(deg)\n";
-    PPOINT[0]=CSIP[APROP.CCDNUM].CRVAL[0];
-    PPOINT[1]=CSIP[APROP.CCDNUM].CRVAL[1];
-    for(NUM=0;NUM<APROP.NUMREFALL;NUM++){
-        Cdeg[0]=PAIR[NUM].RA;
-        Cdeg[1]=PAIR[NUM].DEC;
-        F_PROJECTION(Cdeg,Pdeg,PPOINT);
-        PAIR[NUM].xI=Pdeg[0];
-        PAIR[NUM].yI=Pdeg[1];
-//cout << PAIR[NUM].RA << "	" << PAIR[NUM].xI << endl;
-//cout << PAIR[NUM].DEC<< "	" << PAIR[NUM].yI << endl;
-    }
-cout << endl;
 }
 void    F_WCS_TANSIP_GPOS_CCDPOSITIONS    (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
     int Iter,ID,TCHECK;

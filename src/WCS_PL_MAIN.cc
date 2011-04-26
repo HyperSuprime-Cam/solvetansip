@@ -38,6 +38,8 @@ vector<afwImage::TanWcs::Ptr>    F_WCS_TANSIP_V(vector< vector<afwdetect::Source
     cout << "CCDPOSMODE  : " << APROP.CCDPOSMODE  << endl;
     cout << "CRPIX1      : " << APROP.CRPIX[0]    << endl;
     cout << "CRPIX2      : " << APROP.CRPIX[1]    << endl;
+    cout << "CRVAL1      : " << APROP.CRVAL[0]    << endl;
+    cout << "CRVAL2      : " << APROP.CRVAL[1]    << endl;
     cout << "SIP_L_ORDER : " << APROP.SIP_L_ORDER << endl;
     cout << "SIP_ORDER   : " << APROP.SIP_ORDER   << endl;
     cout << "SIP_PORDER  : " << APROP.SIP_P_ORDER << endl;
@@ -136,6 +138,8 @@ void    F_WCS_MAKEAPROP(lsst::pex::policy::Policy::Ptr &APROPPolicy, CL_APROP *A
     APROP->CCDPOSMODE  =APROPPolicy->getInt("CCDPMODE");
     APROP->CRPIX[0]    =APROPPolicy->getDouble("CRPIX1");
     APROP->CRPIX[1]    =APROPPolicy->getDouble("CRPIX2");
+    APROP->CRVAL[0]    =APROPPolicy->getDouble("CRVAL1");
+    APROP->CRVAL[1]    =APROPPolicy->getDouble("CRVAL2");
     APROP->SIP_L_ORDER =APROPPolicy->getInt("LSIPORDER");
     APROP->SIP_ORDER   =APROPPolicy->getInt("SIPORDER");
     APROP->SIP_P_ORDER =APROPPolicy->getInt("PSIPORDER");
@@ -267,9 +271,11 @@ void    F_WCS_SETCC_PRECSIPfromFILE(CL_APROP APROP, char *CSIPFILE,CL_CSIP *CSIP
 
     SIP[0] = new double*[APROP.PREDICT_SIP_P_ORDER+1];
     SIP[1] = new double*[APROP.PREDICT_SIP_P_ORDER+1];
-    for(XY=0;XY<APROP.PREDICT_SIP_P_ORDER+1;XY++){
-        SIP[0][XY] = new double[APROP.PREDICT_SIP_P_ORDER+1];
-        SIP[1][XY] = new double[APROP.PREDICT_SIP_P_ORDER+1];
+    for(X=0;X<APROP.PREDICT_SIP_P_ORDER+1;X++){
+        SIP[0][X] = new double[APROP.PREDICT_SIP_P_ORDER+1];
+        SIP[1][X] = new double[APROP.PREDICT_SIP_P_ORDER+1];
+        for(Y=0;Y<APROP.PREDICT_SIP_P_ORDER+1;Y++)
+        SIP[0][X][Y]=SIP[1][X][Y]=0;
     }
 //-----
     CSIP->PREDICT_SIP_P_ORDER=APROP.PREDICT_SIP_P_ORDER;
@@ -278,6 +284,7 @@ void    F_WCS_SETCC_PRECSIPfromFILE(CL_APROP APROP, char *CSIPFILE,CL_CSIP *CSIP
 
     fin.open(CSIPFILE);
     while((fin >> XY >> X >> Y >> A) != 0)
+    if(X+Y<CSIP->PREDICT_SIP_P_ORDER+1)
     SIP[XY][X][Y]=A;
 
     XY=0;

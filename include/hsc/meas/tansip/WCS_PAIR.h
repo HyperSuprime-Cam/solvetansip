@@ -66,6 +66,9 @@ public:
     double LyLErr;//SIP->PSIP
     double LxIErr;//PSIP->SIP
     double LyIErr;//PSIP->SIP
+    double CAMERA_MAGNIFICATION;//Magnification by camera, calculated in only CCD determination mode
+    double CAMERA_SHEAR[2];//Shear by camera
+    double CAMERA_ROTATION;//Rotation by camera
     double PREDICTxErr;//(pix)
     double PREDICTyErr;//(pix)
 //temp

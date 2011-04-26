@@ -9,11 +9,14 @@ import lsst.pipette.readwrite as pipReadWrite
 import lsst.pex.policy as pexPolicy
 import lsst.obs.hscSim as hscSim
 from hsc.meas.tansip.doTansip import doTansip
+import hsc.meas.tansip.WCS_POSITION_PY as WCS_POSITION_PY
 import lsst.afw.detection as afwDet
 import lsst.afw.geom as afwGeom
 import lsst.afw.image as afwImage
 import lsst.afw.coord as afwCoord
 import lsst.pipette.plotter as pipPlot
+
+#WCS_POSITION.F_WCS_POSITION_TEST()
 
 plot = pipPlot.Plotter('wcs')
 
@@ -70,6 +73,23 @@ policy = pexPolicy.Policy.createPolicy(policyPath)
 #policy.set("SIPORDER", 6)
 
 wcsList = doTansip(matches, policy=policy, camera=mapper.camera)
+#position test
+X=9514.66
+Y=95.9925
+RA=150.766469
+DEC=1.966586
+print X
+print Y
+print RA
+print DEC
+RADEC=WCS_POSITION_PY.F_WCS_POSITION_RADECfromXY(wcsList[0],X,Y)
+print RADEC[0]
+print RADEC[1]
+XY=WCS_POSITION_PY.F_WCS_POSITION_XYfromRADEC(wcsList[0],RA,DEC)
+print XY[0]
+print XY[1]
+#position test
+
 
 ra1 = []
 dec1 = []

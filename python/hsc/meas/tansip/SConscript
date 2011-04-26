@@ -6,3 +6,6 @@ env.CheckSwig("python", ilang="c++", includedProducts="solvetansip afw utils daf
 env.LoadableModuleIncomplete("_WCS_PL_MAIN", Split("WCS_PL_MAINLib.i"),
                              CCFLAGS=re.sub("-Wall", "", " ".join(env['CCFLAGS'])),
                              LIBS=env.getlibs("solvetansip"))
+env.LoadableModuleIncomplete("_WCS_POSITION", Split("WCS_POSITION.i"),
+                             CCFLAGS=re.sub("-Wall", "", " ".join(env['CCFLAGS'])),
+                             LIBS=env.getlibs("solvetansip"))
