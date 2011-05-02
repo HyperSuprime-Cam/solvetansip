@@ -69,6 +69,8 @@ public:
     double CAMERA_MAGNIFICATION;//Magnification by camera, calculated in only CCD determination mode
     double CAMERA_SHEAR[2];//Shear by camera
     double CAMERA_ROTATION;//Rotation by camera
+    double xDIST;//DISTORTION position(pix)
+    double yDIST;
     double PREDICTxErr;//(pix)
     double PREDICTyErr;//(pix)
 //temp

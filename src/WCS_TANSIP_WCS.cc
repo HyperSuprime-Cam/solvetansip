@@ -19,6 +19,7 @@ void    F_WCS_TANSIP_WCS_SIPFIT         (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR 
 void    F_WCS_TANSIP_WCS_PSIPFIT        (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
 void    F_WCS_TANSIP_WCS_REJECTION      (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
 void    F_WCS_TANSIP_WCS_GCHECK         (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
+void    F_WCS_TANSIP_WCS_PREDICTCHECK   (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
 void    F_WCS_TANSIP_WCS_CAMERADIST     (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
 void    F_WCS_TANSIP_WCS(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
 
@@ -39,6 +40,7 @@ void    F_WCS_TANSIP_WCS(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *C
     cout << "SKIP" << endl;
     cout <<endl;
     F_WCS_TANSIP_WCS_GCHECK(APROP,CPROP,PAIR,&CSIP[APROP.CCDNUM]);
+    F_WCS_TANSIP_WCS_PREDICTCHECK(APROP,CPROP,PAIR,&CSIP[APROP.CCDNUM]);
     F_WCS_TANSIP_WCS_CAMERADIST(APROP,CPROP,PAIR,CSIP);
 //--------------------------------------------------
 //--------------------------------------------------
@@ -372,6 +374,8 @@ void    F_WCS_TANSIP_WCS_PSIPFIT (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,C
     CSIP->FITNUM=FNUM;
 //--------------------------------------------------
 //--------------------------------------------------
+    delete [] Coef[0];
+    delete [] Coef[1];
     for(NUM=0;NUM<APROP.NUMREFALL;NUM++){
     delete [] dx[0][NUM];
     delete [] dx[1][NUM];
@@ -381,11 +385,19 @@ void    F_WCS_TANSIP_WCS_PSIPFIT (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,C
     
 //--------------------------------------------------
 }
+#include<fstream>
 void    F_WCS_TANSIP_WCS_GCHECK(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
     int NUM,FNUM;
     double X[2],Y[2];
     double *RMS[4];
+char fout [100];
+ofstream temp;
 
+sprintf(fout,"reference_check.dat");
+temp.open(fout);
+cout << "temprary output : " << fout << endl;
+
+    cout << "--- WCS_TANSIP : CALCULATING GLOVAL WCS : GLOBAL CHECK---" << endl;
 //--------------------------------------------------
     for(NUM=0;NUM<4;NUM++)
     RMS[NUM] = new double[APROP.NUMREFALL];
@@ -416,18 +428,11 @@ void    F_WCS_TANSIP_WCS_GCHECK(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_
         RMS[3][FNUM]=PAIR[NUM].GyPSIPErr;
         PAIR[NUM].GxIErr=F_CALCVALUE(APROP.SIP_ORDER,CSIP->SIP_AB[0],Y)+Y[0]-X[0];
         PAIR[NUM].GyIErr=F_CALCVALUE(APROP.SIP_ORDER,CSIP->SIP_AB[1],Y)+Y[1]-X[1];
-//cout << PAIR[NUM].GxSIPErr << "	"  << PAIR[NUM].GySIPErr << "	"  << PAIR[NUM].GxPSIPErr << "	"  << PAIR[NUM].GyPSIPErr << endl;
-//cout << PAIR[NUM].GxLErr << "	"  << PAIR[NUM].GyLErr << "	"  << PAIR[NUM].GxIErr << "	"  << PAIR[NUM].GyIErr << endl;
-//predict check 
-        X[0]=PAIR[NUM].xI;
-        X[1]=PAIR[NUM].yI;
-        PAIR[NUM].PREDICTxErr=F_CALCVALUE(CSIP->PREDICT_SIP_P_ORDER,CSIP->PREDICT_SIP_ABP[0],X)-PAIR[NUM].xCRPIX;
-        PAIR[NUM].PREDICTyErr=F_CALCVALUE(CSIP->PREDICT_SIP_P_ORDER,CSIP->PREDICT_SIP_ABP[1],X)-PAIR[NUM].yCRPIX;
-//cout << PAIR[NUM].PREDICTxErr << "	" << PAIR[NUM].PREDICTyErr <<endl;
-//
+
+temp << PAIR[NUM].ID << "	" << PAIR[NUM].CHIPID << "	" << PAIR[NUM].xL << "	" << PAIR[NUM].yL << "	" << PAIR[NUM].RA << "	" << PAIR[NUM].DEC << "	" << PAIR[NUM].xG << "	" << PAIR[NUM].yG << "	" << PAIR[NUM].GxSIPErr << "	" << PAIR[NUM].GySIPErr << "	" << PAIR[NUM].GxPSIPErr << "	" << PAIR[NUM].GyPSIPErr << "	" << PAIR[NUM].GxLErr << "	" << PAIR[NUM].GyLErr << "	" << PAIR[NUM].GxIErr << "	" << PAIR[NUM].GyIErr << "	" << endl;
         FNUM++;
     }
-
+temp.close();
 
     F_RMS(FNUM,RMS[0],CSIP->SIP_AB_GErr[0]);
     F_RMS(FNUM,RMS[1],CSIP->SIP_AB_GErr[1]);
@@ -481,15 +486,126 @@ void    F_WCS_TANSIP_WCS_GCHECK(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_
     for(NUM=0;NUM<4;NUM++)
     delete [] RMS[NUM];
 }
-#include<fstream>
+void    F_WCS_TANSIP_WCS_PREDICTCHECK(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
+    int i,NUM,FNUM;
+    double **Dx[2],*DCoef[2];
+char fout[100];
+ofstream temp;
+
+sprintf(fout,"predict_check.dat");
+temp.open(fout);
+cout << "temprary output : " << fout << endl;
+
+    DCoef[0]=new double[(APROP.SIP_P_ORDER+1)*(APROP.SIP_P_ORDER+2)];
+    DCoef[1]=new double[(APROP.SIP_P_ORDER+1)*(APROP.SIP_P_ORDER+2)];
+    for(i=0;i<(APROP.SIP_P_ORDER+1)*(APROP.SIP_P_ORDER+2);i++)
+    DCoef[0][i]=DCoef[1][i]=0;
+    Dx[0]=new double*[APROP.NUMREFALL];
+    Dx[1]=new double*[APROP.NUMREFALL];
+    for(FNUM=0;FNUM<APROP.NUMREFALL;FNUM++){
+    Dx[0][FNUM]=new double[3];
+    Dx[1][FNUM]=new double[3];
+    }
+
+    cout << "--- WCS_TANSIP : CALCULATING GLOVAL WCS : PREDICT CHECK---" << endl;
+
+    CSIP->ANGLE=atan2(CSIP->CD[1][0]+CSIP->CD[0][1],-CSIP->CD[0][0]+CSIP->CD[1][1]);//with reverse
+    cout << "FOV ANGLE : " << CSIP->ANGLE << endl;
+
+    FNUM=0;
+    for(NUM=0;NUM<APROP.NUMREFALL;NUM++)
+    if(PAIR[NUM].FLAG == 1){
+        PAIR[NUM].xDIST=PAIR[NUM].xCRPIX*cos(CSIP->ANGLE)-PAIR[NUM].yCRPIX*sin(CSIP->ANGLE);
+        PAIR[NUM].yDIST=PAIR[NUM].xCRPIX*sin(CSIP->ANGLE)+PAIR[NUM].yCRPIX*cos(CSIP->ANGLE);
+
+        Dx[0][FNUM][0]=Dx[1][FNUM][0]=PAIR[NUM].xI;
+        Dx[0][FNUM][1]=Dx[1][FNUM][1]=PAIR[NUM].yI;
+        Dx[0][FNUM][2]=PAIR[NUM].xDIST;
+        Dx[1][FNUM][2]=PAIR[NUM].yDIST;
+        FNUM++;
+    }
+
+    #pragma omp parallel num_threads(2)
+    #pragma omp sections
+    {
+        #pragma omp section
+        {
+            F_LS2(FNUM,APROP.SIP_P_ORDER,Dx[0],DCoef[0]);
+        }
+        #pragma omp section
+        {
+            F_LS2(FNUM,APROP.SIP_P_ORDER,Dx[1],DCoef[1]);
+        }
+    }
+
+    CSIP->InvSS[0][0]=DCoef[0][1*(APROP.SIP_P_ORDER+1)+0];
+    CSIP->InvSS[0][1]=DCoef[0][0*(APROP.SIP_P_ORDER+1)+1];
+    CSIP->InvSS[1][0]=DCoef[1][1*(APROP.SIP_P_ORDER+1)+0];
+    CSIP->InvSS[1][1]=DCoef[1][0*(APROP.SIP_P_ORDER+1)+1];
+
+    cout << "MEASURED InvSS" << endl;
+    cout << CSIP->InvSS[0][0] << endl;
+    cout << CSIP->InvSS[0][1] << endl;
+    cout << CSIP->InvSS[1][0] << endl;
+    cout << CSIP->InvSS[1][1] << endl;
+
+    CSIP->SS[0][0]= CSIP->InvSS[1][1]/(CSIP->InvSS[0][0]*CSIP->InvSS[1][1]-CSIP->InvSS[1][0]*CSIP->InvSS[0][1]);
+    CSIP->SS[0][1]=-CSIP->InvSS[0][1]/(CSIP->InvSS[0][0]*CSIP->InvSS[1][1]-CSIP->InvSS[1][0]*CSIP->InvSS[0][1]);
+    CSIP->SS[1][0]=-CSIP->InvSS[1][0]/(CSIP->InvSS[0][0]*CSIP->InvSS[1][1]-CSIP->InvSS[1][0]*CSIP->InvSS[0][1]);
+    CSIP->SS[1][1]= CSIP->InvSS[0][0]/(CSIP->InvSS[0][0]*CSIP->InvSS[1][1]-CSIP->InvSS[1][0]*CSIP->InvSS[0][1]);
+
+    int j,ij;
+    ij=0;
+    for(i=0;i<APROP.SIP_P_ORDER+1;i++)
+    for(j=0;j<APROP.SIP_P_ORDER+1;j++)
+    if(i+j<APROP.SIP_P_ORDER+1){
+        CSIP->SIP_ABD[0][ij]= CSIP->SS[0][0]*DCoef[0][ij]+ CSIP->SS[0][1]*DCoef[1][ij];
+        CSIP->SIP_ABD[1][ij]= CSIP->SS[1][0]*DCoef[0][ij]+ CSIP->SS[1][1]*DCoef[1][ij];
+cout << CSIP->SIP_ABD[0][ij] << "	" << CSIP->SIP_ABD[1][ij] << endl;
+        ij++;	
+    }
+
+    CSIP->SIP_ABD[0][1*(APROP.SIP_P_ORDER+1)+0]-=1.0;
+    CSIP->SIP_ABD[1][0*(APROP.SIP_P_ORDER+1)+1]-=1.0;
+//--------------------------------------------------
+   double dDEC,dRA,xI[2],xPI[2],xDI[2],PREDICT_D[2],MEASURE_D[2];
+
+   for(dRA =-1;dRA <1;dRA +=0.05)
+   for(dDEC=-1;dDEC<1;dDEC+=0.05)
+   if(hypot(dRA,dDEC)<0.8){
+        xI[0]=dRA;
+        xI[1]=dDEC;
+        xDI[0]=CSIP->InvSS[0][0]*xI[0]+CSIP->InvSS[0][1]*xI[1];
+        xDI[1]=CSIP->InvSS[1][0]*xI[0]+CSIP->InvSS[1][1]*xI[1];
+        xPI[0]=CSIP->PREDICT_InvSS[0][0]*xI[0]+CSIP->PREDICT_InvSS[0][1]*xI[1];
+        xPI[1]=CSIP->PREDICT_InvSS[1][0]*xI[0]+CSIP->PREDICT_InvSS[1][1]*xI[1];
+        MEASURE_D[0]=F_CALCVALUE(APROP.SIP_P_ORDER          ,CSIP->SIP_ABD[0]        ,xDI)+xDI[0];
+        MEASURE_D[1]=F_CALCVALUE(APROP.SIP_P_ORDER          ,CSIP->SIP_ABD[1]        ,xDI)+xDI[1];
+        PREDICT_D[0]=F_CALCVALUE(CSIP->PREDICT_SIP_ABD_ORDER,CSIP->PREDICT_SIP_ABD[0],xPI)+xPI[0];
+        PREDICT_D[1]=F_CALCVALUE(CSIP->PREDICT_SIP_ABD_ORDER,CSIP->PREDICT_SIP_ABD[1],xPI)+xPI[1];
+temp << xI[0] << "	" << xI[1] << "	" << PREDICT_D[0] << "	" << PREDICT_D[1] << "	" << MEASURE_D[0] << "	" << MEASURE_D[1] << endl;
+   }
+temp.close();
+
+    cout << endl;
+//--------------------------------------------------
+    delete [] DCoef[0];
+    delete [] DCoef[1];
+    for(FNUM=0;FNUM<APROP.NUMREFALL;FNUM++){
+    delete [] Dx[0][FNUM];
+    delete [] Dx[1][FNUM];
+    }
+    delete [] Dx[0];
+    delete [] Dx[1];
+}
 void    F_WCS_TANSIP_WCS_CAMERADIST(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
     int NUM;
-    char fout[100];
-    ofstream temp;
+char fout[100];
+ofstream temp;
 
-    sprintf(fout,"reference_check.dat");
-    temp.open(fout);
-    cout << "temprary output : " << fout << endl;
+sprintf(fout,"distortion_check.dat");
+temp.open(fout);
+cout << "temprary output : " << fout << endl;
 
     int i,j,ij;
     double *dPSIP[2][2],*PSIP[2],xI[2];
@@ -526,8 +642,9 @@ void    F_WCS_TANSIP_WCS_CAMERADIST(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR
         PAIR[NUM].CAMERA_SHEAR[0]     =0.5*(PAIR[NUM].dxGdxI-PAIR[NUM].dyGdyI)/PAIR[NUM].CAMERA_MAGNIFICATION;
         PAIR[NUM].CAMERA_SHEAR[1]     =0.5*(PAIR[NUM].dyGdxI+PAIR[NUM].dxGdyI)/PAIR[NUM].CAMERA_MAGNIFICATION;
         PAIR[NUM].CAMERA_ROTATION     =atan2((PAIR[NUM].dyGdxI-PAIR[NUM].dxGdyI),(PAIR[NUM].dxGdxI+PAIR[NUM].dyGdyI));
-        temp << PAIR[NUM].ID << "	" << PAIR[NUM].CHIPID << "	" << PAIR[NUM].xL << "	" << PAIR[NUM].yL << "	" << PAIR[NUM].RA << "	" << PAIR[NUM].DEC << "	" << PAIR[NUM].xG << "	" << PAIR[NUM].yG << "	" << PAIR[NUM].CAMERA_MAGNIFICATION << "	" << PAIR[NUM].CAMERA_SHEAR[0] << "	" << PAIR[NUM].CAMERA_SHEAR[1] << "	" << PAIR[NUM].CAMERA_ROTATION << endl;
+temp << PAIR[NUM].ID << "	" << PAIR[NUM].CHIPID << "	" << PAIR[NUM].xL << "	" << PAIR[NUM].yL << "	" << PAIR[NUM].RA << "	" << PAIR[NUM].DEC << "	" << PAIR[NUM].xG << "	" << PAIR[NUM].yG << "	" << PAIR[NUM].CAMERA_MAGNIFICATION << "	" << PAIR[NUM].CAMERA_SHEAR[0] << "	" << PAIR[NUM].CAMERA_SHEAR[1] << "	" << PAIR[NUM].CAMERA_ROTATION << endl;
     }
+temp.close();
 
     delete []  PSIP[0];
     delete []  PSIP[1];

@@ -19,8 +19,9 @@ namespace camGeom = lsst::afw::cameraGeom;
 
 void    F_WCS_MAKEAPROP(lsst::pex::policy::Policy::Ptr &,CL_APROP*);
 void    F_WCS_MAKECPROP(lsst::afw::cameraGeom::Camera::Ptr &,vector< vector< afwdetect::SourceMatch  >  > const &, CL_APROP*, CL_CPROP *);
-void    F_WCS_SETCC_PRECSIPfromFILE(CL_APROP, char *,CL_CSIP *);
+void    F_WCS_SETCC_PRECSIPfromFILE(CL_APROP, char *, char *,CL_CSIP *);
 void    F_WCS_MAKEPAIR(vector< vector< afwdetect::SourceMatch  >  > const &, CL_APROP *, CL_CPROP *,CL_PAIR *);
+void    F_WCS_SETDEFAULTDISTORTION(CL_CSIP *);
 afwImage::TanWcs::Ptr    F_WCS_MAKERESULTWCS(CL_CSIP *);
 vector<afwImage::TanWcs::Ptr>    F_WCS_TANSIP_V(vector< vector<afwdetect::SourceMatch> > const &matchlist,lsst::pex::policy::Policy::Ptr &APROPPolicy,lsst::afw::cameraGeom::Camera::Ptr &camera/*,lsst::daf::base::PropertySet::Ptr &metadata,bool verbose*/){
     cout <<endl<< "--- WCS_PL_MAIN :AAA ---" << endl;
@@ -90,14 +91,17 @@ vector<afwImage::TanWcs::Ptr>    F_WCS_TANSIP_V(vector< vector<afwdetect::Source
         CSIP[CID].SIP_AB[1]  = new double[APROP.SIP_ORDER*APROP.SIP_ORDER+1];
         CSIP[CID].SIP_ABP[0] = new double[APROP.SIP_P_ORDER*APROP.SIP_P_ORDER+1];
         CSIP[CID].SIP_ABP[1] = new double[APROP.SIP_P_ORDER*APROP.SIP_P_ORDER+1];
+        CSIP[CID].SIP_ABD[0] = new double[APROP.SIP_P_ORDER*APROP.SIP_P_ORDER+1];
+        CSIP[CID].SIP_ABD[1] = new double[APROP.SIP_P_ORDER*APROP.SIP_P_ORDER+1];
     }
-    CSIP[APROP.CCDNUM].PREDICT_SIP_ABP[0] = new double[(APROP.PREDICT_SIP_P_ORDER+2)*(APROP.PREDICT_SIP_P_ORDER+1)];
-    CSIP[APROP.CCDNUM].PREDICT_SIP_ABP[1] = new double[(APROP.PREDICT_SIP_P_ORDER+2)*(APROP.PREDICT_SIP_P_ORDER+1)];
+    CSIP[APROP.CCDNUM].PREDICT_SIP_ABD[0] = new double[(APROP.PREDICT_SIP_D_ORDER+2)*(APROP.PREDICT_SIP_D_ORDER+1)];
+    CSIP[APROP.CCDNUM].PREDICT_SIP_ABD[1] = new double[(APROP.PREDICT_SIP_D_ORDER+2)*(APROP.PREDICT_SIP_D_ORDER+1)];
 
 //PREDICT CSIP
-    char PRECSIPFILE[100];
-    sprintf(PRECSIPFILE,"../policy/WCS_CSIP_PREDICT.paf");
-    F_WCS_SETCC_PRECSIPfromFILE(APROP, PRECSIPFILE, &CSIP[APROP.CCDNUM]);
+    char PRESSFILE[100],PREDSIPFILE[100];
+    sprintf(PRESSFILE,"../policy/WCS_SS_PREDICT.paf");
+    sprintf(PREDSIPFILE,"../policy/WCS_DSIP_PREDICT.paf");
+    F_WCS_SETCC_PRECSIPfromFILE(APROP, PRESSFILE, PREDSIPFILE, &CSIP[APROP.CCDNUM]);
 //------------------------------------------------------
     cout << "--- WCS_PL_MAIN : F_WCS_TANSIP ---" << endl;
     F_WCS_TANSIP(APROP,CPROP,PAIR,CSIP);
@@ -121,9 +125,11 @@ vector<afwImage::TanWcs::Ptr>    F_WCS_TANSIP_V(vector< vector<afwdetect::Source
     delete [] CSIP[CID].SIP_AB[1];
     delete [] CSIP[CID].SIP_ABP[0];
     delete [] CSIP[CID].SIP_ABP[1];
+    delete [] CSIP[CID].SIP_ABD[0];
+    delete [] CSIP[CID].SIP_ABD[1];
     }
-    delete [] CSIP[APROP.CCDNUM].PREDICT_SIP_ABP[0];
-    delete [] CSIP[APROP.CCDNUM].PREDICT_SIP_ABP[1];
+    delete [] CSIP[APROP.CCDNUM].PREDICT_SIP_ABD[0];
+    delete [] CSIP[APROP.CCDNUM].PREDICT_SIP_ABD[1];
     delete [] CSIP;
 //------------------------------------------------------
     cout << "--- F_WCS_PL_MAIN : ZZZ ---" << endl;
@@ -143,7 +149,7 @@ void    F_WCS_MAKEAPROP(lsst::pex::policy::Policy::Ptr &APROPPolicy, CL_APROP *A
     APROP->SIP_L_ORDER =APROPPolicy->getInt("LSIPORDER");
     APROP->SIP_ORDER   =APROPPolicy->getInt("SIPORDER");
     APROP->SIP_P_ORDER =APROPPolicy->getInt("PSIPORDER");
-    APROP->PREDICT_SIP_P_ORDER =APROPPolicy->getInt("PREORDER");
+    APROP->PREDICT_SIP_D_ORDER =APROPPolicy->getInt("PREORDER");
     APROP->CLIP_SIGMA  =APROPPolicy->getDouble("CLIPSIGMA");
     APROP->CHECKFILE   =APROPPolicy->getInt("CHECKFILE");
     APROP->BASISCID    =APROPPolicy->getInt("BASISCCD");
@@ -188,8 +194,9 @@ void    F_WCS_MAKECPROP(lsst::afw::cameraGeom::Camera::Ptr &camera, vector< vect
 
     fin.open(CPROPIDFILE);
     if(!fin){
-        cout << "ERROR : Can't read " << CPROPIDFILE << endl;
-        return;
+        cout << "Warning : Can't read " << CPROPIDFILE << endl;
+        cout << "          Using 000 - 009 CCDs for CCD alignment" << endl;
+        CPROP[0].ALIGN=CPROP[1].ALIGN=CPROP[2].ALIGN=CPROP[3].ALIGN=CPROP[4].ALIGN=CPROP[5].ALIGN=CPROP[6].ALIGN=CPROP[7].ALIGN=CPROP[8].ALIGN=CPROP[9].ALIGN=1;
     }
     while((fin >> ID >> POSID[0] >> POSID[1] >> ALIGN) !=0){
     if(ID<APROP->CCDNUM){
@@ -265,43 +272,184 @@ afwImage::TanWcs::Ptr    F_WCS_MAKERESULTWCS(CL_CSIP *CSIP){
     afwImage::TanWcs::Ptr    resultTanWcs(new afwImage::TanWcs(crval, crpix, cdMatrix, sipA, sipB, sipAp, sipBp));
     return resultTanWcs;
 }
-void    F_WCS_SETCC_PRECSIPfromFILE(CL_APROP APROP, char *CSIPFILE,CL_CSIP *CSIP){
+void    F_WCS_SETCC_PRECSIPfromFILE(CL_APROP APROP, char *SSFILE, char *DSIPFILE,CL_CSIP *CSIP){
     int XY,X,Y;
-    double A,**SIP[2];
+    double A,**DSIP[2];
 
-    SIP[0] = new double*[APROP.PREDICT_SIP_P_ORDER+1];
-    SIP[1] = new double*[APROP.PREDICT_SIP_P_ORDER+1];
-    for(X=0;X<APROP.PREDICT_SIP_P_ORDER+1;X++){
-        SIP[0][X] = new double[APROP.PREDICT_SIP_P_ORDER+1];
-        SIP[1][X] = new double[APROP.PREDICT_SIP_P_ORDER+1];
-        for(Y=0;Y<APROP.PREDICT_SIP_P_ORDER+1;Y++)
-        SIP[0][X][Y]=SIP[1][X][Y]=0;
+    DSIP[0] = new double*[APROP.PREDICT_SIP_D_ORDER+1];
+    DSIP[1] = new double*[APROP.PREDICT_SIP_D_ORDER+1];
+    for(X=0;X<APROP.PREDICT_SIP_D_ORDER+1;X++){
+        DSIP[0][X] = new double[APROP.PREDICT_SIP_D_ORDER+1];
+        DSIP[1][X] = new double[APROP.PREDICT_SIP_D_ORDER+1];
+        for(Y=0;Y<APROP.PREDICT_SIP_D_ORDER+1;Y++)
+        DSIP[0][X][Y]=DSIP[1][X][Y]=0;
     }
 //-----
-    CSIP->PREDICT_SIP_P_ORDER=APROP.PREDICT_SIP_P_ORDER;
+    CSIP->PREDICT_SIP_ABD_ORDER=APROP.PREDICT_SIP_D_ORDER;
 
-    ifstream fin;
+    ifstream finS,finD;
 
-    fin.open(CSIPFILE);
-    while((fin >> XY >> X >> Y >> A) != 0)
-    if(X+Y<CSIP->PREDICT_SIP_P_ORDER+1)
-    SIP[XY][X][Y]=A;
+    finS.open(SSFILE);
+    finD.open(DSIPFILE);
+    if(!finS||!finD){
+        cout << "Warning : Can't read " << SSFILE << " or " << DSIPFILE << endl;        
+        CSIP->PREDICT_SIP_ABD_ORDER=9;
+        F_WCS_SETDEFAULTDISTORTION(CSIP);
+        CSIP->PREDICT_InvSS[0][0]= CSIP->PREDICT_SS[1][1]/(CSIP->PREDICT_SS[0][0]*CSIP->PREDICT_SS[1][1]-CSIP->PREDICT_SS[1][0]*CSIP->PREDICT_SS[0][1]);
+        CSIP->PREDICT_InvSS[0][1]=-CSIP->PREDICT_SS[0][1]/(CSIP->PREDICT_SS[0][0]*CSIP->PREDICT_SS[1][1]-CSIP->PREDICT_SS[1][0]*CSIP->PREDICT_SS[0][1]);
+        CSIP->PREDICT_InvSS[1][0]=-CSIP->PREDICT_SS[1][0]/(CSIP->PREDICT_SS[0][0]*CSIP->PREDICT_SS[1][1]-CSIP->PREDICT_SS[1][0]*CSIP->PREDICT_SS[0][1]);
+        CSIP->PREDICT_InvSS[1][1]= CSIP->PREDICT_SS[0][0]/(CSIP->PREDICT_SS[0][0]*CSIP->PREDICT_SS[1][1]-CSIP->PREDICT_SS[1][0]*CSIP->PREDICT_SS[0][1]);
+        cout << "          SET PREDICT_DIP_D_ORDER : " << CSIP->PREDICT_SIP_ABD_ORDER << endl;
+        cout << "          USING DEFAULT VALUES FOR PREDICT DISTORTION " << endl;
+    }else{
+        while((finS >> CSIP->PREDICT_SS[0][0] >> CSIP->PREDICT_SS[0][1] >> CSIP->PREDICT_SS[1][0] >> CSIP->PREDICT_SS[1][1] ) != 0){
+        CSIP->PREDICT_InvSS[0][0]= CSIP->PREDICT_SS[1][1]/(CSIP->PREDICT_SS[0][0]*CSIP->PREDICT_SS[1][1]-CSIP->PREDICT_SS[1][0]*CSIP->PREDICT_SS[0][1]);
+        CSIP->PREDICT_InvSS[0][1]=-CSIP->PREDICT_SS[0][1]/(CSIP->PREDICT_SS[0][0]*CSIP->PREDICT_SS[1][1]-CSIP->PREDICT_SS[1][0]*CSIP->PREDICT_SS[0][1]);
+        CSIP->PREDICT_InvSS[1][0]=-CSIP->PREDICT_SS[1][0]/(CSIP->PREDICT_SS[0][0]*CSIP->PREDICT_SS[1][1]-CSIP->PREDICT_SS[1][0]*CSIP->PREDICT_SS[0][1]);
+        CSIP->PREDICT_InvSS[1][1]= CSIP->PREDICT_SS[0][0]/(CSIP->PREDICT_SS[0][0]*CSIP->PREDICT_SS[1][1]-CSIP->PREDICT_SS[1][0]*CSIP->PREDICT_SS[0][1]);
+        }
 
-    XY=0;
-    for(X=0;X<CSIP->PREDICT_SIP_P_ORDER+1;X++)
-    for(Y=0;Y<CSIP->PREDICT_SIP_P_ORDER+1;Y++)
-    if(X+Y<CSIP->PREDICT_SIP_P_ORDER+1){
-        CSIP->PREDICT_SIP_ABP[0][XY]=SIP[0][X][Y];
-        CSIP->PREDICT_SIP_ABP[1][XY]=SIP[1][X][Y];
-        XY++;
+        while((finD >> XY >> X >> Y >> A) != 0)
+        if(X+Y<CSIP->PREDICT_SIP_ABD_ORDER+1)
+        DSIP[XY][X][Y]=A;
+
+        XY=0;
+        for(X=0;X<CSIP->PREDICT_SIP_ABD_ORDER+1;X++)
+        for(Y=0;Y<CSIP->PREDICT_SIP_ABD_ORDER+1;Y++)
+        if(X + Y <CSIP->PREDICT_SIP_ABD_ORDER+1){
+            CSIP->PREDICT_SIP_ABD[0][XY]=DSIP[0][X][Y];
+            CSIP->PREDICT_SIP_ABD[1][XY]=DSIP[1][X][Y];
+            XY++;
+        }
     }
-    
+
+    cout << "PREDICT SS" << endl;
+    cout << CSIP->PREDICT_SS[0][0] << "	" << CSIP->PREDICT_SS[0][1] << endl;
+    cout << CSIP->PREDICT_SS[1][0] << "	" << CSIP->PREDICT_SS[1][1] << endl;
 //-----
-    for(XY=0;XY<APROP.PREDICT_SIP_P_ORDER+1;XY++){
-        delete [] SIP[0][XY];
-        delete [] SIP[1][XY];
+    for(XY=0;XY<APROP.PREDICT_SIP_D_ORDER+1;XY++){
+        delete [] DSIP[0][XY];
+        delete [] DSIP[1][XY];
     }
-    delete [] SIP[0];
-    delete [] SIP[1];
+    delete [] DSIP[0];
+    delete [] DSIP[1];
+}
+void    F_WCS_SETDEFAULTDISTORTION(CL_CSIP *CSIP){
+    CSIP->PREDICT_SS[0][0]=-0.000047;
+    CSIP->PREDICT_SS[0][1]= 0.000000;
+    CSIP->PREDICT_SS[1][0]= 0.000000;
+    CSIP->PREDICT_SS[1][1]= 0.000047;
+
+    CSIP->PREDICT_SIP_ABD[0][ 0]=0;
+    CSIP->PREDICT_SIP_ABD[0][ 1]=0;
+    CSIP->PREDICT_SIP_ABD[0][ 2]=0;
+    CSIP->PREDICT_SIP_ABD[0][ 3]=0;
+    CSIP->PREDICT_SIP_ABD[0][ 4]=0;
+    CSIP->PREDICT_SIP_ABD[0][ 5]=0;
+    CSIP->PREDICT_SIP_ABD[0][ 6]=0;
+    CSIP->PREDICT_SIP_ABD[0][ 7]=0;
+    CSIP->PREDICT_SIP_ABD[0][ 8]=0;
+    CSIP->PREDICT_SIP_ABD[0][ 9]=0;
+    CSIP->PREDICT_SIP_ABD[0][10]=0;
+    CSIP->PREDICT_SIP_ABD[0][11]=0;
+    CSIP->PREDICT_SIP_ABD[0][12]=1.030000e-10;
+    CSIP->PREDICT_SIP_ABD[0][13]=0;
+    CSIP->PREDICT_SIP_ABD[0][14]=7.750000e-20;
+    CSIP->PREDICT_SIP_ABD[0][15]=0;
+    CSIP->PREDICT_SIP_ABD[0][16]=-7.300000e-29;
+    CSIP->PREDICT_SIP_ABD[0][17]=0;
+    CSIP->PREDICT_SIP_ABD[0][18]=0;
+    CSIP->PREDICT_SIP_ABD[0][19]=0;
+    CSIP->PREDICT_SIP_ABD[0][20]=0;
+    CSIP->PREDICT_SIP_ABD[0][21]=0;
+    CSIP->PREDICT_SIP_ABD[0][22]=0;
+    CSIP->PREDICT_SIP_ABD[0][23]=0;
+    CSIP->PREDICT_SIP_ABD[0][24]=0;
+    CSIP->PREDICT_SIP_ABD[0][25]=0;
+    CSIP->PREDICT_SIP_ABD[0][26]=0;
+    CSIP->PREDICT_SIP_ABD[0][27]=1.030000e-10;
+    CSIP->PREDICT_SIP_ABD[0][28]=0;
+    CSIP->PREDICT_SIP_ABD[0][29]=1.550000e-19;
+    CSIP->PREDICT_SIP_ABD[0][30]=0;
+    CSIP->PREDICT_SIP_ABD[0][31]=-2.190000e-28;
+    CSIP->PREDICT_SIP_ABD[0][32]=0;
+    CSIP->PREDICT_SIP_ABD[0][33]=0;
+    CSIP->PREDICT_SIP_ABD[0][34]=0;
+    CSIP->PREDICT_SIP_ABD[0][35]=0;
+    CSIP->PREDICT_SIP_ABD[0][36]=0;
+    CSIP->PREDICT_SIP_ABD[0][37]=0;
+    CSIP->PREDICT_SIP_ABD[0][38]=0;
+    CSIP->PREDICT_SIP_ABD[0][39]=0;
+    CSIP->PREDICT_SIP_ABD[0][40]=7.750000e-20;
+    CSIP->PREDICT_SIP_ABD[0][41]=0;
+    CSIP->PREDICT_SIP_ABD[0][42]=-2.190000e-28;
+    CSIP->PREDICT_SIP_ABD[0][43]=0;
+    CSIP->PREDICT_SIP_ABD[0][44]=0;
+    CSIP->PREDICT_SIP_ABD[0][45]=0;
+    CSIP->PREDICT_SIP_ABD[0][46]=0;
+    CSIP->PREDICT_SIP_ABD[0][47]=0;
+    CSIP->PREDICT_SIP_ABD[0][48]=0;
+    CSIP->PREDICT_SIP_ABD[0][49]=-7.300000e-29;
+    CSIP->PREDICT_SIP_ABD[0][50]=0;
+    CSIP->PREDICT_SIP_ABD[0][51]=0;
+    CSIP->PREDICT_SIP_ABD[0][52]=0;
+    CSIP->PREDICT_SIP_ABD[0][53]=0;
+    CSIP->PREDICT_SIP_ABD[0][54]=0;
+
+    CSIP->PREDICT_SIP_ABD[0][ 0]=0;
+    CSIP->PREDICT_SIP_ABD[0][ 1]=0;
+    CSIP->PREDICT_SIP_ABD[0][ 2]=0;
+    CSIP->PREDICT_SIP_ABD[0][ 3]=-1.030000e-10;
+    CSIP->PREDICT_SIP_ABD[0][ 4]=0;
+    CSIP->PREDICT_SIP_ABD[0][ 5]=-7.750000e-20;
+    CSIP->PREDICT_SIP_ABD[0][ 6]=0;
+    CSIP->PREDICT_SIP_ABD[0][ 7]=7.300000e-29;
+    CSIP->PREDICT_SIP_ABD[0][ 8]=0;
+    CSIP->PREDICT_SIP_ABD[0][ 9]=0;
+    CSIP->PREDICT_SIP_ABD[0][10]=0;
+    CSIP->PREDICT_SIP_ABD[0][11]=0;
+    CSIP->PREDICT_SIP_ABD[0][12]=0;
+    CSIP->PREDICT_SIP_ABD[0][13]=0;
+    CSIP->PREDICT_SIP_ABD[0][14]=0;
+    CSIP->PREDICT_SIP_ABD[0][15]=0;
+    CSIP->PREDICT_SIP_ABD[0][16]=0;
+    CSIP->PREDICT_SIP_ABD[0][17]=0;
+    CSIP->PREDICT_SIP_ABD[0][18]=0;
+    CSIP->PREDICT_SIP_ABD[0][19]=0;
+    CSIP->PREDICT_SIP_ABD[0][20]=-1.030000e-10;
+    CSIP->PREDICT_SIP_ABD[0][21]=0;
+    CSIP->PREDICT_SIP_ABD[0][22]=-1.550000e-19;
+    CSIP->PREDICT_SIP_ABD[0][23]=0;
+    CSIP->PREDICT_SIP_ABD[0][24]=2.190000e-28;
+    CSIP->PREDICT_SIP_ABD[0][25]=0;
+    CSIP->PREDICT_SIP_ABD[0][26]=0;
+    CSIP->PREDICT_SIP_ABD[0][27]=0;
+    CSIP->PREDICT_SIP_ABD[0][28]=0;
+    CSIP->PREDICT_SIP_ABD[0][29]=0;
+    CSIP->PREDICT_SIP_ABD[0][30]=0;
+    CSIP->PREDICT_SIP_ABD[0][31]=0;
+    CSIP->PREDICT_SIP_ABD[0][32]=0;
+    CSIP->PREDICT_SIP_ABD[0][33]=0;
+    CSIP->PREDICT_SIP_ABD[0][34]=0;
+    CSIP->PREDICT_SIP_ABD[0][35]=-7.750000e-20;
+    CSIP->PREDICT_SIP_ABD[0][36]=0;
+    CSIP->PREDICT_SIP_ABD[0][37]=2.190000e-28;
+    CSIP->PREDICT_SIP_ABD[0][38]=0;
+    CSIP->PREDICT_SIP_ABD[0][39]=0;
+    CSIP->PREDICT_SIP_ABD[0][40]=0;
+    CSIP->PREDICT_SIP_ABD[0][41]=0;
+    CSIP->PREDICT_SIP_ABD[0][42]=0;
+    CSIP->PREDICT_SIP_ABD[0][43]=0;
+    CSIP->PREDICT_SIP_ABD[0][44]=0;
+    CSIP->PREDICT_SIP_ABD[0][45]=0;
+    CSIP->PREDICT_SIP_ABD[0][46]=7.300000e-29;
+    CSIP->PREDICT_SIP_ABD[0][47]=0;
+    CSIP->PREDICT_SIP_ABD[0][48]=0;
+    CSIP->PREDICT_SIP_ABD[0][49]=0;
+    CSIP->PREDICT_SIP_ABD[0][50]=0;
+    CSIP->PREDICT_SIP_ABD[0][51]=0;
+    CSIP->PREDICT_SIP_ABD[0][52]=0;
+    CSIP->PREDICT_SIP_ABD[0][53]=0;
+    CSIP->PREDICT_SIP_ABD[0][54]=0;
 }
 

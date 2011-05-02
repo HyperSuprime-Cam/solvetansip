@@ -95,6 +95,8 @@ ra1 = []
 dec1 = []
 ra2 = []
 dec2 = []
+ra3 = []
+dec3 = []
 dSky = []
 for wcs, matchList in zip(wcsList, matches):
     #print wcs.getFitsMetadata()
@@ -109,6 +111,10 @@ for wcs, matchList in zip(wcsList, matches):
 
         coord1 = afwCoord.Coord(afwGeom.makePointD(m.first.getRa(), m.first.getDec()), afwCoord.DEGREES)
         dSky.append(coord1.angularSeparation(sky, afwCoord.DEGREES) * 3600.0)
+
+#        RADEC=WCS_POSITION_PY.F_WCS_POSITION_RADECfromXY(wcs,m.second.getXAstrom(), m.second.getYAstrom())
+#        ra3.append(RADEC[0])
+#        dec3.append(RADEC[1])
         
 
 ra1 = numpy.array(ra1)
@@ -117,9 +123,15 @@ ra2 = numpy.array(ra2)
 dec2 = numpy.array(dec2)
 dRa = (ra2-ra1)*3600
 dDec = (dec2-dec1)*3600
+#ra3 = numpy.array(ra3)
+#dec3 = numpy.array(dec3)
+#dRa3 = (ra3-ra1)*3600
+#dDec3 = (dec3-dec1)*3600
 dSky = numpy.array(dSky)
 print "RA difference stats (arcsec):", dRa.mean(), dRa.std()
 print "Dec difference stats (arcsec):", dDec.mean(), dDec.std()
+#print "RA difference stats (arcsec):", dRa3.mean(), dRa3.std()
+#print "Dec difference stats (arcsec):", dDec3.mean(), dDec3.std()
 print "Offset stats:", dSky.mean(), dSky.std()
 plot.histogram(dSky, None, bins=101, clip=3.0, gaussFit=None)
 plot.quivers(ra1, dec1, dRa, dDec, addUnitQuiver=1./3600)
