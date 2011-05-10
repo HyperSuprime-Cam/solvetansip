@@ -1,5 +1,7 @@
 syntax: glob
-WCS_PL_MAINLib_wrap.cc
+*_wrap.cc
+WCS_PL_MAIN.py
+WCS_POSITION.py
 *~
 *.pyo
 *.pyc

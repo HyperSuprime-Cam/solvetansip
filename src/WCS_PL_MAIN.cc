@@ -15,6 +15,7 @@ using namespace std;
 namespace afwdetect = lsst::afw::detection;
 namespace afwImage = lsst::afw::image;
 namespace afwGeom = lsst::afw::geom; 
+namespace afwCoord = lsst::afw::coord;
 namespace camGeom = lsst::afw::cameraGeom;
 namespace dafbase = lsst::daf::base;
 
@@ -219,8 +220,9 @@ ofstream PAIRout("supa_cfhqs/PAIR.dat");//temp
         PAIR[ALLNUM].ID    =matchlist[CID][NUM].first->getId();
         PAIR[ALLNUM].CHIPID=CID;
         PAIR[ALLNUM].FLAG  =1;
-        PAIR[ALLNUM].RA    =matchlist[CID][NUM].first->getRa();
-        PAIR[ALLNUM].DEC   =matchlist[CID][NUM].first->getDec();
+        afwCoord::Coord::Ptr radec = matchlist[CID][NUM].first->getRaDec();
+        PAIR[ALLNUM].RA    = radec->getLongitude(afwCoord::DEGREES);
+        PAIR[ALLNUM].DEC   = radec->getLatitude(afwCoord::DEGREES);
         PAIR[ALLNUM].xL    =matchlist[CID][NUM].second->getXAstrom();
         PAIR[ALLNUM].yL    =matchlist[CID][NUM].second->getYAstrom();
         PAIR[ALLNUM].xErr  =matchlist[CID][NUM].second->getXAstromErr();
@@ -238,8 +240,8 @@ PAIRout.close();//temp
 afwImage::TanWcs::Ptr    F_WCS_MAKERESULTWCS(CL_CSIP *CSIP){
     int i,j;
 
-    afwGeom::PointD crpix = afwGeom::makePointD(CSIP->CRPIX[0], CSIP->CRPIX[1]);
-    afwGeom::PointD crval = afwGeom::makePointD(CSIP->CRVAL[0], CSIP->CRVAL[1]);
+    afwGeom::Point2D crpix = afwGeom::Point2D(CSIP->CRPIX[0], CSIP->CRPIX[1]);
+    afwGeom::Point2D crval = afwGeom::Point2D(CSIP->CRVAL[0], CSIP->CRVAL[1]);
 
     Eigen::Matrix2d cdMatrix;
     cdMatrix << CSIP->CD[0][0], CSIP->CD[0][1], CSIP->CD[1][0], CSIP->CD[1][1];
