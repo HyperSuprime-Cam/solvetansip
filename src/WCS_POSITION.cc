@@ -51,10 +51,10 @@ cout << "---F_WCS_POSITION_RADECfromXY---" << endl;
     RADEC_V.push_back(RADEC[0]);
     RADEC_V.push_back(RADEC[1]);
 
-    cout << fixed << endl;
-    cout << "XY    : " << X << " , " << Y << endl;
-    cout << "RADEC : " << RADEC_V[0] << " , " << RADEC_V[1] << endl;
-    cout << endl;
+//    cout << fixed << endl;
+//    cout << "XY    : " << X << " , " << Y << endl;
+//    cout << "RADEC : " << RADEC_V[0] << " , " << RADEC_V[1] << endl;
+//    cout << endl;
 
 //--------------------------------------------------
     delete [] SIP[0];
@@ -97,10 +97,10 @@ cout << "---F_WCS_POSITION_XYfromRADEC---" << endl;
     XY_V.push_back(xCRPIX[0]+CRPIX_V[0]);
     XY_V.push_back(xCRPIX[1]+CRPIX_V[1]);
 
-    cout << fixed << endl;
-    cout << "XY    : " << XY_V[0]  << " , " << XY_V[1]  << endl;
-    cout << "RADEC : " << RADEC[0] << " , " << RADEC[1] << endl;
-    cout << endl;
+//    cout << fixed << endl;
+//    cout << "XY    : " << XY_V[0]  << " , " << XY_V[1]  << endl;
+//    cout << "RADEC : " << RADEC[0] << " , " << RADEC[1] << endl;
+//    cout << endl;
 
 //--------------------------------------------------
     delete [] PSIP[0];

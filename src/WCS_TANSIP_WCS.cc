@@ -32,11 +32,11 @@ void    F_WCS_TANSIP_WCS(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *C
     }
     F_WCS_TANSIP_WCS_SIPFIT (APROP,CPROP,PAIR,&CSIP[APROP.CCDNUM]);
     F_WCS_TANSIP_WCS_PSIPFIT(APROP,CPROP,PAIR,&CSIP[APROP.CCDNUM]);
-    cout << "--- WCS_TANSIP : CALCULATING GLOVAL WCS : REJECTION ---" << endl;
+    cout << "--- WCS_TANSIP : CALCULATING GLOBAL WCS : REJECTION ---" << endl;
     cout << "SKIP" << endl;
-    cout << "--- WCS_TANSIP : CALCULATING GLOVAL WCS : Re-SIP FITTING---" << endl;
+    cout << "--- WCS_TANSIP : CALCULATING GLOBAL WCS : Re-SIP FITTING---" << endl;
     cout << "SKIP" << endl;
-    cout << "--- WCS_TANSIP : CALCULATING GLOVAL WCS : Re-PSIP FITTING---" << endl;
+    cout << "--- WCS_TANSIP : CALCULATING GLOBAL WCS : Re-PSIP FITTING---" << endl;
     cout << "SKIP" << endl;
     cout <<endl;
     F_WCS_TANSIP_WCS_GCHECK(APROP,CPROP,PAIR,&CSIP[APROP.CCDNUM]);
@@ -49,7 +49,7 @@ void    F_WCS_TANSIP_WCS_SETBASE(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL
     int NUM,FNUM;
     double CRPIXAVE[2]={0};
 
-    cout << "--- WCS_TANSIP : CALCULATING GLOVAL WCS : SET BASE ---" << endl;
+    cout << "--- WCS_TANSIP : CALCULATING GLOBAL WCS : SET BASE ---" << endl;
 
 //SET CSIP parameters
     CSIP->SIP_AB_ORDER=APROP.SIP_ORDER;
@@ -132,7 +132,7 @@ void    F_WCS_TANSIP_WCS_PROJECTIONPOINT(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR 
 void    F_WCS_TANSIP_WCS_PROJECTION(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
     int NUM;
     double PPOINT[2],Pdeg[2],Cdeg[2];
-    cout << "--- WCS_TANSIP : CALCULATING GLOVAL WCS : PROJECTION ---" << endl;
+    cout << "--- WCS_TANSIP : CALCULATING GLOBAL WCS : PROJECTION ---" << endl;
 
 //    cout << "PROJECTION : CRPIX : ( " << CSIP[APROP.CCDNUM].CRPIX[0] << " , " << CSIP[APROP.CCDNUM].CRPIX[1] << " )(pix)\n";
     cout << "PROJECTION : CRVAL : ( " << CSIP[APROP.CCDNUM].CRVAL[0] << " , " << CSIP[APROP.CCDNUM].CRVAL[1] << " )(deg)\n";
@@ -153,7 +153,7 @@ void    F_WCS_TANSIP_WCS_CR(int DIR,CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR
     int i,NUM,FNUM;
     double **dx[2],*Coef[2];
 
-    cout << "--- WCS_TANSIP : CALCULATING GLOVAL WCS : SET CRPIX and CRVAL ---" << endl;
+    cout << "--- WCS_TANSIP : CALCULATING GLOBAL WCS : SET CRPIX and CRVAL ---" << endl;
 //--------------------------------------------------
     Coef[0]=new double[(APROP.SIP_ORDER+1)*(APROP.SIP_ORDER+2)];
     Coef[1]=new double[(APROP.SIP_ORDER+1)*(APROP.SIP_ORDER+2)];
@@ -238,7 +238,7 @@ cout << endl;
 //--------------------------------------------------
 }
 void    F_WCS_TANSIP_WCS_SIPFIT (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
-    cout << "--- WCS_TANSIP : CALCULATING GLOVAL WCS :  SIP FITTING ---" << endl;
+    cout << "--- WCS_TANSIP : CALCULATING GLOBAL WCS :  SIP FITTING ---" << endl;
     int i,NUM,FNUM;
     double **dx[2],*Coef[2];
 
@@ -305,6 +305,7 @@ void    F_WCS_TANSIP_WCS_SIPFIT (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL
     CSIP->SIP_AB[1][0*(APROP.SIP_ORDER+1)+1]-=1.0;
     CSIP->FITNUM=FNUM;
 //--------------------------------------------------
+
     for(NUM=0;NUM<APROP.NUMREFALL;NUM++){
     delete [] dx[0][NUM];
     delete [] dx[1][NUM];
@@ -316,7 +317,7 @@ void    F_WCS_TANSIP_WCS_SIPFIT (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL
 }
 
 void    F_WCS_TANSIP_WCS_PSIPFIT (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
-    cout << "--- WCS_TANSIP : CALCULATING GLOVAL WCS : PSIP FITTING ---" << endl;
+    cout << "--- WCS_TANSIP : CALCULATING GLOBAL WCS : PSIP FITTING ---" << endl;
     int i,NUM,FNUM;
     double **dx[2],*Coef[2];
 
@@ -397,7 +398,7 @@ sprintf(fout,"reference_check.dat");
 temp.open(fout);
 cout << "temprary output : " << fout << endl;
 
-    cout << "--- WCS_TANSIP : CALCULATING GLOVAL WCS : GLOBAL CHECK---" << endl;
+    cout << "--- WCS_TANSIP : CALCULATING GLOBAL WCS : GLOBAL CHECK---" << endl;
 //--------------------------------------------------
     for(NUM=0;NUM<4;NUM++)
     RMS[NUM] = new double[APROP.NUMREFALL];
@@ -507,7 +508,7 @@ cout << "temprary output : " << fout << endl;
     Dx[1][FNUM]=new double[3];
     }
 
-    cout << "--- WCS_TANSIP : CALCULATING GLOVAL WCS : PREDICT CHECK---" << endl;
+    cout << "--- WCS_TANSIP : CALCULATING GLOBAL WCS : PREDICT CHECK---" << endl;
 
     CSIP->ANGLE=atan2(CSIP->CD[1][0]+CSIP->CD[0][1],-CSIP->CD[0][0]+CSIP->CD[1][1]);//with reverse
     cout << "FOV ANGLE : " << CSIP->ANGLE << endl;

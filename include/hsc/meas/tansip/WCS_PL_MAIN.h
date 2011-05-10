@@ -15,5 +15,6 @@
 #include "hsc/meas/tansip/WCS_CSIP.h"
 //#include "lsst/afw/detection/Source.h"
 
-std::vector <lsst::afw::image::TanWcs::Ptr>    F_WCS_TANSIP_V(std::vector< std::vector<lsst::afw::detection::SourceMatch> > const &,lsst::pex::policy::Policy::Ptr &,lsst::afw::cameraGeom::Camera::Ptr &/*,lsst::daf::base::PropertySet::Ptr &,bool*/);
+std::vector <lsst::afw::image::TanWcs::Ptr>    F_WCS_TANSIP_V(std::vector< std::vector<lsst::afw::detection::SourceMatch> > const &,lsst::daf::base::PropertySet::Ptr &,lsst::pex::policy::Policy::Ptr &,lsst::afw::cameraGeom::Camera::Ptr &/*,lsst::daf::base::PropertySet::Ptr &,bool*/);
+lsst::daf::base::PropertySet::Ptr F_WCS_EMPTYMETADATA();
 

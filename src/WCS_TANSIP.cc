@@ -20,10 +20,10 @@ void    F_WCS_TANSIP(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP)
     }else{
 //--------------------------------------------------
     cout << "--- WCS_TANSIP : DETERMINING CCD POSITION ---" << endl;
-    F_WCS_TANSIP_GPOS(APROP,CPROP,PAIR,CSIP);
+    F_WCS_TANSIP_GPOS(&APROP,CPROP,PAIR,CSIP);
 
 //--------------------------------------------------
-    cout << "--- WCS_TANSIP : CALCULATING GLOVAL WCS ---" << endl;
+    cout << "--- WCS_TANSIP : CALCULATING GLOBAL WCS ---" << endl;
     F_WCS_TANSIP_WCS(APROP,CPROP,PAIR,CSIP);
 
 //--------------------------------------------------

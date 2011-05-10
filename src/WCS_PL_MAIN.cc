@@ -16,14 +16,16 @@ namespace afwdetect = lsst::afw::detection;
 namespace afwImage = lsst::afw::image;
 namespace afwGeom = lsst::afw::geom; 
 namespace camGeom = lsst::afw::cameraGeom;
+namespace dafbase = lsst::daf::base;
 
 void    F_WCS_MAKEAPROP(lsst::pex::policy::Policy::Ptr &,CL_APROP*);
 void    F_WCS_MAKECPROP(lsst::afw::cameraGeom::Camera::Ptr &,vector< vector< afwdetect::SourceMatch  >  > const &, CL_APROP*, CL_CPROP *);
 void    F_WCS_SETCC_PRECSIPfromFILE(CL_APROP, char *, char *,CL_CSIP *);
 void    F_WCS_MAKEPAIR(vector< vector< afwdetect::SourceMatch  >  > const &, CL_APROP *, CL_CPROP *,CL_PAIR *);
 void    F_WCS_SETDEFAULTDISTORTION(CL_CSIP *);
+dafbase::PropertySet::Ptr F_WCS_EMPTYMETADATA();
 afwImage::TanWcs::Ptr    F_WCS_MAKERESULTWCS(CL_CSIP *);
-vector<afwImage::TanWcs::Ptr>    F_WCS_TANSIP_V(vector< vector<afwdetect::SourceMatch> > const &matchlist,lsst::pex::policy::Policy::Ptr &APROPPolicy,lsst::afw::cameraGeom::Camera::Ptr &camera/*,lsst::daf::base::PropertySet::Ptr &metadata,bool verbose*/){
+vector<afwImage::TanWcs::Ptr>    F_WCS_TANSIP_V(vector< vector<afwdetect::SourceMatch> > const &matchlist,dafbase::PropertySet::Ptr &metaTANSIP,lsst::pex::policy::Policy::Ptr &APROPPolicy,lsst::afw::cameraGeom::Camera::Ptr &camera/*,lsst::daf::base::PropertySet::Ptr &metadata,bool verbose*/){
     cout <<endl<< "--- WCS_PL_MAIN :AAA ---" << endl;
 
 //------------------------------------------------------
@@ -451,5 +453,10 @@ void    F_WCS_SETDEFAULTDISTORTION(CL_CSIP *CSIP){
     CSIP->PREDICT_SIP_ABD[0][52]=0;
     CSIP->PREDICT_SIP_ABD[0][53]=0;
     CSIP->PREDICT_SIP_ABD[0][54]=0;
+}
+dafbase::PropertySet::Ptr F_WCS_EMPTYMETADATA(){
+    dafbase::PropertySet::Ptr metadata(new dafbase::PropertySet);
+
+    return metadata;
 }
 

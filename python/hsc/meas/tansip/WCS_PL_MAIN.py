@@ -1095,7 +1095,11 @@ resultWcs_V_swigregister(resultWcs_V)
 
 
 def F_WCS_TANSIP_V(*args):
-  """F_WCS_TANSIP_V(vvSourceMatch ?, Ptr ?, Ptr ?) -> resultWcs_V"""
+  """F_WCS_TANSIP_V(vvSourceMatch ?, Ptr ?, Ptr ?, Ptr ?) -> resultWcs_V"""
   return _WCS_PL_MAIN.F_WCS_TANSIP_V(*args)
+
+def F_WCS_EMPTYMETADATA(*args):
+  """F_WCS_EMPTYMETADATA() -> Ptr"""
+  return _WCS_PL_MAIN.F_WCS_EMPTYMETADATA(*args)
 
 

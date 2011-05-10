@@ -27,10 +27,14 @@ public:
     double yG_Init;
     double xI;//Relative Projected position(deg), having 0 at CRVAL
     double yI;//Intermediate world coodinate
-    double xCRPIX;//Relative position from CRpix(pix)
+    double xCRPIX;//Relative position from CRpix(pix) in Global coordinate
     double yCRPIX;
-    double xCRVAL;//Relative position from CRval(pix)
+    double xCRVAL;//Relative position from CRval(pix) in Global coordinate
     double yCRVAL;//Intermediate pixel coodinate
+    double xLCRPIX;//Relative position from CRpix(pix) in Local coordinate
+    double yLCRPIX;
+    double xLCRVAL;//Relative position from CRval(pix) in Local coordinate
+    double yLCRVAL;//Intermediate pixel coodinate
     double dxLdxI;//Diferential value of xL by xCRPIX
     double dxLdyI;
     double dyLdxI;

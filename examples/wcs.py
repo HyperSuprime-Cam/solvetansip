@@ -8,7 +8,8 @@ import numpy
 import lsst.pipette.readwrite as pipReadWrite
 import lsst.pex.policy as pexPolicy
 import lsst.obs.hscSim as hscSim
-from hsc.meas.tansip.doTansip import doTansip
+import hsc.meas.tansip.doTansip as doTansip
+import hsc.meas.tansip.WCS_PL_MAIN       as hscTansip
 import hsc.meas.tansip.WCS_POSITION_PY as WCS_POSITION_PY
 import lsst.afw.detection as afwDet
 import lsst.afw.geom as afwGeom
@@ -71,8 +72,10 @@ policy = pexPolicy.Policy.createPolicy(policyPath)
 
 #policy.set("LSIPORDER", 1)
 #policy.set("SIPORDER", 6)
+metadata = hscTansip.F_WCS_EMPTYMETADATA()
 
-wcsList = doTansip(matches, policy=policy, camera=mapper.camera)
+wcsList = doTansip.doTansip(matches, policy=policy, camera=mapper.camera)
+#wcsList = doTansip.doTansip_meta(matches, metadata, policy=policy, camera=mapper.camera)
 #position test
 X=9514.66
 Y=95.9925

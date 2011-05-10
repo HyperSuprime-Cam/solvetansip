@@ -8,6 +8,7 @@ import lsst.afw.cameraGeom.utils         as cameraGeomUtils
 import hsc.meas.tansip.WCS_PL_MAIN       as hscTansip
 import lsst.daf.base                     as dafBase
 import lsst.pex.policy as pexPolicy
+import lsst.afw.image as afwImage
 
 import lsst.afw.display.ds9              as ds9
 
@@ -16,7 +17,8 @@ import lsst.pex.logging                  as pexLog
 scriptLog = pexLog.getDefaultLog()
 scriptLog.setThreshold(pexLog.Log.INFO)
 
-def doTansip(matchListAllCcd, policy=None, camera=None, rerun=None):
+def doTansip_getresultWcs(matchListAllCcd, metaTANSIP, policy=None, camera=None, rerun=None):
+    print '--- doTansip_getresultWcs ---'
     """ Entry point for calling the global solvetansip fitter.
 
     Args:
@@ -45,8 +47,24 @@ def doTansip(matchListAllCcd, policy=None, camera=None, rerun=None):
             print "empty list for ccd %i: %s" % (i, m)
             matchListAllCcd[i] = []
             
-    resultWcs_V = hscTansip.F_WCS_TANSIP_V(matchListAllCcd, policy, camera)
+    resultWcs_V = hscTansip.F_WCS_TANSIP_V(matchListAllCcd, metaTANSIP, policy, camera)
 
     print '... TAN-SIP fitting done.'
 
+    return resultWcs_V
+
+def doTansip(matchListAllCcd, policy=None, camera=None, rerun=None):
+    print '--- doTansip ---'
+    metaTANSIP = hscTansip.F_WCS_EMPTYMETADATA()
+    resultWcs_V = doTansip_getresultWcs(matchListAllCcd, metaTANSIP, policy, camera)
+
+    return resultWcs_V
+
+def doTansip_meta(matchListAllCcd, metadata, policy=None, camera=None, rerun=None):
+    print '--- doTansip_meta ---'
+    metaTANSIP = hscTansip.F_WCS_EMPTYMETADATA()
+    resultWcs_V = doTansip_getresultWcs(matchListAllCcd, metaTANSIP, policy, camera)
+#add metaTANSIP in metadata
+#
+#
     return resultWcs_V
