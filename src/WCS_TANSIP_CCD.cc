@@ -624,10 +624,7 @@ void    F_WCS_TANSIP_CCD_LCHECK(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_
     double X[2],Y[2];
     for(NUM=0;NUM<APROP.NUMREFALL;NUM++)
     if(PAIR[NUM].FLAG == 1){
-cout << PAIR[NUM].xL-CSIP[ID].CRPIX[0] << "	" << PAIR[NUM].xCRPIX << endl;
         ID=PAIR[NUM].CHIPID;
-//        X[0]=PAIR[NUM].xL-CSIP[ID].CRPIX[0];
-//        X[1]=PAIR[NUM].yL-CSIP[ID].CRPIX[1];
         X[0]=PAIR[NUM].xLCRPIX;
         X[1]=PAIR[NUM].yLCRPIX;
         Y[0]=F_CALCVALUE(APROP.SIP_ORDER,CSIP[ID].SIP_AB[0],X)+X[0];
