@@ -13,7 +13,7 @@ except AttributeError:
 
 env = scons.makeEnv(
     "solvetansip",
-    r"$HeadURL$",
+    "hg",
     scons.ConfigureDependentProducts("solvetansip"),
     )
 
