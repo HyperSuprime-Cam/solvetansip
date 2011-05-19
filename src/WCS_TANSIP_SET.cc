@@ -2,7 +2,7 @@
 //WCS_TANSIP_SET.cc
 //Checking and setting parameters
 //
-//Last modification : 2010/04/01
+//Last modification : 2010/05/20
 //------------------------------------------------------------
 #include<iostream>
 #include<stdio.h>
@@ -23,27 +23,56 @@ void    F_WCS_TANSIP_SET(CL_APROP *APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *
     if(strcmp(APROP->CRPIXMODE,"AUTO")==0||strcmp(APROP->CRPIXMODE,"PIX")==0||strcmp(APROP->CRPIXMODE,"VAL")==0){
     }else{
         cout << "CRPIXMODE is " << APROP->CRPIXMODE << endl;
+        cout << "---------------------------------------------" << endl;
         cout << "Warning : CRPIXMODE isn't 'AUTO' or 'PIX' or 'VAL'" << endl;
         sprintf(APROP->CRPIXMODE,"AUTO");
         cout << "Warning : SET CRPIXMODE : " << APROP->CRPIXMODE << endl;
+        cout << "---------------------------------------------" << endl;
+    }
+    if(APROP->CCDPOSMODE==0||APROP->CCDPOSMODE==1){
+    }else{
+        cout << "CCDPMODE is " << APROP->CCDPOSMODE << endl;
+        cout << "---------------------------------------------" << endl;
+        cout << "Warning : CCDPMODE isn't 0 or 1" << endl;
+        APROP->CCDPOSMODE=0;
+        cout << "Warning : SET CCDPMODE : " << APROP->CCDPOSMODE << endl;
+        cout << "---------------------------------------------" << endl;
     }
     if(APROP->SIP_ORDER<0.5||APROP->SIP_ORDER>9.5){
         cout << "SIPORDER is " << APROP->SIP_ORDER << endl;
+        cout << "---------------------------------------------" << endl;
         cout << "Warning :  SIPORDER isn't a number between 1 and 9" << endl;
         APROP->SIP_ORDER=9;
         cout << "Warning : SET SIPORDER : " << APROP->SIP_ORDER << endl;
+        cout << "---------------------------------------------" << endl;
     }
     if(APROP->SIP_P_ORDER<0.5||APROP->SIP_P_ORDER>9.5){
         cout << "PSIP_ORDER is " << APROP->SIP_P_ORDER << endl;
+        cout << "---------------------------------------------" << endl;
         cout << "Warning : PSIPORDER isn't a number between 1 and 9" << endl;
         APROP->SIP_P_ORDER=9;
         cout << "Warning : SET PSIPORDER : " << APROP->SIP_P_ORDER << endl;
+        cout << "---------------------------------------------" << endl;
     }
     if(APROP->SIP_L_ORDER<1.5||APROP->SIP_L_ORDER>9.5){
         cout << "LSIP_ORDER is " << APROP->SIP_L_ORDER << endl;
+        cout << "---------------------------------------------" << endl;
         cout << "Warning : LSIPORDER isn't a number between 2 and 9" << endl;
         APROP->SIP_L_ORDER=3;
         cout << "Warning : SET LSIPORDER : " << APROP->SIP_L_ORDER << endl;
+        cout << "---------------------------------------------" << endl;
+    }
+    for(CID=0;CID<APROP->CCDNUM;CID++)
+    if(APROP->BASISCID==CID){
+    break;
+    }else{
+        cout << "BASISCCD is " << APROP->BASISCID << endl;
+        cout << "---------------------------------------------" << endl;
+        cout << "Warning : in BASISCCD" << endl;
+        APROP->BASISCID=0;
+        cout << "Warning : SET BASISCCD : " << APROP->BASISCID << endl;
+        cout << "---------------------------------------------" << endl;
+        break;
     }
 
 
@@ -57,8 +86,10 @@ void    F_WCS_TANSIP_SET(CL_APROP *APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *
         }else{
         F_WCS_SETDEFAULTPOSITIONS_HSC(CPROP);
         }
+        cout << "---------------------------------------------" << endl;
         cout << "Warning : Separation between CHIPID : " << CID << " and " << CID2 << " is under 2000" << endl;
         cout << "          USING DEFAULT VALUES FOR CCD POSITIONS " << endl;
+        cout << "---------------------------------------------" << endl;
         break;
     }
     int ALIGNNUM=0;
@@ -66,16 +97,20 @@ void    F_WCS_TANSIP_SET(CL_APROP *APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *
     if(CPROP[CID].ALIGN==1)
     ALIGNNUM++;
     if(ALIGNNUM<2){
+    cout << "---------------------------------------------" << endl;
     cout << "Warning : in F_WCS_TANSIP_SET : CPROP[].ALIGN" << endl;
     cout << "          Number of CCDs used for CCD alignment is under 2" << endl;
     cout << "          Using 000 - 009 CCDs for CCD alignment" << endl;
+    cout << "---------------------------------------------" << endl;
     CPROP[0].ALIGN=CPROP[1].ALIGN=CPROP[2].ALIGN=CPROP[3].ALIGN=CPROP[4].ALIGN=CPROP[5].ALIGN=CPROP[6].ALIGN=CPROP[7].ALIGN=CPROP[8].ALIGN=CPROP[9].ALIGN=1;
     }
 
 ///Error : in ORDER
 
     if(APROP->NUMREFALL<0.5*(APROP->SIP_ORDER+1)*(APROP->SIP_ORDER+2)+1){
+    cout << "---------------------------------------------" << endl;
     cout << "Warning : NUMBER OF REFERENCES ARE NOT ENOUGH TO FITTING WITH ORDER : " << APROP->SIP_ORDER << endl;
+    cout << "---------------------------------------------" << endl;
     int ORDER;
     for(ORDER=APROP->SIP_ORDER+1;ORDER<1;ORDER--)
     if(APROP->NUMREFALL>0.5*(APROP->SIP_ORDER+1)*(APROP->SIP_ORDER+2)+1){
@@ -85,7 +120,9 @@ void    F_WCS_TANSIP_SET(CL_APROP *APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *
     }}
 
     if(APROP->NUMREFALL<0.5*(APROP->SIP_P_ORDER+1)*(APROP->SIP_P_ORDER+2)+1){
+    cout << "---------------------------------------------" << endl;
     cout << "Warning : NUMBER OF REFERENCES ARE NOT ENOUGH TO FITTING WITH ORDER : " << APROP->SIP_P_ORDER << endl;
+    cout << "---------------------------------------------" << endl;
     int PORDER;
     for(PORDER=APROP->SIP_P_ORDER+1;PORDER<1;PORDER--)
     if(APROP->NUMREFALL>0.5*(APROP->SIP_P_ORDER+1)*(APROP->SIP_P_ORDER+2)+1){
@@ -96,10 +133,12 @@ void    F_WCS_TANSIP_SET(CL_APROP *APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *
 
 ///Error : in 0 NUM
     for(CID=0;CID<APROP->CCDNUM;CID++)
-    if(CPROP->NUMREF==0){
+    if(CPROP[CID].NUMREF==0){
+    cout << "---------------------------------------------" << endl;
     cout << "Warning : NUMBER OF REFERENCE in CCD " << CID << " IS 0" << endl;
     APROP->CCDPOSMODE=0;
     cout << "          USING INITIAL VALUES FOR CCD POSITIONS " << endl;
+    cout << "---------------------------------------------" << endl;
     }
 
 //SET INITIAL

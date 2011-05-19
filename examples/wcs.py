@@ -8,6 +8,8 @@ import numpy
 import lsst.pipette.readwrite as pipReadWrite
 import lsst.pex.policy as pexPolicy
 import lsst.obs.hscSim as hscSim
+import lsst.obs.suprimecam as scmapper
+
 import hsc.meas.tansip.doTansip as doTansip
 import hsc.meas.tansip.WCS_PL_MAIN       as hscTansip
 import hsc.meas.tansip.WCS_POSITION_PY as WCS_POSITION_PY
@@ -20,10 +22,12 @@ import lsst.pipette.plotter as pipPlot
 #WCS_POSITION.F_WCS_POSITION_TEST()
 
 plot = pipPlot.Plotter('wcs')
-
-mapper = hscSim.HscSimMapper(rerun="pre-DC2.4")
+#mapper = hscSim.HscSimMapper(rerun="fh-dc2.9-sc") fh-dc2.9-sc/
+#mapper = hscSim.HscSimMapper(rerun="pre-DC2.4")
+mapper = scmapper.SuprimecamMapper(rerun="fh-dc2.9-sc") 
 io = pipReadWrite.ReadWrite(mapper, ['visit'], fileKeys=['visit', 'ccd'])
-data = {'visit': 220}
+#data = {'visit': 220}
+data = {'visit': 126969}
 
 sources = io.read('src', data, ignore=True)
 md = io.read('calexp_md', data, ignore=True)
@@ -73,14 +77,28 @@ policy = pexPolicy.Policy.createPolicy(policyPath)
 #policy.set("LSIPORDER", 1)
 #policy.set("SIPORDER", 6)
 metadata = hscTansip.F_WCS_EMPTYMETADATA()
+CPROP = []
+CSIP = []
+PAIR = []
+CPROP.append(hscTansip.F_WCS_EMPTYCPROP())
+CSIP.append(hscTansip.F_WCS_EMPTYCSIP())
+PAIR.append(hscTansip.F_WCS_EMPTYPAIR())
+print CPROP
+print CSIP
+print PAIR
 
-wcsList = doTansip.doTansip(matches, policy=policy, camera=mapper.camera)
+#wcsList = doTansip.doTansip(matches, policy=policy, camera=mapper.camera)
 #wcsList = doTansip.doTansip_meta(matches, metadata, policy=policy, camera=mapper.camera)
+wcsList = doTansip.doTansip_CCP(matches, CPROP, CSIP, PAIR, policy=policy, camera=mapper.camera)
+
+print CPROP
+print CSIP
+print PAIR
 #position test
-X=9514.66
-Y=95.9925
-RA=150.766469
-DEC=1.966586
+X=-3311.42
+Y=-304.917
+RA=5.53589
+DEC=-0.577933
 print X
 print Y
 print RA
@@ -105,15 +123,17 @@ for wcs, matchList in zip(wcsList, matches):
     #print wcs.getFitsMetadata()
     for m in matchList:
         # First is catalogue, which is mistakenly and temporarily in degrees
-        ra1.append(m.first.getRa())
-        dec1.append(m.first.getDec())
+        ra1.append(m.first.getRa()*180./numpy.pi)
+        dec1.append(m.first.getDec()*180./numpy.pi)
         # Second is image, which needs to be re-computed from new wcs
         sky = wcs.pixelToSky(m.second.getXAstrom(), m.second.getYAstrom())
         ra2.append(sky.getLongitude(afwCoord.DEGREES))
         dec2.append(sky.getLatitude(afwCoord.DEGREES))
 
-        coord1 = afwCoord.Coord(afwGeom.makePointD(m.first.getRa(), m.first.getDec()), afwCoord.DEGREES)
-        dSky.append(coord1.angularSeparation(sky, afwCoord.DEGREES) * 3600.0)
+        coord1 = afwCoord.Coord(afwGeom.Point2D(m.first.getRa(), m.first.getDec()), afwCoord.DEGREES)
+#        coord1 = afwCoord.Coord(afwGeom.makePointD(m.first.getRa(), m.first.getDec()), afwCoord.DEGREES)
+        ###dSky.append(coord1.angularSeparation(sky, afwCoord.DEGREES) * 3600.0) ### --> did not work properly
+        dSky.append(coord1.angularSeparation(sky, afwCoord.RADIANS) * 180./numpy.pi)
 
 #        RADEC=WCS_POSITION_PY.F_WCS_POSITION_RADECfromXY(wcs,m.second.getXAstrom(), m.second.getYAstrom())
 #        ra3.append(RADEC[0])

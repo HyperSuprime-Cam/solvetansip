@@ -47,23 +47,34 @@ def doTansip_getresultWcs(matchListAllCcd, metaTANSIP, policy=None, camera=None,
             print "empty list for ccd %i: %s" % (i, m)
             matchListAllCcd[i] = []
             
-    resultWcs_V = hscTansip.F_WCS_TANSIP_V(matchListAllCcd, metaTANSIP, policy, camera)
-
+    WCSCCP = hscTansip.F_WCS_TANSIP_V(matchListAllCcd, metaTANSIP, policy, camera)
     print '... TAN-SIP fitting done.'
-
-    return resultWcs_V
+    return WCSCCP
 
 def doTansip(matchListAllCcd, policy=None, camera=None, rerun=None):
     print '--- doTansip ---'
     metaTANSIP = hscTansip.F_WCS_EMPTYMETADATA()
-    resultWcs_V = doTansip_getresultWcs(matchListAllCcd, metaTANSIP, policy, camera)
+    WCSCCP = doTansip_getresultWcs(matchListAllCcd, metaTANSIP, policy, camera)
+    resultWcs_V = WCSCCP.WCSPtr
+
+    return resultWcs_V
+
+def doTansip_CCP(matchListAllCcd, CPROP, CSIP, PAIR, policy=None, camera=None, rerun=None):
+    print '--- doTansip ---'
+
+    metaTANSIP = hscTansip.F_WCS_EMPTYMETADATA()
+    WCSCCP = doTansip_getresultWcs(matchListAllCcd, metaTANSIP, policy, camera)
+    resultWcs_V = WCSCCP.WCSPtr
+    CPROP[0] = WCSCCP.CPROP
+    CSIP[0] = WCSCCP.CSIP    PAIR[0] = WCSCCP.PAIR
 
     return resultWcs_V
 
 def doTansip_meta(matchListAllCcd, metadata, policy=None, camera=None, rerun=None):
     print '--- doTansip_meta ---'
     metaTANSIP = hscTansip.F_WCS_EMPTYMETADATA()
-    resultWcs_V = doTansip_getresultWcs(matchListAllCcd, metaTANSIP, policy, camera)
+    WCSCCP = doTansip_getresultWcs(matchListAllCcd, metaTANSIP, policy, camera)
+    resultWcs_V = WCSCCP.WCSPtr
 #add metaTANSIP in metadata
 #
 #

@@ -590,7 +590,7 @@ cout << "temprary output : " << fout << endl;
     if(i+j<APROP.SIP_P_ORDER+1){
         CSIP->SIP_ABD[0][ij]= CSIP->SS[0][0]*DCoef[0][ij]+ CSIP->SS[0][1]*DCoef[1][ij];
         CSIP->SIP_ABD[1][ij]= CSIP->SS[1][0]*DCoef[0][ij]+ CSIP->SS[1][1]*DCoef[1][ij];
-cout << CSIP->SIP_ABD[0][ij] << "	" << CSIP->SIP_ABD[1][ij] << endl;
+//cout << CSIP->SIP_ABD[0][ij] << "	" << CSIP->SIP_ABD[1][ij] << endl;
         ij++;	
     }
 

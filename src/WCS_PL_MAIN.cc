@@ -2,7 +2,7 @@
 //WCS_PL_MAIN.cc
 //main program for wcs in pipeline
 //
-//Last modification : 2011/02/22
+//Last modification : 2011/05/20
 //------------------------------------------------------------
 #include<vector>
 #include<iostream>
@@ -25,8 +25,12 @@ void    F_WCS_SETCC_PRECSIPfromFILE(CL_APROP, char *, char *,CL_CSIP *);
 void    F_WCS_MAKEPAIR(vector< vector< afwdetect::SourceMatch  >  > const &, CL_APROP *, CL_CPROP *,CL_PAIR *);
 void    F_WCS_SETDEFAULTDISTORTION(CL_CSIP *);
 dafbase::PropertySet::Ptr F_WCS_EMPTYMETADATA();
+CL_CPROP* F_WCS_EMPTYCPROP();
+CL_CSIP*  F_WCS_EMPTYCSIP();
+CL_PAIR*  F_WCS_EMPTYPAIR();
 afwImage::TanWcs::Ptr    F_WCS_MAKERESULTWCS(CL_CSIP *);
-vector<afwImage::TanWcs::Ptr>    F_WCS_TANSIP_V(vector< vector<afwdetect::SourceMatch> > const &matchlist,dafbase::PropertySet::Ptr &metaTANSIP,lsst::pex::policy::Policy::Ptr &APROPPolicy,lsst::afw::cameraGeom::Camera::Ptr &camera/*,lsst::daf::base::PropertySet::Ptr &metadata,bool verbose*/){
+//vector<afwImage::TanWcs::Ptr>    F_WCS_TANSIP_V(vector< vector<afwdetect::SourceMatch> > const &matchlist,dafbase::PropertySet::Ptr &metaTANSIP,lsst::pex::policy::Policy::Ptr &APROPPolicy,lsst::afw::cameraGeom::Camera::Ptr &camera/*,lsst::daf::base::PropertySet::Ptr &metadata,bool verbose*/,CL_CPROP *CPROPout,CL_CSIP *CSIPout, CL_PAIR *PAIRout){
+CL_WCSCCP F_WCS_TANSIP_V(vector< vector<afwdetect::SourceMatch> > const &matchlist,dafbase::PropertySet::Ptr &metaTANSIP,lsst::pex::policy::Policy::Ptr &APROPPolicy,lsst::afw::cameraGeom::Camera::Ptr &camera/*,lsst::daf::base::PropertySet::Ptr &metadata,bool verbose*/){
     cout <<endl<< "--- WCS_PL_MAIN :AAA ---" << endl;
 
 //------------------------------------------------------
@@ -109,6 +113,8 @@ vector<afwImage::TanWcs::Ptr>    F_WCS_TANSIP_V(vector< vector<afwdetect::Source
     cout << "--- WCS_PL_MAIN : F_WCS_TANSIP ---" << endl;
     F_WCS_TANSIP(APROP,CPROP,PAIR,CSIP);
 
+// ------------------------------------------------------
+//SET METADATA
 //------------------------------------------------------
 //MAKING VECTOR OF WCS CLASS
     vector <afwImage::TanWcs::Ptr> resultWcs_V;
@@ -120,23 +126,14 @@ vector<afwImage::TanWcs::Ptr>    F_WCS_TANSIP_V(vector< vector<afwdetect::Source
 //    resultWcs_V.push_back(F_WCS_MAKERESULTWCS(&CSIP[CID]));
     }
 
-//------------------------------------------------------
-    delete [] CPROP;
-    delete [] PAIR;
-    for(CID=0;CID<APROP.CCDNUM+1;CID++){
-    delete [] CSIP[CID].SIP_AB[0];
-    delete [] CSIP[CID].SIP_AB[1];
-    delete [] CSIP[CID].SIP_ABP[0];
-    delete [] CSIP[CID].SIP_ABP[1];
-    delete [] CSIP[CID].SIP_ABD[0];
-    delete [] CSIP[CID].SIP_ABD[1];
-    }
-    delete [] CSIP[APROP.CCDNUM].PREDICT_SIP_ABD[0];
-    delete [] CSIP[APROP.CCDNUM].PREDICT_SIP_ABD[1];
-    delete [] CSIP;
-//------------------------------------------------------
+    CL_WCSCCP WCSCCP;
+    WCSCCP.WCSPtr = resultWcs_V;
+    WCSCCP.CPROP = CPROP;
+    WCSCCP.CSIP  = CSIP;
+    WCSCCP.PAIR  = PAIR;
     cout << "--- F_WCS_PL_MAIN : ZZZ ---" << endl;
-    return resultWcs_V;
+    return WCSCCP;
+
 }
 //SUB ROUTINES
 void    F_WCS_MAKEAPROP(lsst::pex::policy::Policy::Ptr &APROPPolicy, CL_APROP *APROP){
@@ -461,4 +458,21 @@ dafbase::PropertySet::Ptr F_WCS_EMPTYMETADATA(){
 
     return metadata;
 }
+CL_CPROP* F_WCS_EMPTYCPROP(){
+    CL_CPROP *CPROPout;
 
+    CPROPout = new CL_CPROP;
+    return CPROPout;
+}
+CL_CSIP*  F_WCS_EMPTYCSIP(){
+    CL_CSIP *CSIPout;
+
+    CSIPout = new CL_CSIP;
+    return CSIPout;
+}
+CL_PAIR* F_WCS_EMPTYPAIR(){
+    CL_PAIR *PAIRout;
+
+    PAIRout = new CL_PAIR;
+    return PAIRout;
+}

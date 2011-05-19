@@ -12,7 +12,9 @@ void	F_RMS(int NUM,double *data,double *STAT){
 	double SUM[2],VAR;
 
 	if(NUM<2){
-		cout << "Error : Statistics.cc : Can't calculate RMS, because NUM of data is less than 2. : " << NUM << endl;
+                cout << "---------------------------------------------" << endl;
+		cout << "Error : Statistics.cc : Can't calculate RMS, because NUM of data is less than 2. NUM = : " << NUM << endl;
+                cout << "---------------------------------------------" << endl;
 		return;
 	}
 	STAT[0]=STAT[1]=0;
