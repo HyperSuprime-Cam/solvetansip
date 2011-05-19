@@ -28,11 +28,20 @@ def doTansip_getresultWcs(matchListAllCcd, metaTANSIP, policy=None, camera=None,
         rerun           - ignored
     """
     
-    if not policy:
-        policyPath = os.path.join(os.getenv("SOLVETANSIP_DIR"), "policy", "WCS_MAKEAPROP.paf")
-        policy = pexPolicy.Policy.createPolicy(policyPath)
-    if not policy:
-        raise RuntimeError("no policy available to doTansip()")
+    #defaultPath = os.path.join(os.getenv("SOLVETANSIP_DIR"), "policy", "WCS_MAKEAPROP_Dictionary.paf")
+    defaultFile = pexPolicy.DefaultPolicyFile("SOLVETANSIP", "WCS_MAKEAPROP_Dictionary.paf", "policy")
+    defaults = pexPolicy.Policy.createPolicy(defaultFile, defaultFile.getRepositoryPath())
+
+    print "Defaults:"
+    print defaults.toString()
+
+    if policy:
+        policy.mergeDefaults(defaults)
+    else:
+        policy = defaults
+
+    print "Final:"
+    print policy.toString()
         
     if not camera:
         raise RuntimeError("no camera passed in to doTansip()")
