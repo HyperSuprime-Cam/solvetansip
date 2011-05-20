@@ -27,24 +27,16 @@ def doTansip_getresultWcs(matchListAllCcd, metaTANSIP, policy=None, camera=None,
         camera          - cameraGeom
         rerun           - ignored
     """
-    
-    #defaultPath = os.path.join(os.getenv("SOLVETANSIP_DIR"), "policy", "WCS_MAKEAPROP_Dictionary.paf")
+        
+    if not camera:
+        raise RuntimeError("no camera passed in to doTansip()")
+
     defaultFile = pexPolicy.DefaultPolicyFile("SOLVETANSIP", "WCS_MAKEAPROP_Dictionary.paf", "policy")
     defaults = pexPolicy.Policy.createPolicy(defaultFile, defaultFile.getRepositoryPath())
-
-    print "Defaults:"
-    print defaults.toString()
-
     if policy:
         policy.mergeDefaults(defaults)
     else:
         policy = defaults
-
-    print "Final:"
-    print policy.toString()
-        
-    if not camera:
-        raise RuntimeError("no camera passed in to doTansip()")
     
     print "len(match)=%d order=(%d,%d,%d)" % (len(matchListAllCcd),
                                            policy.get('LSIPORDER'),
