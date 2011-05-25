@@ -94,12 +94,20 @@ CL_WCSCCP F_WCS_TANSIP_V(vector< vector<afwdetect::SourceMatch> > const &matchli
     int CID;
     CSIP = new CL_CSIP[APROP.CCDNUM+1];
     for(CID=0;CID<APROP.CCDNUM+1;CID++){
-        CSIP[CID].SIP_AB[0]  = new double[APROP.SIP_ORDER*APROP.SIP_ORDER+1];
-        CSIP[CID].SIP_AB[1]  = new double[APROP.SIP_ORDER*APROP.SIP_ORDER+1];
-        CSIP[CID].SIP_ABP[0] = new double[APROP.SIP_P_ORDER*APROP.SIP_P_ORDER+1];
-        CSIP[CID].SIP_ABP[1] = new double[APROP.SIP_P_ORDER*APROP.SIP_P_ORDER+1];
-        CSIP[CID].SIP_ABD[0] = new double[APROP.SIP_P_ORDER*APROP.SIP_P_ORDER+1];
-        CSIP[CID].SIP_ABD[1] = new double[APROP.SIP_P_ORDER*APROP.SIP_P_ORDER+1];
+        CSIP[CID].SIP_AB[0]   = new double[(APROP.SIP_ORDER  +1)*(APROP.SIP_ORDER  +2)];
+        CSIP[CID].SIP_AB[1]   = new double[(APROP.SIP_ORDER  +1)*(APROP.SIP_ORDER  +2)];
+        CSIP[CID].SIP_ABP[0]  = new double[(APROP.SIP_P_ORDER+1)*(APROP.SIP_P_ORDER+2)];
+        CSIP[CID].SIP_ABP[1]  = new double[(APROP.SIP_P_ORDER+1)*(APROP.SIP_P_ORDER+2)];
+        CSIP[CID].SIP_ABD[0]  = new double[(APROP.SIP_P_ORDER+1)*(APROP.SIP_P_ORDER+2)];
+        CSIP[CID].SIP_ABD[1]  = new double[(APROP.SIP_P_ORDER+1)*(APROP.SIP_P_ORDER+2)];
+        CSIP[CID].TCoef[0]    = new double[(APROP.SIP_ORDER  +1)*(APROP.SIP_ORDER  +2)];
+        CSIP[CID].TCoef[1]    = new double[(APROP.SIP_P_ORDER+1)*(APROP.SIP_P_ORDER+2)];
+        CSIP[CID].TPCoef[0]   = new double[(APROP.SIP_ORDER  +1)*(APROP.SIP_ORDER  +2)];
+        CSIP[CID].TPCoef[1]   = new double[(APROP.SIP_P_ORDER+1)*(APROP.SIP_P_ORDER+2)];
+        CSIP[CID].SIP_MAG     = new double[(APROP.SIP_P_ORDER+1)*(APROP.SIP_P_ORDER+2)];
+        CSIP[CID].SIP_SHEAR[0]= new double[(APROP.SIP_P_ORDER+1)*(APROP.SIP_P_ORDER+2)];
+        CSIP[CID].SIP_SHEAR[1]= new double[(APROP.SIP_P_ORDER+1)*(APROP.SIP_P_ORDER+2)];
+        CSIP[CID].SIP_ROT     = new double[(APROP.SIP_P_ORDER+1)*(APROP.SIP_P_ORDER+2)];
     }
     CSIP[APROP.CCDNUM].PREDICT_SIP_ABD[0] = new double[(APROP.PREDICT_SIP_D_ORDER+2)*(APROP.PREDICT_SIP_D_ORDER+1)];
     CSIP[APROP.CCDNUM].PREDICT_SIP_ABD[1] = new double[(APROP.PREDICT_SIP_D_ORDER+2)*(APROP.PREDICT_SIP_D_ORDER+1)];
@@ -132,6 +140,14 @@ CL_WCSCCP F_WCS_TANSIP_V(vector< vector<afwdetect::SourceMatch> > const &matchli
     WCSCCP.CSIP  = CSIP;
     WCSCCP.PAIR  = PAIR;
     cout << "--- F_WCS_PL_MAIN : ZZZ ---" << endl;
+//------------------------------------------------------
+/*    for(CID=0;CID<APROP.CCDNUM+1;CID++){
+        delete [] CSIP[CID].TCoef[0];
+        delete [] CSIP[CID].TCoef[1];
+        delete [] CSIP[CID].TPCoef[0];
+        delete [] CSIP[CID].TPCoef[1];
+    }*/
+//------------------------------------------------------
     return WCSCCP;
 
 }

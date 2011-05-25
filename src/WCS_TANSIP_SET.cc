@@ -20,11 +20,11 @@ void    F_WCS_TANSIP_SET(CL_APROP *APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *
     cout << "--- WCS_TANSIP : SET : CHEKING PARAMERTERS---" << endl;
     APROP->CHECKPARAM=0;
 
-    if(strcmp(APROP->CRPIXMODE,"AUTO")==0||strcmp(APROP->CRPIXMODE,"PIX")==0||strcmp(APROP->CRPIXMODE,"VAL")==0){
+    if(strcmp(APROP->CRPIXMODE,"AUTO")==0||strcmp(APROP->CRPIXMODE,"PIX")==0||strcmp(APROP->CRPIXMODE,"VAL")==0||strcmp(APROP->CRPIXMODE,"LAXIS")==0){
     }else{
         cout << "CRPIXMODE is " << APROP->CRPIXMODE << endl;
         cout << "---------------------------------------------" << endl;
-        cout << "Warning : CRPIXMODE isn't 'AUTO' or 'PIX' or 'VAL'" << endl;
+        cout << "Warning : CRPIXMODE isn't 'AUTO' or 'PIX' or 'VAL' or 'LAXIS'" << endl;
         sprintf(APROP->CRPIXMODE,"AUTO");
         cout << "Warning : SET CRPIXMODE : " << APROP->CRPIXMODE << endl;
         cout << "---------------------------------------------" << endl;
@@ -62,17 +62,18 @@ void    F_WCS_TANSIP_SET(CL_APROP *APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *
         cout << "Warning : SET LSIPORDER : " << APROP->SIP_L_ORDER << endl;
         cout << "---------------------------------------------" << endl;
     }
-    for(CID=0;CID<APROP->CCDNUM;CID++)
-    if(APROP->BASISCID==CID){
-    break;
-    }else{
+    for(CID=0;CID<APROP->CCDNUM;CID++){
+        if(APROP->BASISCID==CID)
+        break;
+
+        if(APROP->CCDNUM-1==CID){        
         cout << "BASISCCD is " << APROP->BASISCID << endl;
         cout << "---------------------------------------------" << endl;
         cout << "Warning : in BASISCCD" << endl;
         APROP->BASISCID=0;
         cout << "Warning : SET BASISCCD : " << APROP->BASISCID << endl;
         cout << "---------------------------------------------" << endl;
-        break;
+        }
     }
 
 

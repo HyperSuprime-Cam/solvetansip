@@ -169,3 +169,238 @@ void    F_INTSIP(int ORDER,double *dxCoef,double *dyCoef,double *Coef){
 #undef LP
 #undef PI
 #undef INFMIN
+void    F_SIPROT(int ORDER, double THETA, double *InCoef, double *OutCoef){
+    int i,j,ij;
+    double **Coef[2];
+
+    Coef[0] = new double*[ORDER+1];
+    Coef[1] = new double*[ORDER+1];
+    for(i=0;i<ORDER+1;i++){
+    Coef[0][i] = new double[ORDER+1];
+    Coef[1][i] = new double[ORDER+1];
+    for(j=0;j<ORDER+1;j++)
+    Coef[0][i][j]=Coef[1][i][j]=0;
+    }
+//--------------------------------------------------
+
+    double ABS[10],PHI[10],Z[10][2];
+
+    ij=0;
+    for(i=0;i<ORDER+1;i++)
+    for(j=0;j<ORDER+1;j++)
+    if(i+j<ORDER+1)
+    Coef[0][i][j]=InCoef[ij++];
+
+// 0 -----
+        if(ORDER > -0.5)
+        Coef[1][0][0] =Coef[0][0][0];
+
+// 1 -----
+        if(ORDER >  0.5){
+            ABS[1]=hypot(Coef[0][0][1],Coef[0][1][0]);
+            PHI[1]=atan2(Coef[0][0][1],Coef[0][1][0]);
+            Coef[1][1][0]=ABS[1]*cos(PHI[1]-1*THETA);
+            Coef[1][0][1]=ABS[1]*sin(PHI[1]-1*THETA);
+        }
+
+// 2 -----
+        if(ORDER >  1.5){
+            Z[2][0]=0.5*(Coef[0][2][0]-Coef[0][0][2]);
+            Z[2][1]=0.5*(Coef[0][1][1]);
+            ABS[0]=0.5*(Coef[0][2][0]+Coef[0][0][2]);
+            ABS[2]=hypot(Z[2][1],Z[2][0]);
+            PHI[2]=atan2(Z[2][1],Z[2][0]);
+            Coef[1][2][0]=1*ABS[0]+1*ABS[2]*cos(PHI[2]-2*THETA);
+            Coef[1][1][1]=0*ABS[0]+2*ABS[2]*sin(PHI[2]-2*THETA);
+            Coef[1][0][2]=1*ABS[0]-1*ABS[2]*cos(PHI[2]-2*THETA);
+        }
+
+// 3 -----
+        if(ORDER >  2.5){
+            Z[1][0]=0.25*(3*Coef[0][3][0]+  Coef[0][1][2]);
+            Z[1][1]=0.25*(  Coef[0][2][1]+3*Coef[0][0][3]);
+            Z[3][0]=0.25*(  Coef[0][3][0]-  Coef[0][1][2]);
+            Z[3][1]=0.25*(  Coef[0][2][1]-  Coef[0][0][3]);
+            ABS[1]=hypot(Z[1][1],Z[1][0]);
+            ABS[3]=hypot(Z[3][1],Z[3][0]);
+            PHI[1]=atan2(Z[1][1],Z[1][0]);
+            PHI[3]=atan2(Z[3][1],Z[3][0]);
+            Coef[1][3][0]=1*ABS[1]*cos(PHI[1]-1*THETA)+1*ABS[3]*cos(PHI[3]-3*THETA);
+            Coef[1][2][1]=1*ABS[1]*sin(PHI[1]-1*THETA)+3*ABS[3]*sin(PHI[3]-3*THETA);
+            Coef[1][1][2]=1*ABS[1]*cos(PHI[1]-1*THETA)-3*ABS[3]*cos(PHI[3]-3*THETA);
+            Coef[1][0][3]=1*ABS[1]*sin(PHI[1]-1*THETA)-1*ABS[3]*sin(PHI[3]-3*THETA);
+        }
+
+// 4 -----
+        if(ORDER >  3.5){
+            Z[2][0]=  0.5*(Coef[0][4][0]-Coef[0][0][4]);
+            Z[2][1]= 0.25*(Coef[0][3][1]+Coef[0][1][3]);
+            Z[4][0]=0.125*(Coef[0][4][0]-Coef[0][2][2]+Coef[0][0][4]);
+            Z[4][1]=0.125*(Coef[0][3][1]-Coef[0][1][3]);
+            ABS[0]=0.125*(3*Coef[0][4][0]+Coef[0][2][2]+3*Coef[0][0][4]);
+            ABS[2]=hypot(Z[2][1],Z[2][0]);
+            ABS[4]=hypot(Z[4][1],Z[4][0]);
+            PHI[2]=atan2(Z[2][1],Z[2][0]);
+            PHI[4]=atan2(Z[4][1],Z[4][0]);
+            Coef[1][4][0]=1*ABS[0]+1*ABS[2]*cos(PHI[2]-2*THETA)+1*ABS[4]*cos(PHI[4]-4*THETA);
+            Coef[1][3][1]=0*ABS[0]+2*ABS[2]*sin(PHI[2]-2*THETA)+4*ABS[4]*sin(PHI[4]-4*THETA);
+            Coef[1][2][2]=2*ABS[0]+0*ABS[2]*cos(PHI[2]-2*THETA)-6*ABS[4]*cos(PHI[4]-4*THETA);
+            Coef[1][1][3]=0*ABS[0]+2*ABS[2]*sin(PHI[2]-2*THETA)-4*ABS[4]*sin(PHI[4]-4*THETA);
+            Coef[1][0][4]=1*ABS[0]-1*ABS[2]*cos(PHI[2]-2*THETA)+1*ABS[4]*cos(PHI[4]-4*THETA);
+        }
+
+// 5 -----
+        if(ORDER >  4.5){
+            Z[1][0]=(5*Coef[0][5][0]+  Coef[0][3][2]+  Coef[0][1][4])/16.0*2.0;
+            Z[1][1]=(  Coef[0][4][1]+  Coef[0][2][3]+5*Coef[0][0][5])/16.0*2.0;
+            Z[3][0]=(5*Coef[0][5][0]-  Coef[0][3][2]-3*Coef[0][1][4])/16.0;
+            Z[3][1]=(3*Coef[0][4][1]+  Coef[0][2][3]-5*Coef[0][0][5])/16.0;
+            Z[5][0]=(  Coef[0][5][0]-  Coef[0][3][2]+  Coef[0][1][4])/16.0;
+            Z[5][1]=(  Coef[0][4][1]-  Coef[0][2][3]+  Coef[0][0][5])/16.0;
+            ABS[1]=hypot(Z[1][1],Z[1][0]);
+            ABS[3]=hypot(Z[3][1],Z[3][0]);
+            ABS[5]=hypot(Z[5][1],Z[5][0]);
+            PHI[1]=atan2(Z[1][1],Z[1][0]);
+            PHI[3]=atan2(Z[3][1],Z[3][0]);
+            PHI[5]=atan2(Z[5][1],Z[5][0]);
+            Coef[1][5][0]=1*ABS[1]*cos(PHI[1]-1*THETA)+1*ABS[3]*cos(PHI[3]-3*THETA)+ 1*ABS[5]*cos(PHI[5]-5*THETA);
+            Coef[1][4][1]=1*ABS[1]*sin(PHI[1]-1*THETA)+3*ABS[3]*sin(PHI[3]-3*THETA)+ 5*ABS[5]*sin(PHI[5]-5*THETA);
+            Coef[1][3][2]=2*ABS[1]*cos(PHI[1]-1*THETA)-2*ABS[3]*cos(PHI[3]-3*THETA)-10*ABS[5]*cos(PHI[5]-5*THETA);
+            Coef[1][2][3]=2*ABS[1]*sin(PHI[1]-1*THETA)+2*ABS[3]*sin(PHI[3]-3*THETA)-10*ABS[5]*sin(PHI[5]-5*THETA);
+            Coef[1][1][4]=1*ABS[1]*cos(PHI[1]-1*THETA)-3*ABS[3]*cos(PHI[3]-3*THETA)+ 5*ABS[5]*cos(PHI[5]-5*THETA);
+            Coef[1][0][5]=1*ABS[1]*sin(PHI[1]-1*THETA)-1*ABS[3]*sin(PHI[3]-3*THETA)+ 1*ABS[5]*sin(PHI[5]-5*THETA);
+        }
+
+// 6 -----
+        if(ORDER >  5.5){
+            Z[2][0]=(15*Coef[0][6][0]+  Coef[0][4][2]-  Coef[0][2][4]-15*Coef[0][0][6])/32.0;
+            Z[2][1]=( 5*Coef[0][5][1]+3*Coef[0][3][3]+5*Coef[0][1][5])/32.0;
+            Z[4][0]=( 3*Coef[0][6][0]-  Coef[0][4][2]-  Coef[0][2][4]+ 3*Coef[0][0][6])/32.0*2.0;
+            Z[4][1]=( 4*Coef[0][5][1]+0*Coef[0][3][3]-4*Coef[0][1][5])/32.0;
+            Z[6][0]=( 1*Coef[0][6][0]-  Coef[0][4][2]+  Coef[0][2][4]-   Coef[0][0][6])/32.0;
+            Z[6][1]=( 1*Coef[0][5][1]-1*Coef[0][3][3]+1*Coef[0][1][5])/32.0;
+            ABS[0]= ( 5*Coef[0][6][0]+  Coef[0][4][2]+  Coef[0][2][4]+ 5*Coef[0][0][6])/32.0*2.0;
+            ABS[2]=hypot(Z[2][1],Z[2][0]);
+            ABS[4]=hypot(Z[4][1],Z[4][0]);
+            ABS[6]=hypot(Z[6][1],Z[6][0]);
+            PHI[2]=atan2(Z[2][1],Z[2][0]);
+            PHI[4]=atan2(Z[4][1],Z[4][0]);
+            PHI[6]=atan2(Z[6][1],Z[6][0]);
+            Coef[1][6][0]=1*ABS[0]+1*ABS[2]*cos(PHI[2]-2*THETA)+1*ABS[4]*cos(PHI[4]-4*THETA)+ 1*ABS[6]*cos(PHI[6]-6*THETA);
+            Coef[1][5][1]=0*ABS[0]+2*ABS[2]*sin(PHI[2]-2*THETA)+4*ABS[4]*sin(PHI[4]-4*THETA)+ 6*ABS[6]*sin(PHI[6]-6*THETA);
+            Coef[1][4][2]=3*ABS[0]+1*ABS[2]*cos(PHI[2]-2*THETA)-5*ABS[4]*cos(PHI[4]-4*THETA)-15*ABS[6]*cos(PHI[6]-6*THETA);
+            Coef[1][3][3]=0*ABS[0]+4*ABS[2]*sin(PHI[2]-2*THETA)+0*ABS[4]*sin(PHI[4]-4*THETA)-20*ABS[6]*sin(PHI[6]-6*THETA);
+            Coef[1][2][4]=3*ABS[0]-1*ABS[2]*cos(PHI[2]-2*THETA)-5*ABS[4]*cos(PHI[4]-4*THETA)+15*ABS[6]*cos(PHI[6]-6*THETA);
+            Coef[1][1][5]=0*ABS[0]+2*ABS[2]*sin(PHI[2]-2*THETA)-4*ABS[4]*sin(PHI[4]-4*THETA)+ 6*ABS[6]*sin(PHI[6]-6*THETA);
+            Coef[1][0][6]=1*ABS[0]-1*ABS[2]*cos(PHI[2]-2*THETA)+1*ABS[4]*cos(PHI[4]-4*THETA)- 1*ABS[6]*cos(PHI[6]-6*THETA);
+        }
+
+// 7 -----
+        if(ORDER >  6.5){
+            Z[1][0]=(35*Coef[0][7][0]+5*Coef[0][5][2]+3*Coef[0][3][4]+ 5*Coef[0][1][6])/64.0;
+            Z[1][1]=( 5*Coef[0][6][1]+3*Coef[0][4][3]+5*Coef[0][2][5]+35*Coef[0][0][7])/64.0;
+            Z[3][0]=(21*Coef[0][7][0]-1*Coef[0][5][2]-3*Coef[0][3][4]- 9*Coef[0][1][6])/64.0;
+            Z[3][1]=( 9*Coef[0][6][1]+3*Coef[0][4][3]+1*Coef[0][2][5]-21*Coef[0][0][7])/64.0;
+            Z[5][0]=( 7*Coef[0][7][0]-3*Coef[0][5][2]-1*Coef[0][3][4]+ 5*Coef[0][1][6])/64.0;
+            Z[5][1]=( 5*Coef[0][6][1]-1*Coef[0][4][3]-3*Coef[0][2][5]+ 7*Coef[0][0][7])/64.0;
+            Z[7][0]=( 1*Coef[0][7][0]-1*Coef[0][5][2]+1*Coef[0][3][4]- 1*Coef[0][1][6])/64.0;
+            Z[7][1]=( 1*Coef[0][6][1]-1*Coef[0][4][3]+1*Coef[0][2][5]- 1*Coef[0][0][7])/64.0;
+            ABS[1]=hypot(Z[1][1],Z[1][0]);
+            ABS[3]=hypot(Z[3][1],Z[3][0]);
+            ABS[5]=hypot(Z[5][1],Z[5][0]);
+            ABS[7]=hypot(Z[7][1],Z[7][0]);
+            PHI[1]=atan2(Z[1][1],Z[1][0]);
+            PHI[3]=atan2(Z[3][1],Z[3][0]);
+            PHI[5]=atan2(Z[5][1],Z[5][0]);
+            PHI[7]=atan2(Z[7][1],Z[7][0]);
+            Coef[1][7][0]=1*ABS[1]*cos(PHI[1]-1*THETA)+1*ABS[3]*cos(PHI[3]-3*THETA)+ 1*ABS[5]*cos(PHI[5]-5*THETA)+ 1*ABS[7]*cos(PHI[7]-7*THETA);
+            Coef[1][6][1]=1*ABS[1]*sin(PHI[1]-1*THETA)+3*ABS[3]*sin(PHI[3]-3*THETA)+ 5*ABS[5]*sin(PHI[5]-5*THETA)+ 7*ABS[7]*sin(PHI[7]-7*THETA);
+            Coef[1][5][2]=3*ABS[1]*cos(PHI[1]-1*THETA)-1*ABS[3]*cos(PHI[3]-3*THETA)- 9*ABS[5]*cos(PHI[5]-5*THETA)-21*ABS[7]*cos(PHI[7]-7*THETA);
+            Coef[1][4][3]=3*ABS[1]*sin(PHI[1]-1*THETA)+5*ABS[3]*sin(PHI[3]-3*THETA)- 5*ABS[5]*sin(PHI[5]-5*THETA)-35*ABS[7]*sin(PHI[7]-7*THETA);
+            Coef[1][3][4]=3*ABS[1]*cos(PHI[1]-1*THETA)-5*ABS[3]*cos(PHI[3]-3*THETA)- 5*ABS[5]*cos(PHI[5]-5*THETA)+35*ABS[7]*cos(PHI[7]-7*THETA);
+            Coef[1][2][5]=3*ABS[1]*sin(PHI[1]-1*THETA)+1*ABS[3]*sin(PHI[3]-3*THETA)- 9*ABS[5]*sin(PHI[5]-5*THETA)+21*ABS[7]*sin(PHI[7]-7*THETA);
+            Coef[1][1][6]=1*ABS[1]*cos(PHI[1]-1*THETA)-3*ABS[3]*cos(PHI[3]-3*THETA)+ 5*ABS[5]*cos(PHI[5]-5*THETA)- 7*ABS[7]*cos(PHI[7]-7*THETA);
+            Coef[1][0][7]=1*ABS[1]*sin(PHI[1]-1*THETA)-1*ABS[3]*sin(PHI[3]-3*THETA)+ 1*ABS[5]*sin(PHI[5]-5*THETA)- 1*ABS[7]*sin(PHI[7]-7*THETA);
+        }
+
+// 8 -----
+        if(ORDER >  7.5){
+            Z[2][0]=(56*Coef[0][8][0]+4*Coef[0][6][2]+0*Coef[0][4][4]- 4*Coef[0][2][6]-56*Coef[0][0][8])/128.0;
+            Z[2][1]=(14*Coef[0][7][1]+6*Coef[0][5][3]+6*Coef[0][3][5]+14*Coef[0][1][7])/128.0;
+            Z[4][0]=(28*Coef[0][8][0]-4*Coef[0][6][2]-4*Coef[0][4][4]- 4*Coef[0][2][6]+28*Coef[0][0][8])/128.0;
+            Z[4][1]=(14*Coef[0][7][1]+2*Coef[0][5][3]-2*Coef[0][3][5]-14*Coef[0][1][7])/128.0;
+            Z[6][0]=( 8*Coef[0][8][0]-4*Coef[0][6][2]+0*Coef[0][4][4]+ 4*Coef[0][2][6]- 8*Coef[0][0][8])/128.0;
+            Z[6][1]=( 6*Coef[0][7][1]-2*Coef[0][5][3]-2*Coef[0][3][5]+ 6*Coef[0][1][7])/128.0;
+            Z[8][0]=( 1*Coef[0][8][0]-1*Coef[0][6][2]+1*Coef[0][4][4]- 1*Coef[0][2][6]+ 1*Coef[0][0][8])/128.0;
+            Z[8][1]=( 1*Coef[0][7][1]-1*Coef[0][5][3]+1*Coef[0][3][5]- 1*Coef[0][1][7])/128.0;
+            ABS[0]= (35*Coef[0][8][0]+5*Coef[0][6][2]+3*Coef[0][4][4]+ 5*Coef[0][2][6]+35*Coef[0][0][8])/128.0;
+            ABS[2]=hypot(Z[2][1],Z[2][0]);
+            ABS[4]=hypot(Z[4][1],Z[4][0]);
+            ABS[6]=hypot(Z[6][1],Z[6][0]);
+            ABS[8]=hypot(Z[8][1],Z[8][0]);
+            PHI[2]=atan2(Z[2][1],Z[2][0]);
+            PHI[4]=atan2(Z[4][1],Z[4][0]);
+            PHI[6]=atan2(Z[6][1],Z[6][0]);
+            PHI[8]=atan2(Z[8][1],Z[8][0]);
+            Coef[1][8][0]=1*ABS[0]+1*ABS[2]*cos(PHI[2]-2*THETA)+ 1*ABS[4]*cos(PHI[4]-4*THETA)+ 1*ABS[6]*cos(PHI[6]-6*THETA)+ 1*ABS[8]*cos(PHI[8]-8*THETA);
+            Coef[1][7][1]=0*ABS[0]+2*ABS[2]*sin(PHI[2]-2*THETA)+ 4*ABS[4]*sin(PHI[4]-4*THETA)+ 6*ABS[6]*sin(PHI[6]-6*THETA)+ 8*ABS[8]*sin(PHI[8]-8*THETA);
+            Coef[1][6][2]=4*ABS[0]+2*ABS[2]*cos(PHI[2]-2*THETA)- 4*ABS[4]*cos(PHI[4]-4*THETA)-14*ABS[6]*cos(PHI[6]-6*THETA)-28*ABS[8]*cos(PHI[8]-8*THETA);
+            Coef[1][5][3]=0*ABS[0]+6*ABS[2]*sin(PHI[2]-2*THETA)+ 4*ABS[4]*sin(PHI[4]-4*THETA)-14*ABS[6]*sin(PHI[6]-6*THETA)-56*ABS[8]*sin(PHI[8]-8*THETA);
+            Coef[1][4][4]=6*ABS[0]+0*ABS[2]*cos(PHI[2]-2*THETA)-10*ABS[4]*cos(PHI[4]-4*THETA)+ 0*ABS[6]*cos(PHI[6]-6*THETA)+70*ABS[8]*cos(PHI[8]-8*THETA);
+            Coef[1][3][5]=0*ABS[0]+6*ABS[2]*sin(PHI[2]-2*THETA)- 4*ABS[4]*sin(PHI[4]-4*THETA)-14*ABS[6]*sin(PHI[6]-6*THETA)+56*ABS[8]*sin(PHI[8]-8*THETA);
+            Coef[1][2][6]=4*ABS[0]-2*ABS[2]*cos(PHI[2]-2*THETA)- 4*ABS[4]*cos(PHI[4]-4*THETA)+14*ABS[6]*cos(PHI[6]-6*THETA)-28*ABS[8]*cos(PHI[8]-8*THETA);
+            Coef[1][1][7]=0*ABS[0]+2*ABS[2]*sin(PHI[2]-2*THETA)- 4*ABS[4]*sin(PHI[4]-4*THETA)+ 6*ABS[6]*sin(PHI[6]-6*THETA)- 8*ABS[8]*sin(PHI[8]-8*THETA);
+            Coef[1][0][8]=1*ABS[0]-1*ABS[2]*cos(PHI[2]-2*THETA)+ 1*ABS[4]*cos(PHI[4]-4*THETA)- 1*ABS[6]*cos(PHI[6]-6*THETA)+ 1*ABS[8]*cos(PHI[8]-8*THETA);
+        }
+
+// 9 -----
+        if(ORDER >  8.5){
+            Z[1][0]=(126*Coef[0][9][0]+14*Coef[0][7][2]+6*Coef[0][5][4]+ 6*Coef[0][3][6]+ 14*Coef[0][1][8])/256.0;
+            Z[1][1]=( 14*Coef[0][8][1]+ 6*Coef[0][6][3]+6*Coef[0][4][5]+14*Coef[0][2][7]+126*Coef[0][0][9])/256.0;
+            Z[3][0]=( 84*Coef[0][9][0]+ 0*Coef[0][7][2]-4*Coef[0][5][4]- 8*Coef[0][3][6]- 28*Coef[0][1][8])/256.0;
+            Z[3][1]=( 28*Coef[0][8][1]+ 8*Coef[0][6][3]+4*Coef[0][4][5]+ 0*Coef[0][2][7]- 84*Coef[0][0][9])/256.0;
+            Z[5][0]=( 36*Coef[0][9][0]- 8*Coef[0][7][2]-4*Coef[0][5][4]+ 0*Coef[0][3][6]+ 20*Coef[0][1][8])/256.0;
+            Z[5][1]=( 20*Coef[0][8][1]- 0*Coef[0][6][3]-4*Coef[0][4][5]- 8*Coef[0][2][7]+ 36*Coef[0][0][9])/256.0;
+            Z[7][0]=(  9*Coef[0][9][0]- 5*Coef[0][7][2]+1*Coef[0][5][4]+ 3*Coef[0][3][6]-  7*Coef[0][1][8])/256.0;
+            Z[7][1]=(  7*Coef[0][8][1]- 3*Coef[0][6][3]-1*Coef[0][4][5]+ 5*Coef[0][2][7]-  9*Coef[0][0][9])/256.0;
+            Z[9][0]=(  1*Coef[0][9][0]- 1*Coef[0][7][2]+1*Coef[0][5][4]- 1*Coef[0][3][6]+  1*Coef[0][1][8])/256.0;
+            Z[9][1]=(  1*Coef[0][8][1]- 1*Coef[0][6][3]+1*Coef[0][4][5]- 1*Coef[0][2][7]+  1*Coef[0][0][9])/256.0;
+            ABS[1]=hypot(Z[1][1],Z[1][0]);
+            ABS[3]=hypot(Z[3][1],Z[3][0]);
+            ABS[5]=hypot(Z[5][1],Z[5][0]);
+            ABS[7]=hypot(Z[7][1],Z[7][0]);
+            ABS[9]=hypot(Z[9][1],Z[9][0]);
+            PHI[1]=atan2(Z[1][1],Z[1][0]);
+            PHI[3]=atan2(Z[3][1],Z[3][0]);
+            PHI[5]=atan2(Z[5][1],Z[5][0]);
+            PHI[7]=atan2(Z[7][1],Z[7][0]);
+            PHI[9]=atan2(Z[9][1],Z[9][0]);
+            Coef[1][9][0]=1*ABS[1]*cos(PHI[1]-1*THETA)+1*ABS[3]*cos(PHI[3]-3*THETA)+ 1*ABS[5]*cos(PHI[5]-5*THETA)+ 1*ABS[7]*cos(PHI[7]-7*THETA)+  1*ABS[9]*cos(PHI[9]-9*THETA);
+            Coef[1][8][1]=1*ABS[1]*sin(PHI[1]-1*THETA)+3*ABS[3]*sin(PHI[3]-3*THETA)+ 5*ABS[5]*sin(PHI[5]-5*THETA)+ 7*ABS[7]*sin(PHI[7]-7*THETA)+  9*ABS[9]*sin(PHI[9]-9*THETA);
+            Coef[1][7][2]=4*ABS[1]*cos(PHI[1]-1*THETA)+0*ABS[3]*cos(PHI[3]-3*THETA)- 8*ABS[5]*cos(PHI[5]-5*THETA)-20*ABS[7]*cos(PHI[7]-7*THETA)- 36*ABS[9]*cos(PHI[9]-9*THETA);
+            Coef[1][6][3]=4*ABS[1]*sin(PHI[1]-1*THETA)+8*ABS[3]*sin(PHI[3]-3*THETA)+ 0*ABS[5]*sin(PHI[5]-5*THETA)-28*ABS[7]*sin(PHI[7]-7*THETA)- 84*ABS[9]*sin(PHI[9]-9*THETA);
+            Coef[1][5][4]=6*ABS[1]*cos(PHI[1]-1*THETA)-6*ABS[3]*cos(PHI[3]-3*THETA)-14*ABS[5]*cos(PHI[5]-5*THETA)+14*ABS[7]*cos(PHI[7]-7*THETA)+126*ABS[9]*cos(PHI[9]-9*THETA);
+            Coef[1][4][5]=6*ABS[1]*sin(PHI[1]-1*THETA)+6*ABS[3]*sin(PHI[3]-3*THETA)-14*ABS[5]*sin(PHI[5]-5*THETA)-14*ABS[7]*sin(PHI[7]-7*THETA)+126*ABS[9]*sin(PHI[9]-9*THETA);
+            Coef[1][3][6]=4*ABS[1]*cos(PHI[1]-1*THETA)-8*ABS[3]*cos(PHI[3]-3*THETA)+ 0*ABS[5]*cos(PHI[5]-5*THETA)+28*ABS[7]*cos(PHI[7]-7*THETA)- 84*ABS[9]*cos(PHI[9]-9*THETA);
+            Coef[1][2][7]=4*ABS[1]*sin(PHI[1]-1*THETA)+0*ABS[3]*sin(PHI[3]-3*THETA)- 8*ABS[5]*sin(PHI[5]-5*THETA)+20*ABS[7]*sin(PHI[7]-7*THETA)- 36*ABS[9]*sin(PHI[9]-9*THETA);
+            Coef[1][1][8]=1*ABS[1]*cos(PHI[1]-1*THETA)-3*ABS[3]*cos(PHI[3]-3*THETA)+ 5*ABS[5]*cos(PHI[5]-5*THETA)- 7*ABS[7]*cos(PHI[7]-7*THETA)+  9*ABS[9]*cos(PHI[9]-9*THETA);
+            Coef[1][0][9]=1*ABS[1]*sin(PHI[1]-1*THETA)-1*ABS[3]*sin(PHI[3]-3*THETA)+ 1*ABS[5]*sin(PHI[5]-5*THETA)- 1*ABS[7]*sin(PHI[7]-7*THETA)+  1*ABS[9]*sin(PHI[9]-9*THETA);
+        }
+
+
+    ij=0;
+    for(i=0;i<ORDER+1;i++)
+    for(j=0;j<ORDER+1;j++)
+    if(i+j<ORDER+1){
+        OutCoef[ij]=Coef[1][i][j];
+        ij++;
+    }
+//--------------------------------------------------
+    for(i=0;i<ORDER+1;i++){
+    delete [] Coef[0][i];
+    delete [] Coef[1][i];
+    }
+    delete [] Coef[0];
+    delete [] Coef[1];
+
+}

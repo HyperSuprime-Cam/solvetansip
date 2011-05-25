@@ -24,7 +24,7 @@ void    F_INTSIP(int ORDER,double *dxCoef,double *dyCoef,double *Coef);
 //etc
 void    F_LS2(int dataNUM,int Order,double **data,double *Coef);
 void    F_LS1(int dataNUM,int Order,double **data,double *Coef);
-void	 F_RMS(int NUM,double *data,double *STAT);
+void	F_RMS(int NUM,double *data,double *STAT);
 void    F_InvM(int MNUM,double **Min,double **Mout);
 /*
 void    F_WCS_TANSIP_GPOS(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);

@@ -9,7 +9,7 @@
 class CL_APROP{//Analysis property
 private:
 public:
-    char CRPIXMODE[11];//AUTO or PIX or VAL
+    char CRPIXMODE[11];//AUTO or PIX or VAL or LAXIS
     int  CCDPOSMODE;
     int  CCDNUM;
     int  BASISCID;
