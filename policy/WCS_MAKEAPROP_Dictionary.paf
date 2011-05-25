@@ -12,8 +12,16 @@ definitions: {
             description: Determine CRPIX and CRVAL automatically
         }
         allowed: {
-            value: MANUAL
-            description: Determine CRPIX and CRVAL manually (specified by policy)
+            value: PIX
+            description: CRPIX specified manually in policy
+        }
+        allowed: {
+            value: VAL
+            description: CRVAL specified manually in policy
+        }
+        allowed: {
+            value: OAXIS
+            description: Determine optical axis automatically
         }
         minOccurs: 0
         maxOccurs: 1
