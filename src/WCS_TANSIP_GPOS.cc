@@ -13,6 +13,7 @@
 //#include<fstream>//temp
 
 #define CHECKstdout 1
+#define PI (4*atan(1.0))
 
 using namespace std;
 void    F_WCS_TANSIP_SETxG                (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
@@ -21,132 +22,95 @@ void    F_WCS_TANSIP_SETxCRPIX            (CL_APROP APROP,CL_CPROP *CPROP,CL_PAI
 void    F_WCS_TANSIP_CENTERofOBJECTS      (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
 void    F_WCS_TANSIP_CR           (int DIR,CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
 void    F_WCS_TANSIP_PROJECTION           (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
-void    F_WCS_TANSIP_GPOS_OAXIS           (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
 void    F_WCS_TANSIP_GPOS_PROJECTION      (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
-void    F_WCS_TANSIP_GPOS_CCDPOSITIONS   (CL_APROP *APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
+void    F_WCS_TANSIP_GPOS_CCDPOSITIONS_T  (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
 void    F_WCS_TANSIP_GPOS_LDIFFVALUES     (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
+void    F_WCS_TANSIP_GPOS_LPOLYNOMIALFITTING(int VARIABLE, int FUNCTION,CL_APROP APROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
 void    F_WCS_TANSIP_GPOS_A_GDIFFVALUES   (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
 void    F_WCS_TANSIP_GPOS_A_CCDPOSITIONS_T(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
 void    F_WCS_TANSIP_GPOS_CCDPOSITIONS_XY (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
 void    F_WCS_TANSIP_GPOS_ALIGN          (CL_APROP *APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
+void    F_WCS_TANSIP_WCS_SIPFIT           (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
+void    F_WCS_TANSIP_WCS_PSIPFIT          (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
+void    F_WCS_TANSIP_WCS_CAMERADIST       (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
+void    F_WCS_TANSIP_WCS_SIPDIST          (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
+void    F_WCS_TANSIP_WCS_OPTICAXIS        (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
 
 void    F_WCS_TANSIP_GPOS(CL_APROP *APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
     int ID;
 
-//obtaining (xI, yI) from (RA, DEC) by projection at CRVAL
-    F_WCS_TANSIP_GPOS_PROJECTION(*APROP,CPROP,PAIR,CSIP);
-
-    if(APROP->CCDPOSMODE==1){
-    F_WCS_TANSIP_GPOS_CCDPOSITIONS(APROP,CPROP,PAIR,CSIP);
-    }else{
+    if(APROP->CCDPOSMODE==0){
         cout << "--- WCS_TANSIP : DETERMINING CCD POSITION : USING INITIAL VALUES for CCD POSITIONS ---" << endl;
         for(ID=0;ID<APROP->CCDNUM;ID++){
-        CPROP[ID].GLOB_POS[0]=CPROP[ID].GLOB_POS_Init[0];
-        CPROP[ID].GLOB_POS[1]=CPROP[ID].GLOB_POS_Init[1];
-        CPROP[ID].GLOB_POS[2]=CPROP[ID].GLOB_POS_Init[2];
-         }
+            CPROP[ID].GLOB_POS[0]=CPROP[ID].GLOB_POS_Init[0];
+            CPROP[ID].GLOB_POS[1]=CPROP[ID].GLOB_POS_Init[1];
+            CPROP[ID].GLOB_POS[2]=CPROP[ID].GLOB_POS_Init[2];
+            cout << "ID : " << ID << "	X : " << CPROP[ID].GLOB_POS[0] << "	Y : " << CPROP[ID].GLOB_POS[1] << "	T(rad) : " << CPROP[ID].GLOB_POS[2] << "	T(deg) : " << CPROP[ID].GLOB_POS[2]*180/PI << endl;
+        }
+    }else{
+        cout << "--- WCS_TANSIP : DETERMINING CCD POSITION : PROJECTION ---" << endl;
+        F_WCS_TANSIP_GPOS_PROJECTION(*APROP,CPROP,PAIR,&CSIP[APROP->CCDNUM]);
+        F_WCS_TANSIP_GPOS_LDIFFVALUES(*APROP,CPROP,PAIR,CSIP);
+        cout << "--- WCS_TANSIP : DETERMINING CCD POSITION : CALCULATING THETA of CCD ---" << endl;
+        F_WCS_TANSIP_GPOS_CCDPOSITIONS_T(*APROP,CPROP,PAIR,CSIP);
+        cout << "--- WCS_TANSIP : DETERMINING CCD POSITION : CALCULATING XY of CCD ---" << endl;
+        F_WCS_TANSIP_GPOS_CCDPOSITIONS_XY(*APROP,CPROP,PAIR,CSIP);
+        cout << "--- WCS_TANSIP : DETERMINING CCD POSITION : ALIGN ---" << endl;
+        F_WCS_TANSIP_GPOS_ALIGN(APROP,CPROP,PAIR,CSIP);
     }
 }
 void    F_WCS_TANSIP_GPOS_PROJECTION(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
-
 //obtaining CRVAL
     if(strcmp(APROP.CRPIXMODE,"VAL")==0){
-        cout << "ASSIGNED CRVAL ( " << APROP.CRVAL[0] << " , " << APROP.CRVAL[1] << " )"<< endl;
-        CSIP[APROP.CCDNUM].CRVAL[0]=APROP.CRVAL[0];
-        CSIP[APROP.CCDNUM].CRVAL[1]=APROP.CRVAL[1];
+        cout << "VAL MODE CRVAL ( " << CSIP->CRVAL[0] << " , " << CSIP->CRVAL[1] << " )"<< endl;
+        CSIP->CRVAL[0]=APROP.CRVAL[0];
+        CSIP->CRVAL[1]=APROP.CRVAL[1];
     }else if(strcmp(APROP.CRPIXMODE,"PIX")==0){
-        F_WCS_TANSIP_SETxCRPIX(APROP,CPROP,PAIR,&CSIP[APROP.CCDNUM]);
-        F_WCS_TANSIP_CR(0,APROP,CPROP,PAIR,&CSIP[APROP.CCDNUM]);
-    }else if(strcmp(APROP.CRPIXMODE,"OAXIS")==0){
-        F_WCS_TANSIP_GPOS_OAXIS(APROP,CPROP,PAIR,&CSIP[APROP.CCDNUM]);
+        F_WCS_TANSIP_SETxCRPIX(APROP,CPROP,PAIR,CSIP);
+        F_WCS_TANSIP_CR(0,APROP,CPROP,PAIR,CSIP);
+        cout << "PIX MODE CRPIX ( " << CSIP->CRPIX[0] << " , " << CSIP->CRPIX[1] << " )"<< endl;
+        cout << "PIX MODE CRVAL ( " << CSIP->CRVAL[0] << " , " << CSIP->CRVAL[1] << " )"<< endl;
     }else if(strcmp(APROP.CRPIXMODE,"AUTO")==0){
-        F_WCS_TANSIP_SETxG(APROP,CPROP,PAIR,&CSIP[APROP.CCDNUM]);
-        F_WCS_TANSIP_CENTERofOBJECTS(APROP,CPROP,PAIR,&CSIP[APROP.CCDNUM]);
-        cout << "CRPIX : (" << CSIP[APROP.CCDNUM].CRPIX[0] << " , " << CSIP[APROP.CCDNUM].CRPIX[1] << " )"<<endl;
-        F_WCS_TANSIP_SETxCRPIX(APROP,CPROP,PAIR,&CSIP[APROP.CCDNUM]);
-        F_WCS_TANSIP_CR(0,APROP,CPROP,PAIR,&CSIP[APROP.CCDNUM]);
+        F_WCS_TANSIP_SETxG(APROP,CPROP,PAIR,CSIP);
+        F_WCS_TANSIP_CENTERofOBJECTS(APROP,CPROP,PAIR,CSIP);
+        F_WCS_TANSIP_SETxCRPIX(APROP,CPROP,PAIR,CSIP);
+        F_WCS_TANSIP_CR(0,APROP,CPROP,PAIR,CSIP);
+        cout << "AUTO MODE CRPIX ( " << CSIP->CRPIX[0] << " , " << CSIP->CRPIX[1] << " )"<< endl;
+        cout << "AUTO MODE CRVAL ( " << CSIP->CRVAL[0] << " , " << CSIP->CRVAL[1] << " )"<< endl;
+    }else if(strcmp(APROP.CRPIXMODE,"OAXIS")==0){
+        F_WCS_TANSIP_SETxG(APROP,CPROP,PAIR,CSIP);
+        F_WCS_TANSIP_CENTERofOBJECTS(APROP,CPROP,PAIR,CSIP);
+        F_WCS_TANSIP_SETxCRPIX(APROP,CPROP,PAIR,CSIP);
+        F_WCS_TANSIP_CR(0,APROP,CPROP,PAIR,CSIP);
+        for(;;){
+            F_WCS_TANSIP_PROJECTION(APROP,CPROP,PAIR,CSIP);
+            F_WCS_TANSIP_WCS_SIPFIT (APROP,CPROP,PAIR,CSIP);
+            F_WCS_TANSIP_SETxCRVAL(APROP,CPROP,PAIR,CSIP);
+            F_WCS_TANSIP_WCS_PSIPFIT(APROP,CPROP,PAIR,CSIP);
+            F_WCS_TANSIP_WCS_CAMERADIST(APROP,CPROP,PAIR,CSIP);
+            F_WCS_TANSIP_WCS_SIPDIST(APROP,CPROP,PAIR,CSIP);
+            F_WCS_TANSIP_WCS_OPTICAXIS(APROP,CPROP,PAIR,CSIP);
+            if(hypot(CSIP->CRPIX[0]-CSIP->OAPIX[0],CSIP->CRPIX[1]-CSIP->OAPIX[1])<pow(10.0,-3))
+            break;
+            CSIP->CRVAL[0]=CSIP->OAVAL[0];
+            CSIP->CRVAL[1]=CSIP->OAVAL[1];
+            CSIP->CRPIX[0]=CSIP->OAPIX[0];
+            CSIP->CRPIX[1]=CSIP->OAPIX[1];
+            F_WCS_TANSIP_SETxCRPIX(APROP,CPROP,PAIR,CSIP);
+        }
+        cout << "OAXIS MODE CRVAL ( " << CSIP->CRVAL[0] << " , " << CSIP->CRVAL[1] << " )"<< endl;
+        cout << "OAXIS MODE CRPIX ( " << CSIP->CRPIX[0] << " , " << CSIP->CRPIX[1] << " )"<< endl;
     }
 
 //projection
-    F_WCS_TANSIP_PROJECTION(APROP,CPROP,PAIR,&CSIP[APROP.CCDNUM]);
-}
-void    F_WCS_TANSIP_GPOS_OAXIS(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
-    
-}
-void    F_WCS_TANSIP_GPOS_CCDPOSITIONS(CL_APROP *APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
-    int Iter,ID,TCHECK;
-    CL_CPROP *CPROPI;
-    
-    CPROPI = new CL_CPROP[APROP->CCDNUM];
-//--------------------------------------------------
-    F_WCS_TANSIP_GPOS_LDIFFVALUES(*APROP,CPROP,PAIR,CSIP);
-
-    for(Iter=0;;Iter++){
-        cout << "T iteration : " << Iter << endl;
-
-        for(ID=0;ID<APROP->CCDNUM;ID++)
-        CPROPI[ID].GLOB_POS[2]=CPROP[ID].GLOB_POS[2];
-
-        F_WCS_TANSIP_GPOS_A_GDIFFVALUES(*APROP,CPROP,PAIR,CSIP);
-        F_WCS_TANSIP_GPOS_A_CCDPOSITIONS_T(*APROP,CPROP,PAIR,CSIP);
-
-        double MCBASE=CPROP[APROP->BASISCID].GLOB_POS[2]-APROP->BASIS_POS[2];
-        for(ID=0;ID<APROP->CCDNUM;ID++)
-        CPROP[ID].GLOB_POS[2]-=MCBASE;
-
-if(CHECKstdout==1){
-    cout << "--- GLOB_POS Theta ---\n";
-    for(ID=0;ID<APROP->CCDNUM;ID++)
-    cout <<"CCD : " << ID << " : T : "<< CPROP[ID].GLOB_POS[2] << endl;
-}
-
-        if(Iter==10){
-            cout << "T iteration didn't converge" << endl;
-            break;
-        }
-
-        TCHECK=0;
-        for(ID=0;ID<APROP->CCDNUM;ID++)
-        if(fabs(CPROPI[ID].GLOB_POS[2]-CPROP[ID].GLOB_POS[2])>pow(10,-5.0))
-        TCHECK++;
-
-        if(TCHECK==0){
-            cout << "T iteration converged" << endl; 
-            break;
-        }
-    }
-
-    F_WCS_TANSIP_GPOS_CCDPOSITIONS_XY(*APROP,CPROP,PAIR,CSIP);
-    F_WCS_TANSIP_GPOS_ALIGN(APROP,CPROP,PAIR,CSIP);
-
-//--------------------------------------------------
-    delete [] CPROPI;
+    cout << "PROJECTION POSITION ( " << CSIP->CRVAL[0] << " , " << CSIP->CRVAL[1] << " )"<< endl;
+    F_WCS_TANSIP_PROJECTION(APROP,CPROP,PAIR,CSIP);
 }
 void    F_WCS_TANSIP_GPOS_LDIFFVALUES(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
-    int CID,NUM,CNUM[APROP.CCDNUM],CoefNUM;
-    double ****data,***LCoef,****dLCoef;
-    cout << "--- WCS_TANSIP : DETERMINING CCD POSITION : CALCULATING L DIFFERENTIAL VALUES (dxL/dxCRval) ---" << endl;
+    int CID,NUM,CoefNUM;
+    double ****dLCoef;
 
     CoefNUM=(int)(0.5*(APROP.SIP_L_ORDER+1)*(APROP.SIP_L_ORDER+2)+0.1);
-    data = new double***[2];
-    data[0] = new double**[APROP.CCDNUM];
-    data[1] = new double**[APROP.CCDNUM];
-    for(CID=0;CID<APROP.CCDNUM;CID++){
-    data[0][CID] = new double*[APROP.NUMREFALL];
-    data[1][CID] = new double*[APROP.NUMREFALL];
-    }
-    for(CID=0;CID<APROP.CCDNUM;CID++)
-    for(NUM=0;NUM<APROP.NUMREFALL;NUM++){
-        data[0][CID][NUM] = new double[3];
-        data[1][CID][NUM] = new double[3];
-    }
-    LCoef = new double**[2];
-    LCoef[0] = new double*[APROP.CCDNUM];
-    LCoef[1] = new double*[APROP.CCDNUM];
-    for(CID=0;CID<APROP.CCDNUM;CID++){
-        LCoef[0][CID] = new double[CoefNUM];
-        LCoef[1][CID] = new double[CoefNUM];
-    }
     dLCoef = new double***[2];
     dLCoef[0] = new double**[2];
     dLCoef[1] = new double**[2];
@@ -164,74 +128,32 @@ void    F_WCS_TANSIP_GPOS_LDIFFVALUES(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PA
 //--------------------------------------------------
 //Calculating CRval of each CCD 
 //CRpix is (0,0)
-    for(CID=0;CID<APROP.CCDNUM;CID++)
-    CNUM[CID]=0;
 
-    for(NUM=0;NUM<APROP.NUMREFALL;NUM++){
-        CID=PAIR[NUM].CHIPID;
-        data[0][CID][CNUM[CID]][0]=data[1][CID][CNUM[CID]][0]=PAIR[NUM].xL;
-        data[0][CID][CNUM[CID]][1]=data[1][CID][CNUM[CID]][1]=PAIR[NUM].yL;
-        data[0][CID][CNUM[CID]][2]=PAIR[NUM].xI;
-        data[1][CID][CNUM[CID]][2]=PAIR[NUM].yI;
-        CNUM[CID]++;
-    }
+    F_WCS_TANSIP_GPOS_LPOLYNOMIALFITTING(5,1,APROP,PAIR,CSIP);
     for(CID=0;CID<APROP.CCDNUM;CID++){
-        F_LS2(CNUM[CID],APROP.SIP_L_ORDER,data[0][CID],LCoef[0][CID]);
-        F_LS2(CNUM[CID],APROP.SIP_L_ORDER,data[1][CID],LCoef[1][CID]);
+        CSIP[CID].CRVAL[0]=CSIP[CID].TLCoef[0][0];
+        CSIP[CID].CRVAL[1]=CSIP[CID].TLCoef[1][0];
     }
 
-//--------------------------------------------------
-//xCRval from xI
-//xCRpix is xL
-//CD matrix and InvCDmMatrix are unit
+    F_WCS_TANSIP_GPOS_LPOLYNOMIALFITTING(1,5,APROP,PAIR,CSIP);//InvCD=unit
 
-    double xL[2];
     for(CID=0;CID<APROP.CCDNUM;CID++){
-        CSIP[CID].CD[0][0]=CSIP[CID].CD[1][1]=CSIP[CID].InvCD[0][0]=CSIP[CID].InvCD[1][1]=1;
-        CSIP[CID].CD[0][1]=CSIP[CID].CD[1][0]=CSIP[CID].InvCD[0][1]=CSIP[CID].InvCD[1][0]=0;
-        CSIP[CID].CRPIX[0]=0;
-        CSIP[CID].CRPIX[1]=0;
-        xL[0]=xL[1]=0;
-        CSIP[CID].CRVAL[0]=F_CALCVALUE(APROP.SIP_L_ORDER,LCoef[0][CID],xL);
-        CSIP[CID].CRVAL[1]=F_CALCVALUE(APROP.SIP_L_ORDER,LCoef[1][CID],xL);
-//cout << CID << " : " << CSIP[CID].CRVAL[0] << "	" <<CSIP[CID].CRVAL[1] << endl;
+        F_DIFFSIP(APROP.SIP_L_ORDER,CSIP[CID].TLCoef[0],dLCoef[0][0][CID],dLCoef[0][1][CID]);
+        F_DIFFSIP(APROP.SIP_L_ORDER,CSIP[CID].TLCoef[1],dLCoef[1][0][CID],dLCoef[1][1][CID]);
     }
 
-    for(NUM=0;NUM<APROP.NUMREFALL;NUM++){
-        CID=PAIR[NUM].CHIPID;
-        PAIR[NUM].xCRVAL=PAIR[NUM].xI;
-        PAIR[NUM].yCRVAL=PAIR[NUM].yI;
-    }//InvCD=unit
-//--------------------------------------------------
-//PSIP fitting for xL by xCRval
-//Differential of PSIP coefficiesnts
-//Differential values of xL by xCRval
-    for(CID=0;CID<APROP.CCDNUM;CID++)
-    CNUM[CID]=0;
-    for(NUM=0;NUM<APROP.NUMREFALL;NUM++){
-        CID=PAIR[NUM].CHIPID;
-        data[0][CID][CNUM[CID]][0]=data[1][CID][CNUM[CID]][0]=PAIR[NUM].xCRVAL;
-        data[0][CID][CNUM[CID]][1]=data[1][CID][CNUM[CID]][1]=PAIR[NUM].yCRVAL;
-        data[0][CID][CNUM[CID]][2]=PAIR[NUM].xL;
-        data[1][CID][CNUM[CID]][2]=PAIR[NUM].yL;
-        CNUM[CID]++;
-    }
-    for(CID=0;CID<APROP.CCDNUM;CID++){
-        F_LS2(CNUM[CID],APROP.SIP_L_ORDER,data[0][CID],LCoef[0][CID]);
-        F_LS2(CNUM[CID],APROP.SIP_L_ORDER,data[1][CID],LCoef[1][CID]);
-        F_DIFFSIP(APROP.SIP_L_ORDER,LCoef[0][CID],dLCoef[0][0][CID],dLCoef[0][1][CID]);
-        F_DIFFSIP(APROP.SIP_L_ORDER,LCoef[1][CID],dLCoef[1][0][CID],dLCoef[1][1][CID]);
-    }
+    double xI[2],*STdata[2],ST[2][2];
 
-    double xI[2],STdata[2][APROP.NUMREFALL],ST[2][2];
+    STdata[0] = new double[APROP.NUMREFALL];
+    STdata[1] = new double[APROP.NUMREFALL];
 //ofstream out;
 //out.open("dtemp.dat");
     for(NUM=0;NUM<APROP.NUMREFALL;NUM++){
         CID=PAIR[NUM].CHIPID;
-        xI[0]=PAIR[NUM].xCRVAL;
-        xI[1]=PAIR[NUM].yCRVAL;
-        STdata[0][NUM]=F_CALCVALUE(APROP.SIP_L_ORDER,LCoef[0][CID],xI) - PAIR[NUM].xL;
-        STdata[1][NUM]=F_CALCVALUE(APROP.SIP_L_ORDER,LCoef[1][CID],xI) - PAIR[NUM].yL;
+        xI[0]=PAIR[NUM].xI;
+        xI[1]=PAIR[NUM].yI;
+        STdata[0][NUM]=F_CALCVALUE(APROP.SIP_L_ORDER,CSIP[CID].TLCoef[0],xI) - PAIR[NUM].xL;
+        STdata[1][NUM]=F_CALCVALUE(APROP.SIP_L_ORDER,CSIP[CID].TLCoef[1],xI) - PAIR[NUM].yL;
 
         PAIR[NUM].dxLdxI=F_CALCVALUE(APROP.SIP_L_ORDER,dLCoef[0][0][CID],xI);
         PAIR[NUM].dxLdyI=F_CALCVALUE(APROP.SIP_L_ORDER,dLCoef[0][1][CID],xI);
@@ -247,24 +169,6 @@ void    F_WCS_TANSIP_GPOS_LDIFFVALUES(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PA
     cout << endl;
     
 //--------------------------------------------------
-    for(CID=0;CID<APROP.CCDNUM;CID++){
-    for(NUM=0;NUM<APROP.NUMREFALL;NUM++){
-    delete [] data[0][CID][NUM];
-    delete [] data[1][CID][NUM];
-    }
-    delete [] data[0][CID];
-    delete [] data[1][CID];
-    }
-    delete [] data[0];
-    delete [] data[1];
-    delete [] data;
-    for(NUM=0;NUM<APROP.CCDNUM;NUM++){
-    delete [] LCoef[0][NUM];
-    delete [] LCoef[1][NUM];
-    }
-    delete [] LCoef[0];
-    delete [] LCoef[1];
-    delete [] LCoef;
     for(NUM=0;NUM<APROP.CCDNUM;NUM++){
     delete [] dLCoef[0][0][NUM];
     delete [] dLCoef[0][1][NUM];
@@ -278,12 +182,133 @@ void    F_WCS_TANSIP_GPOS_LDIFFVALUES(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PA
     delete [] dLCoef[0];
     delete [] dLCoef[1];
     delete [] dLCoef;
+    delete [] STdata[0];
+    delete [] STdata[1];
+}
+void    F_WCS_TANSIP_GPOS_LPOLYNOMIALFITTING(int VARIABLE, int FUNCTION,CL_APROP APROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
+    int CID,NUM,*CNUM;
+    double ***dx[2];
+
+//--------------------------------------------------
+    CNUM = new int[APROP.CCDNUM];
+    for(CID=0;CID<APROP.CCDNUM;CID++)
+    CNUM[CID]=0;
+    dx[0]=new double**[APROP.CCDNUM];
+    dx[1]=new double**[APROP.CCDNUM];
+    for(CID=0;CID<APROP.CCDNUM;CID++){
+    dx[0][CID]=new double*[APROP.NUMREFALL];
+    dx[1][CID]=new double*[APROP.NUMREFALL];
+    for(NUM=0;NUM<APROP.NUMREFALL;NUM++){
+    dx[0][CID][NUM]=new double[3];
+    dx[1][CID][NUM]=new double[3];
+    }}
+
+//--------------------------------------------------
+
+    for(NUM=0;NUM<APROP.NUMREFALL;NUM++){
+        CID=PAIR[NUM].CHIPID;
+	      if(VARIABLE==0){
+            dx[0][CID][CNUM[CID]][0]=dx[1][CID][CNUM[CID]][0]=PAIR[NUM].RA;
+            dx[0][CID][CNUM[CID]][1]=dx[1][CID][CNUM[CID]][1]=PAIR[NUM].DEC;
+        }else if(VARIABLE==1){
+            dx[0][CID][CNUM[CID]][0]=dx[1][CID][CNUM[CID]][0]=PAIR[NUM].xI;
+            dx[0][CID][CNUM[CID]][1]=dx[1][CID][CNUM[CID]][1]=PAIR[NUM].yI;
+        }else if(VARIABLE==2){
+            dx[0][CID][CNUM[CID]][0]=dx[1][CID][CNUM[CID]][0]=PAIR[NUM].xCRVAL;
+            dx[0][CID][CNUM[CID]][1]=dx[1][CID][CNUM[CID]][1]=PAIR[NUM].yCRVAL;
+        }else if(VARIABLE==3){
+            dx[0][CID][CNUM[CID]][0]=dx[1][CID][CNUM[CID]][0]=PAIR[NUM].xCRPIX;
+            dx[0][CID][CNUM[CID]][1]=dx[1][CID][CNUM[CID]][1]=PAIR[NUM].yCRPIX;
+        }else if(VARIABLE==4){
+            dx[0][CID][CNUM[CID]][0]=dx[1][CID][CNUM[CID]][0]=PAIR[NUM].xG;
+            dx[0][CID][CNUM[CID]][1]=dx[1][CID][CNUM[CID]][1]=PAIR[NUM].yG;
+        }else if(VARIABLE==5){
+            dx[0][CID][CNUM[CID]][0]=dx[1][CID][CNUM[CID]][0]=PAIR[NUM].xL;
+            dx[0][CID][CNUM[CID]][1]=dx[1][CID][CNUM[CID]][1]=PAIR[NUM].yL;
+        }
+	      if(FUNCTION==0){
+            dx[0][CID][CNUM[CID]][2]=PAIR[NUM].RA;
+            dx[1][CID][CNUM[CID]][2]=PAIR[NUM].DEC;
+        }else if(FUNCTION==1){
+            dx[0][CID][CNUM[CID]][2]=PAIR[NUM].xI;
+            dx[1][CID][CNUM[CID]][2]=PAIR[NUM].yI;
+        }else if(FUNCTION==2){
+            dx[0][CID][CNUM[CID]][2]=PAIR[NUM].xCRVAL;
+            dx[1][CID][CNUM[CID]][2]=PAIR[NUM].yCRVAL;
+        }else if(FUNCTION==3){
+            dx[0][CID][CNUM[CID]][2]=PAIR[NUM].xCRPIX;
+            dx[1][CID][CNUM[CID]][2]=PAIR[NUM].yCRPIX;
+        }else if(FUNCTION==4){
+            dx[0][CID][CNUM[CID]][2]=PAIR[NUM].xG;
+            dx[1][CID][CNUM[CID]][2]=PAIR[NUM].yG;
+        }else if(FUNCTION==5){
+            dx[0][CID][CNUM[CID]][2]=PAIR[NUM].xL;
+            dx[1][CID][CNUM[CID]][2]=PAIR[NUM].yL;
+        }
+        CNUM[CID]++;
+    }
+    for(CID=0;CID<APROP.CCDNUM;CID++){
+        F_LS2(CNUM[CID],APROP.SIP_L_ORDER,dx[0][CID],CSIP[CID].TLCoef[0]);
+        F_LS2(CNUM[CID],APROP.SIP_L_ORDER,dx[1][CID],CSIP[CID].TLCoef[1]);
+    }
+//--------------------------------------------------*/
+    delete [] CNUM;
+    for(CID=0;CID<APROP.CCDNUM;CID++){
+    for(NUM=0;NUM<APROP.NUMREFALL;NUM++){
+    delete [] dx[0][CID][NUM];
+    delete [] dx[1][CID][NUM];
+    }
+    delete [] dx[0][CID];
+    delete [] dx[1][CID];
+    }
+    delete [] dx[0];
+    delete [] dx[1];
+}
+void    F_WCS_TANSIP_GPOS_CCDPOSITIONS_T(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
+    int Iter,ID,TCHECK;
+    CL_CPROP *CPROPI;
+    
+    CPROPI = new CL_CPROP[APROP.CCDNUM];
+//--------------------------------------------------
+
+    for(Iter=0;;Iter++){
+        cout << "T iteration : " << Iter << endl;
+
+        for(ID=0;ID<APROP.CCDNUM;ID++)
+        CPROPI[ID].GLOB_POS[2]=CPROP[ID].GLOB_POS[2];
+
+        F_WCS_TANSIP_GPOS_A_GDIFFVALUES(APROP,CPROP,PAIR,CSIP);
+        F_WCS_TANSIP_GPOS_A_CCDPOSITIONS_T(APROP,CPROP,PAIR,CSIP);
+
+        double MCBASE=CPROP[APROP.BASISCID].GLOB_POS[2]-APROP.BASIS_POS[2];
+        for(ID=0;ID<APROP.CCDNUM;ID++)
+        CPROP[ID].GLOB_POS[2]-=MCBASE;
+
+        if(Iter==10){
+            cout << "Theta iteration didn't converge" << endl;
+            break;
+        }
+
+        TCHECK=0;
+        for(ID=0;ID<APROP.CCDNUM;ID++)
+        if(fabs(CPROPI[ID].GLOB_POS[2]-CPROP[ID].GLOB_POS[2])>pow(10,-5.0))
+        TCHECK++;
+
+        if(TCHECK==0){
+            cout << "Theta iteration converged" << endl; 
+            for(ID=0;ID<APROP.CCDNUM;ID++)
+            cout <<"CCD : " << ID << " : Theta : "<< CPROP[ID].GLOB_POS[2] << endl;
+            cout << endl;
+            break;
+        }
+    }
+//--------------------------------------------------
+    delete [] CPROPI;
 }
 void    F_WCS_TANSIP_GPOS_A_GDIFFVALUES  (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
     int NUM,CoefNUM,dCoefNUM;
     double **dGdI[2][2],*dPSIP[2][2];
     double xI[2];
-    cout << "--- WCS_TANSIP : DETERMINING CCD POSITION : CALCULATING G DIFFERENTIAL VALUES (dxG/dxCRval) ---" << endl;
 
      CoefNUM=(int)(0.5*(APROP.SIP_P_ORDER+1  )*(APROP.SIP_P_ORDER+2  )+0.5);
     dCoefNUM=(int)(0.5*(APROP.SIP_P_ORDER+1-1)*(APROP.SIP_P_ORDER+2-1)+0.5);
@@ -372,7 +397,6 @@ void    F_WCS_TANSIP_GPOS_A_GDIFFVALUES  (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR
     delete [] dPSIP[1][1];
 }
 void    F_WCS_TANSIP_GPOS_A_CCDPOSITIONS_T(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
-    cout << "--- WCS_TANSIP : DETERMINING CCD POSITION : DETERMINIG CCD ROTATIONS ---" << endl;
     int i,j,ij,k,l,kl,ID,ID2,NUM,dCoefNUM;
     double *MA,**MB,**InvMB,*MC;
     dCoefNUM=(int)(0.5*(APROP.SIP_P_ORDER+1-1)*(APROP.SIP_P_ORDER+2-1)+0.5);
@@ -519,7 +543,7 @@ void    F_WCS_TANSIP_GPOS_CCDPOSITIONS_XY(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR
     dPSIP[1][0] = new double[dCoefNUM];
     dPSIP[1][1] = new double[dCoefNUM];
 //--------------------------------------------------
-    cout << "--- WCS_TANSIP : DETERMINING CCD POSITION : FITTING DIFFERENTIAL dG ---" << endl;
+
     for(NUM=0;NUM<APROP.NUMREFALL;NUM++){
         PAIR[NUM].dxGdxI=PAIR[NUM].dxLdxI*cos(CPROP[PAIR[NUM].CHIPID].GLOB_POS[2])-PAIR[NUM].dyLdxI*sin(CPROP[PAIR[NUM].CHIPID].GLOB_POS[2]);
         PAIR[NUM].dyGdxI=PAIR[NUM].dyLdxI*cos(CPROP[PAIR[NUM].CHIPID].GLOB_POS[2])+PAIR[NUM].dxLdxI*sin(CPROP[PAIR[NUM].CHIPID].GLOB_POS[2]);
@@ -554,7 +578,6 @@ void    F_WCS_TANSIP_GPOS_CCDPOSITIONS_XY(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR
     }
 
 //--------------------------------------------------
-    cout << "--- WCS_TANSIP : DETERMINING CCD POSITION : INTEGRATING DIFFERENTIAL PSIP---" << endl;
     double *PSIP[2];
 
     PSIP[0] = new double[CoefNUM];
@@ -565,7 +588,6 @@ void    F_WCS_TANSIP_GPOS_CCDPOSITIONS_XY(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR
     F_INTSIP(APROP.SIP_P_ORDER,dPSIP[0][0],dPSIP[0][1],PSIP[0]);
     F_INTSIP(APROP.SIP_P_ORDER,dPSIP[1][0],dPSIP[1][1],PSIP[1]);
 //--------------------------------------------------
-    cout << "--- WCS_TANSIP : DETERMINING CCD POSITION : DETERMINIG GLOBAL POSITIONS---" << endl;
     for(NUM=0;NUM<APROP.NUMREFALL;NUM++){
         PAIR[NUM].xG=PAIR[NUM].yG=0;
         xI[0]=PAIR[NUM].xCRVAL;
@@ -574,7 +596,6 @@ void    F_WCS_TANSIP_GPOS_CCDPOSITIONS_XY(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR
         PAIR[NUM].yG=F_CALCVALUE(APROP.SIP_P_ORDER,PSIP[1],xI);
     }
 //--------------------------------------------------
-    cout << "--- WCS_TANSIP : DETERMINING CCD POSITION : DETERMINIG CCD X AND Y---" << endl;
     double **dX;
 
     dX = new double*[APROP.CCDNUM];
@@ -602,6 +623,7 @@ if(CHECKstdout==1){
     cout << "--- GLOB_POS X and Y ---\n";
     for(ID=0;ID<APROP.CCDNUM;ID++)
     cout <<fixed<< ID << " : " << CPROP[ID].GLOB_POS[0] << "	"  << CPROP[ID].GLOB_POS[1] << endl;
+    cout << endl;
     cout.unsetf(ios::fixed);
 }
 //--------------------------------------------------
@@ -622,7 +644,6 @@ if(CHECKstdout==1){
     delete [] PSIP[0];
     delete [] PSIP[1];
 }
-#define PI (4*atan(1.0))
 void    F_WCS_TANSIP_GPOS_ALIGN(CL_APROP *APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
     int i,ID,NM,*NMNUM;
     double **NMSET,NMCOEF[2],NMAVE[2]={0};
@@ -713,14 +734,14 @@ if(CHECKstdout==1)
         CPROP[ID].GLOB_POS[0]+=X[0];
         CPROP[ID].GLOB_POS[1]+=X[1];
     }
+    for(ID=0;ID<APROP->CCDNUM;ID++)
+    cout <<fixed<< ID << " : X : " <<CPROP[ID].GLOB_POS[0] << "	: Y : " <<CPROP[ID].GLOB_POS[1] << "	: T : " <<scientific<<CPROP[ID].GLOB_POS[2] << "	: T : " <<fixed<<CPROP[ID].GLOB_POS[2]*180/PI << endl;
+    cout.unsetf(ios::scientific);
+
     APROP->CRPIX[0]-=X[0];
     APROP->CRPIX[1]-=X[1];
     cout << "NEW CRPIX : ( " << APROP->CRPIX[0] << " , " << APROP->CRPIX[1] << " )" << endl;
     
-    for(ID=0;ID<APROP->CCDNUM;ID++)
-    cout <<fixed<< ID << " : X : " <<CPROP[ID].GLOB_POS[0] << "	: Y : " <<CPROP[ID].GLOB_POS[1] << "	: T : " <<scientific<<CPROP[ID].GLOB_POS[2] << "	: T : " <<fixed<<CPROP[ID].GLOB_POS[2]*180/PI << endl;
-    cout.unsetf(ios::scientific);
-    cout << endl;
 //--------------------------------------------------
     delete [] NMNUM;
     for(NM=0;NM<APROP->CCDNUM;NM++)

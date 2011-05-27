@@ -29,6 +29,7 @@ public:
 //for CALC
     double *TCoef[2];
     double *TPCoef[2];
+    double *TLCoef[2];
 //for check
     double ANGLE;
     int SIP_ABD_ORDER;
@@ -43,5 +44,8 @@ public:
     double *SIP_MAG;
     double *SIP_SHEAR[2];
     double *SIP_ROT;
+    double *PSIP_MAG;
+    double *PSIP_SHEAR[2];
+    double *PSIP_ROT;
 };
 #endif

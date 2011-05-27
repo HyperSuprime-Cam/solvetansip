@@ -29,7 +29,7 @@ void    F_WCS_TANSIP(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP)
 
 //--------------------------------------------------
     cout << "--- WCS_TANSIP : CALCULATING GLOBAL WCS ---" << endl;
-    F_WCS_TANSIP_WCS(APROP,CPROP,PAIR,CSIP);
+    F_WCS_TANSIP_WCS(APROP,CPROP,PAIR,&CSIP[APROP.CCDNUM]);
 
 //--------------------------------------------------
     cout << "--- WCS_TANSIP : CALCULATING LOCAL CCD ---" << endl;
@@ -81,25 +81,18 @@ void    F_WCS_TANSIP_CR(int DIR,CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_
     }
 
     if(DIR==0){
-    cout << "RA and DEC at CRPIX : ( " << CSIP->TCoef[0][0] << " , " << CSIP->TCoef[1][0] << " )\n";
         CSIP->CRVAL[0]=CSIP->TCoef[0][0];
         CSIP->CRVAL[1]=CSIP->TCoef[1][0];
-    cout << "CRVAL      at CRPIX : ( " << CSIP->CRVAL[0] << " , " << CSIP->CRVAL[1] << " )\n";
     }else{
-    cout << "xG and yG  at CRVAL : ( " << CSIP->TPCoef[0][0] << " , " << CSIP->TPCoef[1][0] << " )\n";
         CSIP->CRPIX[0]=CSIP->TPCoef[0][0];
         CSIP->CRPIX[1]=CSIP->TPCoef[1][0];
-    cout << "CRPIX      at CRVAL : ( " << CSIP->CRPIX[0] << " , " << CSIP->CRPIX[1] << " )\n";
     }
-cout << endl;
 
 }
 void    F_WCS_TANSIP_PROJECTION(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
     int NUM;
     double PPOINT[2],Pdeg[2],Cdeg[2];
-    cout << "--- WCS_TANSIP : PROJECTION ---" << endl;
 
-    cout << "PROJECTION : CRVAL : ( " << CSIP->CRVAL[0] << " , " << CSIP->CRVAL[1] << " )(deg)\n";
     PPOINT[0]=CSIP->CRVAL[0];
     PPOINT[1]=CSIP->CRVAL[1];
     for(NUM=0;NUM<APROP.NUMREFALL;NUM++){
@@ -109,10 +102,9 @@ void    F_WCS_TANSIP_PROJECTION(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_
         PAIR[NUM].xI=Pdeg[0];
         PAIR[NUM].yI=Pdeg[1];
     }
-    cout << endl;
 }
 void    F_WCS_TANSIP_GPOLYNOMIALFITTING(int NUMALL,int ORDER, int VARIABLE, int FUNCTION, CL_PAIR *PAIR, double *Coef[2]){
-cout <<"F_WCS_TANSIP_GPOLYNOMIALFITTING"<<endl;
+//cout <<"F_WCS_TANSIP_GPOLYNOMIALFITTING"<<endl;
     int NUM,FNUM=0,ERROR=0;
     double **dx[2];
 
@@ -127,11 +119,11 @@ cout <<"F_WCS_TANSIP_GPOLYNOMIALFITTING"<<endl;
     Coef[0][NUM]=Coef[1][NUM]=0;
 
 //--------------------------------------------------
-    if(VARIABLE==0||VARIABLE==1||VARIABLE==2||VARIABLE==3||VARIABLE==4){
+    if(VARIABLE==0||VARIABLE==1||VARIABLE==2||VARIABLE==3||VARIABLE==4||VARIABLE==5){
     }else{
     ERROR=1;
     }
-    if(FUNCTION==0||FUNCTION==1||FUNCTION==2||FUNCTION==3||FUNCTION==4||FUNCTION==5||FUNCTION==6){
+    if(FUNCTION==0||FUNCTION==1||FUNCTION==2||FUNCTION==3||FUNCTION==4||FUNCTION==5||FUNCTION==6||FUNCTION==7){
     }else{
     ERROR=1;
     }
@@ -154,6 +146,9 @@ cout <<"F_WCS_TANSIP_GPOLYNOMIALFITTING"<<endl;
         }else if(VARIABLE==4){
             dx[0][FNUM][0]=dx[1][FNUM][0]=PAIR[NUM].xG;
             dx[0][FNUM][1]=dx[1][FNUM][1]=PAIR[NUM].yG;
+        }else if(VARIABLE==5){
+            dx[0][FNUM][0]=dx[1][FNUM][0]=PAIR[NUM].xL;
+            dx[0][FNUM][1]=dx[1][FNUM][1]=PAIR[NUM].yL;
         }
 	      if(FUNCTION==0){
             dx[0][FNUM][2]=PAIR[NUM].RA;
@@ -171,9 +166,12 @@ cout <<"F_WCS_TANSIP_GPOLYNOMIALFITTING"<<endl;
             dx[0][FNUM][2]=PAIR[NUM].xG;
             dx[1][FNUM][2]=PAIR[NUM].yG;
         }else if(FUNCTION==5){
+            dx[0][FNUM][2]=PAIR[NUM].xL;
+            dx[1][FNUM][2]=PAIR[NUM].yL;
+        }else if(FUNCTION==6){
             dx[0][FNUM][2]=PAIR[NUM].CAMERA_MAGNIFICATION;
             dx[1][FNUM][2]=PAIR[NUM].CAMERA_ROTATION;
-        }else if(FUNCTION==6){
+        }else if(FUNCTION==7){
             dx[0][FNUM][2]=PAIR[NUM].CAMERA_SHEAR[0];
             dx[1][FNUM][2]=PAIR[NUM].CAMERA_SHEAR[1];
         }

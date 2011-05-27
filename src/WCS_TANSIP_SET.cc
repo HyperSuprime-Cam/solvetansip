@@ -20,11 +20,11 @@ void    F_WCS_TANSIP_SET(CL_APROP *APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *
     cout << "--- WCS_TANSIP : SET : CHEKING PARAMERTERS---" << endl;
     APROP->CHECKPARAM=0;
 
-    if(strcmp(APROP->CRPIXMODE,"AUTO")==0||strcmp(APROP->CRPIXMODE,"PIX")==0||strcmp(APROP->CRPIXMODE,"VAL")==0||strcmp(APROP->CRPIXMODE,"LAXIS")==0){
+    if(strcmp(APROP->CRPIXMODE,"AUTO")==0||strcmp(APROP->CRPIXMODE,"PIX")==0||strcmp(APROP->CRPIXMODE,"VAL")==0||strcmp(APROP->CRPIXMODE,"OAXIS")==0){
     }else{
         cout << "CRPIXMODE is " << APROP->CRPIXMODE << endl;
         cout << "---------------------------------------------" << endl;
-        cout << "Warning : CRPIXMODE isn't 'AUTO' or 'PIX' or 'VAL' or 'LAXIS'" << endl;
+        cout << "Warning : CRPIXMODE isn't 'AUTO' or 'PIX' or 'VAL' or 'OAXIS'" << endl;
         sprintf(APROP->CRPIXMODE,"AUTO");
         cout << "Warning : SET CRPIXMODE : " << APROP->CRPIXMODE << endl;
         cout << "---------------------------------------------" << endl;
