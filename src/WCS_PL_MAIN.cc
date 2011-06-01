@@ -25,12 +25,9 @@ void    F_WCS_SETCC_PRECSIPfromFILE(CL_APROP, char *, char *,CL_CSIP *);
 void    F_WCS_MAKEPAIR(vector< vector< afwdetect::SourceMatch  >  > const &, CL_APROP *, CL_CPROP *,CL_PAIR *);
 void    F_WCS_SETDEFAULTDISTORTION(CL_CSIP *);
 dafbase::PropertySet::Ptr F_WCS_EMPTYMETADATA();
-CL_CPROP* F_WCS_EMPTYCPROP();
-CL_CSIP*  F_WCS_EMPTYCSIP();
-CL_PAIR*  F_WCS_EMPTYPAIR();
 afwImage::TanWcs::Ptr    F_WCS_MAKERESULTWCS(CL_CSIP *);
 //vector<afwImage::TanWcs::Ptr>    F_WCS_TANSIP_V(vector< vector<afwdetect::SourceMatch> > const &matchlist,dafbase::PropertySet::Ptr &metaTANSIP,lsst::pex::policy::Policy::Ptr &APROPPolicy,lsst::afw::cameraGeom::Camera::Ptr &camera/*,lsst::daf::base::PropertySet::Ptr &metadata,bool verbose*/,CL_CPROP *CPROPout,CL_CSIP *CSIPout, CL_PAIR *PAIRout){
-CL_WCSCCP F_WCS_TANSIP_V(vector< vector<afwdetect::SourceMatch> > const &matchlist,dafbase::PropertySet::Ptr &metaTANSIP,lsst::pex::policy::Policy::Ptr &APROPPolicy,lsst::afw::cameraGeom::Camera::Ptr &camera/*,lsst::daf::base::PropertySet::Ptr &metadata,bool verbose*/){
+CL_WCSACCP F_WCS_TANSIP_V(vector< vector<afwdetect::SourceMatch> > const &matchlist,dafbase::PropertySet::Ptr &metaTANSIP,lsst::pex::policy::Policy::Ptr &APROPPolicy,lsst::afw::cameraGeom::Camera::Ptr &camera/*,lsst::daf::base::PropertySet::Ptr &metadata,bool verbose*/){
     cout <<endl<< "--- WCS_PL_MAIN :AAA ---" << endl;
 
 //------------------------------------------------------
@@ -131,20 +128,31 @@ CL_WCSCCP F_WCS_TANSIP_V(vector< vector<afwdetect::SourceMatch> > const &matchli
 //SET METADATA
 //------------------------------------------------------
 //MAKING VECTOR OF WCS CLASS
-    vector <afwImage::TanWcs::Ptr> resultWcs_V;
     cout << "--- WCS_PL_MAIN : F_WCS_MAKE_WCSVECTOR ---" << endl;
+    vector <afwImage::TanWcs::Ptr> resultWcs_V;
+    vector <CL_CPROP*> CPROP_V;
+    vector <CL_CSIP*> CSIP_V;
+    vector <CL_PAIR*> PAIR_V;
+    CL_WCSACCP WCSACCP;
     afwImage::TanWcs::Ptr resultWcs;
+
     for(CID=0;CID<APROP.CCDNUM+1;CID++){
     resultWcs = F_WCS_MAKERESULTWCS(&CSIP[CID]);
     resultWcs_V.push_back(resultWcs);
 //    resultWcs_V.push_back(F_WCS_MAKERESULTWCS(&CSIP[CID]));
+    CPROP_V.push_back(&CPROP[CID]);
+    CSIP_V.push_back(&CSIP[CID]);
+    }
+    int NUM;
+    for(NUM=0;NUM<APROP.NUMREFALL;NUM++){
+    PAIR_V.push_back(&PAIR[NUM]);
     }
 
-    CL_WCSCCP WCSCCP;
-    WCSCCP.WCSPtr = resultWcs_V;
-    WCSCCP.CPROP = CPROP;
-    WCSCCP.CSIP  = CSIP;
-    WCSCCP.PAIR  = PAIR;
+    WCSACCP.WCSPtr = resultWcs_V;
+    WCSACCP.APROP = &APROP;
+    WCSACCP.CPROP = CPROP_V;
+    WCSACCP.CSIP  = CSIP_V;
+    WCSACCP.PAIR  = PAIR_V;
     cout << "--- F_WCS_PL_MAIN : ZZZ ---" << endl;
 //------------------------------------------------------
 /*    for(CID=0;CID<APROP.CCDNUM+1;CID++){
@@ -154,7 +162,7 @@ CL_WCSCCP F_WCS_TANSIP_V(vector< vector<afwdetect::SourceMatch> > const &matchli
         delete [] CSIP[CID].TPCoef[1];
     }*/
 //------------------------------------------------------
-    return WCSCCP;
+    return WCSACCP;
 
 }
 //SUB ROUTINES
@@ -479,22 +487,4 @@ dafbase::PropertySet::Ptr F_WCS_EMPTYMETADATA(){
     dafbase::PropertySet::Ptr metadata(new dafbase::PropertySet);
 
     return metadata;
-}
-CL_CPROP* F_WCS_EMPTYCPROP(){
-    CL_CPROP *CPROPout;
-
-    CPROPout = new CL_CPROP;
-    return CPROPout;
-}
-CL_CSIP*  F_WCS_EMPTYCSIP(){
-    CL_CSIP *CSIPout;
-
-    CSIPout = new CL_CSIP;
-    return CSIPout;
-}
-CL_PAIR* F_WCS_EMPTYPAIR(){
-    CL_PAIR *PAIRout;
-
-    PAIRout = new CL_PAIR;
-    return PAIRout;
 }

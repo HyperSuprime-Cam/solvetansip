@@ -13,6 +13,7 @@ import lsst.obs.suprimecam as scmapper
 import hsc.meas.tansip.doTansip as doTansip
 import hsc.meas.tansip.WCS_PL_MAIN       as hscTansip
 import hsc.meas.tansip.WCS_POSITION_PY as WCS_POSITION_PY
+import hsc.meas.tansip.WCS_DISTORTION_PY as WCS_DISTORTION_PY
 import lsst.afw.detection as afwDet
 import lsst.afw.geom as afwGeom
 import lsst.afw.image as afwImage
@@ -77,23 +78,19 @@ policy = pexPolicy.Policy.createPolicy(policyPath)
 #policy.set("LSIPORDER", 1)
 #policy.set("SIPORDER", 6)
 metadata = hscTansip.F_WCS_EMPTYMETADATA()
-CPROP = []
-CSIP = []
-PAIR = []
-CPROP.append(hscTansip.F_WCS_EMPTYCPROP())
-CSIP.append(hscTansip.F_WCS_EMPTYCSIP())
-PAIR.append(hscTansip.F_WCS_EMPTYPAIR())
-print CPROP
-print CSIP
-print PAIR
 
 #wcsList = doTansip.doTansip(matches, policy=policy, camera=mapper.camera)
-#wcsList = doTansip.doTansip_meta(matches, metadata, policy=policy, camera=mapper.camera)
-wcsList = doTansip.doTansip_CCP(matches, CPROP, CSIP, PAIR, policy=policy, camera=mapper.camera)
-
-print CPROP
-print CSIP
-print PAIR
+WCSACCP   = doTansip.getresultWcs(matches, metadata, policy=policy, camera=mapper.camera)
+wcsList   = doTansip.getwcsList(WCSACCP)
+APROPList = doTansip.getAPROPList(WCSACCP)
+CPROPList = doTansip.getCPROPList(WCSACCP)
+CSIPList  = doTansip.getCSIPList(WCSACCP)
+PAIRList  = doTansip.getPAIRList(WCSACCP)
+print wcsList
+print APROPList
+print CPROPList
+print CSIPList
+print PAIRList[0]
 #position test
 X=-3311.42
 Y=-304.917
@@ -110,6 +107,33 @@ XY=WCS_POSITION_PY.F_WCS_POSITION_XYfromRADEC(wcsList[0],RA,DEC)
 print XY[0]
 print XY[1]
 #position test
+#distortion test
+
+MSSR=WCS_DISTORTION_PY.F_WCS_DISTORTION_wcsList_XY(wcsList[0],X,Y)
+print X,Y,MSSR[0], MSSR[1], MSSR[2], MSSR[3]
+X=0
+Y=0
+MSSR=WCS_DISTORTION_PY.F_WCS_DISTORTION_wcsList_XY(wcsList[0],X,Y)
+print X,Y,MSSR[0], MSSR[1], MSSR[2], MSSR[3]
+X=2000
+Y=4000
+MSSR=WCS_DISTORTION_PY.F_WCS_DISTORTION_wcsList_XY(wcsList[0],X,Y)
+print X,Y,MSSR[0], MSSR[1], MSSR[2], MSSR[3]
+MSSR=WCS_DISTORTION_PY.F_WCS_DISTORTION_wcsList_RADEC(wcsList[0],RA,DEC)
+print RA,DEC,MSSR[0], MSSR[1], MSSR[2], MSSR[3]
+RA=5.0
+DEC=-0.5
+MSSR=WCS_DISTORTION_PY.F_WCS_DISTORTION_wcsList_RADEC(wcsList[0],RA,DEC)
+print RA,DEC,MSSR[0], MSSR[1], MSSR[2], MSSR[3]
+RA=5.5
+DEC=-1.0
+MSSR=WCS_DISTORTION_PY.F_WCS_DISTORTION_wcsList_RADEC(wcsList[0],RA,DEC)
+print RA,DEC,MSSR[0], MSSR[1], MSSR[2], MSSR[3]
+MSSR=WCS_DISTORTION_PY.F_WCS_DISTORTION_CSIP_XY(CPROPList[0],X,Y)
+print MSSR[0], MSSR[1], MSSR[2], MSSR[3]
+MSSR=WCS_DISTORTION_PY.F_WCS_DISTORTION_CSIP_RADEC(CPROPList[0],RA,DEC)
+print MSSR[0], MSSR[1], MSSR[2], MSSR[3]
+#distortion test
 
 
 ra1 = []

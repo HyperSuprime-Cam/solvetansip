@@ -15,5 +15,8 @@
 #%template(WcsDic) std::map<int, lsst::afw::image::Wcs::Ptr>;
 %template(vvSourceMatch) std::vector<std::vector<lsst::afw::detection::SourceMatch> >;
 %template(resultWcs_V) std::vector<lsst::afw::image::TanWcs::Ptr>;
+%template(CPROP_V) std::vector<CL_CPROP*>;
+%template(CSIP_V)  std::vector<CL_CSIP* >;
+%template(PAIR_V)  std::vector<CL_PAIR* >;
 
 %include "hsc/meas/tansip/WCS_PL_MAIN.h"
