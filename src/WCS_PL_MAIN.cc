@@ -32,36 +32,38 @@ CL_WCSACCP F_WCS_TANSIP_V(vector< vector<afwdetect::SourceMatch> > const &matchl
 
 //------------------------------------------------------
 //MAKING PROPERTY FILE
-    CL_APROP  APROP;
+    CL_APROP *APROP;
     CL_CPROP *CPROP;
     CL_PAIR  *PAIR;
     CL_CSIP  *CSIP;
+
     cout << "--- WCS_PL_MAIN : F_WCS_MAKE_APROP ---" << endl;
-    F_WCS_MAKEAPROP(APROPPolicy, &APROP);
+    APROP = new CL_APROP[1];
+    F_WCS_MAKEAPROP(APROPPolicy, APROP);
     cout << "-- APROP CHECK --" << endl;
-    cout << "CRPIXMODE   : " << APROP.CRPIXMODE   << endl;
-    cout << "CCDPOSMODE  : " << APROP.CCDPOSMODE  << endl;
-    cout << "CRPIX1      : " << APROP.CRPIX[0]    << endl;
-    cout << "CRPIX2      : " << APROP.CRPIX[1]    << endl;
-    cout << "CRVAL1      : " << APROP.CRVAL[0]    << endl;
-    cout << "CRVAL2      : " << APROP.CRVAL[1]    << endl;
-    cout << "SIP_L_ORDER : " << APROP.SIP_L_ORDER << endl;
-    cout << "SIP_ORDER   : " << APROP.SIP_ORDER   << endl;
-    cout << "SIP_PORDER  : " << APROP.SIP_P_ORDER << endl;
-    cout << "CRIP_SIGMA  : " << APROP.CLIP_SIGMA  << endl;
-    cout << "CCDNUM      : " << APROP.CCDNUM      << endl;
-    cout << "CHECKFILE   : " << APROP.CHECKFILE   << endl;
-    cout << "BASISCCD    : " << APROP.BASISCID    << endl;
-    cout << "BASISPOSX   : " << APROP.BASIS_POS[0]<< endl;
-    cout << "BASISPOSY   : " << APROP.BASIS_POS[1]<< endl;
-    cout << "BASISPOST   : " << APROP.BASIS_POS[2]<< endl;
+    cout << "CRPIXMODE   : " << APROP->CRPIXMODE   << endl;
+    cout << "CCDPOSMODE  : " << APROP->CCDPOSMODE  << endl;
+    cout << "CRPIX1      : " << APROP->CRPIX[0]    << endl;
+    cout << "CRPIX2      : " << APROP->CRPIX[1]    << endl;
+    cout << "CRVAL1      : " << APROP->CRVAL[0]    << endl;
+    cout << "CRVAL2      : " << APROP->CRVAL[1]    << endl;
+    cout << "SIP_L_ORDER : " << APROP->SIP_L_ORDER << endl;
+    cout << "SIP_ORDER   : " << APROP->SIP_ORDER   << endl;
+    cout << "SIP_PORDER  : " << APROP->SIP_P_ORDER << endl;
+    cout << "CRIP_SIGMA  : " << APROP->CLIP_SIGMA  << endl;
+    cout << "CCDNUM      : " << APROP->CCDNUM      << endl;
+    cout << "CHECKFILE   : " << APROP->CHECKFILE   << endl;
+    cout << "BASISCCD    : " << APROP->BASISCID    << endl;
+    cout << "BASISPOSX   : " << APROP->BASIS_POS[0]<< endl;
+    cout << "BASISPOSY   : " << APROP->BASIS_POS[1]<< endl;
+    cout << "BASISPOST   : " << APROP->BASIS_POS[2]<< endl;
     cout <<endl;
     
     cout << "--- WCS_PL_MAIN : F_WCS_MAKE_CPROP ---" << endl;
-    CPROP = new CL_CPROP[APROP.CCDNUM];
-    F_WCS_MAKECPROP(camera, matchlist, &APROP, CPROP);
+    CPROP = new CL_CPROP[APROP->CCDNUM];
+    F_WCS_MAKECPROP(camera, matchlist, APROP, CPROP);
     cout << "-- APROP CHECK --" << endl;
-    cout << "NUMREFALL   : " << APROP.NUMREFALL   << endl;
+    cout << "NUMREFALL   : " << APROP->NUMREFALL   << endl;
     cout << "-- CPROP CHECK --" << endl;
     cout << "- CCD : " << setw(3) << setfill('0') << CPROP[0].ID  << " -"<< endl;
     cout << "ID          : " << CPROP[0].ID       << endl;
@@ -72,57 +74,57 @@ CL_WCSACCP F_WCS_TANSIP_V(vector< vector<afwdetect::SourceMatch> > const &matchl
     cout << "INITIAL X   : " << CPROP[0].GLOB_POS[0] << endl;
     cout << "INITIAL Y   : " << CPROP[0].GLOB_POS[1] << endl;
     cout << "INITIAL T   : " << CPROP[0].GLOB_POS[2] << endl;
-    cout << "- CCD : " << setw(3) << setfill('0') << CPROP[APROP.CCDNUM-1].ID << " -" <<endl;
-    cout << "ID          : " << CPROP[APROP.CCDNUM-1].ID     << endl;
-    cout << "Index X     : " << CPROP[APROP.CCDNUM-1].POSID[0] << endl;
-    cout << "Index Y     : " << CPROP[APROP.CCDNUM-1].POSID[1] << endl;
-    cout << "NUMREF      : " << CPROP[APROP.CCDNUM-1].NUMREF << endl;
-    cout << "PHASE       : " << CPROP[APROP.CCDNUM-1].PHASE  << endl;
-    cout << "INITIAL X   : " << CPROP[APROP.CCDNUM-1].GLOB_POS[0] << endl;
-    cout << "INITIAL Y   : " << CPROP[APROP.CCDNUM-1].GLOB_POS[1] << endl;
-    cout << "INITIAL T   : " << CPROP[APROP.CCDNUM-1].GLOB_POS[2] << endl; 
+    cout << "- CCD : " << setw(3) << setfill('0') << CPROP[APROP->CCDNUM-1].ID << " -" <<endl;
+    cout << "ID          : " << CPROP[APROP->CCDNUM-1].ID     << endl;
+    cout << "Index X     : " << CPROP[APROP->CCDNUM-1].POSID[0] << endl;
+    cout << "Index Y     : " << CPROP[APROP->CCDNUM-1].POSID[1] << endl;
+    cout << "NUMREF      : " << CPROP[APROP->CCDNUM-1].NUMREF << endl;
+    cout << "PHASE       : " << CPROP[APROP->CCDNUM-1].PHASE  << endl;
+    cout << "INITIAL X   : " << CPROP[APROP->CCDNUM-1].GLOB_POS[0] << endl;
+    cout << "INITIAL Y   : " << CPROP[APROP->CCDNUM-1].GLOB_POS[1] << endl;
+    cout << "INITIAL T   : " << CPROP[APROP->CCDNUM-1].GLOB_POS[2] << endl; 
     cout <<endl;
 
     cout << "--- WCS_PL_MAIN : F_WCS_MAKE_PAIR ---" << endl;
-    PAIR = new CL_PAIR[APROP.NUMREFALL];
-    F_WCS_MAKEPAIR(matchlist, &APROP, CPROP, PAIR);
+    PAIR = new CL_PAIR[APROP->NUMREFALL];
+    F_WCS_MAKEPAIR(matchlist, APROP, CPROP, PAIR);
 
     cout << "--- WCS_PL_MAIN : MAKE_CSIP ---" << endl;
     int CID;
-    CSIP = new CL_CSIP[APROP.CCDNUM+1];
-    for(CID=0;CID<APROP.CCDNUM+1;CID++){
-        CSIP[CID].SIP_AB[0]    = new double[(APROP.SIP_ORDER  +1)*(APROP.SIP_ORDER  +2)];
-        CSIP[CID].SIP_AB[1]    = new double[(APROP.SIP_ORDER  +1)*(APROP.SIP_ORDER  +2)];
-        CSIP[CID].SIP_ABP[0]   = new double[(APROP.SIP_P_ORDER+1)*(APROP.SIP_P_ORDER+2)];
-        CSIP[CID].SIP_ABP[1]   = new double[(APROP.SIP_P_ORDER+1)*(APROP.SIP_P_ORDER+2)];
-        CSIP[CID].SIP_ABD[0]   = new double[(APROP.SIP_P_ORDER+1)*(APROP.SIP_P_ORDER+2)];
-        CSIP[CID].SIP_ABD[1]   = new double[(APROP.SIP_P_ORDER+1)*(APROP.SIP_P_ORDER+2)];
-        CSIP[CID].TCoef[0]     = new double[(APROP.SIP_ORDER  +1)*(APROP.SIP_ORDER  +2)];
-        CSIP[CID].TCoef[1]     = new double[(APROP.SIP_ORDER  +1)*(APROP.SIP_ORDER  +2)];
-        CSIP[CID].TPCoef[0]    = new double[(APROP.SIP_P_ORDER+1)*(APROP.SIP_P_ORDER+2)];
-        CSIP[CID].TPCoef[1]    = new double[(APROP.SIP_P_ORDER+1)*(APROP.SIP_P_ORDER+2)];
-        CSIP[CID].TLCoef[0]    = new double[(APROP.SIP_L_ORDER+1)*(APROP.SIP_L_ORDER+2)];
-        CSIP[CID].TLCoef[1]    = new double[(APROP.SIP_L_ORDER+1)*(APROP.SIP_L_ORDER+2)];
-        CSIP[CID].SIP_MAG      = new double[(APROP.SIP_P_ORDER+1)*(APROP.SIP_P_ORDER+2)];
-        CSIP[CID].SIP_SHEAR[0] = new double[(APROP.SIP_P_ORDER+1)*(APROP.SIP_P_ORDER+2)];
-        CSIP[CID].SIP_SHEAR[1] = new double[(APROP.SIP_P_ORDER+1)*(APROP.SIP_P_ORDER+2)];
-        CSIP[CID].SIP_ROT      = new double[(APROP.SIP_P_ORDER+1)*(APROP.SIP_P_ORDER+2)];
-        CSIP[CID].PSIP_MAG     = new double[(APROP.SIP_P_ORDER+1)*(APROP.SIP_P_ORDER+2)];
-        CSIP[CID].PSIP_SHEAR[0]= new double[(APROP.SIP_P_ORDER+1)*(APROP.SIP_P_ORDER+2)];
-        CSIP[CID].PSIP_SHEAR[1]= new double[(APROP.SIP_P_ORDER+1)*(APROP.SIP_P_ORDER+2)];
-        CSIP[CID].PSIP_ROT     = new double[(APROP.SIP_P_ORDER+1)*(APROP.SIP_P_ORDER+2)];
+    CSIP = new CL_CSIP[APROP->CCDNUM+1];
+    for(CID=0;CID<APROP->CCDNUM+1;CID++){
+        CSIP[CID].SIP_AB[0]    = new double[(APROP->SIP_ORDER  +1)*(APROP->SIP_ORDER  +2)];
+        CSIP[CID].SIP_AB[1]    = new double[(APROP->SIP_ORDER  +1)*(APROP->SIP_ORDER  +2)];
+        CSIP[CID].SIP_ABP[0]   = new double[(APROP->SIP_P_ORDER+1)*(APROP->SIP_P_ORDER+2)];
+        CSIP[CID].SIP_ABP[1]   = new double[(APROP->SIP_P_ORDER+1)*(APROP->SIP_P_ORDER+2)];
+        CSIP[CID].SIP_ABD[0]   = new double[(APROP->SIP_P_ORDER+1)*(APROP->SIP_P_ORDER+2)];
+        CSIP[CID].SIP_ABD[1]   = new double[(APROP->SIP_P_ORDER+1)*(APROP->SIP_P_ORDER+2)];
+        CSIP[CID].TCoef[0]     = new double[(APROP->SIP_ORDER  +1)*(APROP->SIP_ORDER  +2)];
+        CSIP[CID].TCoef[1]     = new double[(APROP->SIP_ORDER  +1)*(APROP->SIP_ORDER  +2)];
+        CSIP[CID].TPCoef[0]    = new double[(APROP->SIP_P_ORDER+1)*(APROP->SIP_P_ORDER+2)];
+        CSIP[CID].TPCoef[1]    = new double[(APROP->SIP_P_ORDER+1)*(APROP->SIP_P_ORDER+2)];
+        CSIP[CID].TLCoef[0]    = new double[(APROP->SIP_L_ORDER+1)*(APROP->SIP_L_ORDER+2)];
+        CSIP[CID].TLCoef[1]    = new double[(APROP->SIP_L_ORDER+1)*(APROP->SIP_L_ORDER+2)];
+        CSIP[CID].SIP_MAG      = new double[(APROP->SIP_P_ORDER+1)*(APROP->SIP_P_ORDER+2)];
+        CSIP[CID].SIP_SHEAR[0] = new double[(APROP->SIP_P_ORDER+1)*(APROP->SIP_P_ORDER+2)];
+        CSIP[CID].SIP_SHEAR[1] = new double[(APROP->SIP_P_ORDER+1)*(APROP->SIP_P_ORDER+2)];
+        CSIP[CID].SIP_ROT      = new double[(APROP->SIP_P_ORDER+1)*(APROP->SIP_P_ORDER+2)];
+        CSIP[CID].PSIP_MAG     = new double[(APROP->SIP_P_ORDER+1)*(APROP->SIP_P_ORDER+2)];
+        CSIP[CID].PSIP_SHEAR[0]= new double[(APROP->SIP_P_ORDER+1)*(APROP->SIP_P_ORDER+2)];
+        CSIP[CID].PSIP_SHEAR[1]= new double[(APROP->SIP_P_ORDER+1)*(APROP->SIP_P_ORDER+2)];
+        CSIP[CID].PSIP_ROT     = new double[(APROP->SIP_P_ORDER+1)*(APROP->SIP_P_ORDER+2)];
     }
-    CSIP[APROP.CCDNUM].PREDICT_SIP_ABD[0] = new double[(APROP.PREDICT_SIP_D_ORDER+2)*(APROP.PREDICT_SIP_D_ORDER+1)];
-    CSIP[APROP.CCDNUM].PREDICT_SIP_ABD[1] = new double[(APROP.PREDICT_SIP_D_ORDER+2)*(APROP.PREDICT_SIP_D_ORDER+1)];
+    CSIP[APROP->CCDNUM].PREDICT_SIP_ABD[0] = new double[(APROP->PREDICT_SIP_D_ORDER+2)*(APROP->PREDICT_SIP_D_ORDER+1)];
+    CSIP[APROP->CCDNUM].PREDICT_SIP_ABD[1] = new double[(APROP->PREDICT_SIP_D_ORDER+2)*(APROP->PREDICT_SIP_D_ORDER+1)];
 
 //PREDICT CSIP
     char PRESSFILE[100],PREDSIPFILE[100];
     sprintf(PRESSFILE,"../policy/WCS_SS_PREDICT.paf");
     sprintf(PREDSIPFILE,"../policy/WCS_DSIP_PREDICT.paf");
-    F_WCS_SETCC_PRECSIPfromFILE(APROP, PRESSFILE, PREDSIPFILE, &CSIP[APROP.CCDNUM]);
+    F_WCS_SETCC_PRECSIPfromFILE(*APROP, PRESSFILE, PREDSIPFILE, &CSIP[APROP->CCDNUM]);
 //------------------------------------------------------
     cout << "--- WCS_PL_MAIN : F_WCS_TANSIP ---" << endl;
-    F_WCS_TANSIP(APROP,CPROP,PAIR,CSIP);
+    F_WCS_TANSIP(*APROP,CPROP,PAIR,CSIP);
 
 // ------------------------------------------------------
 //SET METADATA
@@ -132,27 +134,24 @@ CL_WCSACCP F_WCS_TANSIP_V(vector< vector<afwdetect::SourceMatch> > const &matchl
     vector <afwImage::TanWcs::Ptr> resultWcs_V;
     vector <CL_CPROP*> CPROP_V;
     vector <CL_CSIP*> CSIP_V;
-    vector <CL_PAIR*> PAIR_V;
     CL_WCSACCP WCSACCP;
     afwImage::TanWcs::Ptr resultWcs;
 
-    for(CID=0;CID<APROP.CCDNUM+1;CID++){
+    for(CID=0;CID<APROP->CCDNUM+1;CID++){
     resultWcs = F_WCS_MAKERESULTWCS(&CSIP[CID]);
     resultWcs_V.push_back(resultWcs);
-//    resultWcs_V.push_back(F_WCS_MAKERESULTWCS(&CSIP[CID]));
     CPROP_V.push_back(&CPROP[CID]);
     CSIP_V.push_back(&CSIP[CID]);
     }
-    int NUM;
-    for(NUM=0;NUM<APROP.NUMREFALL;NUM++){
-    PAIR_V.push_back(&PAIR[NUM]);
-    }
 
     WCSACCP.WCSPtr = resultWcs_V;
-    WCSACCP.APROP = &APROP;
-    WCSACCP.CPROP = CPROP_V;
-    WCSACCP.CSIP  = CSIP_V;
-    WCSACCP.PAIR  = PAIR_V;
+    WCSACCP.APROP = APROP;
+    WCSACCP.CPROP = CPROP;
+    WCSACCP.CSIP  = CSIP;
+    WCSACCP.PAIR  = PAIR;
+    WCSACCP.CPROPList = CPROP_V;
+    WCSACCP.CSIPList  = CSIP_V;
+
     cout << "--- F_WCS_PL_MAIN : ZZZ ---" << endl;
 //------------------------------------------------------
 /*    for(CID=0;CID<APROP.CCDNUM+1;CID++){
@@ -487,4 +486,25 @@ dafbase::PropertySet::Ptr F_WCS_EMPTYMETADATA(){
     dafbase::PropertySet::Ptr metadata(new dafbase::PropertySet);
 
     return metadata;
+}
+std::vector <lsst::afw::image::TanWcs::Ptr> F_WCS_GETWCSLIST(CL_WCSACCP* WCSACCP){
+    return WCSACCP->WCSPtr;
+}
+CL_APROP* F_WCS_GETAPROP(CL_WCSACCP* WCSACCP){
+    return WCSACCP->APROP;
+}
+CL_CPROP* F_WCS_GETCPROP(CL_WCSACCP* WCSACCP){
+    return WCSACCP->CPROP;
+}
+CL_CSIP*  F_WCS_GETCSIP(CL_WCSACCP* WCSACCP){
+    return WCSACCP->CSIP;
+}
+CL_PAIR*  F_WCS_GETPAIR(CL_WCSACCP* WCSACCP){
+    return WCSACCP->PAIR;
+}
+std::vector <CL_CPROP*> F_WCS_GETCPROPLIST(CL_WCSACCP* WCSACCP){
+    return WCSACCP->CPROPList;
+}
+std::vector <CL_CSIP*>  F_WCS_GETCSIPLIST(CL_WCSACCP* WCSACCP){
+    return WCSACCP->CSIPList;
 }

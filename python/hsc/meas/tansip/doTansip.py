@@ -60,16 +60,22 @@ def doTansip(matchListAllCcd, policy=None, camera=None, rerun=None):
     return WCSACCP.WCSPtr
 
 def getwcsList(WCSACCP):
-    return WCSACCP.WCSPtr
+    return hscTansip.F_WCS_GETWCSLIST(WCSACCP)
 
-def getAPROPList(WCSACCP):
-    return WCSACCP.APROP
+def getAPROP(WCSACCP):
+    return hscTansip.F_WCS_GETAPROP(WCSACCP)
+
+def getCPROP(WCSACCP):
+    return hscTansip.F_WCS_GETCPROP(WCSACCP)
+
+def getCSIP(WCSACCP):
+    return hscTansip.F_WCS_GETCSIP(WCSACCP)
+
+def getPAIR(WCSACCP):
+    return hscTansip.F_WCS_GETPAIR(WCSACCP)
 
 def getCPROPList(WCSACCP):
-    return WCSACCP.CPROP
+    return hscTansip.F_WCS_GETCPROPLIST(WCSACCP)
 
 def getCSIPList(WCSACCP):
-    return WCSACCP.CSIP
-
-def getPAIRList(WCSACCP):
-    return WCSACCP.PAIR
+    return hscTansip.F_WCS_GETCSIPLIST(WCSACCP)

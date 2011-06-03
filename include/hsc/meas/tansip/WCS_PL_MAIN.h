@@ -21,12 +21,21 @@ private:
 public:
     std::vector <lsst::afw::image::TanWcs::Ptr> WCSPtr;
     CL_APROP* APROP;
-    std::vector <CL_CPROP*> CPROP;
-    std::vector <CL_CSIP*> CSIP;
-    std::vector <CL_PAIR*> PAIR;
+    CL_CPROP* CPROP;
+    CL_CSIP*  CSIP;
+    CL_PAIR*  PAIR;
+    std::vector <CL_CPROP*> CPROPList;
+    std::vector <CL_CSIP*> CSIPList;
 };
 #endif
 
 CL_WCSACCP F_WCS_TANSIP_V(std::vector< std::vector<lsst::afw::detection::SourceMatch> > const &,lsst::daf::base::PropertySet::Ptr &,lsst::pex::policy::Policy::Ptr &,lsst::afw::cameraGeom::Camera::Ptr &/*,lsst::daf::base::PropertySet::Ptr &,bool*/);
+std::vector <lsst::afw::image::TanWcs::Ptr> F_WCS_GETWCSLIST(CL_WCSACCP*);
+CL_APROP* F_WCS_GETAPROP(CL_WCSACCP*);
+CL_CPROP* F_WCS_GETCPROP(CL_WCSACCP*);
+CL_CSIP*  F_WCS_GETCSIP(CL_WCSACCP*);
+CL_PAIR*  F_WCS_GETPAIR(CL_WCSACCP*);
+std::vector <CL_CPROP*> F_WCS_GETCPROPLIST(CL_WCSACCP*);
+std::vector <CL_CSIP*>  F_WCS_GETCSIPLIST(CL_WCSACCP*);
 lsst::daf::base::PropertySet::Ptr F_WCS_EMPTYMETADATA();
 

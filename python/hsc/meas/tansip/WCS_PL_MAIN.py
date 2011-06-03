@@ -1573,6 +1573,12 @@ class CL_WCSACCP(_object):
     __swig_setmethods__["PAIR"] = _WCS_PL_MAIN.CL_WCSACCP_PAIR_set
     __swig_getmethods__["PAIR"] = _WCS_PL_MAIN.CL_WCSACCP_PAIR_get
     if _newclass:PAIR = _swig_property(_WCS_PL_MAIN.CL_WCSACCP_PAIR_get, _WCS_PL_MAIN.CL_WCSACCP_PAIR_set)
+    __swig_setmethods__["CPROPList"] = _WCS_PL_MAIN.CL_WCSACCP_CPROPList_set
+    __swig_getmethods__["CPROPList"] = _WCS_PL_MAIN.CL_WCSACCP_CPROPList_get
+    if _newclass:CPROPList = _swig_property(_WCS_PL_MAIN.CL_WCSACCP_CPROPList_get, _WCS_PL_MAIN.CL_WCSACCP_CPROPList_set)
+    __swig_setmethods__["CSIPList"] = _WCS_PL_MAIN.CL_WCSACCP_CSIPList_set
+    __swig_getmethods__["CSIPList"] = _WCS_PL_MAIN.CL_WCSACCP_CSIPList_get
+    if _newclass:CSIPList = _swig_property(_WCS_PL_MAIN.CL_WCSACCP_CSIPList_get, _WCS_PL_MAIN.CL_WCSACCP_CSIPList_set)
     def __init__(self, *args): 
         """__init__(self) -> CL_WCSACCP"""
         this = _WCS_PL_MAIN.new_CL_WCSACCP(*args)
@@ -1587,6 +1593,34 @@ CL_WCSACCP_swigregister(CL_WCSACCP)
 def F_WCS_TANSIP_V(*args):
   """F_WCS_TANSIP_V(vvSourceMatch ?, Ptr ?, Ptr ?, Ptr ?) -> CL_WCSACCP"""
   return _WCS_PL_MAIN.F_WCS_TANSIP_V(*args)
+
+def F_WCS_GETWCSLIST(*args):
+  """F_WCS_GETWCSLIST(CL_WCSACCP ?) -> resultWcs_V"""
+  return _WCS_PL_MAIN.F_WCS_GETWCSLIST(*args)
+
+def F_WCS_GETAPROP(*args):
+  """F_WCS_GETAPROP(CL_WCSACCP ?) -> CL_APROP"""
+  return _WCS_PL_MAIN.F_WCS_GETAPROP(*args)
+
+def F_WCS_GETCPROP(*args):
+  """F_WCS_GETCPROP(CL_WCSACCP ?) -> CL_CPROP"""
+  return _WCS_PL_MAIN.F_WCS_GETCPROP(*args)
+
+def F_WCS_GETCSIP(*args):
+  """F_WCS_GETCSIP(CL_WCSACCP ?) -> CL_CSIP"""
+  return _WCS_PL_MAIN.F_WCS_GETCSIP(*args)
+
+def F_WCS_GETPAIR(*args):
+  """F_WCS_GETPAIR(CL_WCSACCP ?) -> CL_PAIR"""
+  return _WCS_PL_MAIN.F_WCS_GETPAIR(*args)
+
+def F_WCS_GETCPROPLIST(*args):
+  """F_WCS_GETCPROPLIST(CL_WCSACCP ?) -> CPROP_V"""
+  return _WCS_PL_MAIN.F_WCS_GETCPROPLIST(*args)
+
+def F_WCS_GETCSIPLIST(*args):
+  """F_WCS_GETCSIPLIST(CL_WCSACCP ?) -> CSIP_V"""
+  return _WCS_PL_MAIN.F_WCS_GETCSIPLIST(*args)
 
 def F_WCS_EMPTYMETADATA(*args):
   """F_WCS_EMPTYMETADATA() -> Ptr"""

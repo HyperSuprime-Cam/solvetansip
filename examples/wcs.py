@@ -12,8 +12,9 @@ import lsst.obs.suprimecam as scmapper
 
 import hsc.meas.tansip.doTansip as doTansip
 import hsc.meas.tansip.WCS_PL_MAIN       as hscTansip
-import hsc.meas.tansip.WCS_POSITION_PY as WCS_POSITION_PY
+import hsc.meas.tansip.WCS_POSITION_PY   as WCS_POSITION_PY
 import hsc.meas.tansip.WCS_DISTORTION_PY as WCS_DISTORTION_PY
+import hsc.meas.tansip.WCS_READPAIR_PY   as WCS_READPAIR_PY
 import lsst.afw.detection as afwDet
 import lsst.afw.geom as afwGeom
 import lsst.afw.image as afwImage
@@ -81,17 +82,33 @@ metadata = hscTansip.F_WCS_EMPTYMETADATA()
 
 #wcsList = doTansip.doTansip(matches, policy=policy, camera=mapper.camera)
 WCSACCP   = doTansip.getresultWcs(matches, metadata, policy=policy, camera=mapper.camera)
+print "--- get wcsList ---"
 wcsList   = doTansip.getwcsList(WCSACCP)
-APROPList = doTansip.getAPROPList(WCSACCP)
+print "--- get APROP ---"
+APROP     = doTansip.getAPROP(WCSACCP)
+print "--- get CPROP ---"
+CPROP     = doTansip.getCPROP(WCSACCP)
+print "--- get CSIP ---"
+CSIP      = doTansip.getCSIP(WCSACCP)
+print "--- get PAIR ---"
+PAIR      = doTansip.getPAIR(WCSACCP)
+print "--- get CPROPList ---"
 CPROPList = doTansip.getCPROPList(WCSACCP)
+print "--- get CSIPList ---"
 CSIPList  = doTansip.getCSIPList(WCSACCP)
-PAIRList  = doTansip.getPAIRList(WCSACCP)
 print wcsList
-print APROPList
+print APROP
+print CPROP
+print CSIP
+print PAIR
 print CPROPList
 print CSIPList
-print PAIRList[0]
+#pair test
+print "--- pair test ---"
+WCS_READPAIR_PY.F_WCS_READPAIR(APROP,PAIR)
+#pair test
 #position test
+print "--- position test ---"
 X=-3311.42
 Y=-304.917
 RA=5.53589
@@ -108,6 +125,7 @@ print XY[0]
 print XY[1]
 #position test
 #distortion test
+print "--- disttion test ---"
 
 MSSR=WCS_DISTORTION_PY.F_WCS_DISTORTION_wcsList_XY(wcsList[0],X,Y)
 print X,Y,MSSR[0], MSSR[1], MSSR[2], MSSR[3]
