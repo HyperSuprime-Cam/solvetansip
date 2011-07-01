@@ -1594,6 +1594,10 @@ def F_WCS_TANSIP_V(*args):
   """F_WCS_TANSIP_V(vvSourceMatch ?, Ptr ?, Ptr ?, Ptr ?) -> CL_WCSACCP"""
   return _WCS_PL_MAIN.F_WCS_TANSIP_V(*args)
 
+def F_WCS_TANSIP_V_local(*args):
+  """F_WCS_TANSIP_V_local(string ?, Ptr ?, Ptr ?, Ptr ?) -> CL_WCSACCP"""
+  return _WCS_PL_MAIN.F_WCS_TANSIP_V_local(*args)
+
 def F_WCS_GETWCSLIST(*args):
   """F_WCS_GETWCSLIST(CL_WCSACCP ?) -> resultWcs_V"""
   return _WCS_PL_MAIN.F_WCS_GETWCSLIST(*args)

@@ -4,6 +4,7 @@
 //Last modification : 2011/05/20
 //------------------------------------------------------------
 #include<vector>
+#include<string>
 #include "lsst/pex/policy/Policy.h"
 #include "lsst/afw/detection/SourceMatch.h"
 #include "lsst/afw/cameraGeom/Camera.h"
@@ -25,11 +26,12 @@ public:
     CL_CSIP*  CSIP;
     CL_PAIR*  PAIR;
     std::vector <CL_CPROP*> CPROPList;
-    std::vector <CL_CSIP*> CSIPList;
+    std::vector <CL_CSIP*>  CSIPList;
 };
 #endif
 
 CL_WCSACCP F_WCS_TANSIP_V(std::vector< std::vector<lsst::afw::detection::SourceMatch> > const &,lsst::daf::base::PropertySet::Ptr &,lsst::pex::policy::Policy::Ptr &,lsst::afw::cameraGeom::Camera::Ptr &/*,lsst::daf::base::PropertySet::Ptr &,bool*/);
+CL_WCSACCP F_WCS_TANSIP_V_local(std::string,lsst::daf::base::PropertySet::Ptr &,lsst::pex::policy::Policy::Ptr &,lsst::afw::cameraGeom::Camera::Ptr &/*,lsst::daf::base::PropertySet::Ptr &,bool*/);
 std::vector <lsst::afw::image::TanWcs::Ptr> F_WCS_GETWCSLIST(CL_WCSACCP*);
 CL_APROP* F_WCS_GETAPROP(CL_WCSACCP*);
 CL_CPROP* F_WCS_GETCPROP(CL_WCSACCP*);

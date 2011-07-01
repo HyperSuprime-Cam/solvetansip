@@ -26,21 +26,12 @@ public:
     double *SIP_ABP[2];
     double SIP_ABP_GErr[2][2];//difference between SIPxy and xy from refference RADEC
     double SIP_ABP_LErr[2][2];//difference between SIPxy and xy from refference RADEC
+    double ANGLE;
 //for CALC
     double *TCoef[2];
     double *TPCoef[2];
     double *TLCoef[2];
 //for check
-    double ANGLE;
-    int SIP_ABD_ORDER;
-    double SS[2][2];
-    double InvSS[2][2];
-    double *SIP_ABD[2];
-    int PREDICT_SIP_ABD_ORDER;
-    double PREDICT_SS[2][2];//Coefficients from xI to xCRPIX at CRVAL
-    double PREDICT_InvSS[2][2];//Coefficients from xI to xCRPIX at CRVAL
-    double *PREDICT_SIP_ABD[2];//Coefficients from xI to xCRPIX at CRVAL
-
     double *SIP_MAG;
     double *SIP_SHEAR[2];
     double *SIP_ROT;

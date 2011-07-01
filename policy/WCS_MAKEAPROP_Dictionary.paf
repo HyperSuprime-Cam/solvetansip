@@ -169,4 +169,23 @@ definitions: {
         minOccurs: 0
         maxOccurs: 1
     }
+    STDOUT: {
+        type: int
+        default: 0
+        description: std output
+        allowed: {
+            value: 0
+            description: non output
+        }
+        allowed: {
+            value: 1
+            description: STEP output
+        }
+        allowed: {
+            value: 2
+            description: detail output
+        }
+        minOccurs: 0
+        maxOccurs: 2
+    }
 }

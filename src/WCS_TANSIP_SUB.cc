@@ -11,6 +11,133 @@
 #define LP 180
 #define INFMIN pow(10,-10)
 
+int*	F_NEWint1(int SIZE1){
+	int *MAT;
+	int i;
+
+	MAT = new int[SIZE1];
+	for(i=0;i<SIZE1;i++)
+	MAT[i]=0;
+
+	return MAT;
+}
+double*	F_NEWdouble1(int SIZE1){
+	double *MAT;
+	int i;
+
+	MAT = new double[SIZE1];
+	for(i=0;i<SIZE1;i++)
+	MAT[i]=0;
+
+	return MAT;
+}
+double**	F_NEWdouble2(int SIZE1,int SIZE2){
+	double **MAT;
+	int i,j;
+
+	MAT = new double*[SIZE1];
+	for(i=0;i<SIZE1;i++){
+	MAT[i] = new double[SIZE2];
+	for(j=0;j<SIZE2;j++)
+	MAT[i][j]=0;
+	}
+
+	return MAT;
+}
+double***	F_NEWdouble3(int SIZE1,int SIZE2,int SIZE3){
+	double ***MAT;
+	int i,j,k;
+
+	MAT = new double**[SIZE1];
+	for(i=0;i<SIZE1;i++){
+	MAT[i] = new double*[SIZE2];
+	for(j=0;j<SIZE2;j++){
+	MAT[i][j] = new double[SIZE3];
+	for(k=0;k<SIZE3;k++)
+	MAT[i][j][k]=0;
+	}}
+
+	return MAT;
+}
+double****	F_NEWdouble4(int SIZE1,int SIZE2,int SIZE3,int SIZE4){
+	double ****MAT;
+	int i,j,k,l;
+
+	MAT = new double***[SIZE1];
+	for(i=0;i<SIZE1;i++){
+	MAT[i] = new double**[SIZE2];
+	for(j=0;j<SIZE2;j++){
+	MAT[i][j] = new double*[SIZE3];
+	for(k=0;k<SIZE3;k++){
+	MAT[i][j][k] = new double[SIZE4];
+	for(l=0;l<SIZE4;l++)
+	MAT[i][j][k][l]=0;
+	}}}
+
+	return MAT;
+}
+char***	F_NEWchar3(int SIZE1,int SIZE2,int SIZE3){
+	char ***MAT;
+	int i,j,k;
+
+	MAT = new char**[SIZE1];
+	for(i=0;i<SIZE1;i++){
+	MAT[i] = new char*[SIZE2];
+	for(j=0;j<SIZE2;j++){
+	MAT[i][j] = new char[SIZE3];
+	for(k=0;k<SIZE3;k++)
+	MAT[i][j][k]=0;
+	}}
+
+	return MAT;
+}
+void	F_DELint1(int *MAT){
+	delete [] MAT;
+}
+void	F_DELdouble1(double *MAT){
+	delete [] MAT;
+}
+void	F_DELdouble2(int SIZE1,double **MAT){
+	int i;
+
+	for(i=0;i<SIZE1;i++)
+	delete [] MAT[i];
+	delete [] MAT;
+}
+void	F_DELdouble3(int SIZE1,int SIZE2,double ***MAT){
+	int i,j;
+
+	for(i=0;i<SIZE1;i++){
+	for(j=0;j<SIZE2;j++)
+	delete [] MAT[i][j];
+	delete [] MAT[i];
+        }
+	delete [] MAT;
+}
+void	F_DELdouble4(int SIZE1,int SIZE2,int SIZE3,double ****MAT){
+	int i,j,k;
+
+	for(i=0;i<SIZE1;i++){
+	for(j=0;j<SIZE2;j++){
+	for(k=0;k<SIZE3;k++)
+	delete [] MAT[i][j][k];
+	delete [] MAT[i][j];
+        }
+	delete [] MAT[i];
+        }
+	delete [] MAT;
+}
+void	F_DELchar3(int SIZE1,int SIZE2,char ***MAT){
+	int i,j;
+
+	for(i=0;i<SIZE1;i++){
+	for(j=0;j<SIZE2;j++)
+	delete [] MAT[i][j];
+	delete [] MAT[i];
+        }
+	delete [] MAT;
+}
+
 double  F_CALCVALUE(int ORDER,double *Coef,double *X){
     int i,j,ij;
     double Z;
@@ -50,18 +177,9 @@ void    F_DIFFSIP(int ORDER,double *Coef,double *dxCoef,double *dyCoef){
     int i,j,ij=0;
     double **Coef2,**dxCoef2,**dyCoef2;
 
-      Coef2 = new double*[ORDER+1];
-    dxCoef2 = new double*[ORDER+1];
-    dyCoef2 = new double*[ORDER+1];
-    for(i=0;i<ORDER+1;i++){
-      Coef2[i] = new double[ORDER+1];
-    dxCoef2[i] = new double[ORDER+1];
-    dyCoef2[i] = new double[ORDER+1];
-    for(j=0;j<ORDER+1;j++){
-      Coef2[i][j] = 0;
-    dxCoef2[i][j] = 0;
-    dyCoef2[i][j] = 0;
-    }}
+      Coef2 = F_NEWdouble2(ORDER+1,ORDER+1);
+    dxCoef2 = F_NEWdouble2(ORDER+1,ORDER+1);
+    dyCoef2 = F_NEWdouble2(ORDER+1,ORDER+1);
 
     for(i=0;i<ORDER+1;i++)
     for(j=0;j<ORDER+1;j++)
@@ -85,14 +203,9 @@ void    F_DIFFSIP(int ORDER,double *Coef,double *dxCoef,double *dyCoef){
         ij++;
     }
  
-    for(i=0;i<ORDER+1;i++){
-    delete []   Coef2[i];
-    delete [] dxCoef2[i];
-    delete [] dyCoef2[i];
-    }
-    delete []   Coef2;
-    delete [] dxCoef2;
-    delete [] dyCoef2;
+    F_DELdouble2(ORDER+1,  Coef2);
+    F_DELdouble2(ORDER+1,dxCoef2);
+    F_DELdouble2(ORDER+1,dyCoef2);
 }
 void    F_INTSIP(int ORDER,double *dxCoef,double *dyCoef,double *Coef){
     int i,j,ij,CoefNUM;
@@ -100,24 +213,11 @@ void    F_INTSIP(int ORDER,double *dxCoef,double *dyCoef,double *Coef){
 
     CoefNUM=(int)((ORDER+1)*(ORDER+2)+0.1);
 
-    dxCoef2=new double*[ORDER+1];
-    dyCoef2=new double*[ORDER+1];
-     xCoef2=new double*[ORDER+1];
-     yCoef2=new double*[ORDER+1];
-      Coef2=new double*[ORDER+1];
-    for(i=0;i<ORDER+1;i++){
-    dxCoef2[i]=new double[ORDER+1];
-    dyCoef2[i]=new double[ORDER+1];
-     xCoef2[i]=new double[ORDER+1];
-     yCoef2[i]=new double[ORDER+1];
-      Coef2[i]=new double[ORDER+1];
-    for(j=0;j<ORDER+1;j++){
-    dxCoef2[i][j]=0;
-    dyCoef2[i][j]=0;
-     xCoef2[i][j]=0;
-     yCoef2[i][j]=0;
-      Coef2[i][j]=0;
-    }}
+      Coef2 = F_NEWdouble2(ORDER+1,ORDER+1);
+     xCoef2 = F_NEWdouble2(ORDER+1,ORDER+1);
+     yCoef2 = F_NEWdouble2(ORDER+1,ORDER+1);
+    dxCoef2 = F_NEWdouble2(ORDER+1,ORDER+1);
+    dyCoef2 = F_NEWdouble2(ORDER+1,ORDER+1);
 
     ij=0;
     for(i=0;i<ORDER+1-1;i++)
@@ -153,34 +253,20 @@ void    F_INTSIP(int ORDER,double *dxCoef,double *dyCoef,double *Coef){
         ij++;
     }
 
-    for(i=0;i<ORDER+1;i++){
-    delete []   Coef2[i];
-    delete []  xCoef2[i];
-    delete []  yCoef2[i];
-    delete [] dxCoef2[i];
-    delete [] dyCoef2[i];
-    }
-    delete []   Coef2;
-    delete []  xCoef2;
-    delete []  yCoef2;
-    delete [] dxCoef2;
-    delete [] dyCoef2;
+    F_DELdouble2(ORDER+1,  Coef2);
+    F_DELdouble2(ORDER+1, xCoef2);
+    F_DELdouble2(ORDER+1, yCoef2);
+    F_DELdouble2(ORDER+1,dxCoef2);
+    F_DELdouble2(ORDER+1,dyCoef2);
 }
 #undef LP
 #undef PI
 #undef INFMIN
 void    F_SIPROT(int ORDER, double THETA, double *InCoef, double *OutCoef){
     int i,j,ij;
-    double **Coef[2];
+    double ***Coef;
 
-    Coef[0] = new double*[ORDER+1];
-    Coef[1] = new double*[ORDER+1];
-    for(i=0;i<ORDER+1;i++){
-    Coef[0][i] = new double[ORDER+1];
-    Coef[1][i] = new double[ORDER+1];
-    for(j=0;j<ORDER+1;j++)
-    Coef[0][i][j]=Coef[1][i][j]=0;
-    }
+    Coef = F_NEWdouble3(2,ORDER+1,ORDER+1);
 //--------------------------------------------------
 
     double ABS[10],PHI[10],Z[10][2];
@@ -396,11 +482,6 @@ void    F_SIPROT(int ORDER, double THETA, double *InCoef, double *OutCoef){
         ij++;
     }
 //--------------------------------------------------
-    for(i=0;i<ORDER+1;i++){
-    delete [] Coef[0][i];
-    delete [] Coef[1][i];
-    }
-    delete [] Coef[0];
-    delete [] Coef[1];
+    F_DELdouble3(2,ORDER+1,Coef);
 
 }

@@ -17,7 +17,7 @@ env = scons.makeEnv(
     scons.ConfigureDependentProducts("solvetansip"),
     )
 
-env.libs["solvetansip"] += env.getlibs("pex_exceptions ndarray afw boost utils daf_base daf_data daf_persistence pex_logging pex_policy security")
+env.libs["solvetansip"] += env.getlibs("pex_exceptions afw boost utils daf_base daf_data daf_persistence pex_logging pex_policy security")
 
 for d in (
 #    "etc",

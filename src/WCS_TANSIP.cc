@@ -13,27 +13,28 @@
 using namespace std;
 void    F_WCS_TANSIP_GPOLYNOMIALFITTING(int NUMALL,int ORDER, int VARIABLE, int FUNCTION, CL_PAIR *PAIR, double *Coef[2]);
 void    F_InvPROJECTION(double *Pdeg,double *Cdeg,double *PPOINT);
-void    F_WCS_TANSIP(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
-    cout << "--------------------------------------------------" << endl;
-    cout << "--- WCS_TANSIP ---" << endl;
+void    F_WCS_TANSIP(CL_APROP *APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
+    if(APROP->STDOUT==1||APROP->STDOUT==2)cout << "--------------------------------------------------" << endl;
+    if(APROP->STDOUT==1||APROP->STDOUT==2)cout << "--- WCS_TANSIP ---" << endl;
 
 //--------------------------------------------------
-    cout << "--- WCS_TANSIP : SET ---" << endl;
-    F_WCS_TANSIP_SET(&APROP,CPROP,PAIR,CSIP);
-    if(APROP.CHECKPARAM == 1){
+    if(APROP->STDOUT==1||APROP->STDOUT==2)cout << "--- WCS_TANSIP : SET ---" << endl;
+    F_WCS_TANSIP_SET(APROP,CPROP,PAIR,CSIP);
+    if(APROP->CHECKPARAM == 1){
     cout << "Error : in parameters" << endl;
     }else{
 //--------------------------------------------------
-    cout << "--- WCS_TANSIP : DETERMINING CCD POSITION ---" << endl;
-    F_WCS_TANSIP_GPOS(&APROP,CPROP,PAIR,CSIP);
+    if(APROP->STDOUT==1||APROP->STDOUT==2)cout << "--- WCS_TANSIP : DETERMINING CCD POSITION ---" << endl;
+    if(APROP->CCDPOSMODE==1)
+    F_WCS_TANSIP_GPOS(APROP,CPROP,PAIR,CSIP);
 
 //--------------------------------------------------
-    cout << "--- WCS_TANSIP : CALCULATING GLOBAL WCS ---" << endl;
-    F_WCS_TANSIP_WCS(APROP,CPROP,PAIR,&CSIP[APROP.CCDNUM]);
+    if(APROP->STDOUT==1||APROP->STDOUT==2)cout << "--- WCS_TANSIP : CALCULATING GLOBAL WCS ---" << endl;
+    F_WCS_TANSIP_WCS(*APROP,CPROP,PAIR,&CSIP[APROP->CCDNUM]);
 
 //--------------------------------------------------
-    cout << "--- WCS_TANSIP : CALCULATING LOCAL CCD ---" << endl;
-    F_WCS_TANSIP_CCD(APROP,CPROP,PAIR,CSIP);
+    if(APROP->STDOUT==1||APROP->STDOUT==2)cout << "--- WCS_TANSIP : CALCULATING LOCAL CCD ---" << endl;
+    F_WCS_TANSIP_CCD(*APROP,CPROP,PAIR,CSIP);
 
 //--------------------------------------------------
     }
@@ -106,17 +107,10 @@ void    F_WCS_TANSIP_PROJECTION(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_
 void    F_WCS_TANSIP_GPOLYNOMIALFITTING(int NUMALL,int ORDER, int VARIABLE, int FUNCTION, CL_PAIR *PAIR, double *Coef[2]){
 //cout <<"F_WCS_TANSIP_GPOLYNOMIALFITTING"<<endl;
     int NUM,FNUM=0,ERROR=0;
-    double **dx[2];
+    double ***dx;
 
 //--------------------------------------------------
-    dx[0]=new double*[NUMALL];
-    dx[1]=new double*[NUMALL];
-    for(NUM=0;NUM<NUMALL;NUM++){
-    dx[0][NUM]=new double[3];
-    dx[1][NUM]=new double[3];
-    }
-    for(NUM=0;NUM<(ORDER+1)*(ORDER+2);NUM++)
-    Coef[0][NUM]=Coef[1][NUM]=0;
+    dx = F_NEWdouble3(2,NUMALL,3);
 
 //--------------------------------------------------
     if(VARIABLE==0||VARIABLE==1||VARIABLE==2||VARIABLE==3||VARIABLE==4||VARIABLE==5){
@@ -197,12 +191,7 @@ void    F_WCS_TANSIP_GPOLYNOMIALFITTING(int NUMALL,int ORDER, int VARIABLE, int 
     }
 
 //--------------------------------------------------
-    for(NUM=0;NUM<NUMALL;NUM++){
-    delete [] dx[0][NUM];
-    delete [] dx[1][NUM];
-    }
-    delete [] dx[0];
-    delete [] dx[1];
+    F_DELdouble3(2,NUMALL,dx);
 }
 void    F_WCS_TANSIP_SETSIP(CL_APROP APROP,CL_CSIP* CSIP){
 
@@ -210,6 +199,7 @@ void    F_WCS_TANSIP_SETSIP(CL_APROP APROP,CL_CSIP* CSIP){
     CSIP->CD[0][1]=CSIP->TCoef[0][0*(APROP.SIP_ORDER+1)+1];
     CSIP->CD[1][0]=CSIP->TCoef[1][1*(APROP.SIP_ORDER+1)+0];
     CSIP->CD[1][1]=CSIP->TCoef[1][0*(APROP.SIP_ORDER+1)+1]; 
+    CSIP->ANGLE=atan2(CSIP->CD[1][0]+CSIP->CD[0][1],-CSIP->CD[0][0]+CSIP->CD[1][1]);
 
     CSIP->InvCD[0][0]= CSIP->CD[1][1]/(CSIP->CD[0][0]*CSIP->CD[1][1]-CSIP->CD[1][0]*CSIP->CD[0][1]);
     CSIP->InvCD[0][1]=-CSIP->CD[0][1]/(CSIP->CD[0][0]*CSIP->CD[1][1]-CSIP->CD[1][0]*CSIP->CD[0][1]);

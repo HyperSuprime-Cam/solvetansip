@@ -17,14 +17,13 @@ public:
     int  SIP_L_ORDER;
     int  SIP_ORDER;
     int  SIP_P_ORDER;
-    int  PREDICT_SIP_D_ORDER;
     int  ALIGNAXIS;//0=x,1=y
-    int  CHECKFILE;
     int  CHECKPARAM;
     double CRPIX[2];//for Manual MODE
     double CRVAL[2];//for Manual MODE
     double CLIP_SIGMA;
     double BASIS_POS[3];
+    int STDOUT;
 };
 
 #endif

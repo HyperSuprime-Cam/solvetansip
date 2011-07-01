@@ -52,6 +52,44 @@ def getresultWcs(matchListAllCcd, metadata, policy=None, camera=None, rerun=None
     print '... TAN-SIP fitting done.'
     return WCSACCP
 
+def getresultWcs_local(matchList_address, metadata, policy=None, camera=None, rerun=None):
+    print '--- doTansip_getresultWcs ---'
+    """ Entry point for calling the global solvetansip fitter.
+
+    Args:
+        matchList_address - local address of matchlist txt
+        policy            - pexPolicy; reads our own policy if None
+        camera            - cameraGeom
+        rerun             - ignored
+    """
+        
+    if not camera:
+        raise RuntimeError("no camera passed in to doTansip()")
+
+    defaultFile = pexPolicy.DefaultPolicyFile("SOLVETANSIP", "WCS_MAKEAPROP_Dictionary.paf", "policy")
+    defaults = pexPolicy.Policy.createPolicy(defaultFile, defaultFile.getRepositoryPath())
+    if policy:
+        policy.mergeDefaults(defaults)
+    else:
+        policy = defaults
+    
+#    print "len(match)=%d order=(%d,%d,%d)" % (len(matchListAllCcd),
+#                                           policy.get('LSIPORDER'),
+#                                           policy.get('SIPORDER'),
+#                                           policy.get('PSIPORDER'))
+#    for i in range(len(matchListAllCcd)):
+#        m = matchListAllCcd[i]
+#        if not m:
+#            print "empty list for ccd %i: %s" % (i, m)
+#            matchListAllCcd[i] = []
+          
+    print matchList_address
+    print type(matchList_address)
+  
+    WCSACCP = hscTansip.F_WCS_TANSIP_V_local(matchList_address, metadata, policy, camera)
+    print '... TAN-SIP fitting done.'
+    return WCSACCP
+
 def doTansip(matchListAllCcd, policy=None, camera=None, rerun=None):
     print '--- doTansip ---'
     metaTANSIP = hscTansip.F_WCS_EMPTYMETADATA()
