@@ -129,6 +129,7 @@ void    F_WCS_MAKEAPROP(lsst::pex::policy::Policy::Ptr &APROPPolicy, CL_APROP *A
     APROP->BASIS_POS[2]=APROPPolicy->getDouble("BASISPOST");
     APROP->STDOUT      =APROPPolicy->getInt("STDOUT");
     APROP->CCDPOS      =APROPPolicy->getInt("CCDPOS");
+    APROP->NUMREFALL   = 0;
 
     if(APROP->STDOUT==1||APROP->STDOUT==2)cout << "--- WCS_PL_MAIN : F_WCS_MAKE_APROP ---" << endl;
     if(APROP->STDOUT==1||APROP->STDOUT==2)cout << "-- APROP CHECK --" << endl;
