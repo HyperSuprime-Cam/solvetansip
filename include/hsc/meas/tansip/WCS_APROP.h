@@ -10,6 +10,7 @@ class CL_APROP{//Analysis property
 private:
 public:
     char CRPIXMODE[11];//AUTO or PIX or VAL or LAXIS
+    char OAMODE[11];//MIN or REV
     int  CCDPOSMODE;
     int  CCDNUM;
     int  BASISCID;
@@ -24,6 +25,7 @@ public:
     double CLIP_SIGMA;
     double BASIS_POS[3];
     int STDOUT;
+    int CCDPOS;
 };
 
 #endif

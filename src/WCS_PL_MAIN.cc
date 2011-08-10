@@ -108,9 +108,11 @@ CL_WCSACCP F_WCS_TANSIP_V_local(string matchlist,dafbase::PropertySet::Ptr &meta
 }
 //SUB ROUTINES
 void    F_WCS_MAKEAPROP(lsst::pex::policy::Policy::Ptr &APROPPolicy, CL_APROP *APROP){
-    string CMODE;
+    string CMODE,OAMODE;
     CMODE              =APROPPolicy->getString("CRPIXMODE");
     strcpy(APROP->CRPIXMODE,CMODE.c_str());
+    OAMODE              =APROPPolicy->getString("OAMODE");
+    strcpy(APROP->OAMODE,OAMODE.c_str());
     APROP->CCDNUM      =APROPPolicy->getInt("NCCD");
     APROP->CCDPOSMODE  =APROPPolicy->getInt("CCDPMODE");
     APROP->CRPIX[0]    =APROPPolicy->getDouble("CRPIX1");
@@ -126,12 +128,13 @@ void    F_WCS_MAKEAPROP(lsst::pex::policy::Policy::Ptr &APROPPolicy, CL_APROP *A
     APROP->BASIS_POS[1]=APROPPolicy->getDouble("BASISPOSY");
     APROP->BASIS_POS[2]=APROPPolicy->getDouble("BASISPOST");
     APROP->STDOUT      =APROPPolicy->getInt("STDOUT");
-    APROP->NUMREFALL   = 0;
+    APROP->CCDPOS      =APROPPolicy->getInt("CCDPOS");
 
     if(APROP->STDOUT==1||APROP->STDOUT==2)cout << "--- WCS_PL_MAIN : F_WCS_MAKE_APROP ---" << endl;
     if(APROP->STDOUT==1||APROP->STDOUT==2)cout << "-- APROP CHECK --" << endl;
     if(APROP->STDOUT==2){
     cout << "CRPIXMODE   : " << APROP->CRPIXMODE   << endl;
+    cout << "OAMODE   : " << APROP->OAMODE   << endl;
     cout << "CCDPOSMODE  : " << APROP->CCDPOSMODE  << endl;
     cout << "CRPIX1      : " << APROP->CRPIX[0]    << endl;
     cout << "CRPIX2      : " << APROP->CRPIX[1]    << endl;
@@ -146,6 +149,7 @@ void    F_WCS_MAKEAPROP(lsst::pex::policy::Policy::Ptr &APROPPolicy, CL_APROP *A
     cout << "BASISPOSX   : " << APROP->BASIS_POS[0]<< endl;
     cout << "BASISPOSY   : " << APROP->BASIS_POS[1]<< endl;
     cout << "BASISPOST   : " << APROP->BASIS_POS[2]<< endl;
+    cout << "CCDPOS      : " << APROP->CCDPOS      << endl;
     cout <<endl;
     }
 }

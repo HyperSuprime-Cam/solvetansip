@@ -50,12 +50,14 @@ void    F_WCS_TANSIP_GPOS(CL_APROP *APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP 
 }
 void    F_WCS_TANSIP_GPOS_PROJECTION(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
 //obtaining CRVAL
+        int loop;
 
           if(strcmp(APROP.CRPIXMODE,"OAXIS")==0){
         F_WCS_TANSIP_SETxG(APROP,CPROP,PAIR,CSIP);
         F_WCS_TANSIP_CENTERofOBJECTS(APROP,CPROP,PAIR,CSIP);
         F_WCS_TANSIP_SETxCRPIX(APROP,CPROP,PAIR,CSIP);
         F_WCS_TANSIP_CR(0,APROP,CPROP,PAIR,CSIP);
+        loop=0;
         for(;;){
             F_WCS_TANSIP_PROJECTION(APROP,CPROP,PAIR,CSIP);
             F_WCS_TANSIP_WCS_SIPFIT (APROP,CPROP,PAIR,CSIP);
@@ -71,6 +73,11 @@ void    F_WCS_TANSIP_GPOS_PROJECTION(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAI
             CSIP->CRPIX[0]=CSIP->OAPIX[0];
             CSIP->CRPIX[1]=CSIP->OAPIX[1];
             F_WCS_TANSIP_SETxCRPIX(APROP,CPROP,PAIR,CSIP);
+            loop++;
+            if(loop==100){
+            cout << "OAXIS MODE : DETERMINING OAXIS WAS NOT CONVERGED" << endl;
+            break;
+            }
         }
     }else if(strcmp(APROP.CRPIXMODE,"VAL")==0){
         CSIP->CRVAL[0]=APROP.CRVAL[0];

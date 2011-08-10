@@ -34,7 +34,7 @@ mapper = scmapper.SuprimecamMapper(rerun="fh-dc2.9c-default")
 #io = pipReadWrite.ReadWrite(mapper, ['visit'], fileKeys=['visit', 'ccd'])
 #data = {'visit': 126929}#929-941-
 
-CNUMBER = 1
+CNUMBER = 0
 ANGLE=0
 #sources = io.read('src', data, ignore=True)
 #md = io.read('calexp_md', data, ignore=True)

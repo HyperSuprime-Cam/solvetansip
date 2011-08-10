@@ -30,8 +30,8 @@ plot = pipPlot.Plotter('wcs')
 mapper = scmapper.SuprimecamMapper(rerun="fh-dc2.9c-default") 
 io = pipReadWrite.ReadWrite(mapper, ['visit'], fileKeys=['visit', 'ccd'])
 #data = {'visit': 220}
-data = {'visit': 126958}#929-941-
-CNUMBER = 301
+data = {'visit': 126913}#929-941-
+CNUMBER = 401
 ANGLE=0
 #ANGLE = 0.067195176
 #ANGLE = 0.116745074

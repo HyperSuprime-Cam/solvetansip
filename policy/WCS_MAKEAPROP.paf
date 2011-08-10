@@ -3,6 +3,8 @@
 #CRPIXMODE:VAL       #AUTO for AUTO MODE, PIX and VAL for MANUAL MODE
 CRPIXMODE:OAXIS     #
 #CRPIXMODE:AUTO      #
+#OAMODE   :       MIN#
+OAMODE   :       REV#
 CCDPMODE :         1#1=DETERMINING CCD POSITION
 NCCD     :        10#NUMBER of CCD for analysis
 LSIPORDER:         3#SIP ORDER of AP and BP 
@@ -21,4 +23,5 @@ BASISPOSX:   -1024.0#X BASIS OF GLOBAL POSITION
 BASISPOSY:   -0096.0#Y BASIS OF GLOBAL POSITION
 BASISPOST:  0.000000#T BASIS OF GLOBAL POSITION(deg)//temporally
 STDOUT   :         2#0:non output, 1:STEP output, 2:detail output
+CCDPOS   :         1#1:INPUT CCD POSITION from CCDPOS.paf(for testing program)
 

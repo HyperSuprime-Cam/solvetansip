@@ -5,6 +5,7 @@
 //Last modification : 2010/04/01
 //------------------------------------------------------------
 #include<iostream>
+#include<fstream>
 #include<cmath>
 #include<stdio.h>
 #include<string.h>
@@ -22,6 +23,7 @@ void    F_WCS_TANSIP_CR         (int DIR,CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR 
 void    F_WCS_TANSIP_SETSIP             (CL_APROP APROP,CL_CSIP* CSIP);
 void    F_WCS_TANSIP_SETPSIP            (CL_APROP APROP,CL_CSIP* CSIP);
 void    F_WCS_TANSIP_PIXTOSKY           (double X[2],double Y[2],CL_APROP APROP,CL_CSIP *CSIP);
+void    F_WCS_TANSIP_SKYTOPIX           (double X[2],double Y[2],CL_APROP APROP,CL_CSIP *CSIP);
 void    F_WCS_TANSIP_WCS_SETBASE        (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
 void    F_WCS_TANSIP_WCS_SIPFIT         (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
 void    F_WCS_TANSIP_WCS_PSIPFIT        (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
@@ -30,6 +32,8 @@ void    F_WCS_TANSIP_WCS_CAMERADIST     (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR 
 void    F_WCS_TANSIP_WCS_SIPDIST        (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
 void    F_WCS_TANSIP_WCS_PSIPDIST       (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
 void    F_WCS_TANSIP_WCS_OPTICAXIS      (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
+void    F_WCS_TANSIP_WCS_OPTICAXIS_MIN  (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
+void    F_WCS_TANSIP_WCS_OPTICAXIS_REV  (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
 void    F_WCS_TANSIP_WCS_GCHECK         (CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP);
 void    F_WCS_TANSIP_WCS(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
 
@@ -128,22 +132,7 @@ void    F_WCS_TANSIP_WCS_SETBASE(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL
         F_WCS_TANSIP_SETxCRPIX(APROP,CPROP,PAIR,CSIP);
         F_WCS_TANSIP_CR(0,APROP,CPROP,PAIR,CSIP);
 
-        for(;;){
-            F_WCS_TANSIP_SETxCRPIX(APROP,CPROP,PAIR,CSIP);
-            F_WCS_TANSIP_PROJECTION(APROP,CPROP,PAIR,CSIP);
-            F_WCS_TANSIP_WCS_SIPFIT (APROP,CPROP,PAIR,CSIP);
-            F_WCS_TANSIP_SETxCRVAL(APROP,CPROP,PAIR,CSIP);
-            F_WCS_TANSIP_WCS_PSIPFIT(APROP,CPROP,PAIR,CSIP);
-            F_WCS_TANSIP_WCS_CAMERADIST(APROP,CPROP,PAIR,CSIP);
-            F_WCS_TANSIP_WCS_SIPDIST(APROP,CPROP,PAIR,CSIP);
-            F_WCS_TANSIP_WCS_OPTICAXIS(APROP,CPROP,PAIR,CSIP);
-            if(hypot(CSIP->CRPIX[0]-CSIP->OAPIX[0],CSIP->CRPIX[1]-CSIP->OAPIX[1])<pow(10.0,-3))
-            break;
-            CSIP->CRVAL[0]=CSIP->OAVAL[0];
-            CSIP->CRVAL[1]=CSIP->OAVAL[1];
-            CSIP->CRPIX[0]=CSIP->OAPIX[0];
-            CSIP->CRPIX[1]=CSIP->OAPIX[1];
-        }
+        F_WCS_TANSIP_WCS_OPTICAXIS(APROP,CPROP,PAIR,CSIP);
         if(APROP.STDOUT==2)cout << "OAXIS MODE CRVAL ( " << CSIP->CRVAL[0] << " , " << CSIP->CRVAL[1] << " )"<< endl;
         if(APROP.STDOUT==2)cout << "OAXIS MODE CRPIX ( " << CSIP->CRPIX[0] << " , " << CSIP->CRPIX[1] << " )"<< endl;
     }
@@ -289,46 +278,159 @@ void    F_WCS_TANSIP_WCS_PSIPDIST(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,C
     }
 }
 void    F_WCS_TANSIP_WCS_OPTICAXIS(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
+
+        F_WCS_TANSIP_SETxCRPIX(APROP,CPROP,PAIR,CSIP);
+        F_WCS_TANSIP_PROJECTION(APROP,CPROP,PAIR,CSIP);
+        F_WCS_TANSIP_WCS_SIPFIT (APROP,CPROP,PAIR,CSIP);
+        F_WCS_TANSIP_SETxCRVAL(APROP,CPROP,PAIR,CSIP);
+        F_WCS_TANSIP_WCS_PSIPFIT(APROP,CPROP,PAIR,CSIP);
+        F_WCS_TANSIP_WCS_CAMERADIST(APROP,CPROP,PAIR,CSIP);
+        F_WCS_TANSIP_WCS_SIPDIST(APROP,CPROP,PAIR,CSIP);
+        F_WCS_TANSIP_WCS_OPTICAXIS_MIN(APROP,CPROP,PAIR,CSIP);
+        CSIP->CRVAL[0]=CSIP->OAVAL[0];
+        CSIP->CRVAL[1]=CSIP->OAVAL[1];
+        CSIP->CRPIX[0]=CSIP->OAPIX[0];
+        CSIP->CRPIX[1]=CSIP->OAPIX[1];
+        if(APROP.STDOUT==2)cout << "OAXIS MODE CRVAL (MIN) ( " << CSIP->CRVAL[0] << " , " << CSIP->CRVAL[1] << " )"<< endl;
+        if(APROP.STDOUT==2)cout << "OAXIS MODE CRPIX (MIN) ( " << CSIP->CRPIX[0] << " , " << CSIP->CRPIX[1] << " )"<< endl;
+        for(;;){
+            F_WCS_TANSIP_SETxCRPIX(APROP,CPROP,PAIR,CSIP);
+            F_WCS_TANSIP_PROJECTION(APROP,CPROP,PAIR,CSIP);
+            F_WCS_TANSIP_WCS_SIPFIT (APROP,CPROP,PAIR,CSIP);
+            F_WCS_TANSIP_SETxCRVAL(APROP,CPROP,PAIR,CSIP);
+            F_WCS_TANSIP_WCS_PSIPFIT(APROP,CPROP,PAIR,CSIP);
+            F_WCS_TANSIP_WCS_CAMERADIST(APROP,CPROP,PAIR,CSIP);
+            F_WCS_TANSIP_WCS_SIPDIST(APROP,CPROP,PAIR,CSIP);
+            if(strcmp(APROP.OAMODE,"MIN")==0){
+            F_WCS_TANSIP_WCS_OPTICAXIS_MIN(APROP,CPROP,PAIR,CSIP);
+            }else if(strcmp(APROP.OAMODE,"REV")==0){
+            F_WCS_TANSIP_WCS_OPTICAXIS_REV(APROP,CPROP,PAIR,CSIP);
+            }else{
+            F_WCS_TANSIP_WCS_OPTICAXIS_REV(APROP,CPROP,PAIR,CSIP);
+            }
+            if(hypot(CSIP->CRPIX[0]-CSIP->OAPIX[0],CSIP->CRPIX[1]-CSIP->OAPIX[1])<pow(10.0,-3))
+            break;
+            CSIP->CRVAL[0]=CSIP->OAVAL[0];
+            CSIP->CRVAL[1]=CSIP->OAVAL[1];
+            CSIP->CRPIX[0]=CSIP->OAPIX[0];
+            CSIP->CRPIX[1]=CSIP->OAPIX[1];
+        if(APROP.STDOUT==2)cout << "OAXIS MODE CRVAL (REV) ( " << CSIP->CRVAL[0] << " , " << CSIP->CRVAL[1] << " )"<< endl;
+        if(APROP.STDOUT==2)cout << "OAXIS MODE CRPIX (REV) ( " << CSIP->CRPIX[0] << " , " << CSIP->CRPIX[1] << " )"<< endl;
+        }
+}
+void    F_WCS_TANSIP_WCS_OPTICAXIS_MIN(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
     int i,j,ij;
     double *PSIP,**dPSIP,***ddPSIP;
     double X[2],dX[2],ddX[2];
 
-      PSIP = F_NEWdouble1((APROP.SIP_ORDER+1)*(APROP.SIP_ORDER+2));
-     dPSIP = F_NEWdouble2(2,(APROP.SIP_ORDER+1)*(APROP.SIP_ORDER+2));
-    ddPSIP = F_NEWdouble3(2,2,(APROP.SIP_ORDER+1)*(APROP.SIP_ORDER+2));
+      PSIP = F_NEWdouble1((APROP.SIP_P_ORDER+1)*(APROP.SIP_P_ORDER+2));
+     dPSIP = F_NEWdouble2(2,(APROP.SIP_P_ORDER+1)*(APROP.SIP_P_ORDER+2));
+    ddPSIP = F_NEWdouble3(2,2,(APROP.SIP_P_ORDER+1)*(APROP.SIP_P_ORDER+2));
 
     ij=0;
-    for(i=0;i<APROP.SIP_ORDER+1;i++)
-    for(j=0;j<APROP.SIP_ORDER+1;j++)
-    if(i+j<APROP.SIP_ORDER+1){
+    for(i=0;i<APROP.SIP_P_ORDER+1;i++)
+    for(j=0;j<APROP.SIP_P_ORDER+1;j++)
+    if(i+j<APROP.SIP_P_ORDER+1){
     PSIP[ij]=CSIP->SIP_MAG[ij];
     ij++;
     }
 
-    F_DIFFSIP(APROP.SIP_ORDER, PSIP,dPSIP[0],dPSIP[1]);
-    F_DIFFSIP(APROP.SIP_ORDER,dPSIP[0],ddPSIP[0][0],ddPSIP[0][1]);
-    F_DIFFSIP(APROP.SIP_ORDER,dPSIP[1],ddPSIP[1][0],ddPSIP[1][1]);
+    F_DIFFSIP(APROP.SIP_P_ORDER, PSIP,dPSIP[0],dPSIP[1]);
+    F_DIFFSIP(APROP.SIP_P_ORDER,dPSIP[0],ddPSIP[0][0],ddPSIP[0][1]);
+    F_DIFFSIP(APROP.SIP_P_ORDER,dPSIP[1],ddPSIP[1][0],ddPSIP[1][1]);
 
     X[0]=0;
     X[1]=0;
     for(i=0;i<10;i++){
-         dX[0]=F_CALCVALUE(APROP.SIP_ORDER, dPSIP[0],X);
-         dX[1]=F_CALCVALUE(APROP.SIP_ORDER, dPSIP[1],X);
-        ddX[0]=F_CALCVALUE(APROP.SIP_ORDER,ddPSIP[0][0],X);
-        ddX[1]=F_CALCVALUE(APROP.SIP_ORDER,ddPSIP[1][1],X);
+         dX[0]=F_CALCVALUE(APROP.SIP_P_ORDER, dPSIP[0],X);
+         dX[1]=F_CALCVALUE(APROP.SIP_P_ORDER, dPSIP[1],X);
+        ddX[0]=F_CALCVALUE(APROP.SIP_P_ORDER,ddPSIP[0][0],X);
+        ddX[1]=F_CALCVALUE(APROP.SIP_P_ORDER,ddPSIP[1][1],X);
         if(hypot(dX[0]/ddX[0],dX[1]/ddX[1])<pow(10.0,-3.0))
         break;
         X[0]-=dX[0]/ddX[0];
         X[1]-=dX[1]/ddX[1];
     }
-    CSIP->OAPIX[0]=X[0]+CSIP->CRPIX[0];
-    CSIP->OAPIX[1]=X[1]+CSIP->CRPIX[1];
+    dX[0]=F_CALCVALUE(APROP.SIP_P_ORDER,CSIP->SIP_ABP[0],X);
+    dX[1]=F_CALCVALUE(APROP.SIP_P_ORDER,CSIP->SIP_ABP[1],X);
+    CSIP->OAPIX[0]=dX[0]+CSIP->CRPIX[0];
+    CSIP->OAPIX[1]=dX[1]+CSIP->CRPIX[1];
     F_WCS_TANSIP_PIXTOSKY(CSIP->OAPIX,CSIP->OAVAL,APROP,CSIP);
 
 //--------------------------------------------------
     F_DELdouble1(PSIP);
     F_DELdouble2(2,dPSIP);
     F_DELdouble3(2,2,ddPSIP);
+}
+void    F_WCS_TANSIP_WCS_OPTICAXIS_REV(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
+    int i,j,ij;
+    double *PSIP,**dPSIP,***ddPSIP;
+    double X[2],dX[2],ddX[2];
+
+      PSIP = F_NEWdouble1((APROP.SIP_P_ORDER+1)*(APROP.SIP_P_ORDER+2));
+     dPSIP = F_NEWdouble2(2,(APROP.SIP_P_ORDER+1)*(APROP.SIP_P_ORDER+2));
+    ddPSIP = F_NEWdouble3(2,2,(APROP.SIP_P_ORDER+1)*(APROP.SIP_P_ORDER+2));
+
+    ij=0;
+    for(i=0;i<APROP.SIP_P_ORDER+1;i++)
+    for(j=0;j<APROP.SIP_P_ORDER+1;j++)
+    if(i+j<APROP.SIP_P_ORDER+1){
+    PSIP[ij]=CSIP->SIP_MAG[ij];
+    ij++;
+    }
+
+    F_DIFFSIP(APROP.SIP_P_ORDER, PSIP,dPSIP[0],dPSIP[1]);
+    F_DIFFSIP(APROP.SIP_P_ORDER,dPSIP[0],ddPSIP[0][0],ddPSIP[0][1]);
+    F_DIFFSIP(APROP.SIP_P_ORDER,dPSIP[1],ddPSIP[1][0],ddPSIP[1][1]);
+
+    int NUM,FNUM;
+    double fxp,fxm,dfdx,dfdy,dfdxx,dfdyy,dfdxy;
+    double OAMA[2],**OAMB,**InvOAMB;
+       OAMB = F_NEWdouble2(2,2);
+    InvOAMB = F_NEWdouble2(2,2);
+
+    OAMA[0]=OAMA[1]=OAMB[0][0]=OAMB[0][1]=OAMB[1][0]=OAMB[1][1]=0;
+    FNUM=0;
+    for(NUM=0;NUM<APROP.NUMREFALL;NUM++)
+    if(PAIR[NUM].FLAG == 1){
+        X[0]= PAIR[NUM].xCRVAL;
+        X[1]= PAIR[NUM].yCRVAL;
+        fxp=F_CALCVALUE(APROP.SIP_P_ORDER,PSIP,X);
+
+        X[0]=-PAIR[NUM].xCRVAL;
+        X[1]=-PAIR[NUM].yCRVAL;
+        fxm=F_CALCVALUE(APROP.SIP_P_ORDER,PSIP,X);
+        dfdx=F_CALCVALUE(APROP.SIP_P_ORDER,dPSIP[0],X);
+        dfdy=F_CALCVALUE(APROP.SIP_P_ORDER,dPSIP[1],X);
+        dfdxx=F_CALCVALUE(APROP.SIP_P_ORDER,ddPSIP[0][0],X);
+        dfdyy=F_CALCVALUE(APROP.SIP_P_ORDER,ddPSIP[1][1],X);
+        dfdxy=0.5*(F_CALCVALUE(APROP.SIP_P_ORDER,ddPSIP[1][0],X)+F_CALCVALUE(APROP.SIP_P_ORDER,ddPSIP[0][1],X));
+
+        OAMA[0]+=(fxp-fxm)*dfdx;
+        OAMA[1]+=(fxp-fxm)*dfdy;
+        OAMB[0][0]+=2*(dfdx*dfdx-(fxp-fxm)*dfdxx);
+        OAMB[0][1]+=2*(dfdx*dfdy-(fxp-fxm)*dfdxy);
+        OAMB[1][0]+=2*(dfdx*dfdy-(fxp-fxm)*dfdxy);
+        OAMB[1][1]+=2*(dfdy*dfdy-(fxp-fxm)*dfdyy);
+
+        FNUM++;
+    }
+
+    F_InvM(2,OAMB,InvOAMB);
+    dX[0]=(InvOAMB[0][0]*OAMA[0]+InvOAMB[0][1]*OAMA[1]);
+    dX[1]=(InvOAMB[1][0]*OAMA[0]+InvOAMB[1][1]*OAMA[1]);
+    cout <<"OA:"<< dX[0] << "	" << dX[1] << endl;
+
+    CSIP->OAPIX[0]=dX[0]+CSIP->CRPIX[0];
+    CSIP->OAPIX[1]=dX[1]+CSIP->CRPIX[1];
+    F_WCS_TANSIP_PIXTOSKY(CSIP->OAPIX,CSIP->OAVAL,APROP,CSIP);
+
+//--------------------------------------------------
+    F_DELdouble1(PSIP);
+    F_DELdouble2(2,dPSIP);
+    F_DELdouble3(2,2,ddPSIP);
+    F_DELdouble2(2,   OAMB);
+    F_DELdouble2(2,InvOAMB);
 }
 void    F_WCS_TANSIP_WCS_GCHECK(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
     int NUM,FNUM;
@@ -426,6 +528,12 @@ void    F_WCS_TANSIP_WCS_GCHECK(CL_APROP APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_
     cout.unsetf(ios::scientific);
     cout << endl;
     }
+//--------------------------------------------------
+    ofstream OAout;
+//    OAout.open("SC_OA_SIM10000.dat",ios::app);
+    OAout.open("SC_OA_mlist.dat",ios::app);
+//    OAout <<scientific << CSIP->OAPIX[0] << "	" << CSIP->OAPIX[1] << endl;
+    OAout <<scientific << CSIP->OAPIX[0] << "	" << CSIP->OAPIX[1] << endl;
 //--------------------------------------------------
     F_DELdouble2(4,RMS);
 }
