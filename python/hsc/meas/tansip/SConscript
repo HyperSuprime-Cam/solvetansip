@@ -6,15 +6,15 @@ env.CheckSwig("python", ilang="c++", includedProducts="solvetansip ndarray afw u
 env.LoadableModuleIncomplete("_WCS_PL_MAIN", Split("WCS_PL_MAINLib.i"),
                              CCFLAGS=re.sub("-Wall", "", " ".join(env['CCFLAGS'])),
                              LIBS=env.getlibs("solvetansip"))
-env.LoadableModuleIncomplete("_WCS_CHECK", Split("WCS_CHECK.i"),
-                             CCFLAGS=re.sub("-Wall", "", " ".join(env['CCFLAGS'])),
-                             LIBS=env.getlibs("solvetansip"))
-env.LoadableModuleIncomplete("_WCS_POSITION", Split("WCS_POSITION.i"),
-                             CCFLAGS=re.sub("-Wall", "", " ".join(env['CCFLAGS'])),
-                             LIBS=env.getlibs("solvetansip"))
-env.LoadableModuleIncomplete("_WCS_DISTORTION", Split("WCS_DISTORTION.i"),
-                             CCFLAGS=re.sub("-Wall", "", " ".join(env['CCFLAGS'])),
-                             LIBS=env.getlibs("solvetansip"))
-env.LoadableModuleIncomplete("_WCS_READPAIR", Split("WCS_READPAIR.i"),
-                             CCFLAGS=re.sub("-Wall", "", " ".join(env['CCFLAGS'])),
-                             LIBS=env.getlibs("solvetansip"))
+#env.LoadableModuleIncomplete("_WCS_CHECK", Split("WCS_CHECK.i"),
+#                             CCFLAGS=re.sub("-Wall", "", " ".join(env['CCFLAGS'])),
+#                             LIBS=env.getlibs("solvetansip"))
+#env.LoadableModuleIncomplete("_WCS_POSITION", Split("WCS_POSITION.i"),
+#                             CCFLAGS=re.sub("-Wall", "", " ".join(env['CCFLAGS'])),
+#                             LIBS=env.getlibs("solvetansip"))
+#env.LoadableModuleIncomplete("_WCS_DISTORTION", Split("WCS_DISTORTION.i"),
+#                             CCFLAGS=re.sub("-Wall", "", " ".join(env['CCFLAGS'])),
+#                             LIBS=env.getlibs("solvetansip"))
+#env.LoadableModuleIncomplete("_WCS_READPAIR", Split("WCS_READPAIR.i"),
+#                             CCFLAGS=re.sub("-Wall", "", " ".join(env['CCFLAGS'])),
+#                             LIBS=env.getlibs("solvetansip"))

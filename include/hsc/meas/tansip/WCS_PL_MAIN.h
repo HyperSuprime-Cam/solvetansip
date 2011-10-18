@@ -1,7 +1,7 @@
 //-----------------------------------------------------------
 //WCS_PL_MAIN.h
 //
-//Last modification : 2011/05/20
+//Last modification : 2011/10/01
 //------------------------------------------------------------
 #include<vector>
 #include<string>
@@ -9,35 +9,29 @@
 #include "lsst/afw/detection/SourceMatch.h"
 #include "lsst/afw/cameraGeom/Camera.h"
 #include "lsst/afw/image/TanWcs.h"
-//#include "lsst/daf/base/PropertySet.h"
 #include "hsc/meas/tansip/WCS_APROP.h"
-#include "hsc/meas/tansip/WCS_CPROP.h"
 #include "hsc/meas/tansip/WCS_PAIR.h"
 #include "hsc/meas/tansip/WCS_CSIP.h"
-//#include "lsst/afw/detection/Source.h"
 #ifndef WCS_PL_MAIN_H
 #define WCS_PL_MAIN_H
-class CL_WCSACCP{//Chip property
+class CL_WCSA_ASP{//Chip property
 private:
 public:
     std::vector <lsst::afw::image::TanWcs::Ptr> WCSPtr;
     CL_APROP* APROP;
-    CL_CPROP* CPROP;
-    CL_CSIP*  CSIP;
-    CL_PAIR*  PAIR;
-    std::vector <CL_CPROP*> CPROPList;
+    CL_GSIP*  GSIP;
+    CL_APAIR* APAIR;
     std::vector <CL_CSIP*>  CSIPList;
+ 
+    lsst::afw::image::TanWcs::Ptr F_WCSA_PLMAIN_SETWCSPtr(int);
+    void F_WCS_PLMAIN_SETWCSA_ASP();
 };
-#endif
-
-CL_WCSACCP F_WCS_TANSIP_V(std::vector< std::vector<lsst::afw::detection::SourceMatch> > const &,lsst::daf::base::PropertySet::Ptr &,lsst::pex::policy::Policy::Ptr &,lsst::afw::cameraGeom::Camera::Ptr &/*,lsst::daf::base::PropertySet::Ptr &,bool*/);
-CL_WCSACCP F_WCS_TANSIP_V_local(std::string,lsst::daf::base::PropertySet::Ptr &,lsst::pex::policy::Policy::Ptr &,lsst::afw::cameraGeom::Camera::Ptr &/*,lsst::daf::base::PropertySet::Ptr &,bool*/);
-std::vector <lsst::afw::image::TanWcs::Ptr> F_WCS_GETWCSLIST(CL_WCSACCP*);
-CL_APROP* F_WCS_GETAPROP(CL_WCSACCP*);
-CL_CPROP* F_WCS_GETCPROP(CL_WCSACCP*);
-CL_CSIP*  F_WCS_GETCSIP(CL_WCSACCP*);
-CL_PAIR*  F_WCS_GETPAIR(CL_WCSACCP*);
-std::vector <CL_CPROP*> F_WCS_GETCPROPLIST(CL_WCSACCP*);
-std::vector <CL_CSIP*>  F_WCS_GETCSIPLIST(CL_WCSACCP*);
+CL_WCSA_ASP F_WCSA_TANSIP_V(std::vector< std::vector<lsst::afw::detection::SourceMatch> > const &,lsst::daf::base::PropertySet::Ptr &,lsst::pex::policy::Policy::Ptr &,lsst::afw::cameraGeom::Camera::Ptr &/*,lsst::daf::base::PropertySet::Ptr &,bool*/);
+CL_WCSA_ASP F_WCSA_TANSIP_V_local(std::string,lsst::daf::base::PropertySet::Ptr &,lsst::pex::policy::Policy::Ptr &,lsst::afw::cameraGeom::Camera::Ptr &/*,lsst::daf::base::PropertySet::Ptr &,bool*/);
 lsst::daf::base::PropertySet::Ptr F_WCS_EMPTYMETADATA();
-
+std::vector <lsst::afw::image::TanWcs::Ptr> F_WCSA_PLMAIN_GETWCSLIST(CL_WCSA_ASP* WCSA_ASP);
+std::vector< std::vector< double > >F_WCSA_PLMAIN_GETCCDPOSITIONS(CL_WCSA_ASP* WCSA_ASP);
+std::vector< std::vector< double > >F_WCSA_PLMAIN_GETREFERENCES(CL_WCSA_ASP* WCSA_ASP);
+std::vector< double > F_WCSA_PLMAIN_GETRADEC(std::vector< double > X_GLOBAL,CL_WCSA_ASP* WCSA_ASP);
+std::vector< double > F_WCSA_PLMAIN_GETX_GLOBAL(std::vector< double > RADEC,CL_WCSA_ASP* WCSA_ASP);
+#endif

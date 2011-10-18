@@ -12,10 +12,10 @@ import lsst.obs.suprimecam as scmapper
 
 import hsc.meas.tansip.doTansip as doTansip
 import hsc.meas.tansip.WCS_PL_MAIN       as hscTansip
-import hsc.meas.tansip.WCS_CHECK_PY      as WCS_CHECK_PY
-import hsc.meas.tansip.WCS_POSITION_PY   as WCS_POSITION_PY
-import hsc.meas.tansip.WCS_DISTORTION_PY as WCS_DISTORTION_PY
-import hsc.meas.tansip.WCS_READPAIR_PY   as WCS_READPAIR_PY
+#import hsc.meas.tansip.WCS_CHECK_PY      as WCS_CHECK_PY
+#import hsc.meas.tansip.WCS_POSITION_PY   as WCS_POSITION_PY
+#import hsc.meas.tansip.WCS_DISTORTION_PY as WCS_DISTORTION_PY
+#import hsc.meas.tansip.WCS_READPAIR_PY   as WCS_READPAIR_PY
 import lsst.afw.detection as afwDet
 import lsst.afw.geom as afwGeom
 import lsst.afw.image as afwImage
@@ -95,127 +95,31 @@ policy = pexPolicy.Policy.createPolicy(policyPath)
 metadata = hscTansip.F_WCS_EMPTYMETADATA()
 
 #wcsList = doTansip.doTansip(matches, policy=policy, camera=mapper.camera)
-WCSACCP   = doTansip.getresultWcs(matches, metadata, policy=policy, camera=mapper.camera)
+WCSA_ASP   = doTansip.getresultWcs_local(matches_address, metadata, policy=policy, camera=mapper.camera)
 print "--- get wcsList ---"
-wcsList   = doTansip.getwcsList(WCSACCP)
-print "--- get APROP ---"
-APROP     = doTansip.getAPROP(WCSACCP)
-print "--- get CPROP ---"
-CPROP     = doTansip.getCPROP(WCSACCP)
-print "--- get CSIP ---"
-CSIP      = doTansip.getCSIP(WCSACCP)
-print "--- get PAIR ---"
-PAIR      = doTansip.getPAIR(WCSACCP)
-print "--- get CPROPList ---"
-CPROPList = doTansip.getCPROPList(WCSACCP)
-print "--- get CSIPList ---"
-CSIPList  = doTansip.getCSIPList(WCSACCP)
-print "--- solvetansip check ---"
-WCS_CHECK_PY.F_WCS_CHECK_CCDPOSITION_SC(CNUMBER,APROP,CPROP)
-WCS_CHECK_PY.F_WCS_CHECK_OADISTORTION_SC(CNUMBER,ANGLE,APROP,CPROP,CSIP)
-WCS_CHECK_PY.F_WCS_CHECK_OAPOSITION_SC(CNUMBER,APROP,CPROP,CSIP)
-#print wcsList
-#print APROP
-#print CPROP
-#print CSIP
-#print PAIR
-#print CPROPList
-#print CSIPList
-#pair test
-#####print "--- pair test ---"
-#####WCS_READPAIR_PY.F_WCS_READPAIR(APROP,PAIR)
-#pair test5.57167
-#position test
-#####print "--- position test ---"
-#####X=-3204.81
-#####Y=-87.4664
-#####RA=5.57167
-#####DEC= -0.65657
-#####print X
-#####print Y
-#####print RA
-#####print DEC
-#####RADEC=WCS_POSITION_PY.F_WCS_POSITION_RADECfromXY(wcsList[0],X,Y)
-#####print RADEC[0]
-#####print RADEC[1]
-#####XY=WCS_POSITION_PY.F_WCS_POSITION_XYfromRADEC(wcsList[0],RA,DEC)
-#####print XY[0]
-#####print XY[1]
-#position test
-#distortion test
-#####print "--- distortion test ---"
-
-#####MSSR=WCS_DISTORTION_PY.F_WCS_DISTORTION_wcsList_XY(wcsList[0],X,Y)
-#####print X,Y,MSSR[0], MSSR[1], MSSR[2], MSSR[3]
-#####X=0
-#####Y=0
-#####MSSR=WCS_DISTORTION_PY.F_WCS_DISTORTION_wcsList_XY(wcsList[0],X,Y)
-#####print X,Y,MSSR[0], MSSR[1], MSSR[2], MSSR[3]
-#####X=2000
-#####Y=4000
-#####MSSR=WCS_DISTORTION_PY.F_WCS_DISTORTION_wcsList_XY(wcsList[0],X,Y)
-#####print X,Y,MSSR[0], MSSR[1], MSSR[2], MSSR[3]
-#####MSSR=WCS_DISTORTION_PY.F_WCS_DISTORTION_wcsList_RADEC(wcsList[0],RA,DEC)
-#####print RA,DEC,MSSR[0], MSSR[1], MSSR[2], MSSR[3]
-#####RA=5.0
-#####DEC=-0.5
-#####MSSR=WCS_DISTORTION_PY.F_WCS_DISTORTION_wcsList_RADEC(wcsList[0],RA,DEC)
-#####print RA,DEC,MSSR[0], MSSR[1], MSSR[2], MSSR[3]
-#####RA=5.5
-#####DEC=-1.0
-#####MSSR=WCS_DISTORTION_PY.F_WCS_DISTORTION_wcsList_RADEC(wcsList[0],RA,DEC)
-#####print RA,DEC,MSSR[0], MSSR[1], MSSR[2], MSSR[3]
-#####MSSR=WCS_DISTORTION_PY.F_WCS_DISTORTION_CSIP_XY(CPROPList[0],X,Y)
-#####print MSSR[0], MSSR[1], MSSR[2], MSSR[3]
-#####MSSR=WCS_DISTORTION_PY.F_WCS_DISTORTION_CSIP_RADEC(CPROPList[0],RA,DEC)
-#####print MSSR[0], MSSR[1], MSSR[2], MSSR[3]
-#distortion test
-
-
-#####ra1 = []
-#####dec1 = []
-#####ra2 = []
-#####dec2 = []
-#####ra3 = []
-#####dec3 = []
-#####dSky = []
-#####for wcs, matchList in zip(wcsList, matches):
-#####    #print wcs.getFitsMetadata()
-#####    for m in matchList:
-#####        # First is catalogue, which is mistakenly and temporarily in degrees
-#####        ra1.append(m.first.getRa()*180./numpy.pi)
-#####        dec1.append(m.first.getDec()*180./numpy.pi)
-#####        # Second is image, which needs to be re-computed from new wcs
-#####        sky = wcs.pixelToSky(m.second.getXAstrom(), m.second.getYAstrom())
-#####        ra2.append(sky.getLongitude(afwCoord.DEGREES))
-#####        dec2.append(sky.getLatitude(afwCoord.DEGREES))
-#####
-#####        coord1 = afwCoord.Coord(afwGeom.Point2D(m.first.getRa(), m.first.getDec()), afwCoord.DEGREES)
-#        coord1 = afwCoord.Coord(afwGeom.makePointD(m.first.getRa(), m.first.getDec()), afwCoord.DEGREES)
-#####        ###dSky.append(coord1.angularSeparation(sky, afwCoord.DEGREES) * 3600.0) ### --> did not work properly
-#####        dSky.append(coord1.angularSeparation(sky, afwCoord.RADIANS) * 180./numpy.pi)
-#####
-#        RADEC=WCS_POSITION_PY.F_WCS_POSITION_RADECfromXY(wcs,m.second.getXAstrom(), m.second.getYAstrom())
-#        ra3.append(RADEC[0])
-#        dec3.append(RADEC[1])
-        
-
-#####ra1 = numpy.array(ra1)
-#####dec1 = numpy.array(dec1)
-#####ra2 = numpy.array(ra2)
-#####dec2 = numpy.array(dec2)
-#####dRa = (ra2-ra1)*3600
-#####dDec = (dec2-dec1)*3600
-#ra3 = numpy.array(ra3)
-#dec3 = numpy.array(dec3)
-#dRa3 = (ra3-ra1)*3600
-#dDec3 = (dec3-dec1)*3600
-#####dSky = numpy.array(dSky)
-#####print "RA difference stats (arcsec):", dRa.mean(), dRa.std()
-#####print "Dec difference stats (arcsec):", dDec.mean(), dDec.std()
-#print "RA difference stats (arcsec):", dRa3.mean(), dRa3.std()
-#print "Dec difference stats (arcsec):", dDec3.mean(), dDec3.std()
-#####print "Offset stats:", dSky.mean(), dSky.std()
-#####plot.histogram(dSky, None, bins=101, clip=3.0, gaussFit=None)
-#####plot.quivers(ra1, dec1, dRa, dDec, addUnitQuiver=1./3600)
-#####plot.close()
+wcsList = doTansip.getwcsList(WCSA_ASP)
+print wcsList
+print "--- get ccd positions ---"
+ccdpositions = doTansip.getccdpositions(WCSA_ASP)
+print ccdpositions
+print "--- get references ---"
+references = doTansip.getreferences(WCSA_ASP)
+#print references
+print "--- get RADEC ---"
+X_GLOBAL = (0.0,0.0)
+RADEC = doTansip.getradec(X_GLOBAL,WCSA_ASP)
+print X_GLOBAL
+print RADEC
+print "--- get X_GLOBAL ---"
+X_GLOBAL = doTansip.getxglobal(RADEC,WCSA_ASP)
+print RADEC
+print X_GLOBAL
+print "--- get RADEC ---"
+X_GLOBAL = (2000.0,2000.0)
+RADEC = doTansip.getradec(X_GLOBAL,WCSA_ASP)
+print X_GLOBAL
+print RADEC
+print "--- get X_GLOBAL ---"
+X_GLOBAL = doTansip.getxglobal(RADEC,WCSA_ASP)
+print RADEC
+print X_GLOBAL

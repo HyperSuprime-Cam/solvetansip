@@ -76,6 +76,25 @@ double****	F_NEWdouble4(int SIZE1,int SIZE2,int SIZE3,int SIZE4){
 
 	return MAT;
 }
+double*****	F_NEWdouble5(int SIZE1,int SIZE2,int SIZE3,int SIZE4,int SIZE5){
+	double *****MAT;
+	int i,j,k,l,m;
+
+	MAT = new double****[SIZE1];
+	for(i=0;i<SIZE1;i++){
+	MAT[i] = new double***[SIZE2];
+	for(j=0;j<SIZE2;j++){
+	MAT[i][j] = new double**[SIZE3];
+	for(k=0;k<SIZE3;k++){
+	MAT[i][j][k] = new double*[SIZE4];
+	for(l=0;l<SIZE4;l++){
+	MAT[i][j][k][l] = new double[SIZE5];
+	for(m=0;m<SIZE5;m++)
+	MAT[i][j][k][l][m]=0;
+	}}}}
+
+	return MAT;
+}
 char***	F_NEWchar3(int SIZE1,int SIZE2,int SIZE3){
 	char ***MAT;
 	int i,j,k;
@@ -127,6 +146,22 @@ void	F_DELdouble4(int SIZE1,int SIZE2,int SIZE3,double ****MAT){
         }
 	delete [] MAT;
 }
+void	F_DELdouble5(int SIZE1,int SIZE2,int SIZE3,int SIZE4,double *****MAT){
+	int i,j,k,l;
+
+	for(i=0;i<SIZE1;i++){
+	for(j=0;j<SIZE2;j++){
+	for(k=0;k<SIZE3;k++){
+	for(l=0;l<SIZE4;l++)
+	delete [] MAT[i][j][k][l];
+	delete [] MAT[i][j][k];
+        }
+	delete [] MAT[i][j];
+        }
+	delete [] MAT[i];
+        }
+	delete [] MAT;
+}
 void	F_DELchar3(int SIZE1,int SIZE2,char ***MAT){
 	int i,j;
 
@@ -138,6 +173,28 @@ void	F_DELchar3(int SIZE1,int SIZE2,char ***MAT){
 	delete [] MAT;
 }
 
+int	F_FACTORIAL2(int X){
+	int Y,Z;
+
+	Z=1;
+	for(Y=X;Y>1.5;Y-=2)
+	Z*=Y;
+	return Z;
+}
+double	F_INTEGRAL_R(int ORDER, double MAX_R, double **FUNCTION){
+	int i,j;
+	double X,Y,Z;
+	Z=0;
+	for(i=0;i<ORDER+1;i+=2)
+	for(j=0;j<ORDER+1;j+=2){
+		X=pow(MAX_R,i+j+2)/(2+i+j);
+		Y=2*PI*FUNCTION[i][j]*F_FACTORIAL2(i-1)*F_FACTORIAL2(j-1)/F_FACTORIAL2(i+j);
+
+		Z+=X*Y;
+	}
+
+	return Z;
+}
 double  F_CALCVALUE(int ORDER,double *Coef,double *X){
     int i,j,ij;
     double Z;

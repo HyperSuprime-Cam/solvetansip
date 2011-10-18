@@ -48,9 +48,9 @@ def getresultWcs(matchListAllCcd, metadata, policy=None, camera=None, rerun=None
             print "empty list for ccd %i: %s" % (i, m)
             matchListAllCcd[i] = []
             
-    WCSACCP = hscTansip.F_WCS_TANSIP_V(matchListAllCcd, metadata, policy, camera)
+    WCSA_ASP = hscTansip.F_WCSA_TANSIP_V(matchListAllCcd, metadata, policy, camera)
     print '... TAN-SIP fitting done.'
-    return WCSACCP
+    return WCSA_ASP
 
 def getresultWcs_local(matchList_address, metadata, policy=None, camera=None, rerun=None):
     print '--- doTansip_getresultWcs ---'
@@ -72,23 +72,13 @@ def getresultWcs_local(matchList_address, metadata, policy=None, camera=None, re
         policy.mergeDefaults(defaults)
     else:
         policy = defaults
-    
-#    print "len(match)=%d order=(%d,%d,%d)" % (len(matchListAllCcd),
-#                                           policy.get('LSIPORDER'),
-#                                           policy.get('SIPORDER'),
-#                                           policy.get('PSIPORDER'))
-#    for i in range(len(matchListAllCcd)):
-#        m = matchListAllCcd[i]
-#        if not m:
-#            print "empty list for ccd %i: %s" % (i, m)
-#            matchListAllCcd[i] = []
           
     print matchList_address
     print type(matchList_address)
   
-    WCSACCP = hscTansip.F_WCS_TANSIP_V_local(matchList_address, metadata, policy, camera)
+    WCSA_ASP = hscTansip.F_WCSA_TANSIP_V_local(matchList_address, metadata, policy, camera)
     print '... TAN-SIP fitting done.'
-    return WCSACCP
+    return WCSA_ASP
 
 def doTansip(matchListAllCcd, policy=None, camera=None, rerun=None):
     print '--- doTansip ---'
@@ -97,23 +87,17 @@ def doTansip(matchListAllCcd, policy=None, camera=None, rerun=None):
 
     return WCSACCP.WCSPtr
 
-def getwcsList(WCSACCP):
-    return hscTansip.F_WCS_GETWCSLIST(WCSACCP)
+def getwcsList(WCSA_ASP):
+    return hscTansip.F_WCSA_PLMAIN_GETWCSLIST(WCSA_ASP)
 
-def getAPROP(WCSACCP):
-    return hscTansip.F_WCS_GETAPROP(WCSACCP)
+def getccdpositions(WCSA_ASP):
+    return hscTansip.F_WCSA_PLMAIN_GETCCDPOSITIONS(WCSA_ASP)
 
-def getCPROP(WCSACCP):
-    return hscTansip.F_WCS_GETCPROP(WCSACCP)
+def getreferences(WCSA_ASP):
+    return hscTansip.F_WCSA_PLMAIN_GETREFERENCES(WCSA_ASP)
 
-def getCSIP(WCSACCP):
-    return hscTansip.F_WCS_GETCSIP(WCSACCP)
+def getradec(X_GLOBAL,WCSA_ASP):
+    return hscTansip.F_WCSA_PLMAIN_GETRADEC(X_GLOBAL,WCSA_ASP)
 
-def getPAIR(WCSACCP):
-    return hscTansip.F_WCS_GETPAIR(WCSACCP)
-
-def getCPROPList(WCSACCP):
-    return hscTansip.F_WCS_GETCPROPLIST(WCSACCP)
-
-def getCSIPList(WCSACCP):
-    return hscTansip.F_WCS_GETCSIPLIST(WCSACCP)
+def getxglobal(RADEC,WCSA_ASP):
+    return hscTansip.F_WCSA_PLMAIN_GETX_GLOBAL(RADEC,WCSA_ASP)
