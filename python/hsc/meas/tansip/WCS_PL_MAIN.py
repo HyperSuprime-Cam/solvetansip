@@ -1095,539 +1095,381 @@ class resultWcs_V(_object):
 resultWcs_V_swigregister = _WCS_PL_MAIN.resultWcs_V_swigregister
 resultWcs_V_swigregister(resultWcs_V)
 
-class CPROP_V(_object):
-    """Proxy of C++ CPROP_V class"""
+class APAIR_V(_object):
+    """Proxy of C++ APAIR_V class"""
     __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr_nondynamic(self, CPROP_V, name, value)
+    __setattr__ = lambda self, name, value: _swig_setattr_nondynamic(self, APAIR_V, name, value)
     __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, CPROP_V, name)
+    __getattr__ = lambda self, name: _swig_getattr(self, APAIR_V, name)
     __repr__ = _swig_repr
     def iterator(*args):
         """iterator(self, PyObject PYTHON_SELF) -> PySwigIterator"""
-        return _WCS_PL_MAIN.CPROP_V_iterator(*args)
+        return _WCS_PL_MAIN.APAIR_V_iterator(*args)
 
     def __iter__(self): return self.iterator()
     def __nonzero__(*args):
         """__nonzero__(self) -> bool"""
-        return _WCS_PL_MAIN.CPROP_V___nonzero__(*args)
+        return _WCS_PL_MAIN.APAIR_V___nonzero__(*args)
 
     def __len__(*args):
         """__len__(self) -> size_type"""
-        return _WCS_PL_MAIN.CPROP_V___len__(*args)
+        return _WCS_PL_MAIN.APAIR_V___len__(*args)
 
     def pop(*args):
         """pop(self) -> value_type"""
-        return _WCS_PL_MAIN.CPROP_V_pop(*args)
+        return _WCS_PL_MAIN.APAIR_V_pop(*args)
 
     def __getslice__(*args):
-        """__getslice__(self, difference_type i, difference_type j) -> CPROP_V"""
-        return _WCS_PL_MAIN.CPROP_V___getslice__(*args)
+        """__getslice__(self, difference_type i, difference_type j) -> APAIR_V"""
+        return _WCS_PL_MAIN.APAIR_V___getslice__(*args)
 
     def __setslice__(*args):
-        """__setslice__(self, difference_type i, difference_type j, CPROP_V v)"""
-        return _WCS_PL_MAIN.CPROP_V___setslice__(*args)
+        """__setslice__(self, difference_type i, difference_type j, APAIR_V v)"""
+        return _WCS_PL_MAIN.APAIR_V___setslice__(*args)
 
     def __delslice__(*args):
         """__delslice__(self, difference_type i, difference_type j)"""
-        return _WCS_PL_MAIN.CPROP_V___delslice__(*args)
+        return _WCS_PL_MAIN.APAIR_V___delslice__(*args)
 
     def __delitem__(*args):
         """__delitem__(self, difference_type i)"""
-        return _WCS_PL_MAIN.CPROP_V___delitem__(*args)
+        return _WCS_PL_MAIN.APAIR_V___delitem__(*args)
 
     def __getitem__(*args):
         """__getitem__(self, difference_type i) -> value_type"""
-        return _WCS_PL_MAIN.CPROP_V___getitem__(*args)
+        return _WCS_PL_MAIN.APAIR_V___getitem__(*args)
 
     def __setitem__(*args):
         """__setitem__(self, difference_type i, value_type x)"""
-        return _WCS_PL_MAIN.CPROP_V___setitem__(*args)
+        return _WCS_PL_MAIN.APAIR_V___setitem__(*args)
 
     def append(*args):
         """append(self, value_type x)"""
-        return _WCS_PL_MAIN.CPROP_V_append(*args)
+        return _WCS_PL_MAIN.APAIR_V_append(*args)
 
     def empty(*args):
         """empty(self) -> bool"""
-        return _WCS_PL_MAIN.CPROP_V_empty(*args)
+        return _WCS_PL_MAIN.APAIR_V_empty(*args)
 
     def size(*args):
         """size(self) -> size_type"""
-        return _WCS_PL_MAIN.CPROP_V_size(*args)
+        return _WCS_PL_MAIN.APAIR_V_size(*args)
 
     def clear(*args):
         """clear(self)"""
-        return _WCS_PL_MAIN.CPROP_V_clear(*args)
+        return _WCS_PL_MAIN.APAIR_V_clear(*args)
 
     def swap(*args):
-        """swap(self, CPROP_V v)"""
-        return _WCS_PL_MAIN.CPROP_V_swap(*args)
+        """swap(self, APAIR_V v)"""
+        return _WCS_PL_MAIN.APAIR_V_swap(*args)
 
     def get_allocator(*args):
         """get_allocator(self) -> allocator_type"""
-        return _WCS_PL_MAIN.CPROP_V_get_allocator(*args)
+        return _WCS_PL_MAIN.APAIR_V_get_allocator(*args)
 
     def begin(*args):
         """begin(self) -> const_iterator"""
-        return _WCS_PL_MAIN.CPROP_V_begin(*args)
+        return _WCS_PL_MAIN.APAIR_V_begin(*args)
 
     def end(*args):
         """end(self) -> const_iterator"""
-        return _WCS_PL_MAIN.CPROP_V_end(*args)
+        return _WCS_PL_MAIN.APAIR_V_end(*args)
 
     def rbegin(*args):
         """rbegin(self) -> const_reverse_iterator"""
-        return _WCS_PL_MAIN.CPROP_V_rbegin(*args)
+        return _WCS_PL_MAIN.APAIR_V_rbegin(*args)
 
     def rend(*args):
         """rend(self) -> const_reverse_iterator"""
-        return _WCS_PL_MAIN.CPROP_V_rend(*args)
+        return _WCS_PL_MAIN.APAIR_V_rend(*args)
 
     def pop_back(*args):
         """pop_back(self)"""
-        return _WCS_PL_MAIN.CPROP_V_pop_back(*args)
+        return _WCS_PL_MAIN.APAIR_V_pop_back(*args)
 
     def erase(*args):
         """
         erase(self, iterator pos) -> iterator
         erase(self, iterator first, iterator last) -> iterator
         """
-        return _WCS_PL_MAIN.CPROP_V_erase(*args)
+        return _WCS_PL_MAIN.APAIR_V_erase(*args)
 
     def __init__(self, *args): 
         """
-        __init__(self) -> CPROP_V
-        __init__(self, CPROP_V ?) -> CPROP_V
-        __init__(self, size_type size) -> CPROP_V
-        __init__(self, size_type size, value_type value) -> CPROP_V
+        __init__(self) -> APAIR_V
+        __init__(self, APAIR_V ?) -> APAIR_V
+        __init__(self, size_type size) -> APAIR_V
+        __init__(self, size_type size, value_type value) -> APAIR_V
         """
-        this = _WCS_PL_MAIN.new_CPROP_V(*args)
+        this = _WCS_PL_MAIN.new_APAIR_V(*args)
         try: self.this.append(this)
         except: self.this = this
     def push_back(*args):
         """push_back(self, value_type x)"""
-        return _WCS_PL_MAIN.CPROP_V_push_back(*args)
+        return _WCS_PL_MAIN.APAIR_V_push_back(*args)
 
     def front(*args):
         """front(self) -> value_type"""
-        return _WCS_PL_MAIN.CPROP_V_front(*args)
+        return _WCS_PL_MAIN.APAIR_V_front(*args)
 
     def back(*args):
         """back(self) -> value_type"""
-        return _WCS_PL_MAIN.CPROP_V_back(*args)
+        return _WCS_PL_MAIN.APAIR_V_back(*args)
 
     def assign(*args):
         """assign(self, size_type n, value_type x)"""
-        return _WCS_PL_MAIN.CPROP_V_assign(*args)
+        return _WCS_PL_MAIN.APAIR_V_assign(*args)
 
     def resize(*args):
         """
         resize(self, size_type new_size)
         resize(self, size_type new_size, value_type x)
         """
-        return _WCS_PL_MAIN.CPROP_V_resize(*args)
+        return _WCS_PL_MAIN.APAIR_V_resize(*args)
 
     def insert(*args):
         """
         insert(self, iterator pos, value_type x) -> iterator
         insert(self, iterator pos, size_type n, value_type x)
         """
-        return _WCS_PL_MAIN.CPROP_V_insert(*args)
+        return _WCS_PL_MAIN.APAIR_V_insert(*args)
 
     def reserve(*args):
         """reserve(self, size_type n)"""
-        return _WCS_PL_MAIN.CPROP_V_reserve(*args)
+        return _WCS_PL_MAIN.APAIR_V_reserve(*args)
 
     def capacity(*args):
         """capacity(self) -> size_type"""
-        return _WCS_PL_MAIN.CPROP_V_capacity(*args)
+        return _WCS_PL_MAIN.APAIR_V_capacity(*args)
 
-    __swig_destroy__ = _WCS_PL_MAIN.delete_CPROP_V
+    __swig_destroy__ = _WCS_PL_MAIN.delete_APAIR_V
     __del__ = lambda self : None;
-CPROP_V_swigregister = _WCS_PL_MAIN.CPROP_V_swigregister
-CPROP_V_swigregister(CPROP_V)
+APAIR_V_swigregister = _WCS_PL_MAIN.APAIR_V_swigregister
+APAIR_V_swigregister(APAIR_V)
 
-class CSIP_V(_object):
-    """Proxy of C++ CSIP_V class"""
+class GSIP_V(_object):
+    """Proxy of C++ GSIP_V class"""
     __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr_nondynamic(self, CSIP_V, name, value)
+    __setattr__ = lambda self, name, value: _swig_setattr_nondynamic(self, GSIP_V, name, value)
     __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, CSIP_V, name)
+    __getattr__ = lambda self, name: _swig_getattr(self, GSIP_V, name)
     __repr__ = _swig_repr
     def iterator(*args):
         """iterator(self, PyObject PYTHON_SELF) -> PySwigIterator"""
-        return _WCS_PL_MAIN.CSIP_V_iterator(*args)
+        return _WCS_PL_MAIN.GSIP_V_iterator(*args)
 
     def __iter__(self): return self.iterator()
     def __nonzero__(*args):
         """__nonzero__(self) -> bool"""
-        return _WCS_PL_MAIN.CSIP_V___nonzero__(*args)
+        return _WCS_PL_MAIN.GSIP_V___nonzero__(*args)
 
     def __len__(*args):
         """__len__(self) -> size_type"""
-        return _WCS_PL_MAIN.CSIP_V___len__(*args)
+        return _WCS_PL_MAIN.GSIP_V___len__(*args)
 
     def pop(*args):
         """pop(self) -> value_type"""
-        return _WCS_PL_MAIN.CSIP_V_pop(*args)
+        return _WCS_PL_MAIN.GSIP_V_pop(*args)
 
     def __getslice__(*args):
-        """__getslice__(self, difference_type i, difference_type j) -> CSIP_V"""
-        return _WCS_PL_MAIN.CSIP_V___getslice__(*args)
+        """__getslice__(self, difference_type i, difference_type j) -> GSIP_V"""
+        return _WCS_PL_MAIN.GSIP_V___getslice__(*args)
 
     def __setslice__(*args):
-        """__setslice__(self, difference_type i, difference_type j, CSIP_V v)"""
-        return _WCS_PL_MAIN.CSIP_V___setslice__(*args)
+        """__setslice__(self, difference_type i, difference_type j, GSIP_V v)"""
+        return _WCS_PL_MAIN.GSIP_V___setslice__(*args)
 
     def __delslice__(*args):
         """__delslice__(self, difference_type i, difference_type j)"""
-        return _WCS_PL_MAIN.CSIP_V___delslice__(*args)
+        return _WCS_PL_MAIN.GSIP_V___delslice__(*args)
 
     def __delitem__(*args):
         """__delitem__(self, difference_type i)"""
-        return _WCS_PL_MAIN.CSIP_V___delitem__(*args)
+        return _WCS_PL_MAIN.GSIP_V___delitem__(*args)
 
     def __getitem__(*args):
         """__getitem__(self, difference_type i) -> value_type"""
-        return _WCS_PL_MAIN.CSIP_V___getitem__(*args)
+        return _WCS_PL_MAIN.GSIP_V___getitem__(*args)
 
     def __setitem__(*args):
         """__setitem__(self, difference_type i, value_type x)"""
-        return _WCS_PL_MAIN.CSIP_V___setitem__(*args)
+        return _WCS_PL_MAIN.GSIP_V___setitem__(*args)
 
     def append(*args):
         """append(self, value_type x)"""
-        return _WCS_PL_MAIN.CSIP_V_append(*args)
+        return _WCS_PL_MAIN.GSIP_V_append(*args)
 
     def empty(*args):
         """empty(self) -> bool"""
-        return _WCS_PL_MAIN.CSIP_V_empty(*args)
+        return _WCS_PL_MAIN.GSIP_V_empty(*args)
 
     def size(*args):
         """size(self) -> size_type"""
-        return _WCS_PL_MAIN.CSIP_V_size(*args)
+        return _WCS_PL_MAIN.GSIP_V_size(*args)
 
     def clear(*args):
         """clear(self)"""
-        return _WCS_PL_MAIN.CSIP_V_clear(*args)
+        return _WCS_PL_MAIN.GSIP_V_clear(*args)
 
     def swap(*args):
-        """swap(self, CSIP_V v)"""
-        return _WCS_PL_MAIN.CSIP_V_swap(*args)
+        """swap(self, GSIP_V v)"""
+        return _WCS_PL_MAIN.GSIP_V_swap(*args)
 
     def get_allocator(*args):
         """get_allocator(self) -> allocator_type"""
-        return _WCS_PL_MAIN.CSIP_V_get_allocator(*args)
+        return _WCS_PL_MAIN.GSIP_V_get_allocator(*args)
 
     def begin(*args):
         """begin(self) -> const_iterator"""
-        return _WCS_PL_MAIN.CSIP_V_begin(*args)
+        return _WCS_PL_MAIN.GSIP_V_begin(*args)
 
     def end(*args):
         """end(self) -> const_iterator"""
-        return _WCS_PL_MAIN.CSIP_V_end(*args)
+        return _WCS_PL_MAIN.GSIP_V_end(*args)
 
     def rbegin(*args):
         """rbegin(self) -> const_reverse_iterator"""
-        return _WCS_PL_MAIN.CSIP_V_rbegin(*args)
+        return _WCS_PL_MAIN.GSIP_V_rbegin(*args)
 
     def rend(*args):
         """rend(self) -> const_reverse_iterator"""
-        return _WCS_PL_MAIN.CSIP_V_rend(*args)
+        return _WCS_PL_MAIN.GSIP_V_rend(*args)
 
     def pop_back(*args):
         """pop_back(self)"""
-        return _WCS_PL_MAIN.CSIP_V_pop_back(*args)
+        return _WCS_PL_MAIN.GSIP_V_pop_back(*args)
 
     def erase(*args):
         """
         erase(self, iterator pos) -> iterator
         erase(self, iterator first, iterator last) -> iterator
         """
-        return _WCS_PL_MAIN.CSIP_V_erase(*args)
+        return _WCS_PL_MAIN.GSIP_V_erase(*args)
 
     def __init__(self, *args): 
         """
-        __init__(self) -> CSIP_V
-        __init__(self, CSIP_V ?) -> CSIP_V
-        __init__(self, size_type size) -> CSIP_V
-        __init__(self, size_type size, value_type value) -> CSIP_V
+        __init__(self) -> GSIP_V
+        __init__(self, GSIP_V ?) -> GSIP_V
+        __init__(self, size_type size) -> GSIP_V
+        __init__(self, size_type size, value_type value) -> GSIP_V
         """
-        this = _WCS_PL_MAIN.new_CSIP_V(*args)
+        this = _WCS_PL_MAIN.new_GSIP_V(*args)
         try: self.this.append(this)
         except: self.this = this
     def push_back(*args):
         """push_back(self, value_type x)"""
-        return _WCS_PL_MAIN.CSIP_V_push_back(*args)
+        return _WCS_PL_MAIN.GSIP_V_push_back(*args)
 
     def front(*args):
         """front(self) -> value_type"""
-        return _WCS_PL_MAIN.CSIP_V_front(*args)
+        return _WCS_PL_MAIN.GSIP_V_front(*args)
 
     def back(*args):
         """back(self) -> value_type"""
-        return _WCS_PL_MAIN.CSIP_V_back(*args)
+        return _WCS_PL_MAIN.GSIP_V_back(*args)
 
     def assign(*args):
         """assign(self, size_type n, value_type x)"""
-        return _WCS_PL_MAIN.CSIP_V_assign(*args)
+        return _WCS_PL_MAIN.GSIP_V_assign(*args)
 
     def resize(*args):
         """
         resize(self, size_type new_size)
         resize(self, size_type new_size, value_type x)
         """
-        return _WCS_PL_MAIN.CSIP_V_resize(*args)
+        return _WCS_PL_MAIN.GSIP_V_resize(*args)
 
     def insert(*args):
         """
         insert(self, iterator pos, value_type x) -> iterator
         insert(self, iterator pos, size_type n, value_type x)
         """
-        return _WCS_PL_MAIN.CSIP_V_insert(*args)
+        return _WCS_PL_MAIN.GSIP_V_insert(*args)
 
     def reserve(*args):
         """reserve(self, size_type n)"""
-        return _WCS_PL_MAIN.CSIP_V_reserve(*args)
+        return _WCS_PL_MAIN.GSIP_V_reserve(*args)
 
     def capacity(*args):
         """capacity(self) -> size_type"""
-        return _WCS_PL_MAIN.CSIP_V_capacity(*args)
+        return _WCS_PL_MAIN.GSIP_V_capacity(*args)
 
-    __swig_destroy__ = _WCS_PL_MAIN.delete_CSIP_V
+    __swig_destroy__ = _WCS_PL_MAIN.delete_GSIP_V
     __del__ = lambda self : None;
-CSIP_V_swigregister = _WCS_PL_MAIN.CSIP_V_swigregister
-CSIP_V_swigregister(CSIP_V)
+GSIP_V_swigregister = _WCS_PL_MAIN.GSIP_V_swigregister
+GSIP_V_swigregister(GSIP_V)
 
-class PAIR_V(_object):
-    """Proxy of C++ PAIR_V class"""
+class CL_WCSA_ASP(_object):
+    """Proxy of C++ CL_WCSA_ASP class"""
     __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr_nondynamic(self, PAIR_V, name, value)
+    __setattr__ = lambda self, name, value: _swig_setattr_nondynamic(self, CL_WCSA_ASP, name, value)
     __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, PAIR_V, name)
+    __getattr__ = lambda self, name: _swig_getattr(self, CL_WCSA_ASP, name)
     __repr__ = _swig_repr
-    def iterator(*args):
-        """iterator(self, PyObject PYTHON_SELF) -> PySwigIterator"""
-        return _WCS_PL_MAIN.PAIR_V_iterator(*args)
+    __swig_setmethods__["WCSPtr"] = _WCS_PL_MAIN.CL_WCSA_ASP_WCSPtr_set
+    __swig_getmethods__["WCSPtr"] = _WCS_PL_MAIN.CL_WCSA_ASP_WCSPtr_get
+    if _newclass:WCSPtr = _swig_property(_WCS_PL_MAIN.CL_WCSA_ASP_WCSPtr_get, _WCS_PL_MAIN.CL_WCSA_ASP_WCSPtr_set)
+    __swig_setmethods__["APROP"] = _WCS_PL_MAIN.CL_WCSA_ASP_APROP_set
+    __swig_getmethods__["APROP"] = _WCS_PL_MAIN.CL_WCSA_ASP_APROP_get
+    if _newclass:APROP = _swig_property(_WCS_PL_MAIN.CL_WCSA_ASP_APROP_get, _WCS_PL_MAIN.CL_WCSA_ASP_APROP_set)
+    __swig_setmethods__["GSIP"] = _WCS_PL_MAIN.CL_WCSA_ASP_GSIP_set
+    __swig_getmethods__["GSIP"] = _WCS_PL_MAIN.CL_WCSA_ASP_GSIP_get
+    if _newclass:GSIP = _swig_property(_WCS_PL_MAIN.CL_WCSA_ASP_GSIP_get, _WCS_PL_MAIN.CL_WCSA_ASP_GSIP_set)
+    __swig_setmethods__["APAIR"] = _WCS_PL_MAIN.CL_WCSA_ASP_APAIR_set
+    __swig_getmethods__["APAIR"] = _WCS_PL_MAIN.CL_WCSA_ASP_APAIR_get
+    if _newclass:APAIR = _swig_property(_WCS_PL_MAIN.CL_WCSA_ASP_APAIR_get, _WCS_PL_MAIN.CL_WCSA_ASP_APAIR_set)
+    __swig_setmethods__["CSIPList"] = _WCS_PL_MAIN.CL_WCSA_ASP_CSIPList_set
+    __swig_getmethods__["CSIPList"] = _WCS_PL_MAIN.CL_WCSA_ASP_CSIPList_get
+    if _newclass:CSIPList = _swig_property(_WCS_PL_MAIN.CL_WCSA_ASP_CSIPList_get, _WCS_PL_MAIN.CL_WCSA_ASP_CSIPList_set)
+    def F_WCSA_PLMAIN_SETWCSPtr(*args):
+        """F_WCSA_PLMAIN_SETWCSPtr(self, int ?) -> Ptr"""
+        return _WCS_PL_MAIN.CL_WCSA_ASP_F_WCSA_PLMAIN_SETWCSPtr(*args)
 
-    def __iter__(self): return self.iterator()
-    def __nonzero__(*args):
-        """__nonzero__(self) -> bool"""
-        return _WCS_PL_MAIN.PAIR_V___nonzero__(*args)
-
-    def __len__(*args):
-        """__len__(self) -> size_type"""
-        return _WCS_PL_MAIN.PAIR_V___len__(*args)
-
-    def pop(*args):
-        """pop(self) -> value_type"""
-        return _WCS_PL_MAIN.PAIR_V_pop(*args)
-
-    def __getslice__(*args):
-        """__getslice__(self, difference_type i, difference_type j) -> PAIR_V"""
-        return _WCS_PL_MAIN.PAIR_V___getslice__(*args)
-
-    def __setslice__(*args):
-        """__setslice__(self, difference_type i, difference_type j, PAIR_V v)"""
-        return _WCS_PL_MAIN.PAIR_V___setslice__(*args)
-
-    def __delslice__(*args):
-        """__delslice__(self, difference_type i, difference_type j)"""
-        return _WCS_PL_MAIN.PAIR_V___delslice__(*args)
-
-    def __delitem__(*args):
-        """__delitem__(self, difference_type i)"""
-        return _WCS_PL_MAIN.PAIR_V___delitem__(*args)
-
-    def __getitem__(*args):
-        """__getitem__(self, difference_type i) -> value_type"""
-        return _WCS_PL_MAIN.PAIR_V___getitem__(*args)
-
-    def __setitem__(*args):
-        """__setitem__(self, difference_type i, value_type x)"""
-        return _WCS_PL_MAIN.PAIR_V___setitem__(*args)
-
-    def append(*args):
-        """append(self, value_type x)"""
-        return _WCS_PL_MAIN.PAIR_V_append(*args)
-
-    def empty(*args):
-        """empty(self) -> bool"""
-        return _WCS_PL_MAIN.PAIR_V_empty(*args)
-
-    def size(*args):
-        """size(self) -> size_type"""
-        return _WCS_PL_MAIN.PAIR_V_size(*args)
-
-    def clear(*args):
-        """clear(self)"""
-        return _WCS_PL_MAIN.PAIR_V_clear(*args)
-
-    def swap(*args):
-        """swap(self, PAIR_V v)"""
-        return _WCS_PL_MAIN.PAIR_V_swap(*args)
-
-    def get_allocator(*args):
-        """get_allocator(self) -> allocator_type"""
-        return _WCS_PL_MAIN.PAIR_V_get_allocator(*args)
-
-    def begin(*args):
-        """begin(self) -> const_iterator"""
-        return _WCS_PL_MAIN.PAIR_V_begin(*args)
-
-    def end(*args):
-        """end(self) -> const_iterator"""
-        return _WCS_PL_MAIN.PAIR_V_end(*args)
-
-    def rbegin(*args):
-        """rbegin(self) -> const_reverse_iterator"""
-        return _WCS_PL_MAIN.PAIR_V_rbegin(*args)
-
-    def rend(*args):
-        """rend(self) -> const_reverse_iterator"""
-        return _WCS_PL_MAIN.PAIR_V_rend(*args)
-
-    def pop_back(*args):
-        """pop_back(self)"""
-        return _WCS_PL_MAIN.PAIR_V_pop_back(*args)
-
-    def erase(*args):
-        """
-        erase(self, iterator pos) -> iterator
-        erase(self, iterator first, iterator last) -> iterator
-        """
-        return _WCS_PL_MAIN.PAIR_V_erase(*args)
+    def F_WCS_PLMAIN_SETWCSA_ASP(*args):
+        """F_WCS_PLMAIN_SETWCSA_ASP(self)"""
+        return _WCS_PL_MAIN.CL_WCSA_ASP_F_WCS_PLMAIN_SETWCSA_ASP(*args)
 
     def __init__(self, *args): 
-        """
-        __init__(self) -> PAIR_V
-        __init__(self, PAIR_V ?) -> PAIR_V
-        __init__(self, size_type size) -> PAIR_V
-        __init__(self, size_type size, value_type value) -> PAIR_V
-        """
-        this = _WCS_PL_MAIN.new_PAIR_V(*args)
+        """__init__(self) -> CL_WCSA_ASP"""
+        this = _WCS_PL_MAIN.new_CL_WCSA_ASP(*args)
         try: self.this.append(this)
         except: self.this = this
-    def push_back(*args):
-        """push_back(self, value_type x)"""
-        return _WCS_PL_MAIN.PAIR_V_push_back(*args)
-
-    def front(*args):
-        """front(self) -> value_type"""
-        return _WCS_PL_MAIN.PAIR_V_front(*args)
-
-    def back(*args):
-        """back(self) -> value_type"""
-        return _WCS_PL_MAIN.PAIR_V_back(*args)
-
-    def assign(*args):
-        """assign(self, size_type n, value_type x)"""
-        return _WCS_PL_MAIN.PAIR_V_assign(*args)
-
-    def resize(*args):
-        """
-        resize(self, size_type new_size)
-        resize(self, size_type new_size, value_type x)
-        """
-        return _WCS_PL_MAIN.PAIR_V_resize(*args)
-
-    def insert(*args):
-        """
-        insert(self, iterator pos, value_type x) -> iterator
-        insert(self, iterator pos, size_type n, value_type x)
-        """
-        return _WCS_PL_MAIN.PAIR_V_insert(*args)
-
-    def reserve(*args):
-        """reserve(self, size_type n)"""
-        return _WCS_PL_MAIN.PAIR_V_reserve(*args)
-
-    def capacity(*args):
-        """capacity(self) -> size_type"""
-        return _WCS_PL_MAIN.PAIR_V_capacity(*args)
-
-    __swig_destroy__ = _WCS_PL_MAIN.delete_PAIR_V
+    __swig_destroy__ = _WCS_PL_MAIN.delete_CL_WCSA_ASP
     __del__ = lambda self : None;
-PAIR_V_swigregister = _WCS_PL_MAIN.PAIR_V_swigregister
-PAIR_V_swigregister(PAIR_V)
-
-class CL_WCSACCP(_object):
-    """Proxy of C++ CL_WCSACCP class"""
-    __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr_nondynamic(self, CL_WCSACCP, name, value)
-    __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, CL_WCSACCP, name)
-    __repr__ = _swig_repr
-    __swig_setmethods__["WCSPtr"] = _WCS_PL_MAIN.CL_WCSACCP_WCSPtr_set
-    __swig_getmethods__["WCSPtr"] = _WCS_PL_MAIN.CL_WCSACCP_WCSPtr_get
-    if _newclass:WCSPtr = _swig_property(_WCS_PL_MAIN.CL_WCSACCP_WCSPtr_get, _WCS_PL_MAIN.CL_WCSACCP_WCSPtr_set)
-    __swig_setmethods__["APROP"] = _WCS_PL_MAIN.CL_WCSACCP_APROP_set
-    __swig_getmethods__["APROP"] = _WCS_PL_MAIN.CL_WCSACCP_APROP_get
-    if _newclass:APROP = _swig_property(_WCS_PL_MAIN.CL_WCSACCP_APROP_get, _WCS_PL_MAIN.CL_WCSACCP_APROP_set)
-    __swig_setmethods__["CPROP"] = _WCS_PL_MAIN.CL_WCSACCP_CPROP_set
-    __swig_getmethods__["CPROP"] = _WCS_PL_MAIN.CL_WCSACCP_CPROP_get
-    if _newclass:CPROP = _swig_property(_WCS_PL_MAIN.CL_WCSACCP_CPROP_get, _WCS_PL_MAIN.CL_WCSACCP_CPROP_set)
-    __swig_setmethods__["CSIP"] = _WCS_PL_MAIN.CL_WCSACCP_CSIP_set
-    __swig_getmethods__["CSIP"] = _WCS_PL_MAIN.CL_WCSACCP_CSIP_get
-    if _newclass:CSIP = _swig_property(_WCS_PL_MAIN.CL_WCSACCP_CSIP_get, _WCS_PL_MAIN.CL_WCSACCP_CSIP_set)
-    __swig_setmethods__["PAIR"] = _WCS_PL_MAIN.CL_WCSACCP_PAIR_set
-    __swig_getmethods__["PAIR"] = _WCS_PL_MAIN.CL_WCSACCP_PAIR_get
-    if _newclass:PAIR = _swig_property(_WCS_PL_MAIN.CL_WCSACCP_PAIR_get, _WCS_PL_MAIN.CL_WCSACCP_PAIR_set)
-    __swig_setmethods__["CPROPList"] = _WCS_PL_MAIN.CL_WCSACCP_CPROPList_set
-    __swig_getmethods__["CPROPList"] = _WCS_PL_MAIN.CL_WCSACCP_CPROPList_get
-    if _newclass:CPROPList = _swig_property(_WCS_PL_MAIN.CL_WCSACCP_CPROPList_get, _WCS_PL_MAIN.CL_WCSACCP_CPROPList_set)
-    __swig_setmethods__["CSIPList"] = _WCS_PL_MAIN.CL_WCSACCP_CSIPList_set
-    __swig_getmethods__["CSIPList"] = _WCS_PL_MAIN.CL_WCSACCP_CSIPList_get
-    if _newclass:CSIPList = _swig_property(_WCS_PL_MAIN.CL_WCSACCP_CSIPList_get, _WCS_PL_MAIN.CL_WCSACCP_CSIPList_set)
-    def __init__(self, *args): 
-        """__init__(self) -> CL_WCSACCP"""
-        this = _WCS_PL_MAIN.new_CL_WCSACCP(*args)
-        try: self.this.append(this)
-        except: self.this = this
-    __swig_destroy__ = _WCS_PL_MAIN.delete_CL_WCSACCP
-    __del__ = lambda self : None;
-CL_WCSACCP_swigregister = _WCS_PL_MAIN.CL_WCSACCP_swigregister
-CL_WCSACCP_swigregister(CL_WCSACCP)
+CL_WCSA_ASP_swigregister = _WCS_PL_MAIN.CL_WCSA_ASP_swigregister
+CL_WCSA_ASP_swigregister(CL_WCSA_ASP)
 
 
-def F_WCS_TANSIP_V(*args):
-  """F_WCS_TANSIP_V(vvSourceMatch ?, Ptr ?, Ptr ?, Ptr ?) -> CL_WCSACCP"""
-  return _WCS_PL_MAIN.F_WCS_TANSIP_V(*args)
+def F_WCSA_TANSIP_V(*args):
+  """F_WCSA_TANSIP_V(vvSourceMatch ?, Ptr ?, Ptr ?, Ptr ?) -> CL_WCSA_ASP"""
+  return _WCS_PL_MAIN.F_WCSA_TANSIP_V(*args)
 
-def F_WCS_TANSIP_V_local(*args):
-  """F_WCS_TANSIP_V_local(string ?, Ptr ?, Ptr ?, Ptr ?) -> CL_WCSACCP"""
-  return _WCS_PL_MAIN.F_WCS_TANSIP_V_local(*args)
-
-def F_WCS_GETWCSLIST(*args):
-  """F_WCS_GETWCSLIST(CL_WCSACCP ?) -> resultWcs_V"""
-  return _WCS_PL_MAIN.F_WCS_GETWCSLIST(*args)
-
-def F_WCS_GETAPROP(*args):
-  """F_WCS_GETAPROP(CL_WCSACCP ?) -> CL_APROP"""
-  return _WCS_PL_MAIN.F_WCS_GETAPROP(*args)
-
-def F_WCS_GETCPROP(*args):
-  """F_WCS_GETCPROP(CL_WCSACCP ?) -> CL_CPROP"""
-  return _WCS_PL_MAIN.F_WCS_GETCPROP(*args)
-
-def F_WCS_GETCSIP(*args):
-  """F_WCS_GETCSIP(CL_WCSACCP ?) -> CL_CSIP"""
-  return _WCS_PL_MAIN.F_WCS_GETCSIP(*args)
-
-def F_WCS_GETPAIR(*args):
-  """F_WCS_GETPAIR(CL_WCSACCP ?) -> CL_PAIR"""
-  return _WCS_PL_MAIN.F_WCS_GETPAIR(*args)
-
-def F_WCS_GETCPROPLIST(*args):
-  """F_WCS_GETCPROPLIST(CL_WCSACCP ?) -> CPROP_V"""
-  return _WCS_PL_MAIN.F_WCS_GETCPROPLIST(*args)
-
-def F_WCS_GETCSIPLIST(*args):
-  """F_WCS_GETCSIPLIST(CL_WCSACCP ?) -> CSIP_V"""
-  return _WCS_PL_MAIN.F_WCS_GETCSIPLIST(*args)
+def F_WCSA_TANSIP_V_local(*args):
+  """F_WCSA_TANSIP_V_local(string ?, Ptr ?, Ptr ?, Ptr ?) -> CL_WCSA_ASP"""
+  return _WCS_PL_MAIN.F_WCSA_TANSIP_V_local(*args)
 
 def F_WCS_EMPTYMETADATA(*args):
   """F_WCS_EMPTYMETADATA() -> Ptr"""
   return _WCS_PL_MAIN.F_WCS_EMPTYMETADATA(*args)
+
+def F_WCSA_PLMAIN_GETWCSLIST(*args):
+  """F_WCSA_PLMAIN_GETWCSLIST(CL_WCSA_ASP WCSA_ASP) -> resultWcs_V"""
+  return _WCS_PL_MAIN.F_WCSA_PLMAIN_GETWCSLIST(*args)
+
+def F_WCSA_PLMAIN_GETCCDPOSITIONS(*args):
+  """F_WCSA_PLMAIN_GETCCDPOSITIONS(CL_WCSA_ASP WCSA_ASP) -> vectorVectorD"""
+  return _WCS_PL_MAIN.F_WCSA_PLMAIN_GETCCDPOSITIONS(*args)
+
+def F_WCSA_PLMAIN_GETREFERENCES(*args):
+  """F_WCSA_PLMAIN_GETREFERENCES(CL_WCSA_ASP WCSA_ASP) -> vectorVectorD"""
+  return _WCS_PL_MAIN.F_WCSA_PLMAIN_GETREFERENCES(*args)
+
+def F_WCSA_PLMAIN_GETRADEC(*args):
+  """F_WCSA_PLMAIN_GETRADEC(VectorDouble X_GLOBAL, CL_WCSA_ASP WCSA_ASP) -> VectorDouble"""
+  return _WCS_PL_MAIN.F_WCSA_PLMAIN_GETRADEC(*args)
+
+def F_WCSA_PLMAIN_GETX_GLOBAL(*args):
+  """F_WCSA_PLMAIN_GETX_GLOBAL(VectorDouble RADEC, CL_WCSA_ASP WCSA_ASP) -> VectorDouble"""
+  return _WCS_PL_MAIN.F_WCSA_PLMAIN_GETX_GLOBAL(*args)
 
 

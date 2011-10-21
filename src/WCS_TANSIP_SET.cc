@@ -2,7 +2,7 @@
 //WCS_TANSIP_SET.cc
 //Checking and setting parameters
 //
-//Last modification : 2010/05/20
+//Last modification : 2011/10/01
 //------------------------------------------------------------
 #include<iostream>
 #include<stdio.h>
@@ -11,439 +11,171 @@
 #include "hsc/meas/tansip/WCS_TANSIP.h"
 
 using namespace std;
-void    F_WCS_SETDEFAULTPOSITIONS_SC(CL_CPROP *CPROP);
-void    F_WCS_SETDEFAULTPOSITIONS_HSC(CL_CPROP *CPROP);
-void    F_WCS_TANSIP_SET(CL_APROP *APROP,CL_CPROP *CPROP,CL_PAIR *PAIR,CL_CSIP *CSIP){
-    int CID,CID2;
 
-//CHECKING PARAM
-    if(APROP->STDOUT==1||APROP->STDOUT==2)cout << "--- WCS_TANSIP : SET : CHEKING PARAMERTERS---" << endl;
-    APROP->CHECKPARAM=0;
+void    F_WCSA_TANSIP_SET_GETAPROP(CL_APROP *APROP,CL_APAIR *APAIR,CL_GSIP *GSIP);
+void    F_WCSA_TANSIP_SET(CL_APROP *APROP,CL_APAIR *APAIR,CL_GSIP *GSIP){
+    APROP->F_WCSA_APROP_CHECKCRPIXMODE();
+    APROP->F_WCSA_APROP_CHECKCCDPOSMODE();
+    APROP->F_WCSA_APROP_CHECKSIPORDER();
+    APROP->F_WCSA_APROP_CHECKPSIPORDER();
+    APROP->F_WCSA_APROP_CHECKLSIPORDER();
+//    APROP->F_WCSA_APROP_CHECKBASISCID();
+    APROP->F_WCSA_APROP_CHECKFITNUM();
+    APROP->F_WCSA_APROP_CHECKCCDFITNUM();
 
-    if(strcmp(APROP->CRPIXMODE,"AUTO")==0||strcmp(APROP->CRPIXMODE,"PIX")==0||strcmp(APROP->CRPIXMODE,"VAL")==0||strcmp(APROP->CRPIXMODE,"OAXIS")==0){
-    }else{
-        cout << "CRPIXMODE is " << APROP->CRPIXMODE << endl;
-        cout << "---------------------------------------------" << endl;
-        cout << "Warning : CRPIXMODE isn't 'AUTO' or 'PIX' or 'VAL' or 'OAXIS'" << endl;
-        sprintf(APROP->CRPIXMODE,"AUTO");
-        cout << "Warning : SET CRPIXMODE : " << APROP->CRPIXMODE << endl;
-        cout << "---------------------------------------------" << endl;
-    }
-    if(APROP->CCDPOSMODE==0||APROP->CCDPOSMODE==1){
-    }else{
-        cout << "CCDPMODE is " << APROP->CCDPOSMODE << endl;
-        cout << "---------------------------------------------" << endl;
-        cout << "Warning : CCDPMODE isn't 0 or 1" << endl;
-        APROP->CCDPOSMODE=0;
-        cout << "Warning : SET CCDPMODE : " << APROP->CCDPOSMODE << endl;
-        cout << "---------------------------------------------" << endl;
-    }
-    if(APROP->SIP_ORDER<0.5||APROP->SIP_ORDER>9.5){
-        cout << "SIPORDER is " << APROP->SIP_ORDER << endl;
-        cout << "---------------------------------------------" << endl;
-        cout << "Warning :  SIPORDER isn't a number between 1 and 9" << endl;
-        APROP->SIP_ORDER=9;
-        cout << "Warning : SET SIPORDER : " << APROP->SIP_ORDER << endl;
-        cout << "---------------------------------------------" << endl;
-    }
-    if(APROP->SIP_P_ORDER<0.5||APROP->SIP_P_ORDER>9.5){
-        cout << "PSIP_ORDER is " << APROP->SIP_P_ORDER << endl;
-        cout << "---------------------------------------------" << endl;
-        cout << "Warning : PSIPORDER isn't a number between 1 and 9" << endl;
-        APROP->SIP_P_ORDER=9;
-        cout << "Warning : SET PSIPORDER : " << APROP->SIP_P_ORDER << endl;
-        cout << "---------------------------------------------" << endl;
-    }
-    if(APROP->SIP_L_ORDER<1.5||APROP->SIP_L_ORDER>9.5){
-        cout << "LSIP_ORDER is " << APROP->SIP_L_ORDER << endl;
-        cout << "---------------------------------------------" << endl;
-        cout << "Warning : LSIPORDER isn't a number between 2 and 9" << endl;
-        APROP->SIP_L_ORDER=3;
-        cout << "Warning : SET LSIPORDER : " << APROP->SIP_L_ORDER << endl;
-        cout << "---------------------------------------------" << endl;
-    }
+    F_WCSA_TANSIP_SET_GETAPROP(APROP,APAIR,GSIP);
+
+    GSIP->F_WCSA_GSIP_CHECKCCDPOSITION();
+    GSIP->F_WCSA_GSIP_SETINITIAL();
+
+    int CID;
     for(CID=0;CID<APROP->CCDNUM;CID++){
-        if(APROP->BASISCID==CID)
-        break;
+        APAIR->GPOS[CID][0]=GSIP->CSIP[CID].GPOS[0];
+        APAIR->GPOS[CID][1]=GSIP->CSIP[CID].GPOS[1];
+        APAIR->GPOS[CID][2]=GSIP->CSIP[CID].GPOS[2];
+    }
+    APAIR->F_WCSA_APAIR_SETXG();
 
-        if(APROP->CCDNUM-1==CID){        
-        cout << "BASISCCD is " << APROP->BASISCID << endl;
-        cout << "---------------------------------------------" << endl;
-        cout << "Warning : in BASISCCD" << endl;
-        APROP->BASISCID=0;
-        cout << "Warning : SET BASISCCD : " << APROP->BASISCID << endl;
-        cout << "---------------------------------------------" << endl;
-        }
+    if(APROP->STDOUT==2)GSIP->F_WCSA_GSIP_SHOWGSIP();
+    if(APROP->STDOUT==2)APAIR->F_WCSA_APAIR_SHOWAPAIR();
+}
+void    F_WCSA_TANSIP_SET_GETAPROP(CL_APROP *APROP,CL_APAIR *APAIR,CL_GSIP *GSIP){
+    sprintf(GSIP->CRPIXMODE,APROP->CRPIXMODE);
+    sprintf(GSIP->OAMODE,APROP->OAMODE);
+    GSIP->STDOUT     =APROP->STDOUT;
+    GSIP->CCDPOSMODE =APROP->CCDPOSMODE;
+    GSIP->CCDNUM     =APROP->CCDNUM;
+    GSIP->ALLREFNUM  =APROP->ALLREFNUM;
+    GSIP->ALLFITNUM  =APROP->ALLFITNUM;
+    GSIP->SIP_ORDER  =APROP->SIP_ORDER;
+    GSIP->SIP_P_ORDER=APROP->SIP_P_ORDER;
+    GSIP->SIP_L_ORDER=APROP->SIP_L_ORDER;
+    GSIP->CLIP_SIGMA =APROP->CLIP_SIGMA;
+    GSIP->CRPIX[0]=APROP->CRPIX[0];
+    GSIP->CRPIX[1]=APROP->CRPIX[1];
+    GSIP->CRVAL[0]=APROP->CRVAL[0];
+    GSIP->CRVAL[1]=APROP->CRVAL[1];
+    GSIP->OAPIX[0]=APROP->CRPIX[0];
+    GSIP->OAPIX[1]=APROP->CRPIX[1];
+    GSIP->OAVAL[0]=APROP->CRVAL[0];
+    GSIP->OAVAL[1]=APROP->CRVAL[1];
+
+    sprintf(APAIR->CRPIXMODE,APROP->CRPIXMODE);
+    sprintf(APAIR->OAMODE,APROP->OAMODE);
+    APAIR->STDOUT      =APROP->STDOUT;
+    APAIR->CCDNUM      =APROP->CCDNUM;
+    APAIR->CCDPOSMODE  =APROP->CCDPOSMODE;
+    APAIR->ALLREFNUM   =APROP->ALLREFNUM;
+    APAIR->ALLFITNUM   =APROP->ALLFITNUM;
+    APAIR->SIP_ORDER   =APROP->SIP_ORDER;
+    APAIR->SIP_P_ORDER =APROP->SIP_P_ORDER;
+    APAIR->SIP_L_ORDER =APROP->SIP_L_ORDER;
+    APAIR->CLIP_SIGMA  =APROP->CLIP_SIGMA;
+    APAIR->CRPIX[0]    =APROP->CRPIX[0];
+    APAIR->CRPIX[1]    =APROP->CRPIX[1];
+    APAIR->CRVAL[0]    =APROP->CRVAL[0];
+    APAIR->CRVAL[1]    =APROP->CRVAL[1];
+    APAIR->OAPIX[0]    =APAIR->CRPIX[0];
+    APAIR->OAPIX[1]    =APAIR->CRPIX[1];
+    APAIR->OAVAL[0]    =APAIR->CRVAL[0];
+    APAIR->OAVAL[1]    =APAIR->CRVAL[1];
+    APAIR->TSIP_AB[0]   =F_NEWdouble1((APROP->SIP_ORDER  +1)*(APROP->SIP_ORDER  +2));
+    APAIR->TSIP_AB[1]   =F_NEWdouble1((APROP->SIP_ORDER  +1)*(APROP->SIP_ORDER  +2));
+    APAIR->TSIP_ABP[0]  =F_NEWdouble1((APROP->SIP_P_ORDER+1)*(APROP->SIP_P_ORDER+2));
+    APAIR->TSIP_ABP[1]  =F_NEWdouble1((APROP->SIP_P_ORDER+1)*(APROP->SIP_P_ORDER+2));
+    APAIR->TCoef[0]     =F_NEWdouble1((APROP->SIP_ORDER  +1)*(APROP->SIP_ORDER  +2));
+    APAIR->TCoef[1]     =F_NEWdouble1((APROP->SIP_ORDER  +1)*(APROP->SIP_ORDER  +2));
+    APAIR->TdCoef[0][0] =F_NEWdouble1((APROP->SIP_ORDER  +1)*(APROP->SIP_ORDER  +2));
+    APAIR->TdCoef[0][1] =F_NEWdouble1((APROP->SIP_ORDER  +1)*(APROP->SIP_ORDER  +2));
+    APAIR->TdCoef[1][0] =F_NEWdouble1((APROP->SIP_ORDER  +1)*(APROP->SIP_ORDER  +2));
+    APAIR->TdCoef[1][1] =F_NEWdouble1((APROP->SIP_ORDER  +1)*(APROP->SIP_ORDER  +2));
+    APAIR->TPCoef[0]    =F_NEWdouble1((APROP->SIP_P_ORDER+1)*(APROP->SIP_P_ORDER+2));
+    APAIR->TPCoef[1]    =F_NEWdouble1((APROP->SIP_P_ORDER+1)*(APROP->SIP_P_ORDER+2));
+    APAIR->TdPCoef[0][0]=F_NEWdouble1((APROP->SIP_P_ORDER+1)*(APROP->SIP_P_ORDER+2));
+    APAIR->TdPCoef[0][1]=F_NEWdouble1((APROP->SIP_P_ORDER+1)*(APROP->SIP_P_ORDER+2));
+    APAIR->TdPCoef[1][0]=F_NEWdouble1((APROP->SIP_P_ORDER+1)*(APROP->SIP_P_ORDER+2));
+    APAIR->TdPCoef[1][1]=F_NEWdouble1((APROP->SIP_P_ORDER+1)*(APROP->SIP_P_ORDER+2));
+    APAIR->TLCoef[0]    =F_NEWdouble2(APROP->CCDNUM,(APROP->SIP_L_ORDER+1)*(APROP->SIP_L_ORDER+2));
+    APAIR->TLCoef[1]    =F_NEWdouble2(APROP->CCDNUM,(APROP->SIP_L_ORDER+1)*(APROP->SIP_L_ORDER+2));
+    APAIR->TdLCoef[0][0]=F_NEWdouble2(APROP->CCDNUM,(APROP->SIP_L_ORDER+1)*(APROP->SIP_L_ORDER+2));
+    APAIR->TdLCoef[0][1]=F_NEWdouble2(APROP->CCDNUM,(APROP->SIP_L_ORDER+1)*(APROP->SIP_L_ORDER+2));
+    APAIR->TdLCoef[1][0]=F_NEWdouble2(APROP->CCDNUM,(APROP->SIP_L_ORDER+1)*(APROP->SIP_L_ORDER+2));
+    APAIR->TdLCoef[1][1]=F_NEWdouble2(APROP->CCDNUM,(APROP->SIP_L_ORDER+1)*(APROP->SIP_L_ORDER+2));
+
+    int CID,i;
+    for(CID=0;CID<APROP->CCDNUM+1;CID++){
+    for(i=0;i<2;i++){
+        GSIP->CSIP[CID].SIP_AB[i]    = F_NEWdouble1((APROP->SIP_ORDER  +1)*(APROP->SIP_ORDER  +2));
+        GSIP->CSIP[CID].SIP_ABP[i]   = F_NEWdouble1((APROP->SIP_P_ORDER+1)*(APROP->SIP_P_ORDER+2));
+        GSIP->CSIP[CID].Coef[i]     = F_NEWdouble1((APROP->SIP_ORDER  +1)*(APROP->SIP_ORDER  +2));
+        GSIP->CSIP[CID].PCoef[i]    = F_NEWdouble1((APROP->SIP_P_ORDER+1)*(APROP->SIP_P_ORDER+2));
+        GSIP->CSIP[CID].LCoef[i]    = F_NEWdouble1((APROP->SIP_L_ORDER+1)*(APROP->SIP_L_ORDER+2));
     }
 
-
-    for(CID=0;CID<APROP->CCDNUM;CID++)
-    for(CID2=CID+1;CID2<APROP->CCDNUM;CID2++)
-    if(hypot(CPROP[CID].GLOB_POS[0]-CPROP[CID2].GLOB_POS[0],CPROP[CID].GLOB_POS[1]-CPROP[CID2].GLOB_POS[1])<2000){
-        cout << "CID ;  " << CID << " : GLOB_POS x : " << CPROP[CID].GLOB_POS[0] << " : GLOB_POS y : " << CPROP[CID].GLOB_POS[1] << endl;
-        cout << "CID ;  " << CID2 << " : GLOB_POS x : " << CPROP[CID2].GLOB_POS[0] << " : GLOB_POS y : " << CPROP[CID2].GLOB_POS[1] << endl;
-        if(APROP->CCDNUM<11){
-        F_WCS_SETDEFAULTPOSITIONS_SC(CPROP);
-        }else{
-        F_WCS_SETDEFAULTPOSITIONS_HSC(CPROP);
-        }
-        cout << "---------------------------------------------" << endl;
-        cout << "Warning : Separation between CHIPID : " << CID << " and " << CID2 << " is under 2000" << endl;
-        cout << "          USING DEFAULT VALUES FOR CCD POSITIONS " << endl;
-        cout << "---------------------------------------------" << endl;
-        break;
-    }
-    int ALIGNNUM=0;
-    for(CID=0;CID<APROP->CCDNUM;CID++)
-    if(CPROP[CID].ALIGN==1)
-    ALIGNNUM++;
-    if(ALIGNNUM<2){
-    cout << "---------------------------------------------" << endl;
-    cout << "Warning : in F_WCS_TANSIP_SET : CPROP[].ALIGN" << endl;
-    cout << "          Number of CCDs used for CCD alignment is under 2" << endl;
-    cout << "          Using 000 - 009 CCDs for CCD alignment" << endl;
-    cout << "---------------------------------------------" << endl;
-    CPROP[0].ALIGN=CPROP[1].ALIGN=CPROP[2].ALIGN=CPROP[3].ALIGN=CPROP[4].ALIGN=CPROP[5].ALIGN=CPROP[6].ALIGN=CPROP[7].ALIGN=CPROP[8].ALIGN=CPROP[9].ALIGN=1;
-    }
-
-///Error : in ORDER
-
-    if(APROP->NUMREFALL<0.5*(APROP->SIP_ORDER+1)*(APROP->SIP_ORDER+2)+1){
-    cout << "---------------------------------------------" << endl;
-    cout << "Warning : NUMBER OF REFERENCES ARE NOT ENOUGH TO FITTING WITH ORDER : " << APROP->SIP_ORDER << endl;
-    cout << "---------------------------------------------" << endl;
-    int ORDER;
-    for(ORDER=APROP->SIP_ORDER+1;ORDER<1;ORDER--)
-    if(APROP->NUMREFALL>0.5*(APROP->SIP_ORDER+1)*(APROP->SIP_ORDER+2)+1){
-    APROP->SIP_ORDER=ORDER;
-    cout << "          SET SIPORDER : " << ORDER << endl;
-    break;
-    }}
-
-    if(APROP->NUMREFALL<0.5*(APROP->SIP_P_ORDER+1)*(APROP->SIP_P_ORDER+2)+1){
-    cout << "---------------------------------------------" << endl;
-    cout << "Warning : NUMBER OF REFERENCES ARE NOT ENOUGH TO FITTING WITH ORDER : " << APROP->SIP_P_ORDER << endl;
-    cout << "---------------------------------------------" << endl;
-    int PORDER;
-    for(PORDER=APROP->SIP_P_ORDER+1;PORDER<1;PORDER--)
-    if(APROP->NUMREFALL>0.5*(APROP->SIP_P_ORDER+1)*(APROP->SIP_P_ORDER+2)+1){
-    APROP->SIP_P_ORDER=PORDER;
-    cout << "          SET PSIPORDER : " << PORDER << endl;
-    break;
-    }}
-
-///Error : in 0 NUM
-    for(CID=0;CID<APROP->CCDNUM;CID++)
-    if(CPROP[CID].NUMREF==0){
-    cout << "---------------------------------------------" << endl;
-    cout << "Warning : NUMBER OF REFERENCE in CCD " << CID << " IS 0" << endl;
-    APROP->CCDPOSMODE=0;
-    cout << "          USING INITIAL VALUES FOR CCD POSITIONS " << endl;
-    cout << "---------------------------------------------" << endl;
+        GSIP->CSIP[CID].SIP_MAG      = new double[(APROP->SIP_P_ORDER+1)*(APROP->SIP_P_ORDER+2)];
+        GSIP->CSIP[CID].SIP_SHEAR[0] = new double[(APROP->SIP_P_ORDER+1)*(APROP->SIP_P_ORDER+2)];
+        GSIP->CSIP[CID].SIP_SHEAR[1] = new double[(APROP->SIP_P_ORDER+1)*(APROP->SIP_P_ORDER+2)];
+        GSIP->CSIP[CID].SIP_ROT      = new double[(APROP->SIP_P_ORDER+1)*(APROP->SIP_P_ORDER+2)];
+        GSIP->CSIP[CID].PSIP_MAG     = new double[(APROP->SIP_P_ORDER+1)*(APROP->SIP_P_ORDER+2)];
+        GSIP->CSIP[CID].PSIP_SHEAR[0]= new double[(APROP->SIP_P_ORDER+1)*(APROP->SIP_P_ORDER+2)];
+        GSIP->CSIP[CID].PSIP_SHEAR[1]= new double[(APROP->SIP_P_ORDER+1)*(APROP->SIP_P_ORDER+2)];
+        GSIP->CSIP[CID].PSIP_ROT     = new double[(APROP->SIP_P_ORDER+1)*(APROP->SIP_P_ORDER+2)];
     }
 
 }
-void    F_WCS_SETDEFAULTPOSITIONS_SC(CL_CPROP *CPROP){
-}
-void    F_WCS_SETDEFAULTPOSITIONS_HSC(CL_CPROP *CPROP){
-    CPROP[  0].GLOB_POS[0]=- 9514.700;
-    CPROP[  0].GLOB_POS[1]=-   96.000;
-    CPROP[  0].GLOB_POS[2]=  0.000000;
-    CPROP[  1].GLOB_POS[0]=  7466.700;
-    CPROP[  1].GLOB_POS[1]=- 4266.700;
-    CPROP[  1].GLOB_POS[2]=  0.000000;
-    CPROP[  2].GLOB_POS[0]=- 7392.000;
-    CPROP[  2].GLOB_POS[1]=-   96.000;
-    CPROP[  2].GLOB_POS[2]=  0.000000;
-    CPROP[  3].GLOB_POS[0]=  5344.000;
-    CPROP[  3].GLOB_POS[1]=- 4266.700;
-    CPROP[  3].GLOB_POS[2]=  0.000000;
-    CPROP[  4].GLOB_POS[0]=- 5269.300;
-    CPROP[  4].GLOB_POS[1]=-   96.000;
-    CPROP[  4].GLOB_POS[2]=  0.000000;
-    CPROP[  5].GLOB_POS[0]=  3221.300;
-    CPROP[  5].GLOB_POS[1]=- 4266.700;
-    CPROP[  5].GLOB_POS[2]=  0.000000;
-    CPROP[  6].GLOB_POS[0]=- 3146.700;
-    CPROP[  6].GLOB_POS[1]=-   96.000;
-    CPROP[  6].GLOB_POS[2]=  0.000000;
-    CPROP[  7].GLOB_POS[0]=  1098.700;
-    CPROP[  7].GLOB_POS[1]=- 4266.700;
-    CPROP[  7].GLOB_POS[2]=  0.000000;
-    CPROP[  8].GLOB_POS[0]=- 1024.000;
-    CPROP[  8].GLOB_POS[1]=-   96.000;
-    CPROP[  8].GLOB_POS[2]=  0.000000;
-    CPROP[  9].GLOB_POS[0]=- 1024.000;
-    CPROP[  9].GLOB_POS[1]=- 4266.700;
-    CPROP[  9].GLOB_POS[2]=  0.000000;
-    CPROP[ 10].GLOB_POS[0]=  1098.700;
-    CPROP[ 10].GLOB_POS[1]=-   96.000;
-    CPROP[ 10].GLOB_POS[2]=  0.000000;
-    CPROP[ 11].GLOB_POS[0]=- 3146.700;
-    CPROP[ 11].GLOB_POS[1]=- 4266.700;
-    CPROP[ 11].GLOB_POS[2]=  0.000000;
-    CPROP[ 12].GLOB_POS[0]=  3221.300;
-    CPROP[ 12].GLOB_POS[1]=-   96.000;
-    CPROP[ 12].GLOB_POS[2]=  0.000000;
-    CPROP[ 13].GLOB_POS[0]=- 5269.300;
-    CPROP[ 13].GLOB_POS[1]=- 4266.700;
-    CPROP[ 13].GLOB_POS[2]=  0.000000;
-    CPROP[ 14].GLOB_POS[0]=  5344.000;
-    CPROP[ 14].GLOB_POS[1]=-   96.000;
-    CPROP[ 14].GLOB_POS[2]=  0.000000;
-    CPROP[ 15].GLOB_POS[0]=- 7392.000;
-    CPROP[ 15].GLOB_POS[1]=- 4266.700;
-    CPROP[ 15].GLOB_POS[2]=  0.000000;
-    CPROP[ 16].GLOB_POS[0]=  7466.700;
-    CPROP[ 16].GLOB_POS[1]=-   96.000;
-    CPROP[ 16].GLOB_POS[2]=  0.000000;
-    CPROP[ 17].GLOB_POS[0]=- 9514.700;
-    CPROP[ 17].GLOB_POS[1]=- 4266.700;
-    CPROP[ 17].GLOB_POS[2]=  0.000000;
-    CPROP[ 18].GLOB_POS[0]=  9589.300;
-    CPROP[ 18].GLOB_POS[1]=-   96.000;
-    CPROP[ 18].GLOB_POS[2]=  0.000000;
-    CPROP[ 19].GLOB_POS[0]=-11637.300;
-    CPROP[ 19].GLOB_POS[1]=- 4266.700;
-    CPROP[ 19].GLOB_POS[2]=  0.000000;
-    CPROP[ 20].GLOB_POS[0]= 11712.000;
-    CPROP[ 20].GLOB_POS[1]=-   96.000;
-    CPROP[ 20].GLOB_POS[2]=  0.000000;
-    CPROP[ 21].GLOB_POS[0]=-13760.000;
-    CPROP[ 21].GLOB_POS[1]=- 4266.700;
-    CPROP[ 21].GLOB_POS[2]=  0.000000;
-    CPROP[ 22].GLOB_POS[0]= 13834.700;
-    CPROP[ 22].GLOB_POS[1]=-   96.000;
-    CPROP[ 22].GLOB_POS[2]=  0.000000;
-    CPROP[ 23].GLOB_POS[0]=-15882.700;
-    CPROP[ 23].GLOB_POS[1]=- 4266.700;
-    CPROP[ 23].GLOB_POS[2]=  0.000000;
-    CPROP[ 24].GLOB_POS[0]=- 9514.700;
-    CPROP[ 24].GLOB_POS[1]=  4379.000;
-    CPROP[ 24].GLOB_POS[2]=  0.000000;
-    CPROP[ 25].GLOB_POS[0]=  7466.700;
-    CPROP[ 25].GLOB_POS[1]=- 8741.700;
-    CPROP[ 25].GLOB_POS[2]=  0.000000;
-    CPROP[ 26].GLOB_POS[0]=- 7392.000;
-    CPROP[ 26].GLOB_POS[1]=  4379.000;
-    CPROP[ 26].GLOB_POS[2]=  0.000000;
-    CPROP[ 27].GLOB_POS[0]=  5344.000;
-    CPROP[ 27].GLOB_POS[1]=- 8741.700;
-    CPROP[ 27].GLOB_POS[2]=  0.000000;
-    CPROP[ 28].GLOB_POS[0]=- 5269.300;
-    CPROP[ 28].GLOB_POS[1]=  4379.000;
-    CPROP[ 28].GLOB_POS[2]=  0.000000;
-    CPROP[ 29].GLOB_POS[0]=  3221.300;
-    CPROP[ 29].GLOB_POS[1]=- 8741.700;
-    CPROP[ 29].GLOB_POS[2]=  0.000000;
-    CPROP[ 30].GLOB_POS[0]=- 3146.700;
-    CPROP[ 30].GLOB_POS[1]=  4379.000;
-    CPROP[ 30].GLOB_POS[2]=  0.000000;
-    CPROP[ 31].GLOB_POS[0]=  1098.700;
-    CPROP[ 31].GLOB_POS[1]=- 8741.700;
-    CPROP[ 31].GLOB_POS[2]=  0.000000;
-    CPROP[ 32].GLOB_POS[0]=- 1024.000;
-    CPROP[ 32].GLOB_POS[1]=  4379.000;
-    CPROP[ 32].GLOB_POS[2]=  0.000000;
-    CPROP[ 33].GLOB_POS[0]=- 1024.000;
-    CPROP[ 33].GLOB_POS[1]=- 8741.700;
-    CPROP[ 33].GLOB_POS[2]=  0.000000;
-    CPROP[ 34].GLOB_POS[0]=  1098.700;
-    CPROP[ 34].GLOB_POS[1]=  4379.000;
-    CPROP[ 34].GLOB_POS[2]=  0.000000;
-    CPROP[ 35].GLOB_POS[0]=- 3146.700;
-    CPROP[ 35].GLOB_POS[1]=- 8741.700;
-    CPROP[ 35].GLOB_POS[2]=  0.000000;
-    CPROP[ 36].GLOB_POS[0]=  3221.300;
-    CPROP[ 36].GLOB_POS[1]=  4379.000;
-    CPROP[ 36].GLOB_POS[2]=  0.000000;
-    CPROP[ 37].GLOB_POS[0]=- 5269.300;
-    CPROP[ 37].GLOB_POS[1]=- 8741.700;
-    CPROP[ 37].GLOB_POS[2]=  0.000000;
-    CPROP[ 38].GLOB_POS[0]=  5344.000;
-    CPROP[ 38].GLOB_POS[1]=  4379.000;
-    CPROP[ 38].GLOB_POS[2]=  0.000000;
-    CPROP[ 39].GLOB_POS[0]=- 7392.000;
-    CPROP[ 39].GLOB_POS[1]=- 8741.700;
-    CPROP[ 39].GLOB_POS[2]=  0.000000;
-    CPROP[ 40].GLOB_POS[0]=  7466.700;
-    CPROP[ 40].GLOB_POS[1]=  4379.000;
-    CPROP[ 40].GLOB_POS[2]=  0.000000;
-    CPROP[ 41].GLOB_POS[0]=- 9514.700;
-    CPROP[ 41].GLOB_POS[1]=- 8741.700;
-    CPROP[ 41].GLOB_POS[2]=  0.000000;
-    CPROP[ 42].GLOB_POS[0]=  9589.300;
-    CPROP[ 42].GLOB_POS[1]=  4379.000;
-    CPROP[ 42].GLOB_POS[2]=  0.000000;
-    CPROP[ 43].GLOB_POS[0]=-11637.300;
-    CPROP[ 43].GLOB_POS[1]=- 8741.700;
-    CPROP[ 43].GLOB_POS[2]=  0.000000;
-    CPROP[ 44].GLOB_POS[0]= 11712.000;
-    CPROP[ 44].GLOB_POS[1]=  4379.000;
-    CPROP[ 44].GLOB_POS[2]=  0.000000;
-    CPROP[ 45].GLOB_POS[0]=-13760.000;
-    CPROP[ 45].GLOB_POS[1]=- 8741.700;
-    CPROP[ 45].GLOB_POS[2]=  0.000000;
-    CPROP[ 46].GLOB_POS[0]= 13834.700;
-    CPROP[ 46].GLOB_POS[1]=  4379.000;
-    CPROP[ 46].GLOB_POS[2]=  0.000000;
-    CPROP[ 47].GLOB_POS[0]=-15882.700;
-    CPROP[ 47].GLOB_POS[1]=- 8741.700;
-    CPROP[ 47].GLOB_POS[2]=  0.000000;
-    CPROP[ 48].GLOB_POS[0]=- 9514.700;
-    CPROP[ 48].GLOB_POS[1]=  8854.000;
-    CPROP[ 48].GLOB_POS[2]=  0.000000;
-    CPROP[ 49].GLOB_POS[0]=  7466.700;
-    CPROP[ 49].GLOB_POS[1]=-13216.700;
-    CPROP[ 49].GLOB_POS[2]=  0.000000;
-    CPROP[ 50].GLOB_POS[0]=- 7392.000;
-    CPROP[ 50].GLOB_POS[1]=  8854.000;
-    CPROP[ 50].GLOB_POS[2]=  0.000000;
-    CPROP[ 51].GLOB_POS[0]=  5344.000;
-    CPROP[ 51].GLOB_POS[1]=-13216.700;
-    CPROP[ 51].GLOB_POS[2]=  0.000000;
-    CPROP[ 52].GLOB_POS[0]=- 5269.300;
-    CPROP[ 52].GLOB_POS[1]=  8854.000;
-    CPROP[ 52].GLOB_POS[2]=  0.000000;
-    CPROP[ 53].GLOB_POS[0]=  3221.300;
-    CPROP[ 53].GLOB_POS[1]=-13216.700;
-    CPROP[ 53].GLOB_POS[2]=  0.000000;
-    CPROP[ 54].GLOB_POS[0]=- 3164.700;
-    CPROP[ 54].GLOB_POS[1]=  8854.000;
-    CPROP[ 54].GLOB_POS[2]=  0.000000;
-    CPROP[ 55].GLOB_POS[0]=  1098.700;
-    CPROP[ 55].GLOB_POS[1]=-13216.700;
-    CPROP[ 55].GLOB_POS[2]=  0.000000;
-    CPROP[ 56].GLOB_POS[0]=- 1024.000;
-    CPROP[ 56].GLOB_POS[1]=  8854.000;
-    CPROP[ 56].GLOB_POS[2]=  0.000000;
-    CPROP[ 57].GLOB_POS[0]=- 1024.000;
-    CPROP[ 57].GLOB_POS[1]=-13216.700;
-    CPROP[ 57].GLOB_POS[2]=  0.000000;
-    CPROP[ 58].GLOB_POS[0]=  1098.700;
-    CPROP[ 58].GLOB_POS[1]=  8854.000;
-    CPROP[ 58].GLOB_POS[2]=  0.000000;
-    CPROP[ 59].GLOB_POS[0]=- 3146.700;
-    CPROP[ 59].GLOB_POS[1]=-13216.700;
-    CPROP[ 59].GLOB_POS[2]=  0.000000;
-    CPROP[ 60].GLOB_POS[0]=  3221.300;
-    CPROP[ 60].GLOB_POS[1]=  8854.000;
-    CPROP[ 60].GLOB_POS[2]=  0.000000;
-    CPROP[ 61].GLOB_POS[0]=- 5269.300;
-    CPROP[ 61].GLOB_POS[1]=-13216.700;
-    CPROP[ 61].GLOB_POS[2]=  0.000000;
-    CPROP[ 62].GLOB_POS[0]=  5344.000;
-    CPROP[ 62].GLOB_POS[1]=  8854.000;
-    CPROP[ 62].GLOB_POS[2]=  0.000000;
-    CPROP[ 63].GLOB_POS[0]=- 7392.000;
-    CPROP[ 63].GLOB_POS[1]=-13216.700;
-    CPROP[ 63].GLOB_POS[2]=  0.000000;
-    CPROP[ 64].GLOB_POS[0]=  7466.700;
-    CPROP[ 64].GLOB_POS[1]=  8854.000;
-    CPROP[ 64].GLOB_POS[2]=  0.000000;
-    CPROP[ 65].GLOB_POS[0]=- 9514.700;
-    CPROP[ 65].GLOB_POS[1]=-13216.700;
-    CPROP[ 65].GLOB_POS[2]=  0.000000;
-    CPROP[ 66].GLOB_POS[0]=  9589.300;
-    CPROP[ 66].GLOB_POS[1]=  8854.000;
-    CPROP[ 66].GLOB_POS[2]=  0.000000;
-    CPROP[ 67].GLOB_POS[0]=-11637.300;
-    CPROP[ 67].GLOB_POS[1]=-13216.700;
-    CPROP[ 67].GLOB_POS[2]=  0.000000;
-    CPROP[ 68].GLOB_POS[0]= 11712.000;
-    CPROP[ 68].GLOB_POS[1]=  8854.000;
-    CPROP[ 68].GLOB_POS[2]=  0.000000;
-    CPROP[ 69].GLOB_POS[0]=-13760.000;
-    CPROP[ 69].GLOB_POS[1]=-13216.700;
-    CPROP[ 69].GLOB_POS[2]=  0.000000;
-    CPROP[ 70].GLOB_POS[0]=- 7392.000;
-    CPROP[ 70].GLOB_POS[1]= 13329.000;
-    CPROP[ 70].GLOB_POS[2]=  0.000000;
-    CPROP[ 71].GLOB_POS[0]=  5344.000;
-    CPROP[ 71].GLOB_POS[1]=-17691.700;
-    CPROP[ 71].GLOB_POS[2]=  0.000000;
-    CPROP[ 72].GLOB_POS[0]=- 5269.300;
-    CPROP[ 72].GLOB_POS[1]= 13329.000;
-    CPROP[ 72].GLOB_POS[2]=  0.000000;
-    CPROP[ 73].GLOB_POS[0]=  3221.300;
-    CPROP[ 73].GLOB_POS[1]=-17691.700;
-    CPROP[ 73].GLOB_POS[2]=  0.000000;
-    CPROP[ 74].GLOB_POS[0]=- 3146.700;
-    CPROP[ 74].GLOB_POS[1]= 13329.000;
-    CPROP[ 74].GLOB_POS[2]=  0.000000;
-    CPROP[ 75].GLOB_POS[0]=  1098.700;
-    CPROP[ 75].GLOB_POS[1]=-17691.700;
-    CPROP[ 75].GLOB_POS[2]=  0.000000;
-    CPROP[ 76].GLOB_POS[0]=- 1024.000;
-    CPROP[ 76].GLOB_POS[1]= 13329.000;
-    CPROP[ 76].GLOB_POS[2]=  0.000000;
-    CPROP[ 77].GLOB_POS[0]=- 1024.000;
-    CPROP[ 77].GLOB_POS[1]=-17691.700;
-    CPROP[ 77].GLOB_POS[2]=  0.000000;
-    CPROP[ 78].GLOB_POS[0]=  1098.700;
-    CPROP[ 78].GLOB_POS[1]= 13329.000;
-    CPROP[ 78].GLOB_POS[2]=  0.000000;
-    CPROP[ 79].GLOB_POS[0]=- 3146.700;
-    CPROP[ 79].GLOB_POS[1]=-17691.700;
-    CPROP[ 79].GLOB_POS[2]=  0.000000;
-    CPROP[ 80].GLOB_POS[0]=  3221.300;
-    CPROP[ 80].GLOB_POS[1]= 13329.000;
-    CPROP[ 80].GLOB_POS[2]=  0.000000;
-    CPROP[ 81].GLOB_POS[0]=- 5269.300;
-    CPROP[ 81].GLOB_POS[1]=-17691.700;
-    CPROP[ 81].GLOB_POS[2]=  0.000000;
-    CPROP[ 82].GLOB_POS[0]=  5344.000;
-    CPROP[ 82].GLOB_POS[1]= 13329.000;
-    CPROP[ 82].GLOB_POS[2]=  0.000000;
-    CPROP[ 83].GLOB_POS[0]=- 7392.000;
-    CPROP[ 83].GLOB_POS[1]=-17691.700;
-    CPROP[ 83].GLOB_POS[2]=  0.000000;
-    CPROP[ 84].GLOB_POS[0]=  9589.300;
-    CPROP[ 84].GLOB_POS[1]=- 4571.000;
-    CPROP[ 84].GLOB_POS[2]=  0.000000;
-    CPROP[ 85].GLOB_POS[0]=-11637.300;
-    CPROP[ 85].GLOB_POS[1]=   208.300;
-    CPROP[ 85].GLOB_POS[2]=  0.000000;
-    CPROP[ 86].GLOB_POS[0]= 11712.000;
-    CPROP[ 86].GLOB_POS[1]=- 4571.000;
-    CPROP[ 86].GLOB_POS[2]=  0.000000;
-    CPROP[ 87].GLOB_POS[0]=-13760.000;
-    CPROP[ 87].GLOB_POS[1]=   208.300;
-    CPROP[ 87].GLOB_POS[2]=  0.000000;
-    CPROP[ 88].GLOB_POS[0]= 13834.700;
-    CPROP[ 88].GLOB_POS[1]=- 4571.000;
-    CPROP[ 88].GLOB_POS[2]=  0.000000;
-    CPROP[ 89].GLOB_POS[0]=-15882.700;
-    CPROP[ 89].GLOB_POS[1]=   208.300;
-    CPROP[ 89].GLOB_POS[2]=  0.000000;
-    CPROP[ 90].GLOB_POS[0]=  9589.300;
-    CPROP[ 90].GLOB_POS[1]=- 9046.000;
-    CPROP[ 90].GLOB_POS[2]=  0.000000;
-    CPROP[ 91].GLOB_POS[0]=-11637.300;
-    CPROP[ 91].GLOB_POS[1]=  4683.300;
-    CPROP[ 91].GLOB_POS[2]=  0.000000;
-    CPROP[ 92].GLOB_POS[0]= 11712.000;
-    CPROP[ 92].GLOB_POS[1]=- 9046.000;
-    CPROP[ 92].GLOB_POS[2]=  0.000000;
-    CPROP[ 93].GLOB_POS[0]=-13760.000;
-    CPROP[ 93].GLOB_POS[1]=  4683.300;
-    CPROP[ 93].GLOB_POS[2]=  0.000000;
-    CPROP[ 94].GLOB_POS[0]= 13834.700;
-    CPROP[ 94].GLOB_POS[1]=- 9460.000;
-    CPROP[ 94].GLOB_POS[2]=  0.000000;
-    CPROP[ 95].GLOB_POS[0]=-15882.700;
-    CPROP[ 95].GLOB_POS[1]=  4683.300;
-    CPROP[ 95].GLOB_POS[2]=  0.000000;
-    CPROP[ 96].GLOB_POS[0]=  9589.300;
-    CPROP[ 96].GLOB_POS[1]=-13521.000;
-    CPROP[ 96].GLOB_POS[2]=  0.000000;
-    CPROP[ 97].GLOB_POS[0]=-11637.300;
-    CPROP[ 97].GLOB_POS[1]=  9158.300;
-    CPROP[ 97].GLOB_POS[2]=  0.000000;
-    CPROP[ 98].GLOB_POS[0]= 11712.000;
-    CPROP[ 98].GLOB_POS[1]=-13521.000;
-    CPROP[ 98].GLOB_POS[2]=  0.000000;
-    CPROP[ 99].GLOB_POS[0]=-13760.000;
-    CPROP[ 99].GLOB_POS[1]=  9158.300;
-    CPROP[ 99].GLOB_POS[2]=  0.000000;
+
+void F_WCSA_TANSIP_SET_GETWCS(CL_APROP *APROP,CL_APAIR *APAIR,CL_GSIP *GSIP){
+    int i,j,CID,NUM;
+
+    GSIP->ALLREFNUM=APAIR->ALLREFNUM;
+    GSIP->ALLFITNUM=APAIR->ALLFITNUM;
+    GSIP->CRPIX[0]=APAIR->CRPIX[0];
+    GSIP->CRPIX[1]=APAIR->CRPIX[1];
+    GSIP->CRVAL[0]=APAIR->CRVAL[0];
+    GSIP->CRVAL[1]=APAIR->CRVAL[1];
+    GSIP->OAPIX[0]=APAIR->CRPIX[0];
+    GSIP->OAPIX[1]=APAIR->CRPIX[1];
+    GSIP->OAVAL[0]=APAIR->CRVAL[0];
+    GSIP->OAVAL[1]=APAIR->CRVAL[1];
+    GSIP->CSIP[APROP->CCDNUM].CD[0][0]=GSIP->CD[0][0]=APAIR->CD[0][0];
+    GSIP->CSIP[APROP->CCDNUM].CD[0][1]=GSIP->CD[0][1]=APAIR->CD[0][1];
+    GSIP->CSIP[APROP->CCDNUM].CD[1][0]=GSIP->CD[1][0]=APAIR->CD[1][0];
+    GSIP->CSIP[APROP->CCDNUM].CD[1][1]=GSIP->CD[1][1]=APAIR->CD[1][1];
+    GSIP->CSIP[APROP->CCDNUM].InvCD[0][0]=GSIP->InvCD[0][0]=APAIR->InvCD[0][0];
+    GSIP->CSIP[APROP->CCDNUM].InvCD[0][1]=GSIP->InvCD[0][1]=APAIR->InvCD[0][1];
+    GSIP->CSIP[APROP->CCDNUM].InvCD[1][0]=GSIP->InvCD[1][0]=APAIR->InvCD[1][0];
+    GSIP->CSIP[APROP->CCDNUM].InvCD[1][1]=GSIP->InvCD[1][1]=APAIR->InvCD[1][1];
+
+    for(i=0;i<2;i++)
+    for(j=0;j<(APROP->SIP_ORDER  +1)*(APROP->SIP_ORDER  +2);j++)
+    GSIP->CSIP[APROP->CCDNUM].SIP_AB[i][j]=APAIR->TSIP_AB[i][j];
+    for(i=0;i<2;i++)
+    for(j=0;j<(APROP->SIP_P_ORDER+1)*(APROP->SIP_P_ORDER+2);j++)
+    GSIP->CSIP[APROP->CCDNUM].SIP_ABP[i][j]=APAIR->TSIP_ABP[i][j];
+
+    for(i=0;i<2;i++)
+    for(j=0;j<2;j++){
+    GSIP->CSIP[APROP->CCDNUM].SIP_AB_GERR[i][j] =APAIR-> SIPRMS[i][j];
+    GSIP->CSIP[APROP->CCDNUM].SIP_ABP_GERR[i][j]=APAIR->PSIPRMS[i][j];
+    }
+
+    for(CID=0;CID<APROP->CCDNUM;CID++)
+    for(i=0;i<3;i++)
+    GSIP->CSIP[CID].GPOS[i]=APAIR->GPOS[CID][i];
+
+    for(CID=0;CID<APROP->CCDNUM;CID++)
+    GSIP->CSIP[CID].FITNUM=GSIP->CSIP[CID].REFNUM=0;
+
+    for(NUM=0;NUM<APROP->ALLREFNUM;NUM++){
+    GSIP->CSIP[APAIR->PAIR[NUM].CHIPID].REFNUM++;
+    if(APAIR->PAIR[NUM].FLAG==1)
+    GSIP->CSIP[APAIR->PAIR[NUM].CHIPID].FITNUM++;
+    }
+//--------------------------------------------------
+    if(APROP->STDOUT==2)
+    GSIP->F_WCSA_GSIP_SHOWGSIP();
+    if(APROP->STDOUT==2)
+    GSIP->F_WCSA_GSIP_SHOWGLOBAL();
+
+//--------------------------------------------------
 }

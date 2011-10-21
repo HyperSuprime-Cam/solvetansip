@@ -26,6 +26,21 @@ definitions: {
         minOccurs: 0
         maxOccurs: 1
     }
+    OAMODE: {
+        type: string
+        default: REV
+        description: 
+        allowed: {
+            value: MIN
+            description: 
+        }
+        allowed: {
+            value: REV
+            description: 
+        }
+        minOccurs: 0
+        maxOccurs: 1
+    }
     CCDPMODE: {
         type: int
         default: 1
@@ -187,5 +202,20 @@ definitions: {
         }
         minOccurs: 0
         maxOccurs: 2
+    }
+    CCDPOS: {
+        type: int
+        default: 0
+        description: INPUT CCD POSITION from CCDPOS.paf(for testing program)
+        allowed: {
+            value: 0
+            description: DON'T USE
+        }
+        allowed: {
+            value: 1
+            description: INPUT CCD POSITION from CCDPOS.paf(for testing program)
+        }
+        minOccurs: 0
+        maxOccurs: 1
     }
 }
