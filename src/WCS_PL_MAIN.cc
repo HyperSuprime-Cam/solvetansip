@@ -156,8 +156,9 @@ void    F_WCSA_SETSIZE(vector< vector< afwdetect::SourceMatch  >  > const &match
         GSIP->CSIP[ID].REFNUM =matchlist[ID].size();
         GSIP->CSIP[ID].FITNUM =matchlist[ID].size();
     }
-        GSIP->ALLREFNUM=APROP->ALLREFNUM;
-        GSIP->ALLFITNUM=APROP->ALLFITNUM;
+        APROP->ALLFITNUM=APROP->ALLREFNUM;
+         GSIP->ALLREFNUM=APROP->ALLREFNUM;
+         GSIP->ALLFITNUM=APROP->ALLFITNUM;
 }
 void    F_WCSA_SETSIZE_local(string matchlist, CL_APROP* APROP, CL_GSIP *GSIP){
     int ID,CID,*CIDNUM;
