@@ -101,3 +101,34 @@ def getradec(X_GLOBAL,WCSA_ASP):
 
 def getxglobal(RADEC,WCSA_ASP):
     return hscTansip.F_WCSA_PLMAIN_GETX_GLOBAL(RADEC,WCSA_ASP)
+#GET PAIR
+def getpair_ID(WCSA_ASP):
+    return hscTansip.F_WCSA_PLMAIN_GETPAIR_ID(WCSA_ASP)
+def getpair_CHIPID(WCSA_ASP):
+    return hscTansip.F_WCSA_PLMAIN_GETPAIR_CHIPID(WCSA_ASP)
+def getpair_FLAG(WCSA_ASP):
+    return hscTansip.F_WCSA_PLMAIN_GETPAIR_FLAG(WCSA_ASP)
+def getpair_RA(WCSA_ASP):
+    return hscTansip.F_WCSA_PLMAIN_GETPAIR_RA(WCSA_ASP)
+def getpair_DEC(WCSA_ASP):
+    return hscTansip.F_WCSA_PLMAIN_GETPAIR_DEC(WCSA_ASP)
+def getpair_IM_WORLD_X(WCSA_ASP):
+    return hscTansip.F_WCSA_PLMAIN_GETPAIR_IM_WORLD_X(WCSA_ASP)
+def getpair_IM_WORLD_Y(WCSA_ASP):
+    return hscTansip.F_WCSA_PLMAIN_GETPAIR_IM_WORLD_Y(WCSA_ASP)
+def getpair_IM_PIXEL_X(WCSA_ASP):
+    return hscTansip.F_WCSA_PLMAIN_GETPAIR_IM_PIXEL_X(WCSA_ASP)
+def getpair_IM_PIXEL_Y(WCSA_ASP):
+    return hscTansip.F_WCSA_PLMAIN_GETPAIR_IM_PIXEL_Y(WCSA_ASP)
+def getpair_CRPIX_X(WCSA_ASP):
+    return hscTansip.F_WCSA_PLMAIN_GETPAIR_CRPIX_X(WCSA_ASP)
+def getpair_CRPIX_Y(WCSA_ASP):
+    return hscTansip.F_WCSA_PLMAIN_GETPAIR_CRPIX_Y(WCSA_ASP)
+def getpair_GLOBAL_X(WCSA_ASP):
+    return hscTansip.F_WCSA_PLMAIN_GETPAIR_GLOBAL_X(WCSA_ASP)
+def getpair_GLOBAL_Y(WCSA_ASP):
+    return hscTansip.F_WCSA_PLMAIN_GETPAIR_GLOBAL_Y(WCSA_ASP)
+def getpair_LOCAL_X(WCSA_ASP):
+    return hscTansip.F_WCSA_PLMAIN_GETPAIR_LOCAL_X(WCSA_ASP)
+def getpair_LOCAL_Y(WCSA_ASP):
+    return hscTansip.F_WCSA_PLMAIN_GETPAIR_LOCAL_Y(WCSA_ASP)

@@ -29,6 +29,7 @@ void    CL_APROP::F_WCSA_APROP_SHOWAPROP(){
 /*DEL*/
 void	CL_APROP::F_WCSA_APROP_CHECKCRPIXMODE(){
     if(strcmp(CRPIXMODE,"AUTO")==0||strcmp(CRPIXMODE,"PIX")==0||strcmp(CRPIXMODE,"VAL")==0||strcmp(CRPIXMODE,"OAXIS")==0){
+        if(STDOUT==1||STDOUT==2)cout << "OK : CRPIXMODE" << endl;
     }else{
         cout << "CRPIXMODE is " << CRPIXMODE << endl;
         cout << "---------------------------------------------" << endl;
@@ -40,6 +41,7 @@ void	CL_APROP::F_WCSA_APROP_CHECKCRPIXMODE(){
 }
 void	CL_APROP::F_WCSA_APROP_CHECKCCDPOSMODE(){
     if(CCDPOSMODE==0||CCDPOSMODE==1){
+        if(STDOUT==1||STDOUT==2)cout << "OK : CCDPOSMODE" << endl;
     }else{
         cout << "CCDPMODE is " << CCDPOSMODE << endl;
         cout << "---------------------------------------------" << endl;
@@ -50,7 +52,9 @@ void	CL_APROP::F_WCSA_APROP_CHECKCCDPOSMODE(){
     }
 }
 void	CL_APROP::F_WCSA_APROP_CHECKSIPORDER(){
-    if(SIP_ORDER<0.5||SIP_ORDER>9.5){
+    if(SIP_ORDER>0.5&&SIP_ORDER<9.5){
+        if(STDOUT==1||STDOUT==2)cout << "OK : SIP_ORDER" << endl;
+    }else{
         cout << "SIPORDER is " << SIP_ORDER << endl;
         cout << "---------------------------------------------" << endl;
         cout << "Warning :  SIPORDER isn't a number between 1 and 9" << endl;
@@ -60,7 +64,9 @@ void	CL_APROP::F_WCSA_APROP_CHECKSIPORDER(){
     }
 }
 void	CL_APROP::F_WCSA_APROP_CHECKPSIPORDER(){
-    if(SIP_P_ORDER<0.5||SIP_P_ORDER>9.5){
+    if(SIP_P_ORDER>0.5&&SIP_P_ORDER<9.5){
+        if(STDOUT==1||STDOUT==2)cout << "OK : SIP_P_ORDER" << endl;
+    }else{
         cout << "PSIP_ORDER is " << SIP_P_ORDER << endl;
         cout << "---------------------------------------------" << endl;
         cout << "Warning : PSIPORDER isn't a number between 1 and 9" << endl;
@@ -70,7 +76,9 @@ void	CL_APROP::F_WCSA_APROP_CHECKPSIPORDER(){
     }
 }
 void	CL_APROP::F_WCSA_APROP_CHECKLSIPORDER(){
-    if(SIP_L_ORDER<1.5||SIP_L_ORDER>9.5){
+    if(SIP_L_ORDER>1.5&&SIP_L_ORDER<9.5){
+        if(STDOUT==1||STDOUT==2)cout << "OK : SIP_L_ORDER" << endl;
+    }else{
         cout << "LSIP_ORDER is " << SIP_L_ORDER << endl;
         cout << "---------------------------------------------" << endl;
         cout << "Warning : LSIPORDER isn't a number between 2 and 9" << endl;
@@ -85,6 +93,8 @@ void	CL_APROP::F_WCSA_APROP_CHECKFITNUM(){
         cout << "Error : THERE IS NO REFERENCES" << endl;
         cout << "---------------------------------------------" << endl;
         CHECKPARAM=1;
+    }else{
+        if(STDOUT==1||STDOUT==2)cout << "OK : ALLFITNUM" << endl;
     }
 ///Error : in ORDER
     if(ALLFITNUM<0.5*(SIP_ORDER+1)*(SIP_ORDER+2)+1){
@@ -97,7 +107,9 @@ void	CL_APROP::F_WCSA_APROP_CHECKFITNUM(){
     SIP_ORDER=ORDER;
     cout << "          SET SIPORDER : " << ORDER << endl;
     break;
-    }}
+    }}else{
+        if(STDOUT==1||STDOUT==2)cout << "OK : SIP_ORDER <-> REFERENCE NUM" << endl;
+    }
     if(ALLFITNUM<0.5*(SIP_P_ORDER+1)*(SIP_P_ORDER+2)+1){
     cout << "---------------------------------------------" << endl;
     cout << "Warning : NUMBER OF REFERENCES ARE NOT ENOUGH TO FITTING WITH ORDER : " << SIP_P_ORDER << endl;
@@ -108,7 +120,9 @@ void	CL_APROP::F_WCSA_APROP_CHECKFITNUM(){
     SIP_P_ORDER=PORDER;
     cout << "          SET PSIPORDER : " << PORDER << endl;
     break;
-    }}
+    }}else{
+        if(STDOUT==1||STDOUT==2)cout << "OK : SIP_P_ORDER <-> REFERENCE NUM" << endl;
+    }
 }
 void	CL_APROP::F_WCSA_APROP_CHECKCCDFITNUM(){
     int CID;
@@ -120,5 +134,7 @@ void	CL_APROP::F_WCSA_APROP_CHECKCCDFITNUM(){
     CCDPOSMODE=0;
     cout << "          USING INITIAL VALUES FOR CCD POSITIONS " << endl;
     cout << "---------------------------------------------" << endl;
+    }else{
+        if(STDOUT==1||STDOUT==2)cout << "OK : NUMBER OF REFERENCE in CCD " << CID << endl;
     }
 }
