@@ -9,7 +9,7 @@ import lsst.pipette.readwrite as pipReadWrite
 import lsst.pex.policy as pexPolicy
 import lsst.obs.hscSim as hscSim
 import lsst.obs.suprimecam as scmapper
-from hsc.meas.tansip.doTansip import doTansip
+import hsc.meas.tansip.doTansip as tansip
 import lsst.afw.detection as afwDet
 import lsst.afw.geom as afwGeom
 import lsst.afw.image as afwImage
@@ -107,8 +107,8 @@ def main(hsc_or_sc, rerun, visit):
 #        policy.set("NCCD", nCcd)
         policy.set("NCCD", nCcd)
     
-        wcsList = doTansip(matches, policy=policy, camera=mapper.camera)
-        wcsList2 = doTansip.getwcsList(WCSA_ASP)
+        WCSA_ASP = tansip.doTansip(matches, policy=policy, camera=mapper.camera)
+        wcsList  = tansip.getwcsList(WCSA_ASP)
 
         wcsList = list(wcsList)
         wcsList.pop() #  last item is a summary

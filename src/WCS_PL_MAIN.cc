@@ -284,20 +284,15 @@ afwImage::TanWcs::Ptr CL_WCSA_ASP::F_WCSA_PLMAIN_SETWCSPtr(int CID){
         sipBp(i,j) = 0.0;
     }
 
-cout << "AAA" << endl;
     afwImage::TanWcs::Ptr    resultTanWcs(new afwImage::TanWcs(crval, crpix, cdMatrix, sipA, sipB, sipAp, sipBp));
-cout << "BBB" << endl;
     return resultTanWcs;
 }
 void CL_WCSA_ASP::F_WCS_PLMAIN_SETWCSA_ASP(){
     if(APROP->STDOUT==1||APROP->STDOUT==2)cout << "--- WCS_PL_MAIN : F_WCS_PLMAIN_SETWCSA_ASP ---" << endl;
     int CID;
 
-    for(CID=0;CID<APROP->CCDNUM+1;CID++){
-cout << CID << endl;
+    for(CID=0;CID<APROP->CCDNUM+1;CID++)
     WCSPtr.push_back(F_WCSA_PLMAIN_SETWCSPtr(CID));
-    }
-cout << "CCC" << endl;
 }
 std::vector <lsst::afw::image::TanWcs::Ptr> F_WCSA_PLMAIN_GETWCSLIST(CL_WCSA_ASP* WCSA_ASP){
     return WCSA_ASP->WCSPtr;

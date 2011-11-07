@@ -83,9 +83,9 @@ def getresultWcs_local(matchList_address, metadata, policy=None, camera=None, re
 def doTansip(matchListAllCcd, policy=None, camera=None, rerun=None):
     print '--- doTansip ---'
     metaTANSIP = hscTansip.F_WCS_EMPTYMETADATA()
-    WCSACCP = getresultWcs(matchListAllCcd, metaTANSIP, policy, camera)
+    WCSA_ASP = getresultWcs(matchListAllCcd, metaTANSIP, policy, camera)
 
-    return WCSACCP.WCSPtr
+    return WCSA_ASP
 
 def getwcsList(WCSA_ASP):
     return hscTansip.F_WCSA_PLMAIN_GETWCSLIST(WCSA_ASP)
