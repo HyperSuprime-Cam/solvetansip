@@ -163,19 +163,19 @@ def main(hsc_or_sc, rerun, visit):
             y1.append(yDet)
     
             # Second is image, which needs to be re-computed from new wcs
-            radecFromXY     = wcs.pixelToSky(xDet, yDet)
+            coordRaDecFromXyRadian     = wcs.pixelToSky(xDet, yDet)
             ccdpixFromRaDec = wcs.skyToPixel(raRef, decRef)
             xFromRaDec = ccdpixFromRaDec.getX()
             yFromRaDec = ccdpixFromRaDec.getY()
             x2.append(xFromRaDec)
             y2.append(yFromRaDec)
     
-            ra2.append(radecFromXY.getLongitude().asDegrees())
-            dec2.append(radecFromXY.getLatitude().asDegrees())
+            ra2.append(coordRaDecFromXyRadian.getLongitude().asDegrees())
+            dec2.append(coordRaDecFromXyRadian.getLatitude().asDegrees())
     
-            radecRefDegree = afwCoord.Coord(afwGeom.PointD(raRef.asDegrees(), decRef.asDegrees()))
+            coordRaDecRefRadian = afwCoord.Coord(afwGeom.PointD(raRef.asDegrees(), decRef.asDegrees()))
     
-            dSky.append( radecRefDegree.angularSeparation(radecFromXY).asDegrees() * 3600.0 )  # holds in arcsec
+            dSky.append( coordRaDecRefRadian.angularSeparation(coordRaDecFromXyRadian).asDegrees() * 3600.0 )  # holds in arcsec
             dXY.append(numpy.sqrt(
                 (xDet - xFromRaDec)*(xDet - xFromRaDec) + (yDet - yFromRaDec)*(yDet - yFromRaDec)
                 ))
