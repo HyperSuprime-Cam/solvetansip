@@ -14,8 +14,9 @@ import lsst.afw.detection as afwDet
 import lsst.afw.geom as afwGeom
 import lsst.afw.image as afwImage
 import lsst.afw.coord as afwCoord
-#import lsst.pipette.plotter as pipPlot
-#plot = pipPlot.Plotter('wcs')
+import lsst.pipette.plotter as pipPlot
+
+plot = pipPlot.Plotter('wcs')
     
 
 # Need setup a modified obs_subaru for policy/HscSimMapper.paf
@@ -104,7 +105,6 @@ def main(hsc_or_sc, rerun, visit):
     
         #policy.set("LSIPORDER", 1)
         #policy.set("SIPORDER", 6)
-#        policy.set("NCCD", nCcd)
         policy.set("NCCD", nCcd)
     
         WCSA_ASP = tansip.doTansip(matches, policy=policy, camera=mapper.camera)
@@ -115,17 +115,6 @@ def main(hsc_or_sc, rerun, visit):
         print 'len(wcsList without last element):', len(wcsList)
   
     else:
-        ####io = pipReadWrite.ReadWrite(mapper, ['visit'], fileKeys=['visit', 'ccd'])
-        ####data = {'visit': 220}
-        #data = {'visit': 200}
-    
-        ## Furusawa's memo
-        ## the below gets a list of corrected frames
-        ## corrFiles = io.read('calexp', data, ignore=True) ### deduced from pipette::readwrite.py::write()
-        ## the below gets a list of metadata(hdr incl. wcs) of corrected frames
-        ##md = io.read('calexp_md', data, ignore=True)
-        #matches = io.readMatches(data, ignore=True)
-        
         wcsList = []
         for md in metadata:
             wcs = afwImage.makeWcs(md)
@@ -143,6 +132,7 @@ def main(hsc_or_sc, rerun, visit):
             writeFitsWithNewWcs(exposure, wcs, dataId, io)
         
 
+    # below lines are for evaluation of the fitting result
     ra1 = []
     dec1 = []
     ra2 = []
@@ -158,16 +148,16 @@ def main(hsc_or_sc, rerun, visit):
     for wcs, matchList in zip(wcsList, matches):
         #print wcs.getFitsMetadata()
         for m in matchList:
-            # First is catalogue, which is mistakenly and temporarily in degrees
+            # First is catalogue and second is detection
     
-            raRef = m.first.getRa()
-            decRef = m.first.getDec()
-    
+            raRef = m.first.getRa()    # getRa() gets an Angle object. needs to convert to float by .asDegrees()
+            decRef = m.first.getDec()  # getDec() gets an Angle object. needs to convert to float by .asDegrees()
+                        
             xDet = m.second.getXAstrom()
             yDet = m.second.getYAstrom()
     
-            ra1.append(raRef)
-            dec1.append(decRef)
+            ra1.append(raRef.asDegrees())
+            dec1.append(decRef.asDegrees())
     
             x1.append(xDet)
             y1.append(yDet)
@@ -180,15 +170,12 @@ def main(hsc_or_sc, rerun, visit):
             x2.append(xFromRaDec)
             y2.append(yFromRaDec)
     
-#            ra2.append(radecFromXY.getLongitude(afwCoord.DEGREES))
-#            dec2.append(radecFromXY.getLatitude(afwCoord.DEGREES))
-            ra2.append(radecFromXY.getLongitude())
-            dec2.append(radecFromXY.getLatitude())
+            ra2.append(radecFromXY.getLongitude().asDegrees())
+            dec2.append(radecFromXY.getLatitude().asDegrees())
     
-            #radecRefDegree = afwCoord.Coord(afwGeom.makePointD(raRef, decRef), afwCoord.DEGREES)
-            radecRefDegree = afwCoord.Coord(afwGeom.PointD(raRef, decRef), afwCoord.DEGREES)            
+            radecRefDegree = afwCoord.Coord(afwGeom.PointD(raRef.asDegrees(), decRef.asDegrees()))
     
-            dSky.append( radecRefDegree.angularSeparation(radecFromXY, afwCoord.DEGREES) * 3600.0 )
+            dSky.append( radecRefDegree.angularSeparation(radecFromXY).asDegrees() * 3600.0 )  # holds in arcsec
             dXY.append(numpy.sqrt(
                 (xDet - xFromRaDec)*(xDet - xFromRaDec) + (yDet - yFromRaDec)*(yDet - yFromRaDec)
                 ))
@@ -218,9 +205,9 @@ def main(hsc_or_sc, rerun, visit):
     print "Offset stats RADec (arcsec):", dSky.mean(), dSky.std()
     print "Offset stats XY (pix):", dXY.mean(), dXY.std()
 
-    #plot.histogram(dSky, None, bins=bins, clip=3.0, gaussFit=None)
-    #plot.quivers(ra1, dec1, dRa, dDec, addUnitQuiver=1./3600)
-    #plot.close()
+    plot.histogram(dSky, None, bins=bins, clip=3.0, gaussFit=None)
+    plot.quivers(ra1, dec1, dRa, dDec, addUnitQuiver=1./3600)
+    plot.close()
 
 
 def writeFitsWithNewWcs(exposure, wcs, dataId, pipRW):
