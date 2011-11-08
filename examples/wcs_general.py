@@ -144,9 +144,24 @@ def main(hsc_or_sc, rerun, visit):
     x2 = []
     y2 = []
     dXY = []
-    
+
+    # pixels using okura-kun's functions
+    x2_2 = []
+    y2_2 = []
+    dXY_2 = []    
+
     for wcs, matchList in zip(wcsList, matches):
+        print '** wcs.hasDistortion():', wcs.hasDistortion()
         #print wcs.getFitsMetadata()
+
+        coordRaDec00Radian     = wcs.pixelToSky(0, 0) # should be (1,1)? which is the coodinate origin?
+        ra00Degrees = coordRaDec00Radian.getLongitude().asDegrees()
+        dec00Degrees = coordRaDec00Radian.getLatitude().asDegrees()
+        radec00 = [ra00Degrees, dec00Degrees]
+        ccdPosXy = tansip.getxglobal(radec00, WCSA_ASP)
+        xCcdPos = ccdPosXy[0]
+        yCcdPos = ccdPosXy[1]
+        
         for m in matchList:
             # First is catalogue and second is detection
     
@@ -161,24 +176,31 @@ def main(hsc_or_sc, rerun, visit):
     
             x1.append(xDet)
             y1.append(yDet)
-    
+
             # Second is image, which needs to be re-computed from new wcs
-            coordRaDecFromXyRadian     = wcs.pixelToSky(xDet, yDet)
-            ccdpixFromRaDec = wcs.skyToPixel(raRef, decRef)
-            xFromRaDec = ccdpixFromRaDec.getX()
-            yFromRaDec = ccdpixFromRaDec.getY()
-            x2.append(xFromRaDec)
-            y2.append(yFromRaDec)
+            coordRadecFromXyRadian     = wcs.pixelToSky(xDet, yDet)
+            ccdpixFromRadec = wcs.skyToPixel(raRef, decRef)
+            xFromRadec = ccdpixFromRadec.getX()
+            yFromRadec = ccdpixFromRadec.getY()
+            x2.append(xFromRadec)
+            y2.append(yFromRadec)
     
-            ra2.append(coordRaDecFromXyRadian.getLongitude().asDegrees())
-            dec2.append(coordRaDecFromXyRadian.getLatitude().asDegrees())
+            ra2.append(coordRadecFromXyRadian.getLongitude().asDegrees())
+            dec2.append(coordRadecFromXyRadian.getLatitude().asDegrees())
+
+            # using okura-kun's functions
+            radecRef = [raRef.asDegrees(), decRef.asDegrees()]
+            xyFromRadec2 = tansip.getxglobal(radecRef, WCSA_ASP)
+            xFromRadec2 = xyFromRadec2[0] - xCcdPos  
+            yFromRadec2 = xyFromRadec2[1] - yCcdPos
+            x2_2.append(xFromRadec2)
+            y2_2.append(yFromRadec2)
+            
+            coordRadecRefRadian = afwCoord.Coord(afwGeom.PointD(raRef.asDegrees(), decRef.asDegrees()))
     
-            coordRaDecRefRadian = afwCoord.Coord(afwGeom.PointD(raRef.asDegrees(), decRef.asDegrees()))
-    
-            dSky.append( coordRaDecRefRadian.angularSeparation(coordRaDecFromXyRadian).asDegrees() * 3600.0 )  # holds in arcsec
-            dXY.append(numpy.sqrt(
-                (xDet - xFromRaDec)*(xDet - xFromRaDec) + (yDet - yFromRaDec)*(yDet - yFromRaDec)
-                ))
+            dSky.append( coordRadecRefRadian.angularSeparation(coordRadecFromXyRadian).asDegrees() * 3600.0 )  # holds in arcsec
+            dXY.append( numpy.hypot(xDet-xFromRadec, yDet-yFromRadec) )
+            dXY_2.append( numpy.hypot(xDet-xFromRadec2, yDet-yFromRadec2) )            
     
     ra1 = numpy.array(ra1)
     dec1 = numpy.array(dec1)
@@ -189,14 +211,22 @@ def main(hsc_or_sc, rerun, visit):
     y1 = numpy.array(y1)
     x2 = numpy.array(x2)
     y2 = numpy.array(y2)
-    
+
+    x2_2 = numpy.array(x2_2)
+    y2_2 = numpy.array(y2_2)
+
     dRa = (ra2-ra1)*3600
     dDec = (dec2-dec1)*3600
     dSky = numpy.array(dSky)
     
     dX = (x1-x2)
     dY = (y1-y2)
+
+    dX_2 = (x1-x2_2)
+    dY_2 = (y1-y2_2)
+
     dXY = numpy.array(dXY)
+    dXY_2 = numpy.array(dXY_2)    
     
     print "RA difference stats (arcsec):", dRa.mean(), dRa.std()
     print "Dec difference stats (arcsec):", dDec.mean(), dDec.std()
@@ -204,6 +234,11 @@ def main(hsc_or_sc, rerun, visit):
     print "Y difference stats (pix):", dY.mean(), dY.std()
     print "Offset stats RADec (arcsec):", dSky.mean(), dSky.std()
     print "Offset stats XY (pix):", dXY.mean(), dXY.std()
+    print "## with okura-kun's functions"
+    print "X_2 difference stats (pix):", dX_2.mean(), dX_2.std()
+    print "Y_2 difference stats (pix):", dY_2.mean(), dY_2.std()
+    print "Offset stats XY_2 (pix):", dXY_2.mean(), dXY_2.std()
+
 
     plot.histogram(dSky, None, bins=bins, clip=3.0, gaussFit=None)
     plot.quivers(ra1, dec1, dRa, dDec, addUnitQuiver=1./3600)
@@ -226,7 +261,7 @@ if __name__ == '__main__':
     do_solveTansip = True
     do_writeNewWcs = True # New FITS file will be created
     #do_writeNewWcs = False # Only solve 
-    rerun = "fh-hsc.17"
+    rerun = "flat-dome-hsc.17"
 #    rerun = "flat-nightsky"
 #    rerun = "flat-dome"
 #    rerun = "fh-sc-1269XXX-sdss-dr8-mitaka"
@@ -237,6 +272,8 @@ if __name__ == '__main__':
 #    data = {'visit': 220}  # for HSC-SIM
 
 #    visit = 126968  # for SC
-    visit = 126934
+#    visit = 126934
+
+    visit = int(sys.argv[1])
 
     main(hsc_or_sc, rerun, visit)
