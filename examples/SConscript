@@ -1,8 +1,3 @@
 # -*- python -*-
-#
-#
-import sys
-Import('env')
-#env.Program(["test.cc"], LIBS=env.getlibs("solvetansip"))
-#env.Program(["okura2.cc"], LIBS=env.getlibs("solvetansip"))
-
+from lsst.sconsUtils import scripts
+scripts.BasicSConscript.examples()

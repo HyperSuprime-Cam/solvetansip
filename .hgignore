@@ -32,6 +32,8 @@ eups*
 *.os
 *.la
 *.a
+ups/*.cfgc
+python/hsc/meas/tansip/version.py
 
 syntax: regexp
 ^\#.*\#$
