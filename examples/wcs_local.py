@@ -69,3 +69,48 @@ print "--- get X_GLOBAL ---"
 X_GLOBAL = doTansip.getxglobal(RADEC,WCSA_ASP)
 print RADEC
 print X_GLOBAL
+#print "--- get PAIR ID ---"
+#PAIR_ID = doTansip.getpair_ID(WCSA_ASP)
+#print PAIR_ID
+#print "--- get PAIR CHIPID ---"
+#PAIR_CHIPID = doTansip.getpair_CHIPID(WCSA_ASP)
+#print PAIR_CHIPID
+#print "--- get PAIR FLAG ---"
+#PAIR_FLAG = doTansip.getpair_FLAG(WCSA_ASP)
+#print PAIR_FLAG
+#print "--- get PAIR RA ---"
+#PAIR_RA = doTansip.getpair_RA(WCSA_ASP)
+#print PAIR_RA
+#print "--- get PAIR DEC ---"
+#PAIR_DEC = doTansip.getpair_DEC(WCSA_ASP)
+#print PAIR_DEC
+#print "--- get PAIR IM_WORLD_X ---"
+#PAIR_IM_WORLD_X = doTansip.getpair_IM_WORLD_X(WCSA_ASP)
+#print PAIR_IM_WORLD_X
+#print "--- get PAIR IM_WORLD_Y ---"
+#PAIR_IM_WORLD_Y = doTansip.getpair_IM_WORLD_Y(WCSA_ASP)
+#print PAIR_IM_WORLD_Y
+#print "--- get PAIR IM_PIXEL_X ---"
+#PAIR_IM_PIXEL_X = doTansip.getpair_IM_PIXEL_X(WCSA_ASP)
+#print PAIR_IM_PIXEL_X
+#print "--- get PAIR IM_PIXEL_Y ---"
+#PAIR_IM_PIXEL_Y = doTansip.getpair_IM_PIXEL_Y(WCSA_ASP)
+#print PAIR_IM_PIXEL_Y
+#print "--- get PAIR CRPIX_X ---"
+#PAIR_CRPIX_X = doTansip.getpair_CRPIX_X(WCSA_ASP)
+#print PAIR_CRPIX_X
+#print "--- get PAIR CRPIX_Y ---"
+#PAIR_CRPIX_Y = doTansip.getpair_CRPIX_Y(WCSA_ASP)
+#print PAIR_CRPIX_Y
+#print "--- get PAIR GLOBAL_X ---"
+#PAIR_GLOBAL_X = doTansip.getpair_GLOBAL_X(WCSA_ASP)
+#print PAIR_GLOBAL_X
+#print "--- get PAIR GLOBAL_Y ---"
+#PAIR_GLOBAL_Y = doTansip.getpair_GLOBAL_Y(WCSA_ASP)
+#print PAIR_GLOBAL_Y
+#print "--- get PAIR LOCAL_X ---"
+#PAIR_LOCAL_X = doTansip.getpair_LOCAL_X(WCSA_ASP)
+#print PAIR_LOCAL_X
+#print "--- get PAIR LOCAL_Y ---"
+#PAIR_LOCAL_Y = doTansip.getpair_LOCAL_Y(WCSA_ASP)
+#print PAIR_LOCAL_Y

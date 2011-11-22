@@ -32,6 +32,7 @@ void    F_WCS_DISTORTION(int ,CL_APROP *APROP);
 CL_WCSA_ASP F_WCSA_TANSIP_V(vector< vector<afwdetect::SourceMatch> > const &matchlist,dafbase::PropertySet::Ptr &metaTANSIP,lsst::pex::policy::Policy::Ptr &APROPPolicy,lsst::afw::cameraGeom::Camera::Ptr &camera/*,lsst::daf::base::PropertySet::Ptr &metadata,bool verbose*/){
     CL_WCSA_ASP *WCSA_ASP;
 
+    cout << "--- solvetansip : START ---" << endl;
     WCSA_ASP = new CL_WCSA_ASP[1];
 
     WCSA_ASP->APROP = new CL_APROP[1];
@@ -50,7 +51,6 @@ CL_WCSA_ASP F_WCSA_TANSIP_V(vector< vector<afwdetect::SourceMatch> > const &matc
     if(WCSA_ASP->APROP->STDOUT==1||WCSA_ASP->APROP->STDOUT==2)cout << "ALLREFNUM : " << WCSA_ASP->APROP->ALLREFNUM << endl;
 
     if(WCSA_ASP->APROP->STDOUT==1||WCSA_ASP->APROP->STDOUT==2)cout << "--- WCS_PL_MAIN : F_WCS_MAKE_PAIR ---" << endl;
-
     WCSA_ASP->APAIR = new CL_APAIR[1];
     WCSA_ASP->APAIR->PAIR = new CL_PAIR[WCSA_ASP->APROP->ALLREFNUM];
     WCSA_ASP->APAIR->GPOS = F_NEWdouble2(WCSA_ASP->APROP->CCDNUM,3);
@@ -69,6 +69,7 @@ CL_WCSA_ASP F_WCSA_TANSIP_V(vector< vector<afwdetect::SourceMatch> > const &matc
 CL_WCSA_ASP F_WCSA_TANSIP_V_local(string matchlist,dafbase::PropertySet::Ptr &metaTANSIP,lsst::pex::policy::Policy::Ptr &APROPPolicy,lsst::afw::cameraGeom::Camera::Ptr &camera/*,lsst::daf::base::PropertySet::Ptr &metadata,bool verbose*/){
     CL_WCSA_ASP *WCSA_ASP;
 
+    cout << "--- solvetansip : START(local) ---" << endl;
     WCSA_ASP = new CL_WCSA_ASP[1];
 
     WCSA_ASP->APROP = new CL_APROP[1];
@@ -100,7 +101,7 @@ CL_WCSA_ASP F_WCSA_TANSIP_V_local(string matchlist,dafbase::PropertySet::Ptr &me
 
     WCSA_ASP->F_WCS_PLMAIN_SETWCSA_ASP();
 
-    cout << "--- solvetansip : END ---" << endl;
+    cout << "--- solvetansip : END(local) ---" << endl;
     return *WCSA_ASP;
 }
 void    F_WCSA_MAKEAPROP(lsst::pex::policy::Policy::Ptr &APROPPolicy, CL_APROP *APROP){
@@ -127,6 +128,7 @@ void    F_WCSA_MAKEGSIP(lsst::afw::cameraGeom::Camera::Ptr &camera, CL_APROP *AP
     int ID;
 
     GSIP->F_WCSA_GSIP_SET0();
+    GSIP->CCDNUM=APROP->CCDNUM;
 
     for(camGeom::Camera::const_iterator iter(camera->begin()); iter != camera->end(); ++iter) { 
         camGeom::DetectorMosaic::Ptr detMosaic = boost::shared_dynamic_cast<camGeom::DetectorMosaic>(*iter);
@@ -156,8 +158,9 @@ void    F_WCSA_SETSIZE(vector< vector< afwdetect::SourceMatch  >  > const &match
         GSIP->CSIP[ID].REFNUM =matchlist[ID].size();
         GSIP->CSIP[ID].FITNUM =matchlist[ID].size();
     }
-        GSIP->ALLREFNUM=APROP->ALLREFNUM;
-        GSIP->ALLFITNUM=APROP->ALLFITNUM;
+        APROP->ALLFITNUM=APROP->ALLREFNUM;
+         GSIP->ALLREFNUM=APROP->ALLREFNUM;
+         GSIP->ALLFITNUM=APROP->ALLFITNUM;
 }
 void    F_WCSA_SETSIZE_local(string matchlist, CL_APROP* APROP, CL_GSIP *GSIP){
     int ID,CID,*CIDNUM;
@@ -195,6 +198,7 @@ void    F_WCSA_MAKEPAIR(vector< vector<afwdetect::SourceMatch> > const &matchlis
 
     APAIR->F_WCSA_APAIR_SET0();
     ALLNUM=0;
+
     for(CID=0;CID<GSIP->CCDNUM;CID++)
     for(NUM=0;NUM<GSIP->CSIP[CID].REFNUM;NUM++){
         APAIR->PAIR[ALLNUM].ID            =matchlist[CID][NUM].first->getId();
@@ -380,4 +384,154 @@ std::vector< double > F_WCSA_PLMAIN_GETX_GLOBAL(std::vector< double > RADEC,CL_W
     X_GLOBAL[1]=YY[1];    
 
     return X_GLOBAL;
+}
+std::vector< double > F_WCSA_PLMAIN_GETPAIR_ID(CL_WCSA_ASP* WCSA_ASP){
+    std::vector< double > X;
+    int NUM;
+
+    for(NUM=0;NUM<WCSA_ASP->APAIR->ALLREFNUM;NUM++){
+        X.push_back(WCSA_ASP->APAIR->PAIR[NUM].ID);
+    }
+
+    return X;
+}
+std::vector< double > F_WCSA_PLMAIN_GETPAIR_CHIPID(CL_WCSA_ASP* WCSA_ASP){
+    std::vector< double > X;
+    int NUM;
+
+    for(NUM=0;NUM<WCSA_ASP->APAIR->ALLREFNUM;NUM++){
+        X.push_back(WCSA_ASP->APAIR->PAIR[NUM].CHIPID);
+    }
+
+    return X;
+}
+std::vector< double > F_WCSA_PLMAIN_GETPAIR_FLAG(CL_WCSA_ASP* WCSA_ASP){
+    std::vector< double > X;
+    int NUM;
+
+    for(NUM=0;NUM<WCSA_ASP->APAIR->ALLREFNUM;NUM++){
+        X.push_back(WCSA_ASP->APAIR->PAIR[NUM].FLAG);
+    }
+
+    return X;
+}
+std::vector< double > F_WCSA_PLMAIN_GETPAIR_RA(CL_WCSA_ASP* WCSA_ASP){
+    std::vector< double > X;
+    int NUM;
+
+    for(NUM=0;NUM<WCSA_ASP->APAIR->ALLREFNUM;NUM++){
+        X.push_back(WCSA_ASP->APAIR->PAIR[NUM].X_RADEC[0]);
+    }
+
+    return X;
+}
+std::vector< double > F_WCSA_PLMAIN_GETPAIR_DEC(CL_WCSA_ASP* WCSA_ASP){
+    std::vector< double > X;
+    int NUM;
+
+    for(NUM=0;NUM<WCSA_ASP->APAIR->ALLREFNUM;NUM++){
+        X.push_back(WCSA_ASP->APAIR->PAIR[NUM].X_RADEC[1]);
+    }
+
+    return X;
+}
+std::vector< double > F_WCSA_PLMAIN_GETPAIR_IM_WORLD_X(CL_WCSA_ASP* WCSA_ASP){
+    std::vector< double > X;
+    int NUM;
+
+    for(NUM=0;NUM<WCSA_ASP->APAIR->ALLREFNUM;NUM++){
+        X.push_back(WCSA_ASP->APAIR->PAIR[NUM].X_IM_WORLD[0]);
+    }
+
+    return X;
+}
+std::vector< double > F_WCSA_PLMAIN_GETPAIR_IM_WORLD_Y(CL_WCSA_ASP* WCSA_ASP){
+    std::vector< double > X;
+    int NUM;
+
+    for(NUM=0;NUM<WCSA_ASP->APAIR->ALLREFNUM;NUM++){
+        X.push_back(WCSA_ASP->APAIR->PAIR[NUM].X_IM_WORLD[1]);
+    }
+
+    return X;
+}
+std::vector< double > F_WCSA_PLMAIN_GETPAIR_IM_PIXEL_X(CL_WCSA_ASP* WCSA_ASP){
+    std::vector< double > X;
+    int NUM;
+
+    for(NUM=0;NUM<WCSA_ASP->APAIR->ALLREFNUM;NUM++){
+        X.push_back(WCSA_ASP->APAIR->PAIR[NUM].X_IM_PIXEL[0]);
+    }
+
+    return X;
+}
+std::vector< double > F_WCSA_PLMAIN_GETPAIR_IM_PIXEL_Y(CL_WCSA_ASP* WCSA_ASP){
+    std::vector< double > X;
+    int NUM;
+
+    for(NUM=0;NUM<WCSA_ASP->APAIR->ALLREFNUM;NUM++){
+        X.push_back(WCSA_ASP->APAIR->PAIR[NUM].X_IM_PIXEL[1]);
+    }
+
+    return X;
+}
+std::vector< double > F_WCSA_PLMAIN_GETPAIR_CRPIX_X(CL_WCSA_ASP* WCSA_ASP){
+    std::vector< double > X;
+    int NUM;
+
+    for(NUM=0;NUM<WCSA_ASP->APAIR->ALLREFNUM;NUM++){
+        X.push_back(WCSA_ASP->APAIR->PAIR[NUM].X_CRPIX[0]);
+    }
+
+    return X;
+}
+std::vector< double > F_WCSA_PLMAIN_GETPAIR_CRPIX_Y(CL_WCSA_ASP* WCSA_ASP){
+    std::vector< double > X;
+    int NUM;
+
+    for(NUM=0;NUM<WCSA_ASP->APAIR->ALLREFNUM;NUM++){
+        X.push_back(WCSA_ASP->APAIR->PAIR[NUM].X_CRPIX[1]);
+    }
+
+    return X;
+}
+std::vector< double > F_WCSA_PLMAIN_GETPAIR_GLOBAL_X(CL_WCSA_ASP* WCSA_ASP){
+    std::vector< double > X;
+    int NUM;
+
+    for(NUM=0;NUM<WCSA_ASP->APAIR->ALLREFNUM;NUM++){
+        X.push_back(WCSA_ASP->APAIR->PAIR[NUM].X_GLOBAL[0]);
+    }
+
+    return X;
+}
+std::vector< double > F_WCSA_PLMAIN_GETPAIR_GLOBAL_Y(CL_WCSA_ASP* WCSA_ASP){
+    std::vector< double > X;
+    int NUM;
+
+    for(NUM=0;NUM<WCSA_ASP->APAIR->ALLREFNUM;NUM++){
+        X.push_back(WCSA_ASP->APAIR->PAIR[NUM].X_GLOBAL[1]);
+    }
+
+    return X;
+}
+std::vector< double > F_WCSA_PLMAIN_GETPAIR_LOCAL_X(CL_WCSA_ASP* WCSA_ASP){
+    std::vector< double > X;
+    int NUM;
+
+    for(NUM=0;NUM<WCSA_ASP->APAIR->ALLREFNUM;NUM++){
+        X.push_back(WCSA_ASP->APAIR->PAIR[NUM].X_LOCAL[0]);
+    }
+
+    return X;
+}
+std::vector< double > F_WCSA_PLMAIN_GETPAIR_LOCAL_Y(CL_WCSA_ASP* WCSA_ASP){
+    std::vector< double > X;
+    int NUM;
+
+    for(NUM=0;NUM<WCSA_ASP->APAIR->ALLREFNUM;NUM++){
+        X.push_back(WCSA_ASP->APAIR->PAIR[NUM].X_LOCAL[1]);
+    }
+
+    return X;
 }

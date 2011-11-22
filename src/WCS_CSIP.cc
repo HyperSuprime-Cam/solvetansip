@@ -14,9 +14,10 @@
 using namespace std;
 //MAIN
 void CL_GSIP::F_WCSA_GSIP_CALCLOCALSIP(){
+    int CID;
+
     F_WCSA_GSIP_LOCALSIP();
-    if(STDOUT==2)F_WCSA_GSIP_SHOWGSIP();
-    if(STDOUT==2)F_WCSA_GSIP_SHOWGLOBAL();
+    if(STDOUT==2)for(CID=0;CID<CCDNUM;CID++)F_WCSA_GSIP_SHOWCSIP(CID);
 }
 
 
@@ -96,16 +97,16 @@ void CL_GSIP::F_WCSA_GSIP_LOCALSIP(){
         F_SIPROT(SIP_P_ORDER,CSIP[CID].GPOS[2],CSIP[CCDNUM].SIP_SHEAR[1],CSIP[CID].SIP_SHEAR[1]);
         F_SIPROT(SIP_P_ORDER,CSIP[CID].GPOS[2],CSIP[CCDNUM].SIP_ROT,CSIP[CID].SIP_ROT);
 
+        CSIP[CID].CRVAL[0]=CSIP[CCDNUM].CRVAL[0];
+        CSIP[CID].CRVAL[1]=CSIP[CCDNUM].CRVAL[1];
+        CSIP[CID].OAVAL[0]=CSIP[CCDNUM].OAVAL[0];
+        CSIP[CID].OAVAL[1]=CSIP[CCDNUM].OAVAL[1];
+        CSIP[CID].CRPIX[0]=-(CSIP[CID].GPOS[0]-CSIP[CCDNUM].CRPIX[0])*cos(CSIP[CID].GPOS[2])-(CSIP[CID].GPOS[1]-CSIP[CCDNUM].CRPIX[1])*sin(CSIP[CID].GPOS[2]);
+        CSIP[CID].CRPIX[1]=-(CSIP[CID].GPOS[1]-CSIP[CCDNUM].CRPIX[1])*cos(CSIP[CID].GPOS[2])+(CSIP[CID].GPOS[0]-CSIP[CCDNUM].CRPIX[0])*sin(CSIP[CID].GPOS[2]);
+        CSIP[CID].OAPIX[0]=-(CSIP[CID].GPOS[0]-CSIP[CCDNUM].OAPIX[0])*cos(CSIP[CID].GPOS[2])-(CSIP[CID].GPOS[1]-CSIP[CCDNUM].OAPIX[1])*sin(CSIP[CID].GPOS[2]);
+        CSIP[CID].OAPIX[1]=-(CSIP[CID].GPOS[1]-CSIP[CCDNUM].OAPIX[1])*cos(CSIP[CID].GPOS[2])+(CSIP[CID].GPOS[0]-CSIP[CCDNUM].OAPIX[0])*sin(CSIP[CID].GPOS[2]);
     }
 
-    CSIP[CID].CRVAL[0]=CSIP[CCDNUM].CRVAL[0];
-    CSIP[CID].CRVAL[1]=CSIP[CCDNUM].CRVAL[1];
-    CSIP[CID].OAVAL[0]=CSIP[CCDNUM].OAVAL[0];
-    CSIP[CID].OAVAL[1]=CSIP[CCDNUM].OAVAL[1];
-    CSIP[CID].CRPIX[0]=-(CSIP[CID].GPOS[0]-CSIP[CCDNUM].CRPIX[0])*cos(CSIP[CID].GPOS[2])-(CSIP[CID].GPOS[1]-CSIP[CCDNUM].CRPIX[1])*sin(CSIP[CID].GPOS[2]);
-    CSIP[CID].CRPIX[1]=-(CSIP[CID].GPOS[1]-CSIP[CCDNUM].CRPIX[1])*cos(CSIP[CID].GPOS[2])+(CSIP[CID].GPOS[0]-CSIP[CCDNUM].CRPIX[0])*sin(CSIP[CID].GPOS[2]);
-    CSIP[CID].OAPIX[0]=-(CSIP[CID].GPOS[0]-CSIP[CCDNUM].OAPIX[0])*cos(CSIP[CID].GPOS[2])-(CSIP[CID].GPOS[1]-CSIP[CCDNUM].OAPIX[1])*sin(CSIP[CID].GPOS[2]);
-    CSIP[CID].OAPIX[1]=-(CSIP[CID].GPOS[1]-CSIP[CCDNUM].OAPIX[1])*cos(CSIP[CID].GPOS[2])+(CSIP[CID].GPOS[0]-CSIP[CCDNUM].OAPIX[0])*sin(CSIP[CID].GPOS[2]);
     F_WCSA_GSIP_SETSIP();
     F_WCSA_GSIP_SETPSIP();
 }
@@ -180,34 +181,48 @@ void CL_GSIP::F_WCSA_GSIP_SHOWGSIP(){
     cout << "OAMODE      : " << OAMODE      << endl;
     cout << "CCDPOSMODE  : " << CCDPOSMODE  << endl;
     cout << "CCDNUM      : " << CCDNUM      << endl;
-    cout << "CRPIX1      : " << CRPIX[0]    << endl;
-    cout << "CRPIX2      : " << CRPIX[1]    << endl;
-    cout << "CRVAL1      : " << CRVAL[0]    << endl;
-    cout << "CRVAL2      : " << CRVAL[1]    << endl;
     cout << "ANGLE       : " << ANGLE       << endl;
     cout << "SIP_L_ORDER : " << SIP_L_ORDER << endl;
     cout << "SIP_ORDER   : " << SIP_ORDER   << endl;
     cout << "SIP_PORDER  : " << SIP_P_ORDER << endl;
-    cout << "- CCD : " << setw(3) << setfill('0') << CSIP[0].ID  << " -"<< endl;
-    cout << "ID          : " << CSIP[0].ID       << endl;
-    cout << "Index X     : " << CSIP[0].POSID[0] << endl;
-    cout << "Index Y     : " << CSIP[0].POSID[1] << endl;
-    cout << "REFNUM      : " << CSIP[0].REFNUM   << endl;
-    cout << "FITNUM      : " << CSIP[0].FITNUM   << endl;
-//    cout << "PHASE       : " << CSIP[0].PHASE    << endl;
-    cout << "GLOBAL POS_X: " << CSIP[0].GPOS[0]  << endl;
-    cout << "GLOBAL POS_Y: " << CSIP[0].GPOS[1]  << endl;
-    cout << "GLOBAL POS_T: " << CSIP[0].GPOS[2]  << endl;
-    cout << "- CCD : " << setw(3) << setfill('0') << CSIP[CCDNUM-1].ID << " -" <<endl;
-    cout << "ID          : " << CSIP[CCDNUM-1].ID       << endl;
-    cout << "Index X     : " << CSIP[CCDNUM-1].POSID[0] << endl;
-    cout << "Index Y     : " << CSIP[CCDNUM-1].POSID[1] << endl;
-    cout << "REFNUM      : " << CSIP[CCDNUM-1].REFNUM   << endl;
-    cout << "FITNUM      : " << CSIP[CCDNUM-1].FITNUM   << endl;
-//    cout << "PHASE       : " << CSIP[CCDNUM-1].PHASE    << endl;
-    cout << "GLOBAL POS_X: " << CSIP[CCDNUM-1].GPOS[0]  << endl;
-    cout << "GLOBAL POS_Y: " << CSIP[CCDNUM-1].GPOS[1]  << endl;
-    cout << "GLOBAL POS_T: " << CSIP[CCDNUM-1].GPOS[2]  << endl; 
+    cout << "ID          : " << CSIP[CCDNUM].ID       << endl;
+    cout << "Index X     : " << CSIP[CCDNUM].POSID[0] << endl;
+    cout << "Index Y     : " << CSIP[CCDNUM].POSID[1] << endl;
+    cout << "REFNUM      : " << CSIP[CCDNUM].REFNUM   << endl;
+    cout << "FITNUM      : " << CSIP[CCDNUM].FITNUM   << endl;
+//    cout << "PHASE       : " << CSIP[CCDNUM].PHASE    << endl;
+    cout << "GLOBAL POS_X: " << CSIP[CCDNUM].GPOS[0]  << endl;
+    cout << "GLOBAL POS_Y: " << CSIP[CCDNUM].GPOS[1]  << endl;
+    cout << "GLOBAL POS_T: " << CSIP[CCDNUM].GPOS[2]  << endl; 
+    cout << "CRPIX1      : " << CSIP[CCDNUM].CRPIX[0] << endl;
+    cout << "CRPIX2      : " << CSIP[CCDNUM].CRPIX[1] << endl;
+    cout << "CRVAL1      : " << CSIP[CCDNUM].CRVAL[0] << endl;
+    cout << "CRVAL2      : " << CSIP[CCDNUM].CRVAL[1] << endl;
+    cout << "CD_1_1      : " << CSIP[CCDNUM].CD[0][0] << endl;
+    cout << "CD_1_2      : " << CSIP[CCDNUM].CD[0][1] << endl;
+    cout << "CD_2_1      : " << CSIP[CCDNUM].CD[1][0] << endl;
+    cout << "CD_2_2      : " << CSIP[CCDNUM].CD[1][1] << endl;
+    cout <<endl;
+}
+void CL_GSIP::F_WCSA_GSIP_SHOWCSIP(int CID){
+    cout << "-- CSIP CHECK : CCD : " << setw(3) << setfill('0') << CSIP[CID].ID  << " -"<< endl;
+    cout << "ID          : " << CSIP[CID].ID       << endl;
+    cout << "Index X     : " << CSIP[CID].POSID[0] << endl;
+    cout << "Index Y     : " << CSIP[CID].POSID[1] << endl;
+    cout << "REFNUM      : " << CSIP[CID].REFNUM   << endl;
+    cout << "FITNUM      : " << CSIP[CID].FITNUM   << endl;
+//    cout << "PHASE       : " << CSIP[CID].PHASE    << endl;
+    cout << "GLOBAL POS_X: " << CSIP[CID].GPOS[0]  << endl;
+    cout << "GLOBAL POS_Y: " << CSIP[CID].GPOS[1]  << endl;
+    cout << "GLOBAL POS_T: " << CSIP[CID].GPOS[2]  << endl;
+    cout << "CRPIX1      : " << CSIP[CID].CRPIX[0] << endl;
+    cout << "CRPIX2      : " << CSIP[CID].CRPIX[1] << endl;
+    cout << "CRVAL1      : " << CSIP[CID].CRVAL[0] << endl;
+    cout << "CRVAL2      : " << CSIP[CID].CRVAL[1] << endl;
+    cout << "CD_1_1      : " << CSIP[CID].CD[0][0] << endl;
+    cout << "CD_1_2      : " << CSIP[CID].CD[0][1] << endl;
+    cout << "CD_2_1      : " << CSIP[CID].CD[1][0] << endl;
+    cout << "CD_2_2      : " << CSIP[CID].CD[1][1] << endl;
     cout <<endl;
 }
 void CL_GSIP::F_WCSA_GSIP_SHOWGLOBAL(){
