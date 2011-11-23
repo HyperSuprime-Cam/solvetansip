@@ -6,7 +6,7 @@ Python interface to hsc::meas::tansip
 %enddef
 
 %feature("autodoc", "1");
-%module(package="hsc.meas.tansip", docstring=tansip_DOCSTRING) WCS_PL_MAIN
+%module(package="hsc.meas.tansip", docstring=tansip_DOCSTRING) WCS_PL_MAINLib
 
 %{
 #include "lsst/afw/image.h"

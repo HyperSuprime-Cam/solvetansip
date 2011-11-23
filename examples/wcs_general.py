@@ -246,6 +246,7 @@ def main(hsc_or_sc, rerun, visit):
 
 
 def writeFitsWithNewWcs(exposure, wcs, dataId, pipRW):
+    return
 
     print '*** Writing New FITS Files with New WCS for %s ...' % dataId
 
@@ -259,20 +260,11 @@ if __name__ == '__main__':
     hsc_or_sc = 'sc'
 #    hsc_or_sc = 'hsc'
     do_solveTansip = True
-    do_writeNewWcs = True # New FITS file will be created
-    #do_writeNewWcs = False # Only solve 
-    rerun = "flat-dome-hsc.17"
-#    rerun = "flat-nightsky"
-#    rerun = "flat-dome"
-#    rerun = "fh-sc-1269XXX-sdss-dr8-mitaka"
-#    rerun='fh-dc2.16-default'
+#    do_writeNewWcs = True # New FITS file will be created
+    do_writeNewWcs = False # Only solve 
 
-#    data = {'visit': 126970} # for SC
-#    data = {'visit': 126969} # for SC
-#    data = {'visit': 220}  # for HSC-SIM
-
-#    visit = 126968  # for SC
-#    visit = 126934
+    rerun = "price"
+    visit = 126969
 
     visit = int(sys.argv[1])
 

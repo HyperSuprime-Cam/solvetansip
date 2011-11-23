@@ -5,7 +5,7 @@ import datetime
 import time
 
 import lsst.afw.cameraGeom.utils         as cameraGeomUtils
-import hsc.meas.tansip.WCS_PL_MAIN       as hscTansip
+import hsc.meas.tansip.WCS_PL_MAINLib    as hscTansip
 import lsst.daf.base                     as dafBase
 import lsst.pex.policy as pexPolicy
 import lsst.afw.image as afwImage
