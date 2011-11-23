@@ -154,53 +154,52 @@ def main(hsc_or_sc, rerun, visit):
         print '** wcs.hasDistortion():', wcs.hasDistortion()
         #print wcs.getFitsMetadata()
 
-        coordRaDec00Radian     = wcs.pixelToSky(0, 0) # should be (1,1)? which is the coodinate origin?
-        ra00Degrees = coordRaDec00Radian.getLongitude().asDegrees()
-        dec00Degrees = coordRaDec00Radian.getLatitude().asDegrees()
-        radec00 = [ra00Degrees, dec00Degrees]
+        coordRaDec00 = wcs.pixelToSky(0, 0) # should be (1,1)? which is the coodinate origin?
+        radec00 = [coordRaDec00.getLongitude().asDegrees(), coordRaDec00.getLatitude().asDegrees()]
         ccdPosXy = tansip.getxglobal(radec00, WCSA_ASP)
         xCcdPos = ccdPosXy[0]
         yCcdPos = ccdPosXy[1]
         
+
+        pix0 = afwGeom.Point2D(123, 456)
+        sky = wcs.pixelToSky(pix0)
+        pix1 = wcs.skyToPixel(sky)
+        print pix0, pix1, pix0 - pix1
+        print wcs.getFitsMetadata().toString()
+        
+
         for m in matchList:
             # First is catalogue and second is detection
-    
-            raRef = m.first.getRa()    # getRa() gets an Angle object. needs to convert to float by .asDegrees()
-            decRef = m.first.getDec()  # getDec() gets an Angle object. needs to convert to float by .asDegrees()
+            radec = m.first.getRaDec()
                         
             xDet = m.second.getXAstrom()
             yDet = m.second.getYAstrom()
     
-            ra1.append(raRef.asDegrees())
-            dec1.append(decRef.asDegrees())
+            ra1.append(radec.getLongitude().asDegrees())
+            dec1.append(radec.getLatitude().asDegrees())
     
             x1.append(xDet)
             y1.append(yDet)
 
             # Second is image, which needs to be re-computed from new wcs
-            coordRadecFromXyRadian     = wcs.pixelToSky(xDet, yDet)
-            ccdpixFromRadec = wcs.skyToPixel(raRef, decRef)
-            xFromRadec = ccdpixFromRadec.getX()
-            yFromRadec = ccdpixFromRadec.getY()
-            x2.append(xFromRadec)
-            y2.append(yFromRadec)
+            coordRadecFromXy = wcs.pixelToSky(xDet, yDet)
+            ra2.append(coordRadecFromXy.getLongitude().asDegrees())
+            dec2.append(coordRadecFromXy.getLatitude().asDegrees())
+
+            ccdpixFromRadec = wcs.skyToPixel(radec)
+            x2.append(ccdpixFromRadec.getX())
+            y2.append(ccdpixFromRadec.getY())
     
-            ra2.append(coordRadecFromXyRadian.getLongitude().asDegrees())
-            dec2.append(coordRadecFromXyRadian.getLatitude().asDegrees())
 
             # using okura-kun's functions
-            radecRef = [raRef.asDegrees(), decRef.asDegrees()]
+            radecRef = [radec.getLongitude().asDegrees(), radec.getLatitude().asDegrees()]
             xyFromRadec2 = tansip.getxglobal(radecRef, WCSA_ASP)
-            xFromRadec2 = xyFromRadec2[0] - xCcdPos  
-            yFromRadec2 = xyFromRadec2[1] - yCcdPos
-            x2_2.append(xFromRadec2)
-            y2_2.append(yFromRadec2)
+            x2_2.append(xyFromRadec2[0] - xCcdPos)
+            y2_2.append(xyFromRadec2[1] - yCcdPos)
             
-            coordRadecRefRadian = afwCoord.Coord(afwGeom.PointD(raRef.asDegrees(), decRef.asDegrees()))
-    
-            dSky.append( coordRadecRefRadian.angularSeparation(coordRadecFromXyRadian).asDegrees() * 3600.0 )  # holds in arcsec
-            dXY.append( numpy.hypot(xDet-xFromRadec, yDet-yFromRadec) )
-            dXY_2.append( numpy.hypot(xDet-xFromRadec2, yDet-yFromRadec2) )            
+            dSky.append(radec.angularSeparation(coordRadecFromXy).asDegrees() * 3600.0 )  # holds in arcsec
+            dXY.append(numpy.hypot(xDet-ccdpixFromRadec.getX(), yDet-ccdpixFromRadec.getY()))
+            dXY_2.append(numpy.hypot(xDet-xyFromRadec2[0], yDet-xyFromRadec2[1]))
     
     ra1 = numpy.array(ra1)
     dec1 = numpy.array(dec1)
