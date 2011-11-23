@@ -263,9 +263,7 @@ if __name__ == '__main__':
 #    do_writeNewWcs = True # New FITS file will be created
     do_writeNewWcs = False # Only solve 
 
-    rerun = "price"
-    visit = 126969
-
-    visit = int(sys.argv[1])
-
+    rerun = sys.argv[1]
+    visit = int(sys.argv[2])
+    
     main(hsc_or_sc, rerun, visit)
