@@ -1,4 +1,3 @@
-setupRequired(hscBase)
 setupRequired(afw)
 
 envPrepend(LD_LIBRARY_PATH, ${PRODUCT_DIR}/lib)
