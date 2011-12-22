@@ -1,7 +1,7 @@
 //------------------------------------------------------------
 //WCS_CSIP.h
 //
-//Last modification : 2011/10/01
+//Last modification : 2011/12/20
 //------------------------------------------------------------
 #ifndef WCS_CSIP_H
 #define WCS_CSIP_H
@@ -20,23 +20,23 @@ public:
     double CD[2][2];
     double InvCD[2][2];
     double *SIP_AB[2];
-    double SIP_AB_GERR[2][2];//difference between SIPxy and xy from refference RADEC
-    double SIP_AB_LERR[2][2];//difference between SIPxy and xy from refference RADEC
+    double SIP_AB_ERR[2][2];//difference between SIPxy and xy from refference RADEC
     double *SIP_ABP[2];
-    double SIP_ABP_GERR[2][2];//difference between SIPxy and xy from refference RADEC
-    double SIP_ABP_LERR[2][2];//difference between SIPxy and xy from refference RADEC
+    double SIP_ABP_ERR[2][2];//difference between SIPxy and xy from refference RADEC
     double ANGLE;
 //for CALC
     double *Coef[2];
     double *PCoef[2];
     double *LCoef[2];
 //for check
-    double *SIP_MAG;
-    double *SIP_SHEAR[2];
-    double *SIP_ROT;
-    double *PSIP_MAG;
-    double *PSIP_SHEAR[2];
-    double *PSIP_ROT;
+double *SIP_MAG;
+double *PSIP_MAG;
+double *SIP_CRS[4];//(CONVERGENCE,ROTATION,SHEAR)
+double *PSIP_CRS[4];//(CONVERGENCE,ROTATION,SHEAR)
+double *SIP_SHEAR[2];
+double *SIP_ROT;
+double *PSIP_SHEAR[2];
+double *PSIP_ROT;
 
     int POSID[2];
 /*DEL*/

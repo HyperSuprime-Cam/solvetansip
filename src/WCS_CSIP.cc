@@ -14,10 +14,7 @@
 using namespace std;
 //MAIN
 void CL_GSIP::F_WCSA_GSIP_CALCLOCALSIP(){
-    int CID;
-
     F_WCSA_GSIP_LOCALSIP();
-    if(STDOUT==2)for(CID=0;CID<CCDNUM;CID++)F_WCSA_GSIP_SHOWCSIP(CID);
 }
 
 
@@ -81,6 +78,18 @@ void CL_GSIP::F_WCSA_GSIP_LOCALSIP(){
 
         F_SIPROT(SIP_P_ORDER,CSIP[CID].GPOS[2],CSIP[CCDNUM].PCoef[0],CSIP[CID].PCoef[0]);
         F_SIPROT(SIP_P_ORDER,CSIP[CID].GPOS[2],CSIP[CCDNUM].PCoef[1],CSIP[CID].PCoef[1]);
+
+        CSIP[CID].CD[0][0]=CSIP[CID].Coef[0][1*(SIP_ORDER+1)+0];
+        CSIP[CID].CD[0][1]=CSIP[CID].Coef[0][0*(SIP_ORDER+1)+1];
+        CSIP[CID].CD[1][0]=CSIP[CID].Coef[1][1*(SIP_ORDER+1)+0];
+        CSIP[CID].CD[1][1]=CSIP[CID].Coef[1][0*(SIP_ORDER+1)+1]; 
+        CSIP[CID].ANGLE=atan2(CSIP[CID].CD[1][0]-(-1)*CSIP[CID].CD[0][1],(-1)*CSIP[CID].CD[0][0]+CSIP[CID].CD[1][1]);
+
+        CSIP[CID].InvCD[0][0]= CSIP[CID].CD[1][1]/(CSIP[CID].CD[0][0]*CSIP[CID].CD[1][1]-CSIP[CID].CD[1][0]*CSIP[CID].CD[0][1]);
+        CSIP[CID].InvCD[0][1]=-CSIP[CID].CD[0][1]/(CSIP[CID].CD[0][0]*CSIP[CID].CD[1][1]-CSIP[CID].CD[1][0]*CSIP[CID].CD[0][1]);
+        CSIP[CID].InvCD[1][0]=-CSIP[CID].CD[1][0]/(CSIP[CID].CD[0][0]*CSIP[CID].CD[1][1]-CSIP[CID].CD[1][0]*CSIP[CID].CD[0][1]);
+        CSIP[CID].InvCD[1][1]= CSIP[CID].CD[0][0]/(CSIP[CID].CD[0][0]*CSIP[CID].CD[1][1]-CSIP[CID].CD[1][0]*CSIP[CID].CD[0][1]);
+
         ij=0;
         for(i=0;i<SIP_P_ORDER+1;i++)
         for(j=0;j<SIP_P_ORDER+1;j++)
@@ -92,10 +101,19 @@ void CL_GSIP::F_WCSA_GSIP_LOCALSIP(){
             ij++;	
         }
 
-        F_SIPROT(SIP_P_ORDER,CSIP[CID].GPOS[2],CSIP[CCDNUM].SIP_MAG,CSIP[CID].SIP_MAG);
-        F_SIPROT(SIP_P_ORDER,CSIP[CID].GPOS[2],CSIP[CCDNUM].SIP_SHEAR[0],CSIP[CID].SIP_SHEAR[0]);
-        F_SIPROT(SIP_P_ORDER,CSIP[CID].GPOS[2],CSIP[CCDNUM].SIP_SHEAR[1],CSIP[CID].SIP_SHEAR[1]);
-        F_SIPROT(SIP_P_ORDER,CSIP[CID].GPOS[2],CSIP[CCDNUM].SIP_ROT,CSIP[CID].SIP_ROT);
+        F_SIPROT(SIP_ORDER,CSIP[CID].GPOS[2],CSIP[CCDNUM].SIP_MAG,CSIP[CID].SIP_MAG);
+        F_SIPROT(SIP_ORDER,CSIP[CID].GPOS[2],CSIP[CCDNUM].SIP_CRS[0],CSIP[CID].SIP_CRS[0]);
+        F_SIPROT(SIP_ORDER,CSIP[CID].GPOS[2],CSIP[CCDNUM].SIP_CRS[1],CSIP[CID].SIP_CRS[1]);
+        F_SIPROT(SIP_ORDER,CSIP[CID].GPOS[2],CSIP[CCDNUM].SIP_CRS[2],CSIP[CID].SIP_CRS[2]);
+        F_SIPROT(SIP_ORDER,CSIP[CID].GPOS[2],CSIP[CCDNUM].SIP_CRS[3],CSIP[CID].SIP_CRS[3]);
+        F_SIPROT(SIP_P_ORDER,CSIP[CID].GPOS[2],CSIP[CCDNUM].PSIP_MAG,CSIP[CID].PSIP_MAG);
+        F_SIPROT(SIP_P_ORDER,CSIP[CID].GPOS[2],CSIP[CCDNUM].PSIP_CRS[0],CSIP[CID].PSIP_CRS[0]);
+        F_SIPROT(SIP_P_ORDER,CSIP[CID].GPOS[2],CSIP[CCDNUM].PSIP_CRS[1],CSIP[CID].PSIP_CRS[1]);
+        F_SIPROT(SIP_P_ORDER,CSIP[CID].GPOS[2],CSIP[CCDNUM].PSIP_CRS[2],CSIP[CID].PSIP_CRS[2]);
+        F_SIPROT(SIP_P_ORDER,CSIP[CID].GPOS[2],CSIP[CCDNUM].PSIP_CRS[3],CSIP[CID].PSIP_CRS[3]);
+F_SIPROT(SIP_P_ORDER,CSIP[CID].GPOS[2],CSIP[CCDNUM].SIP_SHEAR[0],CSIP[CID].SIP_SHEAR[0]);
+F_SIPROT(SIP_P_ORDER,CSIP[CID].GPOS[2],CSIP[CCDNUM].SIP_SHEAR[1],CSIP[CID].SIP_SHEAR[1]);
+F_SIPROT(SIP_P_ORDER,CSIP[CID].GPOS[2],CSIP[CCDNUM].SIP_ROT,CSIP[CID].SIP_ROT);
 
         CSIP[CID].CRVAL[0]=CSIP[CCDNUM].CRVAL[0];
         CSIP[CID].CRVAL[1]=CSIP[CCDNUM].CRVAL[1];
@@ -116,17 +134,6 @@ void CL_GSIP::F_WCSA_GSIP_SETSIP(){
     int CID;
 
     for(CID=0;CID<CCDNUM;CID++){
-        CSIP[CID].CD[0][0]=CSIP[CID].Coef[0][1*(SIP_ORDER+1)+0];
-        CSIP[CID].CD[0][1]=CSIP[CID].Coef[0][0*(SIP_ORDER+1)+1];
-        CSIP[CID].CD[1][0]=CSIP[CID].Coef[1][1*(SIP_ORDER+1)+0];
-        CSIP[CID].CD[1][1]=CSIP[CID].Coef[1][0*(SIP_ORDER+1)+1]; 
-        CSIP[CID].ANGLE=atan2(CSIP[CID].CD[1][0]-(-1)*CSIP[CID].CD[0][1],(-1)*CSIP[CID].CD[0][0]+CSIP[CID].CD[1][1]);
-
-        CSIP[CID].InvCD[0][0]= CSIP[CID].CD[1][1]/(CSIP[CID].CD[0][0]*CSIP[CID].CD[1][1]-CSIP[CID].CD[1][0]*CSIP[CID].CD[0][1]);
-        CSIP[CID].InvCD[0][1]=-CSIP[CID].CD[0][1]/(CSIP[CID].CD[0][0]*CSIP[CID].CD[1][1]-CSIP[CID].CD[1][0]*CSIP[CID].CD[0][1]);
-        CSIP[CID].InvCD[1][0]=-CSIP[CID].CD[1][0]/(CSIP[CID].CD[0][0]*CSIP[CID].CD[1][1]-CSIP[CID].CD[1][0]*CSIP[CID].CD[0][1]);
-        CSIP[CID].InvCD[1][1]= CSIP[CID].CD[0][0]/(CSIP[CID].CD[0][0]*CSIP[CID].CD[1][1]-CSIP[CID].CD[1][0]*CSIP[CID].CD[0][1]);
-
         ij=0;
         for(i=0;i<SIP_ORDER+1;i++)
         for(j=0;j<SIP_ORDER+1;j++)
@@ -175,6 +182,8 @@ void CL_GSIP::F_WCSA_GSIP_SET0(){
 }
 void CL_GSIP::F_WCSA_GSIP_SHOWGSIP(){
     cout << "-- GSIP CHECK --" << endl;
+    cout << fixed;
+    cout.unsetf(ios::fixed);
     cout << "CCDNUM      : " << CCDNUM      << endl;
     cout << "ALLREFNUM   : " << ALLREFNUM   << endl;
     cout << "CRPIXMODE   : " << CRPIXMODE   << endl;
@@ -202,6 +211,11 @@ void CL_GSIP::F_WCSA_GSIP_SHOWGSIP(){
     cout << "CD_1_2      : " << CSIP[CCDNUM].CD[0][1] << endl;
     cout << "CD_2_1      : " << CSIP[CCDNUM].CD[1][0] << endl;
     cout << "CD_2_2      : " << CSIP[CCDNUM].CD[1][1] << endl;
+    cout << "InvCD_1_1   : " << CSIP[CCDNUM].InvCD[0][0] << endl;
+    cout << "InvCD_1_2   : " << CSIP[CCDNUM].InvCD[0][1] << endl;
+    cout << "InvCD_2_1   : " << CSIP[CCDNUM].InvCD[1][0] << endl;
+    cout << "InvCD_2_2   : " << CSIP[CCDNUM].InvCD[1][1] << endl;
+    cout << fixed;
     cout <<endl;
 }
 void CL_GSIP::F_WCSA_GSIP_SHOWCSIP(int CID){
@@ -219,11 +233,48 @@ void CL_GSIP::F_WCSA_GSIP_SHOWCSIP(int CID){
     cout << "CRPIX2      : " << CSIP[CID].CRPIX[1] << endl;
     cout << "CRVAL1      : " << CSIP[CID].CRVAL[0] << endl;
     cout << "CRVAL2      : " << CSIP[CID].CRVAL[1] << endl;
+    cout.unsetf(ios::fixed);
     cout << "CD_1_1      : " << CSIP[CID].CD[0][0] << endl;
     cout << "CD_1_2      : " << CSIP[CID].CD[0][1] << endl;
     cout << "CD_2_1      : " << CSIP[CID].CD[1][0] << endl;
     cout << "CD_2_2      : " << CSIP[CID].CD[1][1] << endl;
-    cout <<endl;
+    cout << "InvCD_1_1   : " << CSIP[CID].InvCD[0][0] << endl;
+    cout << "InvCD_1_2   : " << CSIP[CID].InvCD[0][1] << endl;
+    cout << "InvCD_2_1   : " << CSIP[CID].InvCD[1][0] << endl;
+    cout << "InvCD_2_2   : " << CSIP[CID].InvCD[1][1] << endl;
+    cout << scientific;
+    int i,j,ij;
+    ij=0;
+    for(i=0;i<SIP_ORDER+1;i++)
+    for(j=0;j<SIP_ORDER+1;j++)
+    if(i+j<SIP_ORDER+1)
+    cout << "  SIPx["<<i<<"]["<<j<<"] : "<< CSIP[CID].SIP_AB[0][ij++]<<endl;
+    ij=0;
+    for(i=0;i<SIP_ORDER+1;i++)
+    for(j=0;j<SIP_ORDER+1;j++)
+    if(i+j<SIP_ORDER+1)
+    cout << "  SIPy["<<i<<"]["<<j<<"] : "<< CSIP[CID].SIP_AB[1][ij++]<<endl;
+    ij=0;
+    for(i=0;i<SIP_P_ORDER+1;i++)
+    for(j=0;j<SIP_P_ORDER+1;j++)
+    if(i+j<SIP_ORDER+1)
+    cout << " PSIPx["<<i<<"]["<<j<<"] : "<< CSIP[CID].SIP_ABP[0][ij++]<<endl;
+    ij=0;
+    for(i=0;i<SIP_P_ORDER+1;i++)
+    for(j=0;j<SIP_P_ORDER+1;j++)
+    if(i+j<SIP_ORDER+1)
+    cout << " PSIPy["<<i<<"]["<<j<<"] : "<< CSIP[CID].SIP_ABP[1][ij++]<<endl;
+    cout << " SIPGxErrAVE : " << CSIP[CID].SIP_AB_ERR[0][0] << "	(pix)"<< endl;
+    cout << " SIPGxErrRMS : " << CSIP[CID].SIP_AB_ERR[0][1] << "	(pix)" << endl;
+    cout << " SIPGyErrAVE : " << CSIP[CID].SIP_AB_ERR[1][0] << "	(pix)" << endl;
+    cout << " SIPGyErrRMS : " << CSIP[CID].SIP_AB_ERR[1][1] << "	(pix)" << endl;
+    cout << "PSIPGxErrAVE : " << CSIP[CID].SIP_ABP_ERR[0][0] << "	(pix)" << endl;
+    cout << "PSIPGxErrRMS : " << CSIP[CID].SIP_ABP_ERR[0][1] << "	(pix)" << endl;
+    cout << "PSIPGyErrAVE : " << CSIP[CID].SIP_ABP_ERR[1][0] << "	(pix)" << endl;
+    cout << "PSIPGyErrRMS : " << CSIP[CID].SIP_ABP_ERR[1][1] << "	(pix)" << endl;
+    cout << "--------------------------------------------------" <<endl;
+    cout.unsetf(ios::scientific);
+    cout << endl;
 }
 void CL_GSIP::F_WCSA_GSIP_SHOWGLOBAL(){
     cout << "--- GLOBAL FITTING STATISTICS --------------------" <<endl;
@@ -265,14 +316,14 @@ void CL_GSIP::F_WCSA_GSIP_SHOWGLOBAL(){
     for(j=0;j<SIP_P_ORDER+1;j++)
     if(i+j<SIP_ORDER+1)
     cout << " PSIPy["<<i<<"]["<<j<<"] : "<< CSIP[CCDNUM].SIP_ABP[1][ij++]<<endl;
-    cout << " SIPGxErrAVE : " << CSIP[CCDNUM].SIP_AB_GERR[0][0] << "	(pix)"<< endl;
-    cout << " SIPGxErrRMS : " << CSIP[CCDNUM].SIP_AB_GERR[0][1] << "	(pix)" << endl;
-    cout << " SIPGyErrAVE : " << CSIP[CCDNUM].SIP_AB_GERR[1][0] << "	(pix)" << endl;
-    cout << " SIPGyErrRMS : " << CSIP[CCDNUM].SIP_AB_GERR[1][1] << "	(pix)" << endl;
-    cout << "PSIPGxErrAVE : " << CSIP[CCDNUM].SIP_ABP_GERR[0][0] << "	(pix)" << endl;
-    cout << "PSIPGxErrRMS : " << CSIP[CCDNUM].SIP_ABP_GERR[0][1] << "	(pix)" << endl;
-    cout << "PSIPGyErrAVE : " << CSIP[CCDNUM].SIP_ABP_GERR[1][0] << "	(pix)" << endl;
-    cout << "PSIPGyErrRMS : " << CSIP[CCDNUM].SIP_ABP_GERR[1][1] << "	(pix)" << endl;
+    cout << " SIPGxErrAVE : " << CSIP[CCDNUM].SIP_AB_ERR[0][0] << "	(pix)"<< endl;
+    cout << " SIPGxErrRMS : " << CSIP[CCDNUM].SIP_AB_ERR[0][1] << "	(pix)" << endl;
+    cout << " SIPGyErrAVE : " << CSIP[CCDNUM].SIP_AB_ERR[1][0] << "	(pix)" << endl;
+    cout << " SIPGyErrRMS : " << CSIP[CCDNUM].SIP_AB_ERR[1][1] << "	(pix)" << endl;
+    cout << "PSIPGxErrAVE : " << CSIP[CCDNUM].SIP_ABP_ERR[0][0] << "	(pix)" << endl;
+    cout << "PSIPGxErrRMS : " << CSIP[CCDNUM].SIP_ABP_ERR[0][1] << "	(pix)" << endl;
+    cout << "PSIPGyErrAVE : " << CSIP[CCDNUM].SIP_ABP_ERR[1][0] << "	(pix)" << endl;
+    cout << "PSIPGyErrRMS : " << CSIP[CCDNUM].SIP_ABP_ERR[1][1] << "	(pix)" << endl;
     cout << "--------------------------------------------------" <<endl;
     cout.unsetf(ios::scientific);
     cout << endl;
@@ -300,6 +351,7 @@ void CL_GSIP::F_WCSA_GSIP_CHECKCCDPOSITION(){
 void CL_GSIP::F_WCSA_GSIP_SETINITIAL(){
     int CID;
 
+    ANGLE=0;
     CD[0][0]=-4.7*pow(10,-5);
     CD[0][1]= 0.0;
     CD[1][0]= 0.0;
@@ -308,7 +360,20 @@ void CL_GSIP::F_WCSA_GSIP_SETINITIAL(){
     InvCD[0][1]= 0.0;
     InvCD[1][0]= 0.0;
     InvCD[1][1]= 21429;
-    for(CID=0;CID<CCDNUM;CID++){
+
+
+    for(CID=0;CID<CCDNUM+1;CID++){
+    CSIP[CID].ID=0;
+    CSIP[CID].FITNUM=0;
+    CSIP[CID].REFNUM=0;
+    CSIP[CID].GPOS[0] =CSIP[CID].GPOS[1] =CSIP[CID].GPOS[2]=0;
+    CSIP[CID].OAVAL[0]=CSIP[CID].OAVAL[1]=0;
+    CSIP[CID].OAPIX[0]=CSIP[CID].OAPIX[1]=0;
+    CSIP[CID].CRVAL[0]=CSIP[CID].CRVAL[1]=0;
+    CSIP[CID].CRPIX[0]=CSIP[CID].CRPIX[1]=0;
+    CSIP[CID].ANGLE=0;
+    CSIP[CID].POSID[0]=CSIP[CID].POSID[1]=0;
+
     CSIP[CID].CD[0][0]=CD[0][0];
     CSIP[CID].CD[0][1]=CD[0][1];
     CSIP[CID].CD[1][0]=CD[1][0];
@@ -317,6 +382,14 @@ void CL_GSIP::F_WCSA_GSIP_SETINITIAL(){
     CSIP[CID].InvCD[0][1]=InvCD[0][1];
     CSIP[CID].InvCD[1][0]=InvCD[1][0];
     CSIP[CID].InvCD[1][1]=InvCD[1][1];
+    CSIP[CID].SIP_AB_ERR[0][0]=0;
+    CSIP[CID].SIP_AB_ERR[0][1]=0;
+    CSIP[CID].SIP_AB_ERR[1][0]=0;
+    CSIP[CID].SIP_AB_ERR[1][1]=0;
+    CSIP[CID].SIP_ABP_ERR[0][0]=0;
+    CSIP[CID].SIP_ABP_ERR[0][1]=0;
+    CSIP[CID].SIP_ABP_ERR[1][0]=0;
+    CSIP[CID].SIP_ABP_ERR[1][1]=0;
     }
 
     if(CCDNUM<11){
@@ -328,6 +401,9 @@ void CL_GSIP::F_WCSA_GSIP_SETINITIAL(){
     
 }
 void CL_GSIP::F_WCSA_GSIP_SETDEFAULTPOSITIONS_SC(){
+    int CID;
+    for(CID=0;CID<10;CID++)
+    CSIP[CID].ID=CID;
     CSIP[  0].GPOS[0]=   4243.45;
     CSIP[  0].GPOS[1]=   1951.42;
     CSIP[  0].GPOS[2]=9.42553e-05;
@@ -360,6 +436,9 @@ void CL_GSIP::F_WCSA_GSIP_SETDEFAULTPOSITIONS_SC(){
     CSIP[  9].GPOS[2]=0.00026042;
 }
 void CL_GSIP::F_WCSA_GSIP_SETDEFAULTPOSITIONS_HSC(){
+    int CID;
+    for(CID=0;CID<100;CID++)
+    CSIP[CID].ID=CID;
     CSIP[  0].GPOS[0]=- 9514.700;
     CSIP[  0].GPOS[1]=-   96.000;
     CSIP[  0].GPOS[2]=  0.000000;
@@ -662,6 +741,9 @@ void CL_GSIP::F_WCSA_GSIP_SETDEFAULTPOSITIONS_HSC(){
     CSIP[ 99].GPOS[2]=  0.000000;
 }
 void CL_GSIP::F_WCSA_GSIP_SETDEFAULTPOSITIONS_SCfromPAF(){
+    int CID;
+    for(CID=0;CID<10;CID++)
+    CSIP[CID].ID=CID;
     CSIP[  0].GPOS[0]=   4243.45;
     CSIP[  0].GPOS[1]=   1951.42;
     CSIP[  0].GPOS[2]=9.42553e-05;
@@ -694,6 +776,9 @@ void CL_GSIP::F_WCSA_GSIP_SETDEFAULTPOSITIONS_SCfromPAF(){
     CSIP[  9].GPOS[2]=0.00026042;
 }
 void CL_GSIP::F_WCSA_GSIP_SETDEFAULTPOSITIONS_HSCfromPAF(){
+    int CID;
+    for(CID=0;CID<100;CID++)
+    CSIP[CID].ID=CID;
     CSIP[  0].GPOS[0]=- 9514.700;
     CSIP[  0].GPOS[1]=-   96.000;
     CSIP[  0].GPOS[2]=  0.000000;
