@@ -1,7 +1,7 @@
 //------------------------------------------------------------
 //WCS_APAIR.cc
 //
-//Last modification : 2011/10/01
+//Last modification : 2011/12/20
 //------------------------------------------------------------
 #include<iostream>
 #include<iomanip>
@@ -1134,8 +1134,8 @@ void CL_APAIR::F_WCSA_APAIR_CCDPOSITIONS_XY(){
 void CL_APAIR::F_WCSA_APAIR_CCDPOSITIONS_XY_SETAVERAGE(){
     int CID;
     for(CID=0;CID<CCDNUM;CID++){
-    GPOS[CID][0]-=GPOS_AVE[0]-1024;
-    GPOS[CID][1]-=GPOS_AVE[1]-2048;
+    GPOS[CID][0]-=GPOS_AVE[0]+1024;
+    GPOS[CID][1]-=GPOS_AVE[1]+2048;
     }
 }
 //ETC

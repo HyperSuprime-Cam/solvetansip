@@ -19,6 +19,50 @@ void CL_GSIP::F_WCSA_GSIP_CALCLOCALSIP(){
 
 
 
+void CL_CSIP::F_WCSA_CSIP_XLOCALtoXRADEC(double *PIXEL,double *RADEC){
+    double XX[2],YY[2];
+
+    XX[0]=PIXEL[0]-CRPIX[0];
+    XX[1]=PIXEL[1]-CRPIX[1];
+    YY[0]=F_CALCVALUE(SIP_ORDER,SIP_AB[0],XX)+XX[0];
+    YY[1]=F_CALCVALUE(SIP_ORDER,SIP_AB[1],XX)+XX[1];
+    XX[0]=CD[0][0]*YY[0]+CD[0][1]*YY[1];
+    XX[1]=CD[1][0]*YY[0]+CD[1][1]*YY[1];
+    F_InvPROJECTION(XX,RADEC,CRVAL);
+}
+void CL_CSIP::F_WCSA_CSIP_XCRPIXtoXRADEC(double *PIXEL,double *RADEC){
+    double XX[2],YY[2];
+
+    XX[0]=PIXEL[0];
+    XX[1]=PIXEL[1];
+    YY[0]=F_CALCVALUE(SIP_ORDER,SIP_AB[0],XX)+XX[0];
+    YY[1]=F_CALCVALUE(SIP_ORDER,SIP_AB[1],XX)+XX[1];
+    XX[0]=CD[0][0]*YY[0]+CD[0][1]*YY[1];
+    XX[1]=CD[1][0]*YY[0]+CD[1][1]*YY[1];
+    F_InvPROJECTION(XX,RADEC,CRVAL);
+}
+void CL_CSIP::F_WCSA_CSIP_XRADECtoXLOCAL(double *RADEC,double *PIXEL){
+    double XX[2],YY[2];
+
+    F_PROJECTION(RADEC,YY,CRVAL);
+    XX[0]=InvCD[0][0]*YY[0]+InvCD[0][1]*YY[1];
+    XX[1]=InvCD[1][0]*YY[0]+InvCD[1][1]*YY[1];
+    YY[0]=F_CALCVALUE(SIP_P_ORDER,SIP_ABP[0],XX)+XX[0];
+    YY[1]=F_CALCVALUE(SIP_P_ORDER,SIP_ABP[1],XX)+XX[1];
+    PIXEL[0]=YY[0]+CRPIX[0];
+    PIXEL[1]=YY[1]+CRPIX[1];
+}
+void CL_CSIP::F_WCSA_CSIP_XRADECtoXCRPIX(double *RADEC,double *PIXEL){
+    double XX[2],YY[2];
+
+    F_PROJECTION(RADEC,YY,CRVAL);
+    XX[0]=InvCD[0][0]*YY[0]+InvCD[0][1]*YY[1];
+    XX[1]=InvCD[1][0]*YY[0]+InvCD[1][1]*YY[1];
+    YY[0]=F_CALCVALUE(SIP_P_ORDER,SIP_ABP[0],XX)+XX[0];
+    YY[1]=F_CALCVALUE(SIP_P_ORDER,SIP_ABP[1],XX)+XX[1];
+    PIXEL[0]=YY[0];
+    PIXEL[1]=YY[1];
+}
 void CL_GSIP::F_WCSA_GSIP_PIXELtoRADEC(double *PIXEL,double *RADEC){
     double XX[2],YY[2];
 

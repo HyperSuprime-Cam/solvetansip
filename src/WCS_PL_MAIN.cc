@@ -297,593 +297,473 @@ void CL_WCSA_ASP::F_WCS_PLMAIN_SETWCSA_ASP(){
 std::vector <lsst::afw::image::TanWcs::Ptr> F_WCSA_PLMAIN_GETWCSLIST(CL_WCSA_ASP* WCSA_ASP){
     return WCSA_ASP->WCSPtr;
 }
+//-----------------------------------------------------------------
+//Getting Functions : WCS : POSITION
+//-----------------------------------------------------------------
+std::vector< double > F_WCSA_PLMAIN_GETPOSITION_RADECfromLOCAL(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > XY){
+    int CHIPID;
+    double LOCAL[2],RD[2];
+    std::vector< double > RADEC(2);
 
+    if(CID>-0.5&&CID<WCSA_ASP->APROP->CCDNUM-0.5){
+        CHIPID=CID;
+    }else{
+        CHIPID=WCSA_ASP->APROP->CCDNUM;
+    }
+
+    LOCAL[0]=XY[0];
+    LOCAL[1]=XY[1];
+    WCSA_ASP->GSIP->CSIP[CHIPID].F_WCSA_CSIP_XLOCALtoXRADEC(LOCAL,RD);
+    RADEC[0]=RD[0];
+    RADEC[1]=RD[1];
+
+    return RADEC;
+}
+std::vector< double > F_WCSA_PLMAIN_GETPOSITION_RADECfromCRPIX(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > XY){
+    int CHIPID;
+    double XCRPIX[2],RD[2];
+    std::vector< double > RADEC(2);
+
+    if(CID>-0.5&&CID<WCSA_ASP->APROP->CCDNUM-0.5){
+        CHIPID=CID;
+    }else{
+        CHIPID=WCSA_ASP->APROP->CCDNUM;
+    }
+
+    XCRPIX[0]=XY[0];
+    XCRPIX[1]=XY[1];
+    WCSA_ASP->GSIP->CSIP[CHIPID].F_WCSA_CSIP_XCRPIXtoXRADEC(XCRPIX,RD);
+    RADEC[0]=RD[0];
+    RADEC[1]=RD[1];
+
+    return RADEC;
+}
+std::vector< double > F_WCSA_PLMAIN_GETPOSITION_LOCALfromRADEC(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > XY){
+    int CHIPID;
+    double RADEC[2],RD[2];
+    std::vector< double > LOCAL(2);
+
+    if(CID>-0.5&&CID<WCSA_ASP->APROP->CCDNUM-0.5){
+        CHIPID=CID;
+    }else{
+        CHIPID=WCSA_ASP->APROP->CCDNUM;
+    }
+
+    RADEC[0]=XY[0];
+    RADEC[1]=XY[1];
+    WCSA_ASP->GSIP->CSIP[CHIPID].F_WCSA_CSIP_XRADECtoXLOCAL(RADEC,RD);
+    LOCAL[0]=RD[0];
+    LOCAL[1]=RD[1];
+
+    return LOCAL;
+}
+std::vector< double > F_WCSA_PLMAIN_GETPOSITION_CRPIXfromRADEC(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > XY){
+    int CHIPID;
+    double RADEC[2],RD[2];
+    std::vector< double > XCRPIX(2);
+
+    if(CID>-0.5&&CID<WCSA_ASP->APROP->CCDNUM-0.5){
+        CHIPID=CID;
+    }else{
+        CHIPID=WCSA_ASP->APROP->CCDNUM;
+    }
+
+    RADEC[0]=XY[0];
+    RADEC[1]=XY[1];
+    WCSA_ASP->GSIP->CSIP[CHIPID].F_WCSA_CSIP_XRADECtoXCRPIX(RADEC,RD);
+    XCRPIX[0]=RD[0];
+    XCRPIX[1]=RD[1];
+
+    return XCRPIX;
+}
+
+std::vector< double > F_WCSA_PLMAIN_GETPOSITION_GLOBALfromCCDIDLOCAL(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > XY){
+    std::vector< double > X_GLOBAL(2);
+    int CCDID=(int)(CID+0.5);
+    X_GLOBAL[0]=WCSA_ASP->GSIP->CSIP[CCDID].GPOS[0]+XY[0]*cos(WCSA_ASP->GSIP->CSIP[CCDID].GPOS[2])-XY[1]*sin(WCSA_ASP->GSIP->CSIP[CCDID].GPOS[2]);
+    X_GLOBAL[1]=WCSA_ASP->GSIP->CSIP[CCDID].GPOS[1]+XY[1]*cos(WCSA_ASP->GSIP->CSIP[CCDID].GPOS[2])+XY[0]*sin(WCSA_ASP->GSIP->CSIP[CCDID].GPOS[2]);
+
+    return X_GLOBAL;
+}
+std::vector< double > F_WCSA_PLMAIN_GETPOSITION_CCDIDLOCALfromGLOBAL(CL_WCSA_ASP* WCSA_ASP,std::vector< double > XY){
+    std::vector< double > CCDIDLOCAL(3);
+    int CID,CHECK=0;
+    double XLOCAL[2];
+cout << XY[0] << "	" << XY[1] << endl;
+    for(CID=0;CID<WCSA_ASP->APROP->CCDNUM;CID++){
+        XLOCAL[0]=(XY[0]-WCSA_ASP->GSIP->CSIP[CID].GPOS[0])*cos(-WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-(XY[1]-WCSA_ASP->GSIP->CSIP[CID].GPOS[1])*sin(-WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+        XLOCAL[1]=(XY[1]-WCSA_ASP->GSIP->CSIP[CID].GPOS[1])*cos(-WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+(XY[0]-WCSA_ASP->GSIP->CSIP[CID].GPOS[0])*sin(-WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+cout << CID << "	" << XLOCAL[0] << "	" << XLOCAL[1] << endl;
+        if(XLOCAL[0]>0&&XLOCAL[0]<2048&&XLOCAL[1]>0&&XLOCAL[1]<4096){
+            CCDIDLOCAL[0]=CID;
+            CCDIDLOCAL[1]=XLOCAL[0];
+            CCDIDLOCAL[2]=XLOCAL[1];
+            CHECK=1;
+            break;
+        }
+    }
+cout << CHECK << "	" << CID << "	" << XLOCAL[0] << "	" << XLOCAL[1] << endl;
+    if(CHECK==0){
+        cout << "No CCDs(2048,4096) have the global position : " << XY[0] << " , " << XY[1]<<endl;
+            CCDIDLOCAL[0]=0;
+            CCDIDLOCAL[1]=0;
+            CCDIDLOCAL[2]=0;
+    }
+cout << CHECK << "	" << CID << "	" << XLOCAL[0] << "	" << XLOCAL[1] << endl;
+
+    return CCDIDLOCAL;
+}
 //-----------------------------------------------------------------
 //Getting Functions : WCS : REFERNCE
 //-----------------------------------------------------------------
-std::vector< double > F_WCSA_PLMAIN_GETREFALL_ID(CL_WCSA_ASP* WCSA_ASP){
+std::vector< double > F_WCSA_PLMAIN_GETREF_ID(CL_WCSA_ASP* WCSA_ASP, int CID){
     int RID;
-    std::vector< double > ALLREFINFO_ID;
-
-    for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
-    ALLREFINFO_ID.push_back(WCSA_ASP->APAIR->PAIR[RID].ID);
-
-    return ALLREFINFO_ID;
-}
-std::vector< double > F_WCSA_PLMAIN_GETREFALL_CHIPID(CL_WCSA_ASP* WCSA_ASP){
-    int RID;
-    std::vector< double > ALLREFINFO_CHIPID;
-
-    for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
-    ALLREFINFO_CHIPID.push_back(WCSA_ASP->APAIR->PAIR[RID].CHIPID);
-
-    return ALLREFINFO_CHIPID;
-}
-std::vector< double > F_WCSA_PLMAIN_GETREFALL_FLAG(CL_WCSA_ASP* WCSA_ASP){
-    int RID;
-    std::vector< double > ALLREFINFO_FLAG;
-
-    for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
-    ALLREFINFO_FLAG.push_back(WCSA_ASP->APAIR->PAIR[RID].FLAG);
-
-    return ALLREFINFO_FLAG;
-}
-std::vector< std::vector< double > > F_WCSA_PLMAIN_GETREFALL_XYLOCAL(CL_WCSA_ASP* WCSA_ASP){
-    int RID;
-    std::vector< double > ALLREFINFO_XYLOCAL(2);
-    std::vector< std::vector< double > > ALLREFINFO_XYLOCALS;
-
-    for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++){
-    ALLREFINFO_XYLOCAL[0]=WCSA_ASP->APAIR->PAIR[RID].X_LOCAL[0];
-    ALLREFINFO_XYLOCAL[1]=WCSA_ASP->APAIR->PAIR[RID].X_LOCAL[1];
-    ALLREFINFO_XYLOCALS.push_back(ALLREFINFO_XYLOCAL);
-    }
-
-    return ALLREFINFO_XYLOCALS;
-}
-std::vector< std::vector< double > > F_WCSA_PLMAIN_GETREFALL_XYRADEC(CL_WCSA_ASP* WCSA_ASP){
-    int RID;
-    std::vector< double > ALLREFINFO_XYRADEC(2);
-    std::vector< std::vector< double > > ALLREFINFO_XYRADECS;
-
-    for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++){
-    ALLREFINFO_XYRADEC[0]=WCSA_ASP->APAIR->PAIR[RID].X_RADEC[0];
-    ALLREFINFO_XYRADEC[1]=WCSA_ASP->APAIR->PAIR[RID].X_RADEC[1];
-    ALLREFINFO_XYRADECS.push_back(ALLREFINFO_XYRADEC);
-    }
-
-    return ALLREFINFO_XYRADECS;
-}
-std::vector< std::vector< double > > F_WCSA_PLMAIN_GETREFALL_XYGLOBAL(CL_WCSA_ASP* WCSA_ASP){
-    int RID;
-    std::vector< double > ALLREFINFO_XYGLOBAL(2);
-    std::vector< std::vector< double > > ALLREFINFO_XYGLOBALS;
-
-    for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++){
-    ALLREFINFO_XYGLOBAL[0]=WCSA_ASP->APAIR->PAIR[RID].X_GLOBAL[0];
-    ALLREFINFO_XYGLOBAL[1]=WCSA_ASP->APAIR->PAIR[RID].X_GLOBAL[1];
-    ALLREFINFO_XYGLOBALS.push_back(ALLREFINFO_XYGLOBAL);
-    }
-
-    return ALLREFINFO_XYGLOBALS;
-}
-std::vector< std::vector< double > > F_WCSA_PLMAIN_GETREFALL_XYGLOBALCRPIX(CL_WCSA_ASP* WCSA_ASP){
-    int RID;
-    std::vector< double > ALLREFINFO_XYGLOBALCRPIX(2);
-    std::vector< std::vector< double > > ALLREFINFO_XYGLOBALCRPIXS;
-
-    for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++){
-    ALLREFINFO_XYGLOBALCRPIX[0]=WCSA_ASP->APAIR->PAIR[RID].X_GLOBALCRPIX[0];
-    ALLREFINFO_XYGLOBALCRPIX[1]=WCSA_ASP->APAIR->PAIR[RID].X_GLOBALCRPIX[1];
-    ALLREFINFO_XYGLOBALCRPIXS.push_back(ALLREFINFO_XYGLOBALCRPIX);
-    }
-
-    return ALLREFINFO_XYGLOBALCRPIXS;
-}
-std::vector< std::vector< double > > F_WCSA_PLMAIN_GETREFALL_XYLOCALCRPIX(CL_WCSA_ASP* WCSA_ASP){
-    int RID;
-    std::vector< double > ALLREFINFO_XYLOCALCRPIX(2);
-    std::vector< std::vector< double > > ALLREFINFO_XYLOCALCRPIXS;
-
-    for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++){
-    ALLREFINFO_XYLOCALCRPIX[0]=WCSA_ASP->APAIR->PAIR[RID].X_LOCALCRPIX[0];
-    ALLREFINFO_XYLOCALCRPIX[1]=WCSA_ASP->APAIR->PAIR[RID].X_LOCALCRPIX[1];
-    ALLREFINFO_XYLOCALCRPIXS.push_back(ALLREFINFO_XYLOCALCRPIX);
-    }
-
-    return ALLREFINFO_XYLOCALCRPIXS;
-}
-std::vector< std::vector< double > > F_WCSA_PLMAIN_GETREFALL_XYIMPIXEL(CL_WCSA_ASP* WCSA_ASP){
-    int RID;
-    std::vector< double > ALLREFINFO_XYIMPIXEL(2);
-    std::vector< std::vector< double > > ALLREFINFO_XYIMPIXELS;
-
-    for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++){
-    ALLREFINFO_XYIMPIXEL[0]=WCSA_ASP->APAIR->PAIR[RID].X_IM_PIXEL[0];
-    ALLREFINFO_XYIMPIXEL[1]=WCSA_ASP->APAIR->PAIR[RID].X_IM_PIXEL[1];
-    ALLREFINFO_XYIMPIXELS.push_back(ALLREFINFO_XYIMPIXEL);
-    }
-
-    return ALLREFINFO_XYIMPIXELS;
-}
-std::vector< std::vector< double > > F_WCSA_PLMAIN_GETREFALL_XYIMWORLD(CL_WCSA_ASP* WCSA_ASP){
-    int RID;
-    std::vector< double > ALLREFINFO_XYIMWORLD(2);
-    std::vector< std::vector< double > > ALLREFINFO_XYIMWORLDS;
-
-    for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++){
-    ALLREFINFO_XYIMWORLD[0]=WCSA_ASP->APAIR->PAIR[RID].X_IM_WORLD[0];
-    ALLREFINFO_XYIMWORLD[1]=WCSA_ASP->APAIR->PAIR[RID].X_IM_WORLD[1];
-    ALLREFINFO_XYIMWORLDS.push_back(ALLREFINFO_XYIMWORLD);
-    }
-
-    return ALLREFINFO_XYIMWORLDS;
-}
-std::vector< double > F_WCSA_PLMAIN_GETREFALL_CAMERACONV(CL_WCSA_ASP* WCSA_ASP){
-    int RID;
-    std::vector< double > ALLREFINFO_CAMERACONV;
-
-    for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
-    ALLREFINFO_CAMERACONV.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_CONVROT[0]);
-
-    return ALLREFINFO_CAMERACONV;
-}
-std::vector< double > F_WCSA_PLMAIN_GETREFALL_CAMERAROT(CL_WCSA_ASP* WCSA_ASP){
-    int RID;
-    std::vector< double > ALLREFINFO_CAMERAROT;
-
-    for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
-    ALLREFINFO_CAMERAROT.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_CONVROT[1]);
-
-    return ALLREFINFO_CAMERAROT;
-}
-std::vector< double > F_WCSA_PLMAIN_GETREFALL_CAMERASHEAR1(CL_WCSA_ASP* WCSA_ASP){
-    int RID;
-    std::vector< double > ALLREFINFO_CAMERASHEAR1;
-
-    for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
-    ALLREFINFO_CAMERASHEAR1.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_SHEAR[0]);
-
-    return ALLREFINFO_CAMERASHEAR1;
-}
-std::vector< double > F_WCSA_PLMAIN_GETREFALL_CAMERASHEAR2(CL_WCSA_ASP* WCSA_ASP){
-    int RID;
-    std::vector< double > ALLREFINFO_CAMERASHEAR2;
-
-    for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
-    ALLREFINFO_CAMERASHEAR2.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_SHEAR[1]);
-
-    return ALLREFINFO_CAMERASHEAR2;
-}
-std::vector< double > F_WCSA_PLMAIN_GETREFALL_CAMERAMAGNIFICATION(CL_WCSA_ASP* WCSA_ASP){
-    int RID;
-    std::vector< double > ALLREFINFO_CAMERAMAGNIFICATION;
-
-    for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
-    ALLREFINFO_CAMERAMAGNIFICATION.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_MAGNIFICATION);
-
-    return ALLREFINFO_CAMERAMAGNIFICATION;
-}
-std::vector< double > F_WCSA_PLMAIN_GETREFALL_CAMERAPCONV(CL_WCSA_ASP* WCSA_ASP){
-    int RID;
-    std::vector< double > ALLREFINFO_CAMERAPCONV;
-
-    for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
-    ALLREFINFO_CAMERAPCONV.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_PCONVROT[0]);
-
-    return ALLREFINFO_CAMERAPCONV;
-}
-std::vector< double > F_WCSA_PLMAIN_GETREFALL_CAMERAPROT(CL_WCSA_ASP* WCSA_ASP){
-    int RID;
-    std::vector< double > ALLREFINFO_CAMERAPROT;
-
-    for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
-    ALLREFINFO_CAMERAPROT.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_PCONVROT[1]);
-
-    return ALLREFINFO_CAMERAPROT;
-}
-std::vector< double > F_WCSA_PLMAIN_GETREFALL_CAMERAPSHEAR1(CL_WCSA_ASP* WCSA_ASP){
-    int RID;
-    std::vector< double > ALLREFINFO_CAMERAPSHEAR1;
-
-    for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
-    ALLREFINFO_CAMERAPSHEAR1.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_PSHEAR[0]);
-
-    return ALLREFINFO_CAMERAPSHEAR1;
-}
-std::vector< double > F_WCSA_PLMAIN_GETREFALL_CAMERAPSHEAR2(CL_WCSA_ASP* WCSA_ASP){
-    int RID;
-    std::vector< double > ALLREFINFO_CAMERAPSHEAR2;
-
-    for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
-    ALLREFINFO_CAMERAPSHEAR2.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_PSHEAR[1]);
-
-    return ALLREFINFO_CAMERAPSHEAR2;
-}
-std::vector< double > F_WCSA_PLMAIN_GETREFALL_CAMERAPMAGNIFICATION(CL_WCSA_ASP* WCSA_ASP){
-    int RID;
-    std::vector< double > ALLREFINFO_CAMERAPMAGNIFICATION;
-
-    for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
-    ALLREFINFO_CAMERAPMAGNIFICATION.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_PMAGNIFICATION);
-
-    return ALLREFINFO_CAMERAPMAGNIFICATION;
-}
-
-std::vector< double > F_WCSA_PLMAIN_GETREFCCD_ID(CL_WCSA_ASP* WCSA_ASP, int CID){
-    int RID;
-    std::vector< double > CCDREFINFO_ID;
+    std::vector< double > REFINFO_ID;
 
     if(CID>-0.5&&CID<WCSA_ASP->APROP->CCDNUM-0.5){
         for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
         if(WCSA_ASP->APAIR->PAIR[RID].CHIPID==CID)
-        CCDREFINFO_ID.push_back(WCSA_ASP->APAIR->PAIR[RID].ID);
+        REFINFO_ID.push_back(WCSA_ASP->APAIR->PAIR[RID].ID);
     }else{
-        cout << "Warning : in WCS_GET_REFERENCE_CCD_ID(F_WCSA_PLMAIN_GETREFCCD_ID)" << endl;
-        cout << "        : CID must be between 0 and " << WCSA_ASP->APROP->CCDNUM-1 << endl;
-        cout << "        : but assinged " << CID << endl;
-        CCDREFINFO_ID.push_back(0);
+        for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
+        REFINFO_ID.push_back(WCSA_ASP->APAIR->PAIR[RID].ID);
     }
 
-    return CCDREFINFO_ID;
+    return REFINFO_ID;
 }
-std::vector< double > F_WCSA_PLMAIN_GETREFCCD_CHIPID(CL_WCSA_ASP* WCSA_ASP, int CID){
+std::vector< double > F_WCSA_PLMAIN_GETREF_CHIPID(CL_WCSA_ASP* WCSA_ASP, int CID){
     int RID;
-    std::vector< double > CCDREFINFO_CHIPID;
+    std::vector< double > REFINFO_CHIPID;
 
     if(CID>-0.5&&CID<WCSA_ASP->APROP->CCDNUM-0.5){
         for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
         if(WCSA_ASP->APAIR->PAIR[RID].CHIPID==CID)
-        CCDREFINFO_CHIPID.push_back(WCSA_ASP->APAIR->PAIR[RID].CHIPID);
+        REFINFO_CHIPID.push_back(WCSA_ASP->APAIR->PAIR[RID].CHIPID);
     }else{
-        cout << "Warning : in WCS_GET_REFERENCE_CCD_CHIPID(F_WCSA_PLMAIN_GETREFCCD_CHIPID)" << endl;
-        cout << "        : CID must be between 0 and " << WCSA_ASP->APROP->CCDNUM-1 << endl;
-        cout << "        : but assinged " << CID << endl;
-        CCDREFINFO_CHIPID.push_back(0);
+        for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
+        REFINFO_CHIPID.push_back(WCSA_ASP->APAIR->PAIR[RID].CHIPID);
     }
 
-    return CCDREFINFO_CHIPID;
+    return REFINFO_CHIPID;
 }
-std::vector< double > F_WCSA_PLMAIN_GETREFCCD_FLAG(CL_WCSA_ASP* WCSA_ASP, int CID){
+std::vector< double > F_WCSA_PLMAIN_GETREF_FLAG(CL_WCSA_ASP* WCSA_ASP, int CID){
     int RID;
-    std::vector< double > CCDREFINFO_FLAG;
+    std::vector< double > REFINFO_FLAG;
 
     if(CID>-0.5&&CID<WCSA_ASP->APROP->CCDNUM-0.5){
         for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
         if(WCSA_ASP->APAIR->PAIR[RID].CHIPID==CID)
-        CCDREFINFO_FLAG.push_back(WCSA_ASP->APAIR->PAIR[RID].FLAG);
+        REFINFO_FLAG.push_back(WCSA_ASP->APAIR->PAIR[RID].FLAG);
     }else{
-        cout << "Warning : in WCS_GET_REFERENCE_CCD_FLAG(F_WCSA_PLMAIN_GETREFCCD_FLAG)" << endl;
-        cout << "        : CID must be between 0 and " << WCSA_ASP->APROP->CCDNUM-1 << endl;
-        cout << "        : but assinged " << CID << endl;
-        CCDREFINFO_FLAG.push_back(0);
+        for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
+        REFINFO_FLAG.push_back(WCSA_ASP->APAIR->PAIR[RID].FLAG);
     }
 
-    return CCDREFINFO_FLAG;
+    return REFINFO_FLAG;
 }
-std::vector< std::vector< double > > F_WCSA_PLMAIN_GETREFCCD_XYLOCAL(CL_WCSA_ASP* WCSA_ASP, int CID){
+std::vector< std::vector< double > > F_WCSA_PLMAIN_GETREF_XYLOCAL(CL_WCSA_ASP* WCSA_ASP, int CID){
     int RID;
-    std::vector< double > CCDREFINFO_XYLOCAL(2);
-    std::vector< std::vector< double > > CCDREFINFO_XYLOCALS;
+    std::vector< double > REFINFO_XYLOCAL(2);
+    std::vector< std::vector< double > > REFINFO_XYLOCALS;
 
     if(CID>-0.5&&CID<WCSA_ASP->APROP->CCDNUM-0.5){
         for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
         if(WCSA_ASP->APAIR->PAIR[RID].CHIPID==CID){
-            CCDREFINFO_XYLOCAL[0]=WCSA_ASP->APAIR->PAIR[RID].X_LOCAL[0];
-            CCDREFINFO_XYLOCAL[1]=WCSA_ASP->APAIR->PAIR[RID].X_LOCAL[1];
-            CCDREFINFO_XYLOCALS.push_back(CCDREFINFO_XYLOCAL);
+            REFINFO_XYLOCAL[0]=WCSA_ASP->APAIR->PAIR[RID].X_LOCAL[0];
+            REFINFO_XYLOCAL[1]=WCSA_ASP->APAIR->PAIR[RID].X_LOCAL[1];
+            REFINFO_XYLOCALS.push_back(REFINFO_XYLOCAL);
         }
     }else{
-        cout << "Warning : in WCS_GET_REFERENCE_CCD_XYLOCAL(F_WCSA_PLMAIN_GETREFCCD_XYLOCAL)" << endl;
-        cout << "        : CID must be between 0 and " << WCSA_ASP->APROP->CCDNUM-1 << endl;
-        cout << "        : but assinged " << CID << endl;
-        CCDREFINFO_XYLOCAL.push_back(0);
-        CCDREFINFO_XYLOCALS.push_back(CCDREFINFO_XYLOCAL);
+        for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++){
+            REFINFO_XYLOCAL[0]=WCSA_ASP->APAIR->PAIR[RID].X_LOCAL[0];
+            REFINFO_XYLOCAL[1]=WCSA_ASP->APAIR->PAIR[RID].X_LOCAL[1];
+            REFINFO_XYLOCALS.push_back(REFINFO_XYLOCAL);
+        }
     }
 
-    return CCDREFINFO_XYLOCALS;
+    return REFINFO_XYLOCALS;
 }
-std::vector< std::vector< double > > F_WCSA_PLMAIN_GETREFCCD_XYRADEC(CL_WCSA_ASP* WCSA_ASP, int CID){
+std::vector< std::vector< double > > F_WCSA_PLMAIN_GETREF_XYRADEC(CL_WCSA_ASP* WCSA_ASP, int CID){
     int RID;
-    std::vector< double > CCDREFINFO_XYRADEC(2);
-    std::vector< std::vector< double > > CCDREFINFO_XYRADECS;
+    std::vector< double > REFINFO_XYRADEC(2);
+    std::vector< std::vector< double > > REFINFO_XYRADECS;
 
     if(CID>-0.5&&CID<WCSA_ASP->APROP->CCDNUM-0.5){
         for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
         if(WCSA_ASP->APAIR->PAIR[RID].CHIPID==CID){
-            CCDREFINFO_XYRADEC[0]=WCSA_ASP->APAIR->PAIR[RID].X_RADEC[0];
-            CCDREFINFO_XYRADEC[1]=WCSA_ASP->APAIR->PAIR[RID].X_RADEC[1];
-            CCDREFINFO_XYRADECS.push_back(CCDREFINFO_XYRADEC);
+            REFINFO_XYRADEC[0]=WCSA_ASP->APAIR->PAIR[RID].X_RADEC[0];
+            REFINFO_XYRADEC[1]=WCSA_ASP->APAIR->PAIR[RID].X_RADEC[1];
+            REFINFO_XYRADECS.push_back(REFINFO_XYRADEC);
         }
     }else{
-        cout << "Warning : in WCS_GET_REFERENCE_CCD_XYRADEC(F_WCSA_PLMAIN_GETREFCCD_XYRADEC)" << endl;
-        cout << "        : CID must be between 0 and " << WCSA_ASP->APROP->CCDNUM-1 << endl;
-        cout << "        : but assinged " << CID << endl;
-        CCDREFINFO_XYRADEC.push_back(0);
-        CCDREFINFO_XYRADECS.push_back(CCDREFINFO_XYRADEC);
+        for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++){
+            REFINFO_XYRADEC[0]=WCSA_ASP->APAIR->PAIR[RID].X_RADEC[0];
+            REFINFO_XYRADEC[1]=WCSA_ASP->APAIR->PAIR[RID].X_RADEC[1];
+            REFINFO_XYRADECS.push_back(REFINFO_XYRADEC);
+        }
     }
 
-    return CCDREFINFO_XYRADECS;
+    return REFINFO_XYRADECS;
 }
-std::vector< std::vector< double > > F_WCSA_PLMAIN_GETREFCCD_XYGLOBAL(CL_WCSA_ASP* WCSA_ASP, int CID){
+std::vector< std::vector< double > > F_WCSA_PLMAIN_GETREF_XYGLOBAL(CL_WCSA_ASP* WCSA_ASP, int CID){
     int RID;
-    std::vector< double > CCDREFINFO_XYGLOBAL(2);
-    std::vector< std::vector< double > > CCDREFINFO_XYGLOBALS;
+    std::vector< double > REFINFO_XYGLOBAL(2);
+    std::vector< std::vector< double > > REFINFO_XYGLOBALS;
 
     if(CID>-0.5&&CID<WCSA_ASP->APROP->CCDNUM-0.5){
         for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
         if(WCSA_ASP->APAIR->PAIR[RID].CHIPID==CID){
-            CCDREFINFO_XYGLOBAL[0]=WCSA_ASP->APAIR->PAIR[RID].X_GLOBAL[0];
-            CCDREFINFO_XYGLOBAL[1]=WCSA_ASP->APAIR->PAIR[RID].X_GLOBAL[1];
-            CCDREFINFO_XYGLOBALS.push_back(CCDREFINFO_XYGLOBAL);
+            REFINFO_XYGLOBAL[0]=WCSA_ASP->APAIR->PAIR[RID].X_GLOBAL[0];
+            REFINFO_XYGLOBAL[1]=WCSA_ASP->APAIR->PAIR[RID].X_GLOBAL[1];
+            REFINFO_XYGLOBALS.push_back(REFINFO_XYGLOBAL);
         }
     }else{
-        cout << "Warning : in WCS_GET_REFERENCE_CCD_XYGLOBAL(F_WCSA_PLMAIN_GETREFCCD_XYGLOBAL)" << endl;
-        cout << "        : CID must be between 0 and " << WCSA_ASP->APROP->CCDNUM-1 << endl;
-        cout << "        : but assinged " << CID << endl;
-        CCDREFINFO_XYGLOBAL.push_back(0);
-        CCDREFINFO_XYGLOBALS.push_back(CCDREFINFO_XYGLOBAL);
+        for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++){
+            REFINFO_XYGLOBAL[0]=WCSA_ASP->APAIR->PAIR[RID].X_GLOBAL[0];
+            REFINFO_XYGLOBAL[1]=WCSA_ASP->APAIR->PAIR[RID].X_GLOBAL[1];
+            REFINFO_XYGLOBALS.push_back(REFINFO_XYGLOBAL);
+        }
     }
 
-    return CCDREFINFO_XYGLOBALS;
+    return REFINFO_XYGLOBALS;
 }
-std::vector< std::vector< double > > F_WCSA_PLMAIN_GETREFCCD_XYGLOBALCRPIX(CL_WCSA_ASP* WCSA_ASP, int CID){
+std::vector< std::vector< double > > F_WCSA_PLMAIN_GETREF_XYGLOBALCRPIX(CL_WCSA_ASP* WCSA_ASP, int CID){
     int RID;
-    std::vector< double > CCDREFINFO_XYGLOBALCRPIX(2);
-    std::vector< std::vector< double > > CCDREFINFO_XYGLOBALCRPIXS;
+    std::vector< double > REFINFO_XYGLOBALCRPIX(2);
+    std::vector< std::vector< double > > REFINFO_XYGLOBALCRPIXS;
 
     if(CID>-0.5&&CID<WCSA_ASP->APROP->CCDNUM-0.5){
         for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
         if(WCSA_ASP->APAIR->PAIR[RID].CHIPID==CID){
-            CCDREFINFO_XYGLOBALCRPIX[0]=WCSA_ASP->APAIR->PAIR[RID].X_GLOBALCRPIX[0];
-            CCDREFINFO_XYGLOBALCRPIX[1]=WCSA_ASP->APAIR->PAIR[RID].X_GLOBALCRPIX[1];
-            CCDREFINFO_XYGLOBALCRPIXS.push_back(CCDREFINFO_XYGLOBALCRPIX);
+            REFINFO_XYGLOBALCRPIX[0]=WCSA_ASP->APAIR->PAIR[RID].X_GLOBALCRPIX[0];
+            REFINFO_XYGLOBALCRPIX[1]=WCSA_ASP->APAIR->PAIR[RID].X_GLOBALCRPIX[1];
+            REFINFO_XYGLOBALCRPIXS.push_back(REFINFO_XYGLOBALCRPIX);
         }
     }else{
-        cout << "Warning : in WCS_GET_REFERENCE_CCD_XYGLOBALCRPIX(F_WCSA_PLMAIN_GETREFCCD_XYGLOBALCRPIX)" << endl;
-        cout << "        : CID must be between 0 and " << WCSA_ASP->APROP->CCDNUM-1 << endl;
-        cout << "        : but assinged " << CID << endl;
-        CCDREFINFO_XYGLOBALCRPIX.push_back(0);
-        CCDREFINFO_XYGLOBALCRPIXS.push_back(CCDREFINFO_XYGLOBALCRPIX);
+        for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++){
+            REFINFO_XYGLOBALCRPIX[0]=WCSA_ASP->APAIR->PAIR[RID].X_GLOBALCRPIX[0];
+            REFINFO_XYGLOBALCRPIX[1]=WCSA_ASP->APAIR->PAIR[RID].X_GLOBALCRPIX[1];
+            REFINFO_XYGLOBALCRPIXS.push_back(REFINFO_XYGLOBALCRPIX);
+        }
     }
 
-    return CCDREFINFO_XYGLOBALCRPIXS;
+    return REFINFO_XYGLOBALCRPIXS;
 }
-std::vector< std::vector< double > > F_WCSA_PLMAIN_GETREFCCD_XYLOCALCRPIX(CL_WCSA_ASP* WCSA_ASP, int CID){
+std::vector< std::vector< double > > F_WCSA_PLMAIN_GETREF_XYLOCALCRPIX(CL_WCSA_ASP* WCSA_ASP, int CID){
     int RID;
-    std::vector< double > CCDREFINFO_XYLOCALCRPIX(2);
-    std::vector< std::vector< double > > CCDREFINFO_XYLOCALCRPIXS;
+    std::vector< double > REFINFO_XYLOCALCRPIX(2);
+    std::vector< std::vector< double > > REFINFO_XYLOCALCRPIXS;
 
     if(CID>-0.5&&CID<WCSA_ASP->APROP->CCDNUM-0.5){
         for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
         if(WCSA_ASP->APAIR->PAIR[RID].CHIPID==CID){
-            CCDREFINFO_XYLOCALCRPIX[0]=WCSA_ASP->APAIR->PAIR[RID].X_LOCALCRPIX[0];
-            CCDREFINFO_XYLOCALCRPIX[1]=WCSA_ASP->APAIR->PAIR[RID].X_LOCALCRPIX[1];
-            CCDREFINFO_XYLOCALCRPIXS.push_back(CCDREFINFO_XYLOCALCRPIX);
+            REFINFO_XYLOCALCRPIX[0]=WCSA_ASP->APAIR->PAIR[RID].X_LOCALCRPIX[0];
+            REFINFO_XYLOCALCRPIX[1]=WCSA_ASP->APAIR->PAIR[RID].X_LOCALCRPIX[1];
+            REFINFO_XYLOCALCRPIXS.push_back(REFINFO_XYLOCALCRPIX);
         }
     }else{
-        cout << "Warning : in WCS_GET_REFERENCE_CCD_XYLOCALCRPIX(F_WCSA_PLMAIN_GETREFCCD_XYLOCALCRPIX)" << endl;
-        cout << "        : CID must be between 0 and " << WCSA_ASP->APROP->CCDNUM-1 << endl;
-        cout << "        : but assinged " << CID << endl;
-        CCDREFINFO_XYLOCALCRPIX.push_back(0);
-        CCDREFINFO_XYLOCALCRPIXS.push_back(CCDREFINFO_XYLOCALCRPIX);
+        for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++){
+            REFINFO_XYLOCALCRPIX[0]=WCSA_ASP->APAIR->PAIR[RID].X_LOCALCRPIX[0];
+            REFINFO_XYLOCALCRPIX[1]=WCSA_ASP->APAIR->PAIR[RID].X_LOCALCRPIX[1];
+            REFINFO_XYLOCALCRPIXS.push_back(REFINFO_XYLOCALCRPIX);
+        }
     }
 
-    return CCDREFINFO_XYLOCALCRPIXS;
+    return REFINFO_XYLOCALCRPIXS;
 }
-std::vector< std::vector< double > > F_WCSA_PLMAIN_GETREFCCD_XYIMPIXEL(CL_WCSA_ASP* WCSA_ASP, int CID){
+std::vector< std::vector< double > > F_WCSA_PLMAIN_GETREF_XYIMPIXEL(CL_WCSA_ASP* WCSA_ASP, int CID){
     int RID;
-    std::vector< double > CCDREFINFO_XYIMPIXEL(2);
-    std::vector< std::vector< double > > CCDREFINFO_XYIMPIXELS;
+    std::vector< double > REFINFO_XYIMPIXEL(2);
+    std::vector< std::vector< double > > REFINFO_XYIMPIXELS;
 
     if(CID>-0.5&&CID<WCSA_ASP->APROP->CCDNUM-0.5){
         for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
         if(WCSA_ASP->APAIR->PAIR[RID].CHIPID==CID){
-            CCDREFINFO_XYIMPIXEL[0]=WCSA_ASP->APAIR->PAIR[RID].X_IM_PIXEL[0];
-            CCDREFINFO_XYIMPIXEL[1]=WCSA_ASP->APAIR->PAIR[RID].X_IM_PIXEL[1];
-            CCDREFINFO_XYIMPIXELS.push_back(CCDREFINFO_XYIMPIXEL);
+            REFINFO_XYIMPIXEL[0]=WCSA_ASP->APAIR->PAIR[RID].X_IM_PIXEL[0];
+            REFINFO_XYIMPIXEL[1]=WCSA_ASP->APAIR->PAIR[RID].X_IM_PIXEL[1];
+            REFINFO_XYIMPIXELS.push_back(REFINFO_XYIMPIXEL);
         }
     }else{
-        cout << "Warning : in WCS_GET_REFERENCE_CCD_XYIMPIXEL(F_WCSA_PLMAIN_GETREFCCD_XYIMPIXEL)" << endl;
-        cout << "        : CID must be between 0 and " << WCSA_ASP->APROP->CCDNUM-1 << endl;
-        cout << "        : but assinged " << CID << endl;
-        CCDREFINFO_XYIMPIXEL.push_back(0);
-        CCDREFINFO_XYIMPIXELS.push_back(CCDREFINFO_XYIMPIXEL);
+        for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++){
+            REFINFO_XYIMPIXEL[0]=WCSA_ASP->APAIR->PAIR[RID].X_IM_PIXEL[0];
+            REFINFO_XYIMPIXEL[1]=WCSA_ASP->APAIR->PAIR[RID].X_IM_PIXEL[1];
+            REFINFO_XYIMPIXELS.push_back(REFINFO_XYIMPIXEL);
+        }
     }
 
-    return CCDREFINFO_XYIMPIXELS;
+    return REFINFO_XYIMPIXELS;
 }
-std::vector< std::vector< double > > F_WCSA_PLMAIN_GETREFCCD_XYIMWORLD(CL_WCSA_ASP* WCSA_ASP, int CID){
+std::vector< std::vector< double > > F_WCSA_PLMAIN_GETREF_XYIMWORLD(CL_WCSA_ASP* WCSA_ASP, int CID){
     int RID;
-    std::vector< double > CCDREFINFO_XYIMWORLD(2);
-    std::vector< std::vector< double > > CCDREFINFO_XYIMWORLDS;
+    std::vector< double > REFINFO_XYIMWORLD(2);
+    std::vector< std::vector< double > > REFINFO_XYIMWORLDS;
 
     if(CID>-0.5&&CID<WCSA_ASP->APROP->CCDNUM-0.5){
         for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
         if(WCSA_ASP->APAIR->PAIR[RID].CHIPID==CID){
-            CCDREFINFO_XYIMWORLD[0]=WCSA_ASP->APAIR->PAIR[RID].X_IM_WORLD[0];
-            CCDREFINFO_XYIMWORLD[1]=WCSA_ASP->APAIR->PAIR[RID].X_IM_WORLD[1];
-            CCDREFINFO_XYIMWORLDS.push_back(CCDREFINFO_XYIMWORLD);
+            REFINFO_XYIMWORLD[0]=WCSA_ASP->APAIR->PAIR[RID].X_IM_WORLD[0];
+            REFINFO_XYIMWORLD[1]=WCSA_ASP->APAIR->PAIR[RID].X_IM_WORLD[1];
+            REFINFO_XYIMWORLDS.push_back(REFINFO_XYIMWORLD);
         }
     }else{
-        cout << "Warning : in WCS_GET_REFERENCE_CCD_XYIMWORLD(F_WCSA_PLMAIN_GETREFCCD_XYIMWORLD)" << endl;
-        cout << "        : CID must be between 0 and " << WCSA_ASP->APROP->CCDNUM-1 << endl;
-        cout << "        : but assinged " << CID << endl;
-        CCDREFINFO_XYIMWORLD.push_back(0);
-        CCDREFINFO_XYIMWORLDS.push_back(CCDREFINFO_XYIMWORLD);
+        for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++){
+            REFINFO_XYIMWORLD[0]=WCSA_ASP->APAIR->PAIR[RID].X_IM_WORLD[0];
+            REFINFO_XYIMWORLD[1]=WCSA_ASP->APAIR->PAIR[RID].X_IM_WORLD[1];
+            REFINFO_XYIMWORLDS.push_back(REFINFO_XYIMWORLD);
+        }
     }
 
-    return CCDREFINFO_XYIMWORLDS;
+    return REFINFO_XYIMWORLDS;
 }
-std::vector< double > F_WCSA_PLMAIN_GETREFCCD_CAMERACONV(CL_WCSA_ASP* WCSA_ASP, int CID){
+std::vector< double > F_WCSA_PLMAIN_GETREF_CAMERACONV(CL_WCSA_ASP* WCSA_ASP, int CID){
     int RID;
-    std::vector< double > CCDREFINFO_CAMERACONV;
+    std::vector< double > REFINFO_CAMERACONV;
 
     if(CID>-0.5&&CID<WCSA_ASP->APROP->CCDNUM-0.5){
         for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
         if(WCSA_ASP->APAIR->PAIR[RID].CHIPID==CID)
-        CCDREFINFO_CAMERACONV.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_CONVROT[0]);
+        REFINFO_CAMERACONV.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_CONVROT[0]);
     }else{
-        cout << "Warning : in WCS_GET_REFERENCE_CCD_CAMERA_CONVERGENCE(F_WCSA_PLMAIN_GETREFCCD_CAMERACONV)" << endl;
-        cout << "        : CID must be between 0 and " << WCSA_ASP->APROP->CCDNUM-1 << endl;
-        cout << "        : but assinged " << CID << endl;
-        CCDREFINFO_CAMERACONV.push_back(0);
+        for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
+        REFINFO_CAMERACONV.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_CONVROT[0]);
     }
 
-    return CCDREFINFO_CAMERACONV;
+    return REFINFO_CAMERACONV;
 }
-std::vector< double > F_WCSA_PLMAIN_GETREFCCD_CAMERAROT(CL_WCSA_ASP* WCSA_ASP, int CID){
+std::vector< double > F_WCSA_PLMAIN_GETREF_CAMERAROT(CL_WCSA_ASP* WCSA_ASP, int CID){
     int RID;
-    std::vector< double > CCDREFINFO_CAMERAROT;
+    std::vector< double > REFINFO_CAMERAROT;
 
     if(CID>-0.5&&CID<WCSA_ASP->APROP->CCDNUM-0.5){
         for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
         if(WCSA_ASP->APAIR->PAIR[RID].CHIPID==CID)
-        CCDREFINFO_CAMERAROT.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_CONVROT[1]);
+        REFINFO_CAMERAROT.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_CONVROT[1]);
     }else{
-        cout << "Warning : in WCS_GET_REFERENCE_CCD_CAMERA_ROTATION(F_WCSA_PLMAIN_GETREFCCD_CAMERAROT)" << endl;
-        cout << "        : CID must be between 0 and " << WCSA_ASP->APROP->CCDNUM-1 << endl;
-        cout << "        : but assinged " << CID << endl;
-        CCDREFINFO_CAMERAROT.push_back(0);
+        for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
+        REFINFO_CAMERAROT.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_CONVROT[1]);
     }
 
-    return CCDREFINFO_CAMERAROT;
+    return REFINFO_CAMERAROT;
 }
-std::vector< double > F_WCSA_PLMAIN_GETREFCCD_CAMERASHEAR1(CL_WCSA_ASP* WCSA_ASP, int CID){
+std::vector< double > F_WCSA_PLMAIN_GETREF_CAMERASHEAR1(CL_WCSA_ASP* WCSA_ASP, int CID){
     int RID;
-    std::vector< double > CCDREFINFO_CAMERASHEAR1;
+    std::vector< double > REFINFO_CAMERASHEAR1;
 
     if(CID>-0.5&&CID<WCSA_ASP->APROP->CCDNUM-0.5){
         for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
         if(WCSA_ASP->APAIR->PAIR[RID].CHIPID==CID)
-        CCDREFINFO_CAMERASHEAR1.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_SHEAR[0]);
+        REFINFO_CAMERASHEAR1.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_SHEAR[0]);
     }else{
-        cout << "Warning : in WCS_GET_REFERENCE_CCD_CAMERA_SHEAR1(F_WCSA_PLMAIN_GETREFCCD_CAMERASHEAR1)" << endl;
-        cout << "        : CID must be between 0 and " << WCSA_ASP->APROP->CCDNUM-1 << endl;
-        cout << "        : but assinged " << CID << endl;
-        CCDREFINFO_CAMERASHEAR1.push_back(0);
+        for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
+        REFINFO_CAMERASHEAR1.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_SHEAR[0]);
     }
 
-    return CCDREFINFO_CAMERASHEAR1;
+    return REFINFO_CAMERASHEAR1;
 }
-std::vector< double > F_WCSA_PLMAIN_GETREFCCD_CAMERASHEAR2(CL_WCSA_ASP* WCSA_ASP, int CID){
+std::vector< double > F_WCSA_PLMAIN_GETREF_CAMERASHEAR2(CL_WCSA_ASP* WCSA_ASP, int CID){
     int RID;
-    std::vector< double > CCDREFINFO_CAMERASHEAR2;
+    std::vector< double > REFINFO_CAMERASHEAR2;
 
     if(CID>-0.5&&CID<WCSA_ASP->APROP->CCDNUM-0.5){
         for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
         if(WCSA_ASP->APAIR->PAIR[RID].CHIPID==CID)
-        CCDREFINFO_CAMERASHEAR2.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_SHEAR[1]);
+        REFINFO_CAMERASHEAR2.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_SHEAR[1]);
     }else{
-        cout << "Warning : in WCS_GET_REFERENCE_CCD_CAMERA_SHEAR2(F_WCSA_PLMAIN_GETREFCCD_CAMERASHEAR2)" << endl;
-        cout << "        : CID must be between 0 and " << WCSA_ASP->APROP->CCDNUM-1 << endl;
-        cout << "        : but assinged " << CID << endl;
-        CCDREFINFO_CAMERASHEAR2.push_back(0);
+        for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
+        REFINFO_CAMERASHEAR2.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_SHEAR[1]);
     }
 
-    return CCDREFINFO_CAMERASHEAR2;
+    return REFINFO_CAMERASHEAR2;
 }
-std::vector< double > F_WCSA_PLMAIN_GETREFCCD_CAMERAMAGNIFICATION(CL_WCSA_ASP* WCSA_ASP, int CID){
+std::vector< double > F_WCSA_PLMAIN_GETREF_CAMERAMAGNIFICATION(CL_WCSA_ASP* WCSA_ASP, int CID){
     int RID;
-    std::vector< double > CCDREFINFO_CAMERAMAGNIFICATION;
+    std::vector< double > REFINFO_CAMERAMAGNIFICATION;
 
     if(CID>-0.5&&CID<WCSA_ASP->APROP->CCDNUM-0.5){
         for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
         if(WCSA_ASP->APAIR->PAIR[RID].CHIPID==CID)
-        CCDREFINFO_CAMERAMAGNIFICATION.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_MAGNIFICATION);
+        REFINFO_CAMERAMAGNIFICATION.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_MAGNIFICATION);
     }else{
-        cout << "Warning : in WCS_GET_REFERENCE_CCD_CAMERA_MAGNIFICATION(F_WCSA_PLMAIN_GETREFCCD_CAMERAMAGNIFICATION)" << endl;
-        cout << "        : CID must be between 0 and " << WCSA_ASP->APROP->CCDNUM-1 << endl;
-        cout << "        : but assinged " << CID << endl;
-        CCDREFINFO_CAMERAMAGNIFICATION.push_back(0);
+        for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
+        REFINFO_CAMERAMAGNIFICATION.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_MAGNIFICATION);
     }
 
-    return CCDREFINFO_CAMERAMAGNIFICATION;
+    return REFINFO_CAMERAMAGNIFICATION;
 }
-std::vector< double > F_WCSA_PLMAIN_GETREFCCD_CAMERAPCONV(CL_WCSA_ASP* WCSA_ASP, int CID){
+std::vector< double > F_WCSA_PLMAIN_GETREF_CAMERAPCONV(CL_WCSA_ASP* WCSA_ASP, int CID){
     int RID;
-    std::vector< double > CCDREFINFO_CAMERAPCONV;
+    std::vector< double > REFINFO_CAMERAPCONV;
 
     if(CID>-0.5&&CID<WCSA_ASP->APROP->CCDNUM-0.5){
         for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
         if(WCSA_ASP->APAIR->PAIR[RID].CHIPID==CID)
-        CCDREFINFO_CAMERAPCONV.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_PCONVROT[0]);
+        REFINFO_CAMERAPCONV.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_PCONVROT[0]);
     }else{
-        cout << "Warning : in WCS_GET_REFERENCE_CCD_CAMERA_PCONVERGENCE(F_WCSA_PLMAIN_GETREFCCD_CAMERAPCONV)" << endl;
-        cout << "        : CID must be between 0 and " << WCSA_ASP->APROP->CCDNUM-1 << endl;
-        cout << "        : but assinged " << CID << endl;
-        CCDREFINFO_CAMERAPCONV.push_back(0);
+        for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
+        REFINFO_CAMERAPCONV.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_PCONVROT[0]);
     }
 
-    return CCDREFINFO_CAMERAPCONV;
+    return REFINFO_CAMERAPCONV;
 }
-std::vector< double > F_WCSA_PLMAIN_GETREFCCD_CAMERAPROT(CL_WCSA_ASP* WCSA_ASP, int CID){
+std::vector< double > F_WCSA_PLMAIN_GETREF_CAMERAPROT(CL_WCSA_ASP* WCSA_ASP, int CID){
     int RID;
-    std::vector< double > CCDREFINFO_CAMERAPROT;
+    std::vector< double > REFINFO_CAMERAPROT;
 
     if(CID>-0.5&&CID<WCSA_ASP->APROP->CCDNUM-0.5){
         for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
         if(WCSA_ASP->APAIR->PAIR[RID].CHIPID==CID)
-        CCDREFINFO_CAMERAPROT.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_PCONVROT[1]);
+        REFINFO_CAMERAPROT.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_PCONVROT[1]);
     }else{
-        cout << "Warning : in WCS_GET_REFERENCE_CCD_CAMERA_PROTATION(F_WCSA_PLMAIN_GETREFCCD_CAMERAPROT)" << endl;
-        cout << "        : CID must be between 0 and " << WCSA_ASP->APROP->CCDNUM-1 << endl;
-        cout << "        : but assinged " << CID << endl;
-        CCDREFINFO_CAMERAPROT.push_back(0);
+        for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
+        REFINFO_CAMERAPROT.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_PCONVROT[1]);
     }
 
-    return CCDREFINFO_CAMERAPROT;
+    return REFINFO_CAMERAPROT;
 }
-std::vector< double > F_WCSA_PLMAIN_GETREFCCD_CAMERAPSHEAR1(CL_WCSA_ASP* WCSA_ASP, int CID){
+std::vector< double > F_WCSA_PLMAIN_GETREF_CAMERAPSHEAR1(CL_WCSA_ASP* WCSA_ASP, int CID){
     int RID;
-    std::vector< double > CCDREFINFO_CAMERAPSHEAR1;
+    std::vector< double > REFINFO_CAMERAPSHEAR1;
 
     if(CID>-0.5&&CID<WCSA_ASP->APROP->CCDNUM-0.5){
         for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
         if(WCSA_ASP->APAIR->PAIR[RID].CHIPID==CID)
-        CCDREFINFO_CAMERAPSHEAR1.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_PSHEAR[0]);
+        REFINFO_CAMERAPSHEAR1.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_PSHEAR[0]);
     }else{
-        cout << "Warning : in WCS_GET_REFERENCE_CCD_CAMERA_PSHEAR1(F_WCSA_PLMAIN_GETREFCCD_CAMERAPSHEAR1)" << endl;
-        cout << "        : CID must be between 0 and " << WCSA_ASP->APROP->CCDNUM-1 << endl;
-        cout << "        : but assinged " << CID << endl;
-        CCDREFINFO_CAMERAPSHEAR1.push_back(0);
+        for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
+        REFINFO_CAMERAPSHEAR1.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_PSHEAR[0]);
     }
 
-    return CCDREFINFO_CAMERAPSHEAR1;
+    return REFINFO_CAMERAPSHEAR1;
 }
-std::vector< double > F_WCSA_PLMAIN_GETREFCCD_CAMERAPSHEAR2(CL_WCSA_ASP* WCSA_ASP, int CID){
+std::vector< double > F_WCSA_PLMAIN_GETREF_CAMERAPSHEAR2(CL_WCSA_ASP* WCSA_ASP, int CID){
     int RID;
-    std::vector< double > CCDREFINFO_CAMERAPSHEAR2;
+    std::vector< double > REFINFO_CAMERAPSHEAR2;
 
     if(CID>-0.5&&CID<WCSA_ASP->APROP->CCDNUM-0.5){
         for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
         if(WCSA_ASP->APAIR->PAIR[RID].CHIPID==CID)
-        CCDREFINFO_CAMERAPSHEAR2.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_PSHEAR[1]);
+        REFINFO_CAMERAPSHEAR2.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_PSHEAR[1]);
     }else{
-        cout << "Warning : in WCS_GET_REFERENCE_CCD_CAMERA_PSHEAR2(F_WCSA_PLMAIN_GETREFCCD_CAMERAPSHEAR2)" << endl;
-        cout << "        : CID must be between 0 and " << WCSA_ASP->APROP->CCDNUM-1 << endl;
-        cout << "        : but assinged " << CID << endl;
-        CCDREFINFO_CAMERAPSHEAR2.push_back(0);
+        for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
+        REFINFO_CAMERAPSHEAR2.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_PSHEAR[1]);
     }
 
-    return CCDREFINFO_CAMERAPSHEAR2;
+    return REFINFO_CAMERAPSHEAR2;
 }
-std::vector< double > F_WCSA_PLMAIN_GETREFCCD_CAMERAPMAGNIFICATION(CL_WCSA_ASP* WCSA_ASP, int CID){
+std::vector< double > F_WCSA_PLMAIN_GETREF_CAMERAPMAGNIFICATION(CL_WCSA_ASP* WCSA_ASP, int CID){
     int RID;
-    std::vector< double > CCDREFINFO_CAMERAPMAGNIFICATION;
+    std::vector< double > REFINFO_CAMERAPMAGNIFICATION;
 
     if(CID>-0.5&&CID<WCSA_ASP->APROP->CCDNUM-0.5){
         for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
         if(WCSA_ASP->APAIR->PAIR[RID].CHIPID==CID)
-        CCDREFINFO_CAMERAPMAGNIFICATION.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_PMAGNIFICATION);
+        REFINFO_CAMERAPMAGNIFICATION.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_PMAGNIFICATION);
     }else{
-        cout << "Warning : in WCS_GET_REFERENCE_CCD_CAMERA_PMAGNIFICATION(F_WCSA_PLMAIN_GETREFCCD_CAMERAPMAGNIFICATION)" << endl;
-        cout << "        : CID must be between 0 and " << WCSA_ASP->APROP->CCDNUM-1 << endl;
-        cout << "        : but assinged " << CID << endl;
-        CCDREFINFO_CAMERAPMAGNIFICATION.push_back(0);
+        for(RID=0;RID<WCSA_ASP->APROP->ALLREFNUM-0.5;RID++)
+        REFINFO_CAMERAPMAGNIFICATION.push_back(WCSA_ASP->APAIR->PAIR[RID].CAMERA_PMAGNIFICATION);
     }
 
-    return CCDREFINFO_CAMERAPMAGNIFICATION;
+    return REFINFO_CAMERAPMAGNIFICATION;
 }
 
 std::vector< double > F_WCSA_PLMAIN_GETREF(CL_WCSA_ASP* WCSA_ASP,int REFID){

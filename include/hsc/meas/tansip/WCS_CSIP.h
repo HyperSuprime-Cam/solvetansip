@@ -11,6 +11,9 @@ public:
     int ID;
     int FITNUM;
     int REFNUM;
+    int SIP_ORDER;
+    int SIP_P_ORDER;
+    int SIP_L_ORDER;
     double GPOS[3];//CPROP has same parameter
 
     double OAVAL[2];
@@ -42,6 +45,10 @@ double *PSIP_ROT;
 /*DEL*/
 /*    int ALIGN;
     int PHASE;*/
+    void F_WCSA_CSIP_XLOCALtoXRADEC(double *PIXEL,double *RADEC);
+    void F_WCSA_CSIP_XCRPIXtoXRADEC(double *PIXEL,double *RADEC);
+    void F_WCSA_CSIP_XRADECtoXLOCAL(double *RADEC,double *PIXEL);
+    void F_WCSA_CSIP_XRADECtoXCRPIX(double *RADEC,double *PIXEL);
 
 };
 class CL_GSIP{//GLOBAL SIP
