@@ -4,6 +4,7 @@
 //
 //Last modification : 2010/04/01
 //------------------------------------------------------------
+#include <stdlib.h>
 #include<cmath>
 //#include "hsc/meas/tansip/WCS_TANSIP.h"
 
@@ -542,3 +543,27 @@ void    F_SIPROT(int ORDER, double THETA, double *InCoef, double *OutCoef){
     F_DELdouble3(2,ORDER+1,Coef);
 
 }
+#define INFMIN pow(10.0,-10.0)
+void    F_GaussUnit(int srandNUM, int RNDNUM, double *RNDSET){
+        int NUM,DIV;
+        double RNDValue,RNDValue2;
+        srand(srandNUM);
+
+        for(NUM=0;NUM<RNDNUM;NUM++)
+        RNDSET[NUM]=0;
+
+        NUM=0;
+        DIV=1000000;
+        for(;;){
+                RNDValue =10.0/DIV*(rand()%(DIV*2)-DIV);
+                RNDValue2=1.0/DIV*(rand()%DIV);
+                if(RNDValue2>INFMIN)
+                if(RNDValue2<exp(-RNDValue*RNDValue)-exp(-10*10)){
+                        RNDSET[NUM]=RNDValue*sqrt(2);
+                        NUM++;
+                }
+                if(NUM > RNDNUM-0.5)
+                break;
+        }
+}
+#undef INFMIN

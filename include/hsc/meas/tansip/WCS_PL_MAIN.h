@@ -31,7 +31,18 @@ CL_WCSA_ASP F_WCSA_TANSIP_V_local(std::string,lsst::daf::base::PropertySet::Ptr 
 lsst::daf::base::PropertySet::Ptr F_WCS_EMPTYMETADATA();
 std::vector <lsst::afw::image::TanWcs::Ptr> F_WCSA_PLMAIN_GETWCSLIST(CL_WCSA_ASP* WCSA_ASP);
 //-----------------------------------------------------------------
-//Getting Functions : WCS : POSITION
+//Output Functions : WCSA_ASP
+//-----------------------------------------------------------------
+void F_WCSA_PLMAIN_OUTPUTSIP(CL_WCSA_ASP* WCSA_ASP, std::string SIPFILENAME);
+void F_WCSA_PLMAIN_INPUTSIP (CL_WCSA_ASP* WCSA_ASP, std::string SIPFILENAME);
+void F_WCSA_PLMAIN_OUTPUTCCD(CL_WCSA_ASP* WCSA_ASP, std::string CCDFILENAME);
+void F_WCSA_PLMAIN_INPUTCCD (CL_WCSA_ASP* WCSA_ASP, std::string CCDFILENAME);
+//-----------------------------------------------------------------
+//Simulation Functions : WCSA_ASP
+//-----------------------------------------------------------------
+void F_WCSA_PLMAIN_MAKERANDDATA(int RANNUM,int REFNUM,CL_WCSA_ASP* WCSA_ASP, std::string SIMFILENAME);
+//-----------------------------------------------------------------
+//Getting Functions : WCSA_ASP : POSITION
 //-----------------------------------------------------------------
 std::vector< double > F_WCSA_PLMAIN_GETPOSITION_RADECfromLOCAL(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > XY);
 std::vector< double > F_WCSA_PLMAIN_GETPOSITION_RADECfromCRPIX(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > XY);
@@ -40,7 +51,7 @@ std::vector< double > F_WCSA_PLMAIN_GETPOSITION_CRPIXfromRADEC(CL_WCSA_ASP* WCSA
 std::vector< double > F_WCSA_PLMAIN_GETPOSITION_CCDIDLOCALfromGLOBAL(CL_WCSA_ASP* WCSA_ASP,std::vector< double > XY);
 std::vector< double > F_WCSA_PLMAIN_GETPOSITION_GLOBALfromCCDIDLOCAL(CL_WCSA_ASP* WCSA_ASP,int CCDID,std::vector< double > XY);
 //-----------------------------------------------------------------
-//Getting Functions : WCS : REFERENCE
+//Getting Functions : WCSA_ASP : REFERENCE
 //-----------------------------------------------------------------
 std::vector< double > F_WCSA_PLMAIN_GETREF_ID(CL_WCSA_ASP* WCSA_ASP, int CID);
 std::vector< double > F_WCSA_PLMAIN_GETREF_CHIPID(CL_WCSA_ASP* WCSA_ASP, int CID);
@@ -65,7 +76,7 @@ std::vector< double > F_WCSA_PLMAIN_GETREF_CAMERAPMAGNIFICATION(CL_WCSA_ASP* WCS
 
 std::vector< double > F_WCSA_PLMAIN_GETREF(CL_WCSA_ASP* WCSA_ASP,int REFID);
 //-----------------------------------------------------------------
-//Getting Functions : WCS : CCD
+//Getting Functions : WCSA_ASP : CCD
 //-----------------------------------------------------------------
 std::vector< std::vector< double > >F_WCSA_PLMAIN_GETCCDPOSITIONS(CL_WCSA_ASP* WCSA_ASP);
 std::vector< double > F_WCSA_PLMAIN_GETCCDPOSITION(CL_WCSA_ASP* WCSA_ASP, int CID);

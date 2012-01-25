@@ -20,7 +20,7 @@ void CL_APAIR::F_WCSA_APAIR_REJECTION(){
     int NUM;
     F_WCSA_APAIR_CENTERofOBJECTS();
 
-    F_WCSA_APAIR_CALCRMS(0,6,0);   
+    F_WCSA_APAIR_CALCRMS(SIP_ORDER,6,0);   
 
     REJNUM=0;
     for(NUM=0;NUM<ALLREFNUM;NUM++)
@@ -74,21 +74,12 @@ void CL_APAIR::F_WCSA_APAIR_WCS(){
     if(STDOUT==1||STDOUT==2)cout << "--- WCS_TANSIP : CALCULATING GLOBAL WCS : FITTING--" << endl;
     F_WCSA_APAIR_FITTING();
 
-/*    if(STDOUT==1||STDOUT==2)cout << "--- WCS_TANSIP : CALCULATING GLOBAL WCS : FIT  SIP--" << endl;
-    F_WCSA_APAIR_FITSIP();
-    F_WCSA_APAIR_SETIM();
-
-    if(STDOUT==1||STDOUT==2)cout << "--- WCS_TANSIP : CALCULATING GLOBAL WCS : FIT PSIP--" << endl;
-    F_WCSA_APAIR_FITPSIP();
-*/
     if(STDOUT==1||STDOUT==2)cout << "--- WCS_TANSIP : CALCULATING GLOBAL WCS : SET RMS of SIPs--" << endl;
     F_WCSA_APAIR_CALCSIPRMS();
     F_WCSA_APAIR_CALCPSIPRMS();
 
     if(STDOUT==1||STDOUT==2)cout << "--- WCS_TANSIP : CALCULATING GLOBAL WCS : GET CRSM (Convergence, rotation, Shear, Magnification)--" << endl;
     F_WCSA_APAIR_CALCCONVROTSHEARMAG();
-//    F_WCSA_APAIR_CALCMAGROTSHEARfromTCoef();
-//    F_WCSA_APAIR_CALCCRSfromTCoef();
 }
 
 //--------------------------------------------------
@@ -122,11 +113,36 @@ void CL_APAIR::F_WCSA_APAIR_SETIM(){
         PAIR[NUM].X_IM_PIXEL[1]=InvCD[1][0]*PAIR[NUM].X_IM_WORLD[0]+InvCD[1][1]*PAIR[NUM].X_IM_WORLD[1];
     }
 }
+void CL_APAIR::F_WCSA_APAIR_CALCMAXR(){
+    int NUM,CID;
+    double R;
+    R=0;
+    for(NUM=0;NUM<ALLREFNUM;NUM++)
+    if(PAIR[NUM].FLAG == 1)
+    if(hypot(PAIR[NUM].X_CRPIX[0],PAIR[NUM].X_CRPIX[1])>R){
+        R=hypot(PAIR[NUM].X_CRPIX[0],PAIR[NUM].X_CRPIX[1]);
+    }
+    MAXFRAD=R;
+    
+    R=0;
+    for(CID=0;CID<CCDNUM;CID++){
+        if(hypot(GPOS[CID][0]-CRPIX[0]+0000,GPOS[CID][1]-CRPIX[1]+0000)>R)
+        R= hypot(GPOS[CID][0]-CRPIX[0]+0000,GPOS[CID][1]-CRPIX[1]+0000);
+        if(hypot(GPOS[CID][0]-CRPIX[0]+2048,GPOS[CID][1]-CRPIX[1]+0000)>R)
+        R= hypot(GPOS[CID][0]-CRPIX[0]+2048,GPOS[CID][1]-CRPIX[1]+0000);
+        if(hypot(GPOS[CID][0]-CRPIX[0]+0000,GPOS[CID][1]-CRPIX[1]+4096)>R)
+        R= hypot(GPOS[CID][0]-CRPIX[0]+0000,GPOS[CID][1]-CRPIX[1]+4096);
+        if(hypot(GPOS[CID][0]-CRPIX[0]+2048,GPOS[CID][1]-CRPIX[1]+4096)>R)
+        R= hypot(GPOS[CID][0]-CRPIX[0]+2048,GPOS[CID][1]-CRPIX[1]+4096);
+    }
+    MAXDRAD=R;
+}
 void CL_APAIR::F_WCSA_APAIR_SETX(){
     F_WCSA_APAIR_SETXG();
     F_WCSA_APAIR_SETCRPIX();
     F_WCSA_APAIR_PROJECTION();
     F_WCSA_APAIR_SETIM();
+    F_WCSA_APAIR_CALCMAXR();
 }
 void CL_APAIR::F_WCSA_APAIR_CENTERPROJECTION(){
     int NUM;
@@ -151,7 +167,7 @@ void CL_APAIR::F_WCSA_APAIR_CENTERofOBJECTS(){
         PAIR[NUM].X_CENTER_GLOBAL[1]=PAIR[NUM].X_GLOBAL[1]-CENTER_PIXEL[1];
     }
 
-    F_WCSA_APAIR_GFITTING(0,6,0);
+    F_WCSA_APAIR_GFITTING(SIP_ORDER,6,0,TCoef);
 
     CENTER_RADEC[0]=TCoef[0][0];
     CENTER_RADEC[1]=TCoef[1][0];
@@ -181,13 +197,14 @@ CRVAL[1]=CENTER_RADEC[1];
 void CL_APAIR::F_WCSA_APAIR_CALCCRVAL(){
     F_WCSA_APAIR_SETXG();
     F_WCSA_APAIR_SETCRPIX();
-    F_WCSA_APAIR_GFITTING(0,3,0);
+    F_WCSA_APAIR_GFITTING(SIP_ORDER,3,0,TCoef);
     CRVAL[0]=TCoef[0][0];
     CRVAL[1]=TCoef[1][0];
 }
 void CL_APAIR::F_WCSA_APAIR_CALCCRPIX(){
     F_WCSA_APAIR_PROJECTION();
-    F_WCSA_APAIR_GFITTING(1,1,4);
+    F_WCSA_APAIR_SETXG();
+    F_WCSA_APAIR_GFITTING(SIP_P_ORDER,1,4,TPCoef);
     CRPIX[0]=TPCoef[0][0];
     CRPIX[1]=TPCoef[1][0];
 }
@@ -293,6 +310,10 @@ void CL_APAIR::F_WCSA_APAIR_GFITTING(int ORDER,int VARIABLE,int FUNCTION, double
             dx[i][FNUM][2]=PAIR[NUM].CAMERA_CONVROT[i];
         }else if(FUNCTION==7){
             dx[i][FNUM][2]=PAIR[NUM].CAMERA_SHEAR[i];
+        }else if(FUNCTION==8){
+            dx[i][FNUM][2]=PAIR[NUM].CAMERA_MAGNIFICATION;
+        }else if(FUNCTION==9){
+            dx[i][FNUM][2]=PAIR[NUM].CAMERA_PMAGNIFICATION;
         }
         FNUM++;
     }
@@ -313,91 +334,6 @@ void CL_APAIR::F_WCSA_APAIR_GFITTING(int ORDER,int VARIABLE,int FUNCTION, double
     F_DELdouble3(2,ALLREFNUM,dx);
 }
 
-void CL_APAIR::F_WCSA_APAIR_GFITTING(int SELORDER,int VARIABLE,int FUNCTION){
-//cout <<"F_WCS_TANSIP_GPOLYNOMIALFITTING"<<endl;
-    int i,NUM,ORDER,FNUM=0;
-    double ***dx;
-
-//--------------------------------------------------
-    dx = F_NEWdouble3(2,ALLREFNUM,3);
-//--------------------------------------------------
-          if(SELORDER==0){
-        ORDER=SIP_ORDER;
-    }else if(SELORDER==1){
-        ORDER=SIP_P_ORDER;
-    }else if(SELORDER==2){
-        ORDER=SIP_ORDER-1;
-    }else if(SELORDER==3){
-        ORDER=SIP_L_ORDER;
-    }else{
-        ORDER=SIP_ORDER;
-    }
-
-    for(NUM=0;NUM<ALLREFNUM;NUM++)
-    if(PAIR[NUM].FLAG == 1){
-            for(i=0;i<2;i++)
-	      if(VARIABLE==0){
-            dx[0][FNUM][i]=dx[1][FNUM][i]=PAIR[NUM].X_RADEC[i];
-        }else if(VARIABLE==1){
-            dx[0][FNUM][i]=dx[1][FNUM][i]=PAIR[NUM].X_IM_WORLD[i];
-        }else if(VARIABLE==2){
-            dx[0][FNUM][i]=dx[1][FNUM][i]=PAIR[NUM].X_IM_PIXEL[i];
-        }else if(VARIABLE==3){
-            dx[0][FNUM][i]=dx[1][FNUM][i]=PAIR[NUM].X_CRPIX[i];
-        }else if(VARIABLE==4){
-            dx[0][FNUM][i]=dx[1][FNUM][i]=PAIR[NUM].X_GLOBAL[i];
-        }else if(VARIABLE==5){
-            dx[0][FNUM][i]=dx[1][FNUM][i]=PAIR[NUM].X_LOCAL[i];
-        }else if(VARIABLE==6){
-            dx[0][FNUM][i]=dx[1][FNUM][i]=PAIR[NUM].X_CENTER_GLOBAL[i];
-        }else if(VARIABLE==7){
-            dx[0][FNUM][i]=dx[1][FNUM][i]=PAIR[NUM].X_CENTER_IM_WORLD[i];
-        }
-            for(i=0;i<2;i++)
-	      if(FUNCTION==0){
-            dx[i][FNUM][2]=PAIR[NUM].X_RADEC[i];
-        }else if(FUNCTION==1){
-            dx[i][FNUM][2]=PAIR[NUM].X_IM_WORLD[i];
-        }else if(FUNCTION==2){
-            dx[i][FNUM][2]=PAIR[NUM].X_IM_PIXEL[i];
-        }else if(FUNCTION==3){
-            dx[i][FNUM][2]=PAIR[NUM].X_CRPIX[i];
-        }else if(FUNCTION==4){
-            dx[i][FNUM][2]=PAIR[NUM].X_GLOBAL[i];
-        }else if(FUNCTION==5){
-            dx[i][FNUM][2]=PAIR[NUM].X_LOCAL[i];
-        }else if(FUNCTION==6){
-            dx[i][FNUM][2]=PAIR[NUM].CAMERA_CONVROT[i];
-        }else if(FUNCTION==7){
-            dx[i][FNUM][2]=PAIR[NUM].CAMERA_SHEAR[i];
-        }
-        FNUM++;
-    }
-    ALLFITNUM=FNUM;
-    #pragma omp parallel num_threads(2)
-    #pragma omp sections
-    {
-        #pragma omp section
-        {
-            if(SELORDER==1){
-            F_LS2(FNUM,ORDER,dx[0],TPCoef[0]);
-            }else{
-            F_LS2(FNUM,ORDER,dx[0],TCoef[0]);
-            }
-        }
-        #pragma omp section
-        {
-            if(SELORDER==1){
-            F_LS2(FNUM,ORDER,dx[1],TPCoef[1]);
-            }else{
-            F_LS2(FNUM,ORDER,dx[1],TCoef[1]);
-            }
-        }
-    }
-
-//--------------------------------------------------
-    F_DELdouble3(2,ALLREFNUM,dx);
-}
 void CL_APAIR::F_WCSA_APAIR_LFITTING(int VARIABLE,int FUNCTION){
     int i,CID,NUM,*CNUM;
     double ****dx;
@@ -456,25 +392,14 @@ void CL_APAIR::F_WCSA_APAIR_LFITTING(int VARIABLE,int FUNCTION){
     F_DELint1(CNUM);
     F_DELdouble4(2,CCDNUM,ALLREFNUM,dx);
 }
-void CL_APAIR::F_WCSA_APAIR_CALCRMS(int SELORDER,int VARIABLE,int FUNCTION){
-    int i,NUM,ORDER,FNUM=0;
+void CL_APAIR::F_WCSA_APAIR_CALCRMS(int ORDER,int VARIABLE,int FUNCTION){
+    int i,NUM,FNUM=0;
     double ***dx,**data;
 
 //--------------------------------------------------
     dx = F_NEWdouble3(2,ALLREFNUM,3);
     data = F_NEWdouble2(2,ALLREFNUM);
 //--------------------------------------------------
-          if(SELORDER==0){
-        ORDER=SIP_ORDER;
-    }else if(SELORDER==1){
-        ORDER=SIP_P_ORDER;
-    }else if(SELORDER==2){
-        ORDER=SIP_ORDER-1;
-    }else if(SELORDER==3){
-        ORDER=SIP_L_ORDER;
-    }else{
-        ORDER=SIP_ORDER;
-    }
 
     for(NUM=0;NUM<ALLREFNUM;NUM++)
     if(PAIR[NUM].FLAG == 1){
@@ -565,18 +490,8 @@ void CL_APAIR::F_WCSA_APAIR_SETCDPSIP(){
     SIP_ABP[1][0*(SIP_P_ORDER+1)+1]-=1.0;
 }
 void CL_APAIR::F_WCSA_APAIR_CALCCONVROTSHEARMAG(){
-    int i,NUM;
-    double *TdCoef[2][2],*TPdCoef[2][2];
+    int NUM;
     double dGdI[2][2],InvdGdI[2][2],dIdG[2][2];
-
-    TdCoef[0][0]=F_NEWdouble1((SIP_ORDER+1)*(SIP_ORDER+2));
-    TdCoef[0][1]=F_NEWdouble1((SIP_ORDER+1)*(SIP_ORDER+2));
-    TdCoef[1][0]=F_NEWdouble1((SIP_ORDER+1)*(SIP_ORDER+2));
-    TdCoef[1][1]=F_NEWdouble1((SIP_ORDER+1)*(SIP_ORDER+2));
-    TdPCoef[0][0]=F_NEWdouble1((SIP_P_ORDER+1)*(SIP_P_ORDER+2));
-    TdPCoef[0][1]=F_NEWdouble1((SIP_P_ORDER+1)*(SIP_P_ORDER+2));
-    TdPCoef[1][0]=F_NEWdouble1((SIP_P_ORDER+1)*(SIP_P_ORDER+2));
-    TdPCoef[1][1]=F_NEWdouble1((SIP_P_ORDER+1)*(SIP_P_ORDER+2));
 
     F_DIFFSIP(SIP_ORDER,SIP_AB[0],TdCoef[0][0],TdCoef[0][1]);
     F_DIFFSIP(SIP_ORDER,SIP_AB[1],TdCoef[1][0],TdCoef[1][1]);
@@ -609,54 +524,9 @@ void CL_APAIR::F_WCSA_APAIR_CALCCONVROTSHEARMAG(){
         PAIR[NUM].CAMERA_MAGNIFICATION =((1+PAIR[NUM].CAMERA_CONVROT[0])*(1+PAIR[NUM].CAMERA_CONVROT[0])-(PAIR[NUM].CAMERA_SHEAR[0]*PAIR[NUM].CAMERA_SHEAR[0]+PAIR[NUM].CAMERA_SHEAR[1]*PAIR[NUM].CAMERA_SHEAR[1]));
     }
 
-    F_DELdouble1(TdCoef[0][0]);
-    F_DELdouble1(TdCoef[0][1]);
-    F_DELdouble1(TdCoef[1][0]);
-    F_DELdouble1(TdCoef[1][1]);
-    F_DELdouble1(TdPCoef[0][0]);
-    F_DELdouble1(TdPCoef[0][1]);
-    F_DELdouble1(TdPCoef[1][0]);
-    F_DELdouble1(TdPCoef[1][1]);
-}
-//--------------------------------------------------
-//--------------------------------------------------
-//--------------------------------------------------
-void CL_APAIR::F_WCSA_APAIR_SETSIP(){
-    CD[0][0]=TCoef[0][1*(SIP_ORDER+1)+0];
-    CD[0][1]=TCoef[0][0*(SIP_ORDER+1)+1];
-    CD[1][0]=TCoef[1][1*(SIP_ORDER+1)+0];
-    CD[1][1]=TCoef[1][0*(SIP_ORDER+1)+1]; 
-    ANGLE=atan2(CD[1][0]-(-1)*CD[0][1],(-1)*CD[0][0]+CD[1][1]);
+    F_WCSA_APAIR_GFITTING(SIP_ORDER  ,3,8,MAGNIFICATION_AB);
+    F_WCSA_APAIR_GFITTING(SIP_P_ORDER,3,9,MAGNIFICATION_ABP);
 
-    InvCD[0][0]= CD[1][1]/(CD[0][0]*CD[1][1]-CD[1][0]*CD[0][1]);
-    InvCD[0][1]=-CD[0][1]/(CD[0][0]*CD[1][1]-CD[1][0]*CD[0][1]);
-    InvCD[1][0]=-CD[1][0]/(CD[0][0]*CD[1][1]-CD[1][0]*CD[0][1]);
-    InvCD[1][1]= CD[0][0]/(CD[0][0]*CD[1][1]-CD[1][0]*CD[0][1]);
-
-    int i,j,ij;
-    ij=0;
-    for(i=0;i<SIP_ORDER+1;i++)
-    for(j=0;j<SIP_ORDER+1;j++)
-    if(i+j<SIP_ORDER+1){
-        TSIP_AB[0][ij]=InvCD[0][0]*TCoef[0][ij]+InvCD[0][1]*TCoef[1][ij];
-        TSIP_AB[1][ij]=InvCD[1][0]*TCoef[0][ij]+InvCD[1][1]*TCoef[1][ij];
-        ij++;	
-    }
-    TSIP_AB[0][1*(SIP_ORDER+1)+0]-=1.0;
-    TSIP_AB[1][0*(SIP_ORDER+1)+1]-=1.0;
-}
-void CL_APAIR::F_WCSA_APAIR_SETPSIP(){
-    int i,j,ij;
-    ij=0;
-    for(i=0;i<SIP_P_ORDER+1;i++)
-    for(j=0;j<SIP_P_ORDER+1;j++)
-    if(i+j<SIP_P_ORDER+1){
-        TSIP_ABP[0][ij]=TPCoef[0][ij];
-        TSIP_ABP[1][ij]=TPCoef[1][ij];
-        ij++;	
-    }
-    TSIP_ABP[0][1*(SIP_P_ORDER+1)+0]-=1.0;
-    TSIP_ABP[1][0*(SIP_P_ORDER+1)+1]-=1.0;
 }
 void CL_APAIR::F_WCSA_APAIR_CHANGEVARIABLE(int ORDER, double SR[2][2], double* F, double* G){
 	int i,j,k,l,m;
@@ -725,67 +595,6 @@ void CL_APAIR::F_WCSA_APAIR_CHANGEVARIABLE(int ORDER, double SR[2][2], double* F
 	delete [] M;
 	delete [] N;
 }
-void CL_APAIR::F_WCSA_APAIR_FITSIP(){
-    F_WCSA_APAIR_GFITTING(0,3,1);
-    F_WCSA_APAIR_SETSIP();
-}
-void CL_APAIR::F_WCSA_APAIR_FITPSIP(){
-    F_WCSA_APAIR_GFITTING(1,2,3);
-    F_WCSA_APAIR_SETPSIP();
-}
-void CL_APAIR::F_WCSA_APAIR_CALCMAGROTSHEAR(){
-    F_WCSA_APAIR_GFITTING(0,3,1);
-    F_WCSA_APAIR_CALCMAGROTSHEARfromTCoef();
-}
-void CL_APAIR::F_WCSA_APAIR_CALCCRS(){
-//    F_WCSA_APAIR_GFITTING(0,3,1);
-//    F_WCSA_APAIR_CALCMAGROTSHEARfromTCoef();
-}
-void CL_APAIR::F_WCSA_APAIR_CALCMAGROTSHEARfromTCoef(){
-    int NUM;
-
-/*??????????????????????????????????????????????????*/
-    F_DIFFSIP(SIP_ORDER,TCoef[0],TdCoef[0][0],TdCoef[0][1]);
-    F_DIFFSIP(SIP_ORDER,TCoef[1],TdCoef[1][0],TdCoef[1][1]);
-
-    for(NUM=0;NUM<ALLREFNUM;NUM++){
-        PAIR[NUM].CAMERA_CONVROT[0] =PAIR[NUM].CAMERA_CONVROT[1] =PAIR[NUM].CAMERA_SHEAR[0] =PAIR[NUM].CAMERA_SHEAR[1] =PAIR[NUM].CAMERA_MAGNIFICATION =0;
-        PAIR[NUM].CAMERA_PCONVROT[0]=PAIR[NUM].CAMERA_PCONVROT[1]=PAIR[NUM].CAMERA_PSHEAR[0]=PAIR[NUM].CAMERA_PSHEAR[1]=PAIR[NUM].CAMERA_PMAGNIFICATION=0;
-    }
-
-    for(NUM=0;NUM<ALLREFNUM;NUM++){
-        PAIR[NUM].dxGdxI=F_CALCVALUE(SIP_ORDER,TdCoef[0][0],PAIR[NUM].X_CRPIX);
-        PAIR[NUM].dxGdyI=F_CALCVALUE(SIP_ORDER,TdCoef[0][1],PAIR[NUM].X_CRPIX);
-        PAIR[NUM].dyGdxI=F_CALCVALUE(SIP_ORDER,TdCoef[1][0],PAIR[NUM].X_CRPIX);
-        PAIR[NUM].dyGdyI=F_CALCVALUE(SIP_ORDER,TdCoef[1][1],PAIR[NUM].X_CRPIX);
-
-        PAIR[NUM].CAMERA_MAGROT[0]=0.5*hypot((-1)*PAIR[NUM].dxGdxI+PAIR[NUM].dyGdyI,PAIR[NUM].dyGdxI-(-1)*PAIR[NUM].dxGdyI);
-        PAIR[NUM].CAMERA_MAGROT[1]=atan2((PAIR[NUM].dyGdxI-(-1)*PAIR[NUM].dxGdyI),((-1)*PAIR[NUM].dxGdxI+PAIR[NUM].dyGdyI));
-        PAIR[NUM].CAMERA_SHEAR[0] =0.5*((-1)*PAIR[NUM].dxGdxI-     PAIR[NUM].dyGdyI)/PAIR[NUM].CAMERA_MAGROT[0];
-        PAIR[NUM].CAMERA_SHEAR[1] =0.5*(     PAIR[NUM].dyGdxI+(-1)*PAIR[NUM].dxGdyI)/PAIR[NUM].CAMERA_MAGROT[0];
-    }
-}
-void CL_APAIR::F_WCSA_APAIR_CALCCRSfromTCoef(){
-/*    int NUM;
-
-    F_DIFFSIP(SIP_ORDER,TCoef[0],TdCoef[0][0],TdCoef[0][1]);
-    F_DIFFSIP(SIP_ORDER,TCoef[1],TdCoef[1][0],TdCoef[1][1]);
-
-    for(NUM=0;NUM<ALLREFNUM;NUM++){
-        PAIR[NUM].dxGdxI=F_CALCVALUE(SIP_ORDER,TdCoef[0][0],PAIR[NUM].X_CRPIX);
-        PAIR[NUM].dxGdyI=F_CALCVALUE(SIP_ORDER,TdCoef[0][1],PAIR[NUM].X_CRPIX);
-        PAIR[NUM].dyGdxI=F_CALCVALUE(SIP_ORDER,TdCoef[1][0],PAIR[NUM].X_CRPIX);
-        PAIR[NUM].dyGdyI=F_CALCVALUE(SIP_ORDER,TdCoef[1][1],PAIR[NUM].X_CRPIX);
-
-        PAIR[NUM].CAMERA_MAGROT[0]=0.5*hypot((-1)*PAIR[NUM].dxGdxI+PAIR[NUM].dyGdyI,PAIR[NUM].dyGdxI-(-1)*PAIR[NUM].dxGdyI);
-        PAIR[NUM].CAMERA_MAGROT[1]=atan2((PAIR[NUM].dyGdxI-(-1)*PAIR[NUM].dxGdyI),((-1)*PAIR[NUM].dxGdxI+PAIR[NUM].dyGdyI));
-        PAIR[NUM].CAMERA_SHEAR[0] =0.5*((-1)*PAIR[NUM].dxGdxI-     PAIR[NUM].dyGdyI)/PAIR[NUM].CAMERA_MAGROT[0];
-        PAIR[NUM].CAMERA_SHEAR[1] =0.5*(     PAIR[NUM].dyGdxI+(-1)*PAIR[NUM].dxGdyI)/PAIR[NUM].CAMERA_MAGROT[0];
-    }*/
-}
-//--------------------------------------------------
-//--------------------------------------------------
-//--------------------------------------------------
 void CL_APAIR::F_WCSA_APAIR_CALCSIPRMS(){
     int NUM,FNUM=0;
     double **data;

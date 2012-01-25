@@ -15,6 +15,8 @@ public:
     int SIP_P_ORDER;
     int SIP_L_ORDER;
     double GPOS[3];//CPROP has same parameter
+    double MAXDRAD;
+    double MAXFRAD;
 
     double OAVAL[2];
     double OAPIX[2];

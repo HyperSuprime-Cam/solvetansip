@@ -28,4 +28,5 @@ void    F_InvPROJECTION(double *Pdeg,double *Cdeg,double *PPOINT);
 void    F_DIFFSIP(int ORDER,double *Coef,double *dxCoef,double *dyCoef);  
 void    F_INTSIP(int ORDER,double *dxCoef,double *dyCoef,double *Coef);
 void    F_SIPROT(int ORDER, double Theta, double *InCoef, double *OutCoef);
+void    F_GaussUnit(int srandNUM, int RNDNUM, double *RNDSET);
 #endif

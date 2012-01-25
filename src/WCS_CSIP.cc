@@ -159,6 +159,8 @@ F_SIPROT(SIP_P_ORDER,CSIP[CID].GPOS[2],CSIP[CCDNUM].SIP_SHEAR[0],CSIP[CID].SIP_S
 F_SIPROT(SIP_P_ORDER,CSIP[CID].GPOS[2],CSIP[CCDNUM].SIP_SHEAR[1],CSIP[CID].SIP_SHEAR[1]);
 F_SIPROT(SIP_P_ORDER,CSIP[CID].GPOS[2],CSIP[CCDNUM].SIP_ROT,CSIP[CID].SIP_ROT);
 
+        CSIP[CID].MAXFRAD =CSIP[CCDNUM].MAXFRAD;
+        CSIP[CID].MAXDRAD =CSIP[CCDNUM].MAXDRAD;
         CSIP[CID].CRVAL[0]=CSIP[CCDNUM].CRVAL[0];
         CSIP[CID].CRVAL[1]=CSIP[CCDNUM].CRVAL[1];
         CSIP[CID].OAVAL[0]=CSIP[CCDNUM].OAVAL[0];
@@ -243,6 +245,8 @@ void CL_GSIP::F_WCSA_GSIP_SHOWGSIP(){
     cout << "Index Y     : " << CSIP[CCDNUM].POSID[1] << endl;
     cout << "REFNUM      : " << CSIP[CCDNUM].REFNUM   << endl;
     cout << "FITNUM      : " << CSIP[CCDNUM].FITNUM   << endl;
+    cout << "MAXFITRAD   : " << CSIP[CCDNUM].MAXFRAD  << endl;
+    cout << "MAXDATARAD  : " << CSIP[CCDNUM].MAXDRAD  << endl;
 //    cout << "PHASE       : " << CSIP[CCDNUM].PHASE    << endl;
     cout << "GLOBAL POS_X: " << CSIP[CCDNUM].GPOS[0]  << endl;
     cout << "GLOBAL POS_Y: " << CSIP[CCDNUM].GPOS[1]  << endl;
@@ -269,6 +273,8 @@ void CL_GSIP::F_WCSA_GSIP_SHOWCSIP(int CID){
     cout << "Index Y     : " << CSIP[CID].POSID[1] << endl;
     cout << "REFNUM      : " << CSIP[CID].REFNUM   << endl;
     cout << "FITNUM      : " << CSIP[CID].FITNUM   << endl;
+    cout << "MAXFITRAD   : " << CSIP[CID].MAXFRAD  << endl;
+    cout << "MAXDATARAD  : " << CSIP[CID].MAXDRAD  << endl;
 //    cout << "PHASE       : " << CSIP[CID].PHASE    << endl;
     cout << "GLOBAL POS_X: " << CSIP[CID].GPOS[0]  << endl;
     cout << "GLOBAL POS_Y: " << CSIP[CID].GPOS[1]  << endl;
@@ -292,30 +298,30 @@ void CL_GSIP::F_WCSA_GSIP_SHOWCSIP(int CID){
     for(i=0;i<SIP_ORDER+1;i++)
     for(j=0;j<SIP_ORDER+1;j++)
     if(i+j<SIP_ORDER+1)
-    cout << "  SIPx["<<i<<"]["<<j<<"] : "<< CSIP[CID].SIP_AB[0][ij++]<<endl;
+    cout << " SIPx["<<i<<"]["<<j<<"] : "<< CSIP[CID].SIP_AB[0][ij++]<<endl;
     ij=0;
     for(i=0;i<SIP_ORDER+1;i++)
     for(j=0;j<SIP_ORDER+1;j++)
     if(i+j<SIP_ORDER+1)
-    cout << "  SIPy["<<i<<"]["<<j<<"] : "<< CSIP[CID].SIP_AB[1][ij++]<<endl;
+    cout << " SIPy["<<i<<"]["<<j<<"] : "<< CSIP[CID].SIP_AB[1][ij++]<<endl;
     ij=0;
     for(i=0;i<SIP_P_ORDER+1;i++)
     for(j=0;j<SIP_P_ORDER+1;j++)
-    if(i+j<SIP_ORDER+1)
-    cout << " PSIPx["<<i<<"]["<<j<<"] : "<< CSIP[CID].SIP_ABP[0][ij++]<<endl;
+    if(i+j<SIP_P_ORDER+1)
+    cout << "PSIPx["<<i<<"]["<<j<<"] : "<< CSIP[CID].SIP_ABP[0][ij++]<<endl;
     ij=0;
     for(i=0;i<SIP_P_ORDER+1;i++)
     for(j=0;j<SIP_P_ORDER+1;j++)
-    if(i+j<SIP_ORDER+1)
-    cout << " PSIPy["<<i<<"]["<<j<<"] : "<< CSIP[CID].SIP_ABP[1][ij++]<<endl;
-    cout << " SIPGxErrAVE : " << CSIP[CID].SIP_AB_ERR[0][0] << "	(pix)"<< endl;
-    cout << " SIPGxErrRMS : " << CSIP[CID].SIP_AB_ERR[0][1] << "	(pix)" << endl;
-    cout << " SIPGyErrAVE : " << CSIP[CID].SIP_AB_ERR[1][0] << "	(pix)" << endl;
-    cout << " SIPGyErrRMS : " << CSIP[CID].SIP_AB_ERR[1][1] << "	(pix)" << endl;
-    cout << "PSIPGxErrAVE : " << CSIP[CID].SIP_ABP_ERR[0][0] << "	(pix)" << endl;
-    cout << "PSIPGxErrRMS : " << CSIP[CID].SIP_ABP_ERR[0][1] << "	(pix)" << endl;
-    cout << "PSIPGyErrAVE : " << CSIP[CID].SIP_ABP_ERR[1][0] << "	(pix)" << endl;
-    cout << "PSIPGyErrRMS : " << CSIP[CID].SIP_ABP_ERR[1][1] << "	(pix)" << endl;
+    if(i+j<SIP_P_ORDER+1)
+    cout << "PSIPy["<<i<<"]["<<j<<"] : "<< CSIP[CID].SIP_ABP[1][ij++]<<endl;
+    cout << " SIPGxErrAVE: " << CSIP[CID].SIP_AB_ERR[0][0] << "	(pix)"<< endl;
+    cout << " SIPGxErrRMS: " << CSIP[CID].SIP_AB_ERR[0][1] << "	(pix)" << endl;
+    cout << " SIPGyErrAVE: " << CSIP[CID].SIP_AB_ERR[1][0] << "	(pix)" << endl;
+    cout << " SIPGyErrRMS: " << CSIP[CID].SIP_AB_ERR[1][1] << "	(pix)" << endl;
+    cout << "PSIPGxErrAVE: " << CSIP[CID].SIP_ABP_ERR[0][0] << "	(pix)" << endl;
+    cout << "PSIPGxErrRMS: " << CSIP[CID].SIP_ABP_ERR[0][1] << "	(pix)" << endl;
+    cout << "PSIPGyErrAVE: " << CSIP[CID].SIP_ABP_ERR[1][0] << "	(pix)" << endl;
+    cout << "PSIPGyErrRMS: " << CSIP[CID].SIP_ABP_ERR[1][1] << "	(pix)" << endl;
     cout << "--------------------------------------------------" <<endl;
     cout.unsetf(ios::scientific);
     cout << endl;
@@ -344,30 +350,30 @@ void CL_GSIP::F_WCSA_GSIP_SHOWGLOBAL(){
     for(i=0;i<SIP_ORDER+1;i++)
     for(j=0;j<SIP_ORDER+1;j++)
     if(i+j<SIP_ORDER+1)
-    cout << "  SIPx["<<i<<"]["<<j<<"] : "<< CSIP[CCDNUM].SIP_AB[0][ij++]<<endl;
+    cout << " SIPx["<<i<<"]["<<j<<"] : "<< CSIP[CCDNUM].SIP_AB[0][ij++]<<endl;
     ij=0;
     for(i=0;i<SIP_ORDER+1;i++)
     for(j=0;j<SIP_ORDER+1;j++)
     if(i+j<SIP_ORDER+1)
-    cout << "  SIPy["<<i<<"]["<<j<<"] : "<< CSIP[CCDNUM].SIP_AB[1][ij++]<<endl;
+    cout << " SIPy["<<i<<"]["<<j<<"] : "<< CSIP[CCDNUM].SIP_AB[1][ij++]<<endl;
     ij=0;
     for(i=0;i<SIP_P_ORDER+1;i++)
     for(j=0;j<SIP_P_ORDER+1;j++)
-    if(i+j<SIP_ORDER+1)
-    cout << " PSIPx["<<i<<"]["<<j<<"] : "<< CSIP[CCDNUM].SIP_ABP[0][ij++]<<endl;
+    if(i+j<SIP_P_ORDER+1)
+    cout << "PSIPx["<<i<<"]["<<j<<"] : "<< CSIP[CCDNUM].SIP_ABP[0][ij++]<<endl;
     ij=0;
     for(i=0;i<SIP_P_ORDER+1;i++)
     for(j=0;j<SIP_P_ORDER+1;j++)
-    if(i+j<SIP_ORDER+1)
-    cout << " PSIPy["<<i<<"]["<<j<<"] : "<< CSIP[CCDNUM].SIP_ABP[1][ij++]<<endl;
-    cout << " SIPGxErrAVE : " << CSIP[CCDNUM].SIP_AB_ERR[0][0] << "	(pix)"<< endl;
-    cout << " SIPGxErrRMS : " << CSIP[CCDNUM].SIP_AB_ERR[0][1] << "	(pix)" << endl;
-    cout << " SIPGyErrAVE : " << CSIP[CCDNUM].SIP_AB_ERR[1][0] << "	(pix)" << endl;
-    cout << " SIPGyErrRMS : " << CSIP[CCDNUM].SIP_AB_ERR[1][1] << "	(pix)" << endl;
-    cout << "PSIPGxErrAVE : " << CSIP[CCDNUM].SIP_ABP_ERR[0][0] << "	(pix)" << endl;
-    cout << "PSIPGxErrRMS : " << CSIP[CCDNUM].SIP_ABP_ERR[0][1] << "	(pix)" << endl;
-    cout << "PSIPGyErrAVE : " << CSIP[CCDNUM].SIP_ABP_ERR[1][0] << "	(pix)" << endl;
-    cout << "PSIPGyErrRMS : " << CSIP[CCDNUM].SIP_ABP_ERR[1][1] << "	(pix)" << endl;
+    if(i+j<SIP_P_ORDER+1)
+    cout << "PSIPy["<<i<<"]["<<j<<"] : "<< CSIP[CCDNUM].SIP_ABP[1][ij++]<<endl;
+    cout << " SIPGxErrAVE: " << CSIP[CCDNUM].SIP_AB_ERR[0][0] << "	(pix)"<< endl;
+    cout << " SIPGxErrRMS: " << CSIP[CCDNUM].SIP_AB_ERR[0][1] << "	(pix)" << endl;
+    cout << " SIPGyErrAVE: " << CSIP[CCDNUM].SIP_AB_ERR[1][0] << "	(pix)" << endl;
+    cout << " SIPGyErrRMS: " << CSIP[CCDNUM].SIP_AB_ERR[1][1] << "	(pix)" << endl;
+    cout << "PSIPGxErrAVE: " << CSIP[CCDNUM].SIP_ABP_ERR[0][0] << "	(pix)" << endl;
+    cout << "PSIPGxErrRMS: " << CSIP[CCDNUM].SIP_ABP_ERR[0][1] << "	(pix)" << endl;
+    cout << "PSIPGyErrAVE: " << CSIP[CCDNUM].SIP_ABP_ERR[1][0] << "	(pix)" << endl;
+    cout << "PSIPGyErrRMS: " << CSIP[CCDNUM].SIP_ABP_ERR[1][1] << "	(pix)" << endl;
     cout << "--------------------------------------------------" <<endl;
     cout.unsetf(ios::scientific);
     cout << endl;

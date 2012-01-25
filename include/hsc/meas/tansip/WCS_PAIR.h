@@ -30,7 +30,6 @@ public:
     double CAMERA_CONVROT[2];    //OUTPUT INFO//Convergence by camera
     double CAMERA_SHEAR[2];      //OUTPUT INFO//Shear by camera
     double CAMERA_MAGNIFICATION; //OUTPUT INFO//Magnification by camera
-double CAMERA_MAGROT[2];//Magnification by camera
     double CAMERA_PCONVROT[2];   //OUTPUT INFO//Convergence by camera
     double CAMERA_PSHEAR[2];     //OUTPUT INFO//Shear by camera
     double CAMERA_PMAGNIFICATION;//OUTPUT INFO//Magnification by camera
@@ -38,10 +37,10 @@ double CAMERA_MAGROT[2];//Magnification by camera
     double dxLdyI;
     double dyLdxI;
     double dyLdyI;
-double dxGdxI;//Diferential value of xG by xCRPIX
-double dxGdyI;
-double dyGdxI;
-double dyGdyI;
+    double dxGdxI;//Diferential value of xG by xCRPIX
+    double dxGdyI;
+    double dyGdxI;
+    double dyGdyI;
     double Zxx;//Fitting value of SIP dxGdxI 
     double Zyx;
     double Zxy;
@@ -64,6 +63,8 @@ public:
     int IterNUM_XY;
     int IterNUM_T;
     int STDOUT;
+    double MAXDRAD;
+    double MAXFRAD;
     double **GPOS;
     double GPOS_AVE[3];
     double CLIP_SIGMA;
@@ -79,18 +80,18 @@ public:
     double *SIP_ABP[2];
     double *CDSIP_AB[2];//CD*SIP
     double *CDSIP_ABP[2];//InvCD*SIP
+    double *MAGNIFICATION_AB[2];
+    double *MAGNIFICATION_ABP[2];
     double ANGLE;
     double AVERMS[2][2];
     double  SIPRMS[2][2];
     double PSIPRMS[2][2];
-double *TCoef[2];
-double *TdCoef[2][2];
-double *TPCoef[2];
-double *TdPCoef[2][2];
-    double **TLCoef[2];
-    double **TdLCoef[2][2];
-double *TSIP_AB[2];
-double *TSIP_ABP[2];
+/*REJECT*/    double *TCoef[2];
+/*REJECT*/    double *TdCoef[2][2];
+/*REJECT*/    double *TPCoef[2];
+/*REJECT*/    double *TdPCoef[2][2];
+/*REJECT*/    double **TLCoef[2];
+/*REJECT*/    double **TdLCoef[2][2];
 
 //MAIN
     void F_WCSA_APAIR_GPOS();
@@ -101,6 +102,7 @@ double *TSIP_ABP[2];
     void F_WCSA_APAIR_SETXG();
     void F_WCSA_APAIR_SETCRPIX();
     void F_WCSA_APAIR_SETIM();
+    void F_WCSA_APAIR_CALCMAXR();
     void F_WCSA_APAIR_PROJECTION();
     void F_WCSA_APAIR_CENTERPROJECTION();
     void F_WCSA_APAIR_CENTERofOBJECTS();
@@ -111,22 +113,13 @@ double *TSIP_ABP[2];
 //FITTING
     void F_WCSA_APAIR_FITTING();
     void F_WCSA_APAIR_GFITTING(int ORDER,int VARIABLE,int FUNCTION, double **Coef);
-void F_WCSA_APAIR_GFITTING(int,int,int);//(ORDER,VALUE,FUNCTION), ORDER=(SIP_ORDER,SIP_P_ORDER,SIP_ORDER-1,SIP_L_ORDER)
     void F_WCSA_APAIR_LFITTING(int, int);//(FUNCTION), 
-    void F_WCSA_APAIR_CALCRMS(int,int,int);//(ORDER,VALUE,FUNCTION), ORDER=(SIP_ORDER,SIP_P_ORDER,SIP_ORDER-1,SIP_L_ORDER)
+    void F_WCSA_APAIR_CALCRMS(int ORDER,int,int);//(ORDER,VALUE,FUNCTION)
     void F_WCSA_APAIR_SETCDSIP();
     void F_WCSA_APAIR_SETCDPSIP();
     void F_WCSA_APAIR_CHANGEVARIABLE(int, double CD[2][2],double *F,double *G);
-void F_WCSA_APAIR_SETSIP();
-void F_WCSA_APAIR_SETPSIP();
     void F_WCSA_APAIR_CALCSIPRMS();//(ORDER,VALUE,FUNCTION), ORDER=(SIP_ORDER,SIP_P_ORDER,SIP_ORDER-1,SIP_L_ORDER)
-void F_WCSA_APAIR_FITSIP();
-void F_WCSA_APAIR_FITPSIP();
     void F_WCSA_APAIR_CALCPSIPRMS();//(ORDER,VALUE,FUNCTION), ORDER=(SIP_ORDER,SIP_P_ORDER,SIP_ORDER-1,SIP_L_ORDER)
-    void F_WCSA_APAIR_CALCCRS();//(CONVERGENCE,ROTATION,SHEAR)
-    void F_WCSA_APAIR_CALCCRSfromTCoef();//(CONVERGENCE,ROTATION,SHEAR)
-void F_WCSA_APAIR_CALCMAGROTSHEAR();
-void F_WCSA_APAIR_CALCMAGROTSHEARfromTCoef();
     void F_WCSA_APAIR_CALCCONVROTSHEARMAG();
     void F_WCSA_APAIR_LDIFFVALUES();
     void F_WCSA_APAIR_GDIFFVALUES();

@@ -74,7 +74,7 @@ def getresultWcs_local(matchList_address, metadata, policy=None, camera=None, re
         policy = defaults
           
     print matchList_address
-    print type(matchList_address)
+#    print type(matchList_address)
   
     WCSA_ASP = hscTansip.F_WCSA_TANSIP_V_local(matchList_address, metadata, policy, camera)
     print '... TAN-SIP fitting done.'
@@ -94,6 +94,22 @@ def getwcsList(WCSA_ASP):
     return hscTansip.F_WCSA_PLMAIN_GETWCSLIST(WCSA_ASP)
 
 
+#-----------------------------------------------------------------
+#Output Functions : WCSA_ASP
+#-----------------------------------------------------------------
+def WCS_OUTPUT_SIP(WCSA_ASP,SIPFILENAME):
+    hscTansip.F_WCSA_PLMAIN_OUTPUTSIP(WCSA_ASP,SIPFILENAME)
+def WCS_INPUT_SIP(WCSA_ASP,SIPFILENAME):
+    hscTansip.F_WCSA_PLMAIN_INPUTSIP(WCSA_ASP,SIPFILENAME)
+def WCS_OUTPUT_CCD(WCSA_ASP,CCDFILENAME):
+    hscTansip.F_WCSA_PLMAIN_OUTPUTCCD(WCSA_ASP,CCDFILENAME)
+def WCS_INPUT_CCD(WCSA_ASP,CCDFILENAME):
+    hscTansip.F_WCSA_PLMAIN_INPUTCCD(WCSA_ASP,CCDFILENAME)
+#-----------------------------------------------------------------
+#Simulation Functions : WCSA_ASP
+#-----------------------------------------------------------------
+def WCS_MAKE_RANDDATA(RANNUM,REFNUM,WCSA_ASP,SIMFILENAME):
+    hscTansip.F_WCSA_PLMAIN_MAKERANDDATA(RANNUM,REFNUM,WCSA_ASP,SIMFILENAME)
 #-----------------------------------------------------------------
 #Getting Functions : WCSA_ASP : SIP (Values of SIP having)
 #-----------------------------------------------------------------

@@ -43,7 +43,27 @@ metadata = doTansip.F_WCS_EMPTYMETADATA()
 #wcsList = doTansip.doTansip(matches, policy=policy, camera=mapper.camera)
 WCSA_ASP = doTansip.getresultWcs_local(matches_address, metadata, policy=policy, camera=mapper.camera)
 #-----------------------------------------------------------------
-#Getting Functions : WCS : POSITION
+#Output Functions : WCSA_ASP
+#-----------------------------------------------------------------
+SIPFILENAME = 'SIPfromWCSA.txt'
+doTansip.WCS_OUTPUT_SIP(WCSA_ASP,SIPFILENAME)
+doTansip.WCS_INPUT_SIP(WCSA_ASP,SIPFILENAME)
+CCDFILENAME = 'CCDfromWCSA.txt'
+doTansip.WCS_OUTPUT_CCD(WCSA_ASP,CCDFILENAME)
+doTansip.WCS_INPUT_CCD(WCSA_ASP,CCDFILENAME)
+#-----------------------------------------------------------------
+#Simulation Functions : WCSA_ASP
+#-----------------------------------------------------------------
+#RANNUM=1;
+#REFNUMlist=[3,5,10,20,30,50,2000];
+#for REFNUM in range (1,2001):
+#    if REFNUM in REFNUMlist:
+#        for RANNUM in range (1,10000):
+#            SIMFILENAME = 'RREF/SIMULATIONDATA_'+str(REFNUM)+'_'+str(RANNUM)+'.txt'
+#            print SIMFILENAME
+#            doTansip.WCS_MAKE_RANDDATA(RANNUM,REFNUM,WCSA_ASP,SIMFILENAME)
+#-----------------------------------------------------------------
+#Getting Functions : WCSA_ASP : POSITION
 #-----------------------------------------------------------------
 CCDrefinfo_XY_LOCAL = doTansip.WCS_GET_REFERENCE_XY_LOCAL(WCSA_ASP,0)
 print 'LOCAL : ', CCDrefinfo_XY_LOCAL[0]
@@ -87,7 +107,7 @@ POSITIONinfo_CCDIDLOCAL = doTansip.WCS_GET_POSITION_CCDIDLOCALfromGLOBAL(WCSA_AS
 print 'CCDID : ', POSITIONinfo_CCDIDLOCAL[0],' : XY : ',POSITIONinfo_CCDIDLOCAL[1],POSITIONinfo_CCDIDLOCAL[2]
 print ''
 #-----------------------------------------------------------------
-#Getting Functions : WCS : REFERENCES
+#Getting Functions : WCSA_ASP : REFERENCES
 #-----------------------------------------------------------------
 print "--- getting function : references ---"
 print "--- getting function : references : ID ---"
@@ -241,7 +261,7 @@ refinfo = doTansip.WCS_GET_REFERENCE_INIDIVIDUAL(WCSA_ASP,1000000000)
 print refinfo
 
 #-----------------------------------------------------------------
-#Getting Functions : WCS : CCD
+#Getting Functions : WCSA_ASP : CCD
 #-----------------------------------------------------------------
 print "--- getting function : ccd ---"
 ccdpositions = doTansip.WCS_GET_CCD_ALL_CCDPOS(WCSA_ASP)
