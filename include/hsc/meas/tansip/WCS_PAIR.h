@@ -8,7 +8,7 @@
 class CL_PAIR{
 private:
 public:
-    int ID;    //OUTPUT INFO
+    long ID;    //OUTPUT INFO
     int CHIPID;//OUTPUT INFO
     int FLAG;  //OUTPUT INFO
     double X_LOCAL[2];//OUTPUT INFO
@@ -67,6 +67,7 @@ public:
     double MAXFRAD;
     double **GPOS;
     double GPOS_AVE[3];
+    double BASISPOS[3];
     double CLIP_SIGMA;
     double CENTER_PIXEL[2];
     double CENTER_RADEC[2];

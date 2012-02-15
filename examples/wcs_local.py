@@ -23,7 +23,8 @@ import lsst.pipette.plotter as pipPlot
 print sys.argv
 print sys.argv[1]
 matches_address = sys.argv[1]
-mapper = scmapper.SuprimecamMapper(rerun="fh-dc2.9c-default") 
+#mapper = scmapper.SuprimecamMapper(rerun="fh-dc2.9c-default") 
+mapper = hscSim.HscSimMapper(rerun="fh-dc2.9c-default")
 
 #plot = pipPlot.Plotter('wcs')
 #mapper = scmapper.SuprimecamMapper(rerun="fh-dc2.9c-default") 

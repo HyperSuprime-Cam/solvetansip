@@ -12,6 +12,7 @@
 #include "hsc/meas/tansip/WCS_APROP.h"
 #include "hsc/meas/tansip/WCS_PAIR.h"
 #include "hsc/meas/tansip/WCS_CSIP.h"
+#include "hsc/meas/tansip/WCS_SIMULATION.h"
 #ifndef WCS_PL_MAIN_H
 #define WCS_PL_MAIN_H
 class CL_WCSA_ASP{//Chip property
@@ -40,7 +41,8 @@ void F_WCSA_PLMAIN_INPUTCCD (CL_WCSA_ASP* WCSA_ASP, std::string CCDFILENAME);
 //-----------------------------------------------------------------
 //Simulation Functions : WCSA_ASP
 //-----------------------------------------------------------------
-void F_WCSA_PLMAIN_MAKERANDDATA(int RANNUM,int REFNUM,CL_WCSA_ASP* WCSA_ASP, std::string SIMFILENAME);
+void F_WCSA_PLMAIN_SIMULATION(int HARD,std::string CCDPOSfile,std::string DISTfile,double NSCALE,int RANNUM,int REFNUM);
+void F_WCSA_PLMAIN_SIMULATIONDIFF(int HARD,std::string CCDPOSfile,std::string DISTfile,CL_WCSA_ASP* WCSA_ASP);
 //-----------------------------------------------------------------
 //Getting Functions : WCSA_ASP : POSITION
 //-----------------------------------------------------------------

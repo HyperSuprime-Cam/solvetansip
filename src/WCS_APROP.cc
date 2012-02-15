@@ -23,6 +23,9 @@ void    CL_APROP::F_WCSA_APROP_SHOWAPROP(){
     cout << "SIP_ORDER   : " << SIP_ORDER   << endl;
     cout << "SIP_PORDER  : " << SIP_P_ORDER << endl;
     cout << "CRIP_SIGMA  : " << CLIP_SIGMA  << endl;
+    cout << "BASISPOSX   : " << BASISPOS[0] << endl;
+    cout << "BASISPOSY   : " << BASISPOS[1] << endl;
+    cout << "BASISPOST   : " << BASISPOS[2] << endl;
     cout << "CCDNUM      : " << CCDNUM      << endl;
     cout <<endl;
 }

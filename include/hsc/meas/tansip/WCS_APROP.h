@@ -23,6 +23,7 @@ public:
     double CLIP_SIGMA;
     double CRPIX[2];//for Manual MODE
     double CRVAL[2];//for Manual MODE
+    double BASISPOS[3];
     int STDOUT;
     int CHECKPARAM;
 

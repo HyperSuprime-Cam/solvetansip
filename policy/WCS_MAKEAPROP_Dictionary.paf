@@ -172,7 +172,7 @@ definitions: {
     }
     BASISPOSY: {
         type: double
-        default:    -96.0
+        default:    -2048.0
         description: Y BASIS OF GLOBAL POSITION
         minOccurs: 0
         maxOccurs: 1

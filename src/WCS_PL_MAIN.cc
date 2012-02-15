@@ -117,6 +117,9 @@ void    F_WCSA_MAKEAPROP(lsst::pex::policy::Policy::Ptr &APROPPolicy, CL_APROP *
     APROP->SIP_ORDER   =APROPPolicy->getInt("SIPORDER");
     APROP->SIP_P_ORDER =APROPPolicy->getInt("PSIPORDER");
     APROP->CLIP_SIGMA  =APROPPolicy->getDouble("CLIPSIGMA");
+    APROP->BASISPOS[0] =APROPPolicy->getDouble("BASISPOSX");
+    APROP->BASISPOS[1] =APROPPolicy->getDouble("BASISPOSY");
+    APROP->BASISPOS[2] =APROPPolicy->getDouble("BASISPOST");
     APROP->STDOUT      =APROPPolicy->getInt("STDOUT");
     APROP->ALLREFNUM   = 0;
     APROP->ALLFITNUM   = 0;
@@ -477,7 +480,6 @@ void F_WCSA_PLMAIN_INPUTSIP(CL_WCSA_ASP* WCSA_ASP, string SIPFILENAME){
     TCCDNUM = WCSA_ASP->APROP->CCDNUM;
     
     fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].ID;
-    WCSA_ASP->GSIP->CSIP[TCCDNUM].ID++;
     fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].REFNUM;
     fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].FITNUM;
     fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_ORDER;
@@ -558,41 +560,12 @@ void F_WCSA_PLMAIN_INPUTCCD(CL_WCSA_ASP* WCSA_ASP, string CCDFILENAME){
 //-----------------------------------------------------------------
 //Simulation Functions : WCSA_ASP
 //-----------------------------------------------------------------
-void F_WCSA_PLMAIN_MAKERANDDATA(int RANNUM,int REFNUM,CL_WCSA_ASP* WCSA_ASP, std::string SIMFILENAME){
-    int NUM,CID,TREFNUM;
-    double RX[2],RANDSET[REFNUM*10*2];
-    CL_PAIR PAIR[REFNUM*10];
-    srand(RANNUM);
-    ofstream fout;
 
-    fout.open(SIMFILENAME.c_str());
-    F_GaussUnit(RANNUM,REFNUM*10*2,RANDSET);
-
-    TREFNUM=0;
-    for(CID=0;CID<10;CID++)
-    for(NUM=0;NUM<REFNUM;NUM++){
-        RX[0]=rand()%2048;
-        RX[1]=rand()%4096;
-        PAIR[TREFNUM].ID=TREFNUM;
-        PAIR[TREFNUM].CHIPID=CID;
-        PAIR[TREFNUM].X_LOCAL[0]=RX[0];
-        PAIR[TREFNUM].X_LOCAL[1]=RX[1];
-        PAIR[TREFNUM].X_CRPIX[0]=RX[0]-WCSA_ASP->GSIP->CSIP[CID].CRPIX[0];
-        PAIR[TREFNUM].X_CRPIX[1]=RX[1]-WCSA_ASP->GSIP->CSIP[CID].CRPIX[1];
-//cout << fixed << setprecision(6) << PAIR[TREFNUM].ID << "	" << PAIR[TREFNUM].CHIPID << "	" << PAIR[TREFNUM].X_LOCAL[0] << "	" << PAIR[TREFNUM].X_LOCAL[1] << "	" << setw(6) << PAIR[TREFNUM].X_CRPIX[0] << "	" << setw(6) << PAIR[TREFNUM].X_CRPIX[1] << endl;
-//cout << fixed << setprecision(6) << WCSA_ASP->APROP->SIP_ORDER << "	" << WCSA_ASP->GSIP->CSIP[CID].SIP_AB[0][0] << "	" << PAIR[TREFNUM].X_LOCAL[0] << "	" << PAIR[TREFNUM].X_LOCAL[1] << "	" << setw(6) << WCSA_ASP->GSIP->CSIP[CID].SIP_AB[0][1] << "	" << setw(6) << WCSA_ASP->GSIP->CSIP[CID].SIP_AB[0][6] << endl;
-        PAIR[TREFNUM].X_IM_PIXEL[0]=F_CALCVALUE(WCSA_ASP->APROP->SIP_ORDER,WCSA_ASP->GSIP->CSIP[CID].SIP_AB[0],PAIR[TREFNUM].X_CRPIX)+PAIR[TREFNUM].X_CRPIX[0];
-        PAIR[TREFNUM].X_IM_PIXEL[1]=F_CALCVALUE(WCSA_ASP->APROP->SIP_ORDER,WCSA_ASP->GSIP->CSIP[CID].SIP_AB[1],PAIR[TREFNUM].X_CRPIX)+PAIR[TREFNUM].X_CRPIX[1];
-//cout << fixed << setprecision(6) << PAIR[TREFNUM].ID << "	" << PAIR[TREFNUM].CHIPID << "	" << PAIR[TREFNUM].X_LOCAL[0] << "	" << PAIR[TREFNUM].X_LOCAL[1] << "	" << setw(6) << PAIR[TREFNUM].X_IM_PIXEL[0] << "	" << setw(6) << PAIR[TREFNUM].X_IM_PIXEL[1] << endl;
-        PAIR[TREFNUM].X_IM_WORLD[0]=WCSA_ASP->GSIP->CSIP[CID].CD[0][0]*PAIR[TREFNUM].X_IM_PIXEL[0]+WCSA_ASP->GSIP->CSIP[CID].CD[0][1]*PAIR[TREFNUM].X_IM_PIXEL[1];
-        PAIR[TREFNUM].X_IM_WORLD[1]=WCSA_ASP->GSIP->CSIP[CID].CD[1][0]*PAIR[TREFNUM].X_IM_PIXEL[0]+WCSA_ASP->GSIP->CSIP[CID].CD[1][1]*PAIR[TREFNUM].X_IM_PIXEL[1];
-//cout << WCSA_ASP->GSIP->CSIP[CID].CD[0][0] << "	"<< WCSA_ASP->GSIP->CSIP[CID].CD[0][1] << "	"<< WCSA_ASP->GSIP->CSIP[CID].CD[1][0] << "	"<< WCSA_ASP->GSIP->CSIP[CID].CD[1][1] << "	" <<  endl;
-//cout << fixed << setprecision(6) << PAIR[TREFNUM].ID << "	" << PAIR[TREFNUM].CHIPID << "	" << PAIR[TREFNUM].X_LOCAL[0] << "	" << PAIR[TREFNUM].X_LOCAL[1] << "	" << setw(6) << PAIR[TREFNUM].X_IM_WORLD[0] << "	" << setw(6) << PAIR[TREFNUM].X_IM_WORLD[1] << endl;
-        F_InvPROJECTION(PAIR[TREFNUM].X_IM_WORLD,PAIR[TREFNUM].X_RADEC,WCSA_ASP->GSIP->CSIP[CID].CRVAL);
-//cout << fixed << setprecision(6) << PAIR[TREFNUM].ID << "	" << PAIR[TREFNUM].CHIPID << "	" << PAIR[TREFNUM].X_LOCAL[0] << "	" << PAIR[TREFNUM].X_LOCAL[1] << "	" << setw(6) << PAIR[TREFNUM].X_RADEC[0] << "	" << setw(6) << PAIR[TREFNUM].X_RADEC[1] << endl;
-        fout << fixed << setprecision(6) << PAIR[TREFNUM].ID << "	" << PAIR[TREFNUM].CHIPID << "	" << PAIR[TREFNUM].X_LOCAL[0]+RANDSET[2*TREFNUM+0] << "	" << PAIR[TREFNUM].X_LOCAL[1]+RANDSET[2*TREFNUM+1] << "	" << setw(6) << PAIR[TREFNUM].X_RADEC[0] << "	" << setw(6) << PAIR[TREFNUM].X_RADEC[1] << endl;
-        TREFNUM++;
-    }
+void F_WCSA_PLMAIN_SIMULATION(int HARD,string CCDPOSfile,string DISTfile,double NSCALE,int RANNUM,int REFNUM){
+    F_WCSA_SIMULATION_MAIN(HARD,CCDPOSfile,DISTfile,NSCALE,RANNUM,REFNUM);
+}
+void F_WCSA_PLMAIN_SIMULATIONDIFF(int HARD,string CCDPOSfile,string DISTfile,CL_WCSA_ASP* WCSA_ASP){
+    F_WCSA_SIMULATION_DIFF(HARD,CCDPOSfile,DISTfile,WCSA_ASP);
 }
 //-----------------------------------------------------------------
 //Getting Functions : WCSA_ASP : REFERNCE

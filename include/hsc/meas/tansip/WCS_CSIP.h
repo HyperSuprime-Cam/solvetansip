@@ -75,6 +75,8 @@ public:
     double CD[2][2];
     double InvCD[2][2];
     double ANGLE;
+    double *SIP_AB[2];
+    double *SIP_ABP[2];
 /*DEL*/
     double *TSIP_AB[2];
     double *TSIP_ABP[2];

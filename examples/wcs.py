@@ -11,7 +11,7 @@ import lsst.obs.hscSim as hscSim
 import lsst.obs.suprimecam as scmapper
 
 import hsc.meas.tansip.doTansip as doTansip
-import hsc.meas.tansip.WCS_PL_MAIN       as hscTansip
+#import hsc.meas.tansip.WCS_PL_MAIN       as hscTansip
 #import hsc.meas.tansip.WCS_CHECK_PY      as WCS_CHECK_PY
 #import hsc.meas.tansip.WCS_POSITION_PY   as WCS_POSITION_PY
 #import hsc.meas.tansip.WCS_DISTORTION_PY as WCS_DISTORTION_PY
@@ -27,10 +27,11 @@ import lsst.pipette.plotter as pipPlot
 plot = pipPlot.Plotter('wcs')
 #mapper = hscSim.HscSimMapper(rerun="fh-dc2.9-sc") fh-dc2.9-sc/
 #mapper = hscSim.HscSimMapper(rerun="pre-DC2.4")
-mapper = scmapper.SuprimecamMapper(rerun="fh-dc2.9c-default") 
+#mapper = scmapper.SuprimecamMapper(rerun="fh-dc2.9c-default") 
+mapper = scmapper.SuprimecamMapper(rerun="tk-20110531") 
 io = pipReadWrite.ReadWrite(mapper, ['visit'], fileKeys=['visit', 'ccd'])
 #data = {'visit': 220}
-data = {'visit': 126913}#929-941-
+data = {'visit': 126929}#929-941-
 CNUMBER = 401
 ANGLE=0
 #ANGLE = 0.067195176

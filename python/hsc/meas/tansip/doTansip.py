@@ -108,8 +108,10 @@ def WCS_INPUT_CCD(WCSA_ASP,CCDFILENAME):
 #-----------------------------------------------------------------
 #Simulation Functions : WCSA_ASP
 #-----------------------------------------------------------------
-def WCS_MAKE_RANDDATA(RANNUM,REFNUM,WCSA_ASP,SIMFILENAME):
-    hscTansip.F_WCSA_PLMAIN_MAKERANDDATA(RANNUM,REFNUM,WCSA_ASP,SIMFILENAME)
+def WCS_MAKE_SIMULATIONREFERENCE(HARD,CCDPOSfile,DISTfile,NSCALE,RANNUM,REFNUM):
+    hscTansip.F_WCSA_PLMAIN_SIMULATION(HARD,CCDPOSfile,DISTfile,NSCALE,RANNUM,REFNUM)
+def WCS_CALC_SIMULATIONDIFF(HARD,CCDPOSfile,DISTfile,WCSA_ASP):
+    hscTansip.F_WCSA_PLMAIN_SIMULATIONDIFF(HARD,CCDPOSfile,DISTfile,WCSA_ASP)
 #-----------------------------------------------------------------
 #Getting Functions : WCSA_ASP : SIP (Values of SIP having)
 #-----------------------------------------------------------------
