@@ -136,7 +136,7 @@ void    F_WCSA_MAKEGSIP(lsst::afw::cameraGeom::Camera::Ptr &camera, CL_APROP *AP
         for(CID=0;CID<APROP->CCDNUM;CID++){
             camGeom::Id detId = camGeom::Id(CID);//serial
             camGeom::Detector::Ptr det = detMosaic->findDetector(detId);
-            afwGeom::Point2D offsetXY = det->getCenter();
+            afwGeom::Point2D offsetXY = det->getCenter().getPixels(det->getPixelSize());
 //            double ccdTiltYaw = (det->getOrientation()).getYaw();
   //          int ccdTiltNQuarter = (det->getOrientation()).getNQuarter();
 
