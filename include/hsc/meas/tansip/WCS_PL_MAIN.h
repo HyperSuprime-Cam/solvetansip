@@ -22,8 +22,7 @@ public:
     CL_APROP* APROP;
     CL_GSIP*  GSIP;
     CL_APAIR* APAIR;
-    std::vector <CL_CSIP*>  CSIPList;
- 
+
     lsst::afw::image::TanWcs::Ptr F_WCSA_PLMAIN_SETWCSPtr(int);
     void F_WCS_PLMAIN_SETWCSA_ASP();
 };
