@@ -9,8 +9,11 @@
 class CL_APROP{//Analysis property
 private:
 public:
-    char CRPIXMODE[11];//AUTO or PIX or VAL or LAXIS
-    char OAMODE[11];//MIN or REV
+    enum {
+        STRING_LENGTH = 11,             // Length of strings, including \0
+    };
+    char CRPIXMODE[STRING_LENGTH];//AUTO or PIX or VAL or LAXIS
+    char OAMODE[STRING_LENGTH];//MIN or REV
     int  CCDPOSMODE;
     int  CCDNUM;//CSIP has same parameter
     int  ALLREFNUM;

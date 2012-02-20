@@ -103,10 +103,17 @@ CL_WCSA_ASP F_WCSA_TANSIP_V_local(string matchlist,dafbase::PropertySet::Ptr &me
 }
 void    F_WCSA_MAKEAPROP(lsst::pex::policy::Policy::Ptr &APROPPolicy, CL_APROP *APROP){
     string CMODE,OAMODE,SNAME,CNAME,PNAME,DNAME;
+
+    // Validate policy with dictionary
+    lsst::pex::policy::DefaultPolicyFile const defaultsFile("solvetansip", "WCS_MAKEAPROP_Dictionary.paf",
+                                                            "policy");
+    lsst::pex::policy::Policy const defaults(defaultsFile);
+    APROPPolicy->mergeDefaults(defaults);
+
     CMODE              =APROPPolicy->getString("CRPIXMODE");
-    strcpy(APROP->CRPIXMODE,CMODE.c_str());
+    strncpy(APROP->CRPIXMODE,CMODE.c_str(), CL_APROP::STRING_LENGTH);
     OAMODE             =APROPPolicy->getString("OAMODE");
-    strcpy(APROP->OAMODE,OAMODE.c_str());
+    strncpy(APROP->OAMODE,OAMODE.c_str(), CL_APROP::STRING_LENGTH);
     APROP->CCDNUM      =APROPPolicy->getInt("NCCD");
     APROP->CCDPOSMODE  =APROPPolicy->getInt("CCDPMODE");
     APROP->CRPIX[0]    =APROPPolicy->getDouble("CRPIX1");
