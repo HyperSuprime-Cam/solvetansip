@@ -7,7 +7,30 @@
 //--------------------------------------------------
 
 #include<cmath>
+
+
+#ifdef USE_EIGEN
+#include <Eigen/Core>
+#include <Eigen/LU>
+#endif
+
 void    F_InvM(int MNUM,double **Min,double **Mout){
+
+#ifdef USE_EIGEN
+    Eigen::MatrixXd input(MNUM, MNUM);
+    for (int i = 0; i < MNUM; ++i) {
+        for (int j = 0; j < MNUM; ++j) {
+            input(i, j) = Min[i][j];
+        }
+    }
+    Eigen::MatrixXd output = input.inverse();
+    for (int i = 0; i < MNUM; ++i) {
+        for (int j = 0; j < MNUM; ++j) {
+            Mout[i][j] = output(i, j);
+        }
+    }
+    return;
+#else
     int i,j,k;
     double Mdi,**Mtemp,**Mtemp2,**I,**Itemp;
 
@@ -73,7 +96,7 @@ void    F_InvM(int MNUM,double **Min,double **Mout){
     delete [] Mtemp2;
     delete [] I;
     delete [] Itemp;
-	
+#endif	
 }
 void    F_LS1(int dataNUM,int Order,double **data,double *Coef){
     int i,j,NUM;
