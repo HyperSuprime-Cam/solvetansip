@@ -10,11 +10,26 @@
 #include "hsc/meas/tansip/WCS_TANSIP.h"
 
 using namespace std;
+void    CL_APROP::F_WCSA_APROP_NEWAPROP(){
+    REFNUM = F_NEWint1(CCDNUM);
+    FITNUM = F_NEWint1(CCDNUM);
+}
+void    CL_APROP::F_WCSA_APROP_DELAPROP(){
+    F_DELint1(REFNUM);
+    F_DELint1(FITNUM);
+}
 void    CL_APROP::F_WCSA_APROP_SHOWAPROP(){
+    int CID;
     cout << "-- APROP CHECK --" << endl;
     cout << "CRPIXMODE   : " << CRPIXMODE   << endl;
     cout << "OAMODE      : " << OAMODE   << endl;
     cout << "CCDPOSMODE  : " << CCDPOSMODE  << endl;
+    cout << "ALLREFNUM   : " << ALLREFNUM   << endl;
+    for(CID=0;CID<CCDNUM;CID++)
+    cout << "REFNUM      : " << CID << " : " <<  REFNUM[CID] << endl;
+    cout << "ALLFITNUM   : " << ALLFITNUM   << endl;
+    for(CID=0;CID<CCDNUM;CID++)
+    cout << "FITNUM      : " << CID << " : " <<  FITNUM[CID] << endl;
     cout << "CRPIX1      : " << CRPIX[0]    << endl;
     cout << "CRPIX2      : " << CRPIX[1]    << endl;
     cout << "CRVAL1      : " << CRVAL[0]    << endl;
@@ -131,13 +146,13 @@ void	CL_APROP::F_WCSA_APROP_CHECKCCDFITNUM(){
     int CID;
 ///Error : in 0 NUM
    for(CID=0;CID<CCDNUM;CID++)
-    if(FITNUM[CID]==0){
+    if(FITNUM[CID]<(int)(0.5*(SIP_L_ORDER+1)*(SIP_L_ORDER+2)+0.5)){
     cout << "---------------------------------------------" << endl;
-    cout << "Warning : NUMBER OF REFERENCE in CCD " << CID << " IS 0" << endl;
+    cout << "Warning : NUMBER OF REFERENCE in CCD " << CID << " is " << FITNUM[CID] << endl;
     CCDPOSMODE=0;
     cout << "          USING INITIAL VALUES FOR CCD POSITIONS " << endl;
     cout << "---------------------------------------------" << endl;
     }else{
-        if(STDOUT==1||STDOUT==2)cout << "OK : NUMBER OF REFERENCE in CCD " << CID << endl;
+        if(STDOUT==1||STDOUT==2)cout << "OK : NUMBER OF REFERENCE in CCD " << CID << " IS " << FITNUM[CID] << endl;
     }
 }

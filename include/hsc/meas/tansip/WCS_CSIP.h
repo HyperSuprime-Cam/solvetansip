@@ -25,23 +25,19 @@ public:
     double CD[2][2];
     double InvCD[2][2];
     double *SIP_AB[2];
-    double SIP_AB_ERR[2][2];//difference between SIPxy and xy from refference RADEC
+    double SIP_AB_ERR[2][3];//difference between SIPxy and xy from refference RADEC
     double *SIP_ABP[2];
-    double SIP_ABP_ERR[2][2];//difference between SIPxy and xy from refference RADEC
+    double SIP_ABP_ERR[2][3];//difference between SIPxy and xy from refference RADEC
     double ANGLE;
 //for CALC
     double *Coef[2];
     double *PCoef[2];
     double *LCoef[2];
 //for check
-double *SIP_MAG;
-double *PSIP_MAG;
-double *SIP_CRS[4];//(CONVERGENCE,ROTATION,SHEAR)
-double *PSIP_CRS[4];//(CONVERGENCE,ROTATION,SHEAR)
-double *SIP_SHEAR[2];
-double *SIP_ROT;
-double *PSIP_SHEAR[2];
-double *PSIP_ROT;
+    double *SIP_MAG;
+    double *PSIP_MAG;
+    double *SIP_CRS[4];//(CONVERGENCE,ROTATION,SHEAR)
+    double *PSIP_CRS[4];//(CONVERGENCE,ROTATION,SHEAR)
 
     int POSID[2];
 /*DEL*/
@@ -77,13 +73,10 @@ public:
     double ANGLE;
     double *SIP_AB[2];
     double *SIP_ABP[2];
-/*DEL*/
-    double *TSIP_AB[2];
-    double *TSIP_ABP[2];
-    double *TCoef[2];
-    double *TPCoef[2];
-    double *TLCoef[2];
+
 //MAIN
+    void F_WCSA_GSIP_NEWGSIP();
+    void F_WCSA_GSIP_DELGSIP();
     void F_WCSA_GSIP_CALCLOCALSIP();
     void F_WCSA_GSIP_LOCALSIP();
     void F_WCSA_GSIP_SETSIP();

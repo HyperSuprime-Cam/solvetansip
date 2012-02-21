@@ -11,7 +11,7 @@
 #include "hsc/meas/tansip/WCS_PL_MAIN.h"
 
 void F_WCSA_SIMULATION_MAIN(int, std::string, std::string, double NSCALE, int RANNUM, int REFNUM);//(0:SC,1:HSC),(1:CCDPOS from file),(1:DISTORTION from file)
-void F_WCSA_SIMULATION_DIFF(int HARD,std::string CCDPOSfile,std::string DISTfile,CL_WCSA_ASP* WCSA_ASP);
+void F_WCSA_SIMULATION_DIFF(int HARD,std::string CCDPOSfile,std::string DISTfile,std::string CCDoutfile,std::string RESoutfile,CL_WCSA_ASP* WCSA_ASP);
 
 void F_WCSA_SIMULATION_INPUT_SIMULATIONBASIS_SC(CL_GSIP*);
 void F_WCSA_SIMULATION_INPUT_SIMULATIONBASIS_HSC(CL_GSIP*);
@@ -24,6 +24,6 @@ void F_WCSA_SIMULATION_INPUT_CDSIPDISTORTION_SCfromFile(char *,CL_GSIP*);
 void F_WCSA_SIMULATION_INPUT_CDSIPDISTORTION_HSC(CL_GSIP*);
 void F_WCSA_SIMULATION_INPUT_CDSIPDISTORTION_HSCfromFile(char *,CL_GSIP*);
 void F_WCSA_SIMULATION_MAKE_REFERENCESwithRANDOMNOISE(int RANNUM,int REFNUM, double NSCALE,CL_GSIP*);
-void F_WCSA_SIMULATION_CALC_DIFF_SC(CL_WCSA_ASP*  ,CL_GSIP* );
-void F_WCSA_SIMULATION_CALC_DIFF_HSC(CL_WCSA_ASP* ,CL_GSIP* );
+void F_WCSA_SIMULATION_CALC_DIFF_SC (CL_WCSA_ASP* ,CL_GSIP* ,std::string CCDoutfile,std::string RESoutfile);
+void F_WCSA_SIMULATION_CALC_DIFF_HSC(CL_WCSA_ASP* ,CL_GSIP* ,std::string CCDoutfile,std::string RESoutfile);
 #endif

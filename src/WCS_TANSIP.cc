@@ -17,13 +17,17 @@ void    F_WCSA_TANSIP(CL_APROP *APROP,CL_APAIR *APAIR,CL_GSIP *GSIP){
     if(APROP->STDOUT==1||APROP->STDOUT==2)cout << "--- WCS_TANSIP ---" << endl;
 //--------------------------------------------------
     if(APROP->STDOUT==1||APROP->STDOUT==2)cout << "--- WCS_TANSIP : SET ---" << endl;
-        F_WCSA_TANSIP_SET(APROP,APAIR,GSIP);
+        F_WCSA_TANSIP_SET_APROP(APROP,APAIR,GSIP);
+        F_WCSA_TANSIP_SET_GSIP (APROP,APAIR,GSIP);
+        F_WCSA_TANSIP_SET_APAIR(APROP,APAIR,GSIP);
     if(APROP->CHECKPARAM == 1){
         cout << "Error : in parameters" << endl;
     }else{
 //if rejection
         if(APROP->STDOUT==1||APROP->STDOUT==2)cout << "--- WCS_TANSIP : REJECTING BAD REFERENCES ---" << endl;
         APAIR->F_WCSA_APAIR_REJECTION();
+        F_WCSA_TANSIP_SET_GETREJECTIONRESULT(APROP,APAIR,GSIP);
+        F_WCSA_TANSIP_SET_APROP(APROP,APAIR,GSIP);
 
         if(APROP->STDOUT==1||APROP->STDOUT==2)cout << "--- WCS_TANSIP : DETERMINING CCD POSITION ---" << endl;
         if(APROP->CCDPOSMODE==1)

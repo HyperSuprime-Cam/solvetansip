@@ -37,17 +37,19 @@ CCDPOS_SC = "CCDPOS_SC_SIM.txt"
 #DIST_SC = "Dummy"
 #CCDPOS_SC = "Dummy"
 REFNUMlist=[11,15,20,30,50,100,1000];
-for REFNUM in range (110,1001):
+for REFNUM in range (11,1001):
     if REFNUM in REFNUMlist:
         print 'SC  : ' , REFNUM
-        for RANNUM in range (1,10):
+        for RANNUM in range (1,1001):
             SIMFILENAME = 'RREF/SIMULATIONDATA_SC_'+str(REFNUM)+'_'+str(RANNUM)+'.dat'
 #making
-#            doTansip.WCS_MAKE_SIMULATIONREFERENCE(0,CCDPOS_SC,DIST_SC,0.3,RANNUM,REFNUM)
+#            doTansip.WCS_MAKE_SIMULATIONREFERENCE(0,CCDPOS_SC,DIST_SC,0.15,RANNUM,REFNUM)
 #            shutil.copyfile("SIMULATION.data", SIMFILENAME)
 #analysis
             WCSA_ASP = doTansip.getresultWcs_local(SIMFILENAME, metadata, policy=policy, camera=mapper.camera)
-            doTansip.WCS_CALC_SIMULATIONDIFF(0,CCDPOS_SC,DIST_SC,WCSA_ASP)
+            CCDPOSFILENAME = 'RREF/CCDPOS_SC_MODE1_'+str(REFNUM)+'_'+str(RANNUM)+'.dat'
+            RESIDUALFILENAME = 'RREF/RESIDUAL_SC_MODE1_'+str(REFNUM)+'_'+str(RANNUM)+'.dat'
+            doTansip.WCS_CALC_SIMULATIONDIFF(0,CCDPOS_SC,DIST_SC,CCDPOSFILENAME,RESIDUALFILENAME,WCSA_ASP)
 
 #DIST_HSC = "DIST_HSC_SIM.txt"
 #CCDPOS_HSC = "CCDPOS_HSC_SIM.txt"
@@ -58,8 +60,10 @@ for REFNUM in range (110,1001):
 #        for RANNUM in range (1,100):
 #            SIMFILENAME = 'RREF/SIMULATIONDATA_HSC_'+str(REFNUM)+'_'+str(RANNUM)+'.dat'
 #making
-#            doTansip.WCS_MAKE_SIMULATIONREFERENCE(1,CCDPOS_HSC,DIST_HSC,0.3,RANNUM,REFNUM)
+#            doTansip.WCS_MAKE_SIMULATIONREFERENCE(1,CCDPOS_HSC,DIST_HSC,0.15,RANNUM,REFNUM)
 #            shutil.copyfile("SIMULATION.data", SIMFILENAME)
 #analysis
 #            WCSA_ASP = doTansip.getresultWcs_local(SIMFILENAME, metadata, policy=policy, camera=mapper.camera)
-#            doTansip.WCS_CALC_SIMULATIONDIFF(1,CCDPOS_HSC,DIST_HSC,WCSA_ASP)
+#            CCDPOSFILENAME = 'RREF/CCDPOS_HSC_MODE0_'+str(REFNUM)+'_'+str(RANNUM)+'.dat'
+#            RESIDUALFILENAME = 'RREF/RESIDUAL_HSC_MODE0_'+str(REFNUM)+'_'+str(RANNUM)+'.dat'
+#            doTansip.WCS_CALC_SIMULATIONDIFF(1,CCDPOS_SC,DIST_SC,CCDPOSFILENAME,RESIDUALFILENAME,WCSA_ASP)

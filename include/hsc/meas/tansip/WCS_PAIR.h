@@ -56,7 +56,7 @@ public:
     int CCDNUM;
     int ALLREFNUM;
     int ALLFITNUM;
-    int REJNUM;
+    int *REJNUM;
     int SIP_ORDER;
     int SIP_P_ORDER;
     int SIP_L_ORDER;
@@ -85,8 +85,8 @@ public:
     double *MAGNIFICATION_ABP[2];
     double ANGLE;
     double AVERMS[2][2];
-    double  SIPRMS[2][2];
-    double PSIPRMS[2][2];
+    double  SIPRMS[2][3];
+    double PSIPRMS[2][3];
 /*REJECT*/    double *TCoef[2];
 /*REJECT*/    double *TdCoef[2][2];
 /*REJECT*/    double *TPCoef[2];
@@ -95,6 +95,8 @@ public:
 /*REJECT*/    double **TdLCoef[2][2];
 
 //MAIN
+    void F_WCSA_APAIR_NEWAPAIR();
+    void F_WCSA_APAIR_DELAPAIR();
     void F_WCSA_APAIR_GPOS();
     void F_WCSA_APAIR_REJECTION();
     void F_WCSA_APAIR_WCS();

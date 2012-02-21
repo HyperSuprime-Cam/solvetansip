@@ -30,6 +30,8 @@ public:
     int STDOUT;
     int CHECKPARAM;
 
+    void F_WCSA_APROP_NEWAPROP();
+    void F_WCSA_APROP_DELAPROP();
     void F_WCSA_APROP_SHOWAPROP();
     void F_WCSA_APROP_CHECKCRPIXMODE();
     void F_WCSA_APROP_CHECKCCDPOSMODE();

@@ -94,6 +94,9 @@ def getwcsList(WCSA_ASP):
     return hscTansip.F_WCSA_PLMAIN_GETWCSLIST(WCSA_ASP)
 
 
+def memorydelete(WCSA_ASP):
+    hscTansip.F_WCSA_PLMAIN_MEMORYDELETE(WCSA_ASP)
+
 #-----------------------------------------------------------------
 #Output Functions : WCSA_ASP
 #-----------------------------------------------------------------
@@ -110,8 +113,8 @@ def WCS_INPUT_CCD(WCSA_ASP,CCDFILENAME):
 #-----------------------------------------------------------------
 def WCS_MAKE_SIMULATIONREFERENCE(HARD,CCDPOSfile,DISTfile,NSCALE,RANNUM,REFNUM):
     hscTansip.F_WCSA_PLMAIN_SIMULATION(HARD,CCDPOSfile,DISTfile,NSCALE,RANNUM,REFNUM)
-def WCS_CALC_SIMULATIONDIFF(HARD,CCDPOSfile,DISTfile,WCSA_ASP):
-    hscTansip.F_WCSA_PLMAIN_SIMULATIONDIFF(HARD,CCDPOSfile,DISTfile,WCSA_ASP)
+def WCS_CALC_SIMULATIONDIFF(HARD,CCDPOSfile,DISTfile,CCDoutfile,RESoutfile,WCSA_ASP):
+    hscTansip.F_WCSA_PLMAIN_SIMULATIONDIFF(HARD,CCDPOSfile,DISTfile,CCDoutfile,RESoutfile,WCSA_ASP)
 #-----------------------------------------------------------------
 #Getting Functions : WCSA_ASP : SIP (Values of SIP having)
 #-----------------------------------------------------------------

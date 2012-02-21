@@ -40,10 +40,10 @@ REFNUMlist=[11,15,20,30,50,100,1000];
 for REFNUM in range (10,1001):
     if REFNUM in REFNUMlist:
         print 'SC  : ' , REFNUM
-        for RANNUM in range (1,101):
+        for RANNUM in range (1,1001):
             SIMFILENAME = 'RREF/SIMULATIONDATA_SC_'+str(REFNUM)+'_'+str(RANNUM)+'.dat'
 #making
-            doTansip.WCS_MAKE_SIMULATIONREFERENCE(0,CCDPOS_SC,DIST_SC,0.3,RANNUM,REFNUM)
+            doTansip.WCS_MAKE_SIMULATIONREFERENCE(0,CCDPOS_SC,DIST_SC,0.15,RANNUM,REFNUM)
             shutil.copyfile("SIMULATION.data", SIMFILENAME)
 #analysis
 #            WCSA_ASP = doTansip.getresultWcs_local(SIMFILENAME, metadata, policy=policy, camera=mapper.camera)
@@ -55,10 +55,10 @@ REFNUMlist=[11,15,20,30,50,100,1000];
 for REFNUM in range (10,1001):
     if REFNUM in REFNUMlist:
         print 'HSC : ' , REFNUM
-        for RANNUM in range (1,101):
+        for RANNUM in range (1,1001):
             SIMFILENAME = 'RREF/SIMULATIONDATA_HSC_'+str(REFNUM)+'_'+str(RANNUM)+'.dat'
 #making
-            doTansip.WCS_MAKE_SIMULATIONREFERENCE(1,CCDPOS_HSC,DIST_HSC,0.3,RANNUM,REFNUM)
+            doTansip.WCS_MAKE_SIMULATIONREFERENCE(1,CCDPOS_HSC,DIST_HSC,0.15,RANNUM,REFNUM)
             shutil.copyfile("SIMULATION.data", SIMFILENAME)
 #analysis
 #            WCSA_ASP = doTansip.getresultWcs_local(SIMFILENAME, metadata, policy=policy, camera=mapper.camera)

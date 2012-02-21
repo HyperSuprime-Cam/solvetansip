@@ -16,17 +16,115 @@ using namespace std;
 //--------------------------------------------------
 //MAIN
 //--------------------------------------------------
+void CL_APAIR::F_WCSA_APAIR_NEWAPAIR(){
+//1
+    PAIR = new CL_PAIR[ALLREFNUM];
+    GPOS = F_NEWdouble2(CCDNUM,3);
+//2
+    REJNUM              =F_NEWint1(CCDNUM+1);
+    SIP_AB[0]           =F_NEWdouble1((SIP_ORDER  +1)*(SIP_ORDER  +2));
+    SIP_AB[1]           =F_NEWdouble1((SIP_ORDER  +1)*(SIP_ORDER  +2));
+    SIP_ABP[0]          =F_NEWdouble1((SIP_P_ORDER+1)*(SIP_P_ORDER+2));
+    SIP_ABP[1]          =F_NEWdouble1((SIP_P_ORDER+1)*(SIP_P_ORDER+2));
+    CDSIP_AB[0]         =F_NEWdouble1((SIP_ORDER  +1)*(SIP_ORDER  +2));
+    CDSIP_AB[1]         =F_NEWdouble1((SIP_ORDER  +1)*(SIP_ORDER  +2));
+    CDSIP_ABP[0]        =F_NEWdouble1((SIP_P_ORDER+1)*(SIP_P_ORDER+2));
+    CDSIP_ABP[1]        =F_NEWdouble1((SIP_P_ORDER+1)*(SIP_P_ORDER+2));
+    MAGNIFICATION_AB[0] =F_NEWdouble1((SIP_ORDER  +1)*(SIP_ORDER  +2));
+    MAGNIFICATION_AB[1] =F_NEWdouble1((SIP_ORDER  +1)*(SIP_ORDER  +2));
+    MAGNIFICATION_ABP[0]=F_NEWdouble1((SIP_P_ORDER+1)*(SIP_P_ORDER+2));
+    MAGNIFICATION_ABP[1]=F_NEWdouble1((SIP_P_ORDER+1)*(SIP_P_ORDER+2));
+    TCoef[0]            =F_NEWdouble1((SIP_ORDER  +1)*(SIP_ORDER  +2));
+    TCoef[1]            =F_NEWdouble1((SIP_ORDER  +1)*(SIP_ORDER  +2));
+    TdCoef[0][0]        =F_NEWdouble1((SIP_ORDER  +1)*(SIP_ORDER  +2));
+    TdCoef[0][1]        =F_NEWdouble1((SIP_ORDER  +1)*(SIP_ORDER  +2));
+    TdCoef[1][0]        =F_NEWdouble1((SIP_ORDER  +1)*(SIP_ORDER  +2));
+    TdCoef[1][1]        =F_NEWdouble1((SIP_ORDER  +1)*(SIP_ORDER  +2));
+    TPCoef[0]           =F_NEWdouble1((SIP_P_ORDER+1)*(SIP_P_ORDER+2));
+    TPCoef[1]           =F_NEWdouble1((SIP_P_ORDER+1)*(SIP_P_ORDER+2));
+    TdPCoef[0][0]       =F_NEWdouble1((SIP_P_ORDER+1)*(SIP_P_ORDER+2));
+    TdPCoef[0][1]       =F_NEWdouble1((SIP_P_ORDER+1)*(SIP_P_ORDER+2));
+    TdPCoef[1][0]       =F_NEWdouble1((SIP_P_ORDER+1)*(SIP_P_ORDER+2));
+    TdPCoef[1][1]       =F_NEWdouble1((SIP_P_ORDER+1)*(SIP_P_ORDER+2));
+    TLCoef[0]           =F_NEWdouble2(CCDNUM,(SIP_L_ORDER+1)*(SIP_L_ORDER+2));
+    TLCoef[1]           =F_NEWdouble2(CCDNUM,(SIP_L_ORDER+1)*(SIP_L_ORDER+2));
+    TdLCoef[0][0]       =F_NEWdouble2(CCDNUM,(SIP_L_ORDER+1)*(SIP_L_ORDER+2));
+    TdLCoef[0][1]       =F_NEWdouble2(CCDNUM,(SIP_L_ORDER+1)*(SIP_L_ORDER+2));
+    TdLCoef[1][0]       =F_NEWdouble2(CCDNUM,(SIP_L_ORDER+1)*(SIP_L_ORDER+2));
+    TdLCoef[1][1]       =F_NEWdouble2(CCDNUM,(SIP_L_ORDER+1)*(SIP_L_ORDER+2));
+
+}
+void CL_APAIR::F_WCSA_APAIR_DELAPAIR(){
+//2
+    F_DELint1   (REJNUM);
+    F_DELdouble1(SIP_AB[0]           );
+    F_DELdouble1(SIP_AB[1]           );
+    F_DELdouble1(SIP_ABP[0]          );
+    F_DELdouble1(SIP_ABP[1]          );
+    F_DELdouble1(CDSIP_AB[0]         );
+    F_DELdouble1(CDSIP_AB[1]         );
+    F_DELdouble1(CDSIP_ABP[0]        );
+    F_DELdouble1(CDSIP_ABP[1]        );
+    F_DELdouble1(MAGNIFICATION_AB[0] );
+    F_DELdouble1(MAGNIFICATION_AB[1] );
+    F_DELdouble1(MAGNIFICATION_ABP[0]);
+    F_DELdouble1(MAGNIFICATION_ABP[1]);
+    F_DELdouble1(TCoef[0]            );
+    F_DELdouble1(TCoef[1]            );
+    F_DELdouble1(TdCoef[0][0]        );
+    F_DELdouble1(TdCoef[0][1]        );
+    F_DELdouble1(TdCoef[1][0]        );
+    F_DELdouble1(TdCoef[1][1]        );
+    F_DELdouble1(TPCoef[0]           );
+    F_DELdouble1(TPCoef[1]           );
+    F_DELdouble1(TdPCoef[0][0]       );
+    F_DELdouble1(TdPCoef[0][1]       );
+    F_DELdouble1(TdPCoef[1][0]       );
+    F_DELdouble1(TdPCoef[1][1]       );
+    F_DELdouble2(CCDNUM,TLCoef[0]    );
+    F_DELdouble2(CCDNUM,TLCoef[1]    );
+    F_DELdouble2(CCDNUM,TdLCoef[0][0]);
+    F_DELdouble2(CCDNUM,TdLCoef[0][1]);
+    F_DELdouble2(CCDNUM,TdLCoef[1][0]);
+    F_DELdouble2(CCDNUM,TdLCoef[1][1]);
+//1
+    delete [] PAIR;
+    F_DELdouble2(CCDNUM,GPOS);
+}
+void CL_APAIR::F_WCSA_APAIR_SET0(){
+    CCDPOSMODE =0;
+//    CCDNUM     =0;
+//    ALLREFNUM  =0;
+//    ALLFITNUM  =0;
+//    SIP_ORDER  =0;
+//    SIP_P_ORDER=0;
+//    SIP_L_ORDER=0;
+    CLIP_SIGMA =0;
+    ANGLE      =0;
+    OAVAL[0]=OAVAL[1]=0;
+    OAPIX[0]=OAPIX[1]=0;
+    CRVAL[0]=CRVAL[1]=0;
+    CRPIX[0]=CRPIX[1]=0;
+    CENTER_PIXEL[0]=CENTER_PIXEL[1]=0;
+    CENTER_RADEC[0]=CENTER_RADEC[1]=0;
+    CD[0][0]=CD[0][1]=CD[1][0]=CD[1][1]=0;
+    InvCD[0][0]=InvCD[0][1]=InvCD[1][0]=InvCD[1][1]=0;
+}
 void CL_APAIR::F_WCSA_APAIR_REJECTION(){
-    int NUM;
+    int NUM,CID;
     F_WCSA_APAIR_CENTERofOBJECTS();
 
-    F_WCSA_APAIR_CALCRMS(SIP_ORDER,6,0);   
+//    if(STDOUT==2)for(CID=0;CID<CCDNUM;CID++)cout << "X : " << setfill ('0') << setw (3) <<CID << fixed<< " : " << GPOS[CID][0] <<endl<< "Y : " << setfill ('0') << setw (3) <<CID << fixed<< " : " << GPOS[CID][1] << endl;
+    F_WCSA_APAIR_CALCRMS(SIP_P_ORDER,0,10);   
 
-    REJNUM=0;
+//for(NUM=0;NUM<ALLREFNUM;NUM++)
+//cout << NUM << "	" << PAIR[NUM].CHIPID << "	" << PAIR[NUM].X_RADEC[0] << "	" << PAIR[NUM].X_RADEC[1] << "	" << fabs(PAIR[NUM].X_CENTER_GLOBAL[0]-F_CALCVALUE(SIP_P_ORDER,TCoef[0],PAIR[NUM].X_RADEC)) << "	" << CLIP_SIGMA*AVERMS[0][1] << "	" << fabs(PAIR[NUM].X_CENTER_GLOBAL[1]-F_CALCVALUE(SIP_P_ORDER,TCoef[1],PAIR[NUM].X_RADEC)) << "	" << CLIP_SIGMA*AVERMS[1][1] << endl;
+
     for(NUM=0;NUM<ALLREFNUM;NUM++)
-    if(fabs(PAIR[NUM].X_RADEC[0]-F_CALCVALUE(SIP_ORDER,TCoef[0],PAIR[NUM].X_CENTER_GLOBAL)) > CLIP_SIGMA*AVERMS[0][1] || fabs(PAIR[NUM].X_RADEC[1]-F_CALCVALUE(SIP_ORDER,TCoef[1],PAIR[NUM].X_CENTER_GLOBAL)) > CLIP_SIGMA*AVERMS[1][1]){
+    if(fabs(PAIR[NUM].X_CENTER_GLOBAL[0]-F_CALCVALUE(SIP_P_ORDER,TCoef[0],PAIR[NUM].X_RADEC)) > CLIP_SIGMA*AVERMS[0][1] || fabs(PAIR[NUM].X_CENTER_GLOBAL[1]-F_CALCVALUE(SIP_P_ORDER,TCoef[1],PAIR[NUM].X_RADEC)) > CLIP_SIGMA*AVERMS[1][1]){
     PAIR[NUM].FLAG=0;
-    REJNUM++;
+    REJNUM[PAIR[NUM].CHIPID]++;
+    REJNUM[CCDNUM]++;
     }
 
     F_WCSA_APAIR_CENTERofOBJECTS();
@@ -34,7 +132,9 @@ void CL_APAIR::F_WCSA_APAIR_REJECTION(){
     if(STDOUT==2)cout << "CENTER_RADEC : " << CENTER_RADEC[0] << " , " << CENTER_RADEC[1] << endl;
     if(STDOUT==2)cout << "RMS RA(deg)  : " << AVERMS[0][1] << endl;
     if(STDOUT==2)cout << "RMS DEC(deg) : " << AVERMS[1][1] << endl;
-    if(STDOUT==2)cout << "REJECTED NUM : " << REJNUM << endl;
+    for(CID=0;CID<CCDNUM;CID++)
+    if(STDOUT==2)cout << "REJECTED NUM CHIP : " << CID << " : " << REJNUM[CID] << endl;
+    if(STDOUT==2)cout << "REJECTED NUM TOTAL: " << REJNUM[CCDNUM] << endl;
 
 }
 void CL_APAIR::F_WCSA_APAIR_GPOS(){
@@ -168,9 +268,9 @@ void CL_APAIR::F_WCSA_APAIR_CENTERofOBJECTS(){
     }
 
     F_WCSA_APAIR_GFITTING(SIP_ORDER,6,0,TCoef);
-
     CENTER_RADEC[0]=TCoef[0][0];
     CENTER_RADEC[1]=TCoef[1][0];
+
 }
 void CL_APAIR::F_WCSA_APAIR_CALCCR(){
 
@@ -314,6 +414,8 @@ void CL_APAIR::F_WCSA_APAIR_GFITTING(int ORDER,int VARIABLE,int FUNCTION, double
             dx[i][FNUM][2]=PAIR[NUM].CAMERA_MAGNIFICATION;
         }else if(FUNCTION==9){
             dx[i][FNUM][2]=PAIR[NUM].CAMERA_PMAGNIFICATION;
+        }else if(FUNCTION==10){
+            dx[i][FNUM][2]=PAIR[NUM].X_CENTER_GLOBAL[i];
         }
         FNUM++;
     }
@@ -400,6 +502,7 @@ void CL_APAIR::F_WCSA_APAIR_CALCRMS(int ORDER,int VARIABLE,int FUNCTION){
     dx = F_NEWdouble3(2,ALLREFNUM,3);
     data = F_NEWdouble2(2,ALLREFNUM);
 //--------------------------------------------------
+    F_WCSA_APAIR_GFITTING(ORDER,VARIABLE,FUNCTION,TCoef);
 
     for(NUM=0;NUM<ALLREFNUM;NUM++)
     if(PAIR[NUM].FLAG == 1){
@@ -438,16 +541,19 @@ void CL_APAIR::F_WCSA_APAIR_CALCRMS(int ORDER,int VARIABLE,int FUNCTION){
             dx[i][FNUM][2]=PAIR[NUM].CAMERA_CONVROT[i];
         }else if(FUNCTION==7){
             dx[i][FNUM][2]=PAIR[NUM].CAMERA_SHEAR[i];
+        }else if(FUNCTION==10){
+            dx[i][FNUM][2]=PAIR[NUM].X_CENTER_GLOBAL[i];
         }
         FNUM++;
     }
 //--------------------------------------------------
-    for(NUM=0;NUM<FNUM;NUM++){
+    for(NUM=0;NUM<FNUM;NUM++)
+	if(PAIR[NUM].CHIPID==0){
         data[0][NUM]=dx[0][NUM][2]-F_CALCVALUE(ORDER,TCoef[0],dx[0][NUM]);
         data[1][NUM]=dx[1][NUM][2]-F_CALCVALUE(ORDER,TCoef[1],dx[1][NUM]);
     }
-    F_RMS(FNUM,data[0],AVERMS[0]);
-    F_RMS(FNUM,data[1],AVERMS[1]);
+    F_RMS(NUM,data[0],AVERMS[0]);
+    F_RMS(NUM,data[1],AVERMS[1]);
 //--------------------------------------------------
     F_DELdouble3(2,ALLREFNUM,dx);
     F_DELdouble2(2,data);
@@ -597,39 +703,53 @@ void CL_APAIR::F_WCSA_APAIR_CHANGEVARIABLE(int ORDER, double SR[2][2], double* F
 }
 void CL_APAIR::F_WCSA_APAIR_CALCSIPRMS(){
     int NUM,FNUM=0;
-    double **data;
+    double **data,MAXDIFF[2];
 
 //--------------------------------------------------
     data = F_NEWdouble2(2,ALLREFNUM);
 //--------------------------------------------------
     FNUM=0;
+    MAXDIFF[0]=MAXDIFF[1]=0;
     for(NUM=0;NUM<ALLREFNUM;NUM++)
     if(PAIR[NUM].FLAG == 1){
-        data[0][NUM]=PAIR[NUM].X_IM_PIXEL[0]-(F_CALCVALUE(SIP_ORDER,SIP_AB[0],PAIR[NUM].X_GLOBALCRPIX)+PAIR[NUM].X_GLOBALCRPIX[0]);
-        data[1][NUM]=PAIR[NUM].X_IM_PIXEL[1]-(F_CALCVALUE(SIP_ORDER,SIP_AB[1],PAIR[NUM].X_GLOBALCRPIX)+PAIR[NUM].X_GLOBALCRPIX[1]);
+        data[0][FNUM]=PAIR[NUM].X_IM_PIXEL[0]-(F_CALCVALUE(SIP_ORDER,SIP_AB[0],PAIR[NUM].X_GLOBALCRPIX)+PAIR[NUM].X_GLOBALCRPIX[0]);
+        data[1][FNUM]=PAIR[NUM].X_IM_PIXEL[1]-(F_CALCVALUE(SIP_ORDER,SIP_AB[1],PAIR[NUM].X_GLOBALCRPIX)+PAIR[NUM].X_GLOBALCRPIX[1]);
+        if(fabs(MAXDIFF[0])<fabs(data[0][FNUM]))
+	MAXDIFF[0]=data[0][FNUM];
+        if(fabs(MAXDIFF[1])<fabs(data[1][FNUM]))
+	MAXDIFF[1]=data[1][FNUM];
         FNUM++;
     }
     F_RMS(FNUM,data[0],SIPRMS[0]);
     F_RMS(FNUM,data[1],SIPRMS[1]);
+    SIPRMS[0][2]=MAXDIFF[0];
+    SIPRMS[1][2]=MAXDIFF[1];
 //--------------------------------------------------
     F_DELdouble2(2,data);
 }
 void CL_APAIR::F_WCSA_APAIR_CALCPSIPRMS(){
     int NUM,FNUM=0;
-    double **data;
+    double **data,MAXDIFF[2];
 
 //--------------------------------------------------
     data = F_NEWdouble2(2,ALLREFNUM);
 //--------------------------------------------------
     FNUM=0;
+    MAXDIFF[0]=MAXDIFF[1]=0;
     for(NUM=0;NUM<ALLREFNUM;NUM++)
     if(PAIR[NUM].FLAG == 1){
-        data[0][NUM]=PAIR[NUM].X_GLOBALCRPIX[0]-(F_CALCVALUE(SIP_P_ORDER,SIP_ABP[0],PAIR[NUM].X_IM_PIXEL)+PAIR[NUM].X_IM_PIXEL[0]);
-        data[1][NUM]=PAIR[NUM].X_GLOBALCRPIX[1]-(F_CALCVALUE(SIP_P_ORDER,SIP_ABP[1],PAIR[NUM].X_IM_PIXEL)+PAIR[NUM].X_IM_PIXEL[1]);
+        data[0][FNUM]=PAIR[NUM].X_GLOBALCRPIX[0]-(F_CALCVALUE(SIP_P_ORDER,SIP_ABP[0],PAIR[NUM].X_IM_PIXEL)+PAIR[NUM].X_IM_PIXEL[0]);
+        data[1][FNUM]=PAIR[NUM].X_GLOBALCRPIX[1]-(F_CALCVALUE(SIP_P_ORDER,SIP_ABP[1],PAIR[NUM].X_IM_PIXEL)+PAIR[NUM].X_IM_PIXEL[1]);
+        if(fabs(MAXDIFF[0])<fabs(data[0][FNUM]))
+	MAXDIFF[0]=data[0][FNUM];
+        if(fabs(MAXDIFF[1])<fabs(data[1][FNUM]))
+	MAXDIFF[1]=data[1][FNUM];
         FNUM++;
     }
     F_RMS(FNUM,data[0],PSIPRMS[0]);
     F_RMS(FNUM,data[1],PSIPRMS[1]);
+    PSIPRMS[0][2]=MAXDIFF[0];
+    PSIPRMS[1][2]=MAXDIFF[1];
 //--------------------------------------------------
     F_DELdouble2(2,data);
 }
@@ -749,7 +869,6 @@ void CL_APAIR::F_WCSA_APAIR_CCDPOSITIONS_T_MAT(){
        MB = F_NEWdouble2(CCDNUM+4*dCoefNUM,CCDNUM+4*dCoefNUM);
     InvMB = F_NEWdouble2(CCDNUM+4*dCoefNUM,CCDNUM+4*dCoefNUM);
        MC = F_NEWdouble1(CCDNUM+4*dCoefNUM);
-
 //--------------------------------------------------
 //dA1
     for(NUM=0;NUM<ALLREFNUM;NUM++)
@@ -814,6 +933,7 @@ void CL_APAIR::F_WCSA_APAIR_CCDPOSITIONS_T_MAT(){
         }
     ij++;
     }
+
 //--------------------------------------------------
 //dB22
     ij=0;
@@ -950,25 +1070,6 @@ void CL_APAIR::F_WCSA_APAIR_CCDPOSITIONS_XY_SETAVERAGE(){
     }
 }
 //ETC
-void CL_APAIR::F_WCSA_APAIR_SET0(){
-    CCDPOSMODE =0;
-    CCDNUM     =0;
-    ALLREFNUM  =0;
-    ALLFITNUM  =0;
-    SIP_ORDER  =0;
-    SIP_P_ORDER=0;
-    SIP_L_ORDER=0;
-    CLIP_SIGMA =0;
-    ANGLE      =0;
-    OAVAL[0]=OAVAL[1]=0;
-    OAPIX[0]=OAPIX[1]=0;
-    CRVAL[0]=CRVAL[1]=0;
-    CRPIX[0]=CRPIX[1]=0;
-    CENTER_PIXEL[0]=CENTER_PIXEL[1]=0;
-    CENTER_RADEC[0]=CENTER_RADEC[1]=0;
-    CD[0][0]=CD[0][1]=CD[1][0]=CD[1][1]=0;
-    InvCD[0][0]=InvCD[0][1]=InvCD[1][0]=InvCD[1][1]=0;
-}
 void CL_APAIR::F_WCSA_APAIR_SHOWAPAIR(){
     cout << "-- APAIR CHECK --" << endl;
     cout.unsetf(ios::fixed);

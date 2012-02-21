@@ -109,6 +109,7 @@ def main(hsc_or_sc, rerun, visit):
     
         WCSA_ASP = tansip.doTansip(matches, policy=policy, camera=mapper.camera)
         wcsList  = tansip.getwcsList(WCSA_ASP)
+        doTansip.memorydelete(WCSA_ASP)
 
         wcsList = list(wcsList)
         wcsList.pop() #  last item is a summary

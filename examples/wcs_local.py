@@ -364,3 +364,5 @@ print X_GLOBAL
 #print "--- get PAIR LOCAL_Y ---"
 #PAIR_LOCAL_Y = doTansip.getpair_LOCAL_Y(WCSA_ASP)
 #print PAIR_LOCAL_Y
+
+doTansip.memorydelete(WCSA_ASP)

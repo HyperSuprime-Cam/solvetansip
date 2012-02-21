@@ -24,12 +24,15 @@ public:
     CL_APAIR* APAIR;
 
     lsst::afw::image::TanWcs::Ptr F_WCSA_PLMAIN_SETWCSPtr(int);
+    void F_WCS_PLMAIN_NEWWCSA_ASP();
+    void F_WCS_PLMAIN_DELWCSA_ASP();
     void F_WCS_PLMAIN_SETWCSA_ASP();
 };
 CL_WCSA_ASP F_WCSA_TANSIP_V(std::vector< std::vector<lsst::afw::detection::SourceMatch> > const &,lsst::daf::base::PropertySet::Ptr &,lsst::pex::policy::Policy::Ptr &,lsst::afw::cameraGeom::Camera::Ptr &/*,lsst::daf::base::PropertySet::Ptr &,bool*/);
 CL_WCSA_ASP F_WCSA_TANSIP_V_local(std::string,lsst::daf::base::PropertySet::Ptr &,lsst::pex::policy::Policy::Ptr &,lsst::afw::cameraGeom::Camera::Ptr &/*,lsst::daf::base::PropertySet::Ptr &,bool*/);
 lsst::daf::base::PropertySet::Ptr F_WCS_EMPTYMETADATA();
 std::vector <lsst::afw::image::TanWcs::Ptr> F_WCSA_PLMAIN_GETWCSLIST(CL_WCSA_ASP* WCSA_ASP);
+void F_WCSA_PLMAIN_MEMORYDELETE(CL_WCSA_ASP* WCSA_ASP);
 //-----------------------------------------------------------------
 //Output Functions : WCSA_ASP
 //-----------------------------------------------------------------
@@ -41,7 +44,7 @@ void F_WCSA_PLMAIN_INPUTCCD (CL_WCSA_ASP* WCSA_ASP, std::string CCDFILENAME);
 //Simulation Functions : WCSA_ASP
 //-----------------------------------------------------------------
 void F_WCSA_PLMAIN_SIMULATION(int HARD,std::string CCDPOSfile,std::string DISTfile,double NSCALE,int RANNUM,int REFNUM);
-void F_WCSA_PLMAIN_SIMULATIONDIFF(int HARD,std::string CCDPOSfile,std::string DISTfile,CL_WCSA_ASP* WCSA_ASP);
+void F_WCSA_PLMAIN_SIMULATIONDIFF(int HARD,std::string CCDPOSfile,std::string DISTfile,std::string CCDoutfile,std::string RESoutfile,CL_WCSA_ASP* WCSA_ASP);
 //-----------------------------------------------------------------
 //Getting Functions : WCSA_ASP : POSITION
 //-----------------------------------------------------------------

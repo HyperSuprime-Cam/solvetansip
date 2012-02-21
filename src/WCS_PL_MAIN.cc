@@ -22,16 +22,63 @@ namespace dafbase = lsst::daf::base;
 void    F_WCSA_MAKEAPROP(lsst::pex::policy::Policy::Ptr &,CL_APROP*);
 void    F_WCSA_SHOWAPROP(CL_APROP*);
 void    F_WCSA_MAKEGSIP(lsst::afw::cameraGeom::Camera::Ptr &,CL_APROP*,CL_GSIP*);
-void    F_WCSA_SETSIZE(vector< vector< afwdetect::SourceMatch  >  > const &,CL_APROP*,CL_GSIP*);
-void    F_WCSA_SETSIZE_local(string matchlist, CL_APROP*, CL_GSIP *);
-void    F_WCSA_MAKEPAIR(vector< vector< afwdetect::SourceMatch  >  > const &,CL_GSIP*,CL_APAIR*);
-void    F_WCSA_MAKEPAIR_local(string matchlist,CL_GSIP*,CL_APAIR*);
+//void    F_WCSA_SETSIZE(vector< vector< afwdetect::SourceMatch  >  > const &,CL_APROP*,CL_GSIP*);
+//void    F_WCSA_SETSIZE_local(string matchlist, CL_APROP*);
+void    F_WCSA_SETREFSIZE(vector< vector< afwdetect::SourceMatch  >  > const &,CL_APROP*);
+void    F_WCSA_SETREFSIZE_local(string matchlist, CL_APROP*);
+void    F_WCSA_MAKEPAIR(vector< vector< afwdetect::SourceMatch  >  > const &, CL_APROP*,CL_APAIR*);
+void    F_WCSA_MAKEPAIR_local(string matchlist,CL_APAIR*);
 
 void    F_WCS_DISTORTION(int ,CL_APROP *APROP);
 
 CL_WCSA_ASP F_WCSA_TANSIP_V(vector< vector<afwdetect::SourceMatch> > const &matchlist,dafbase::PropertySet::Ptr &metaTANSIP,lsst::pex::policy::Policy::Ptr &APROPPolicy,lsst::afw::cameraGeom::Camera::Ptr &camera/*,lsst::daf::base::PropertySet::Ptr &metadata,bool verbose*/){
     CL_WCSA_ASP *WCSA_ASP;
 
+    cout << "--- solvetansip : START(local) ---" << endl;
+    WCSA_ASP = new CL_WCSA_ASP[1];
+    WCSA_ASP->F_WCS_PLMAIN_NEWWCSA_ASP();
+
+//CCDNUM
+    F_WCSA_MAKEAPROP(APROPPolicy, WCSA_ASP->APROP);
+    if(WCSA_ASP->APROP->STDOUT==1||WCSA_ASP->APROP->STDOUT==2)cout << "--- WCS_PL_MAIN : F_WCS_MAKE_APROP ---" << endl;
+    WCSA_ASP->APAIR->CCDNUM=WCSA_ASP->GSIP->CCDNUM=WCSA_ASP->APROP->CCDNUM;
+    WCSA_ASP->APROP->F_WCSA_APROP_NEWAPROP();
+
+//ALLREFNUM
+    F_WCSA_SETREFSIZE(matchlist,WCSA_ASP->APROP);
+    WCSA_ASP->APAIR->ALLREFNUM=WCSA_ASP->GSIP->ALLREFNUM=WCSA_ASP->APROP->ALLREFNUM;
+    WCSA_ASP->APAIR->ALLFITNUM=WCSA_ASP->GSIP->ALLFITNUM=WCSA_ASP->APROP->ALLFITNUM;
+
+//SIP ORDER
+    WCSA_ASP->APAIR->SIP_ORDER  =WCSA_ASP->GSIP->SIP_ORDER  =WCSA_ASP->APROP->SIP_ORDER;
+    WCSA_ASP->APAIR->SIP_P_ORDER=WCSA_ASP->GSIP->SIP_P_ORDER=WCSA_ASP->APROP->SIP_P_ORDER;
+    WCSA_ASP->APAIR->SIP_L_ORDER=WCSA_ASP->GSIP->SIP_L_ORDER=WCSA_ASP->APROP->SIP_L_ORDER;
+
+    if(WCSA_ASP->APROP->STDOUT==2) WCSA_ASP->APROP->F_WCSA_APROP_SHOWAPROP();
+
+//NEW
+    WCSA_ASP->APAIR->F_WCSA_APAIR_NEWAPAIR();
+    WCSA_ASP->GSIP ->F_WCSA_GSIP_NEWGSIP();
+
+//GSIP
+    if(WCSA_ASP->APROP->STDOUT==1||WCSA_ASP->APROP->STDOUT==2)cout << "--- WCS_PL_MAIN : F_WCS_MAKE_GSIP ---" << endl;
+    F_WCSA_MAKEGSIP(camera,WCSA_ASP->APROP,WCSA_ASP->GSIP);
+    if(WCSA_ASP->APROP->STDOUT==2) WCSA_ASP->GSIP->F_WCSA_GSIP_SHOWGSIP();
+//    F_WCSA_SETSIZE_local(matchlist,WCSA_ASP->APROP,WCSA_ASP->GSIP);
+
+//APAIR
+    if(WCSA_ASP->APROP->STDOUT==1||WCSA_ASP->APROP->STDOUT==2)cout << "--- WCS_PL_MAIN : F_WCS_MAKE_PAIR ---" << endl;
+    F_WCSA_MAKEPAIR(matchlist,WCSA_ASP->APROP,WCSA_ASP->APAIR);
+    if(WCSA_ASP->APROP->STDOUT==2) WCSA_ASP->APAIR->F_WCSA_APAIR_SHOWAPAIR();
+
+//TANSIP
+    F_WCSA_TANSIP(WCSA_ASP->APROP,WCSA_ASP->APAIR,WCSA_ASP->GSIP);
+
+    WCSA_ASP->F_WCS_PLMAIN_SETWCSA_ASP();
+
+    cout << "--- solvetansip : END(local) ---" << endl;
+    return *WCSA_ASP;
+/*
     cout << "--- solvetansip : START ---" << endl;
     WCSA_ASP = new CL_WCSA_ASP[1];
 
@@ -61,10 +108,55 @@ CL_WCSA_ASP F_WCSA_TANSIP_V(vector< vector<afwdetect::SourceMatch> > const &matc
     WCSA_ASP->F_WCS_PLMAIN_SETWCSA_ASP();
 
     cout << "--- solvetansip : END ---" << endl;
-    return *WCSA_ASP;
+    return *WCSA_ASP;*/
 }
 CL_WCSA_ASP F_WCSA_TANSIP_V_local(string matchlist,dafbase::PropertySet::Ptr &metaTANSIP,lsst::pex::policy::Policy::Ptr &APROPPolicy,lsst::afw::cameraGeom::Camera::Ptr &camera/*,lsst::daf::base::PropertySet::Ptr &metadata,bool verbose*/){
     CL_WCSA_ASP *WCSA_ASP;
+
+    cout << "--- solvetansip : START(local) ---" << endl;
+    WCSA_ASP = new CL_WCSA_ASP[1];
+    WCSA_ASP->F_WCS_PLMAIN_NEWWCSA_ASP();
+//CCDNUM
+    F_WCSA_MAKEAPROP(APROPPolicy, WCSA_ASP->APROP);
+    if(WCSA_ASP->APROP->STDOUT==1||WCSA_ASP->APROP->STDOUT==2)cout << "--- WCS_PL_MAIN : F_WCS_MAKE_APROP ---" << endl;
+    WCSA_ASP->APAIR->CCDNUM=WCSA_ASP->GSIP->CCDNUM=WCSA_ASP->APROP->CCDNUM;
+    WCSA_ASP->APROP->F_WCSA_APROP_NEWAPROP();
+
+//ALLREFNUM
+    F_WCSA_SETREFSIZE_local(matchlist,WCSA_ASP->APROP);
+    WCSA_ASP->APAIR->ALLREFNUM=WCSA_ASP->GSIP->ALLREFNUM=WCSA_ASP->APROP->ALLREFNUM;
+    WCSA_ASP->APAIR->ALLFITNUM=WCSA_ASP->GSIP->ALLFITNUM=WCSA_ASP->APROP->ALLFITNUM;
+
+//SIP ORDER
+    WCSA_ASP->APAIR->SIP_ORDER  =WCSA_ASP->GSIP->SIP_ORDER  =WCSA_ASP->APROP->SIP_ORDER;
+    WCSA_ASP->APAIR->SIP_P_ORDER=WCSA_ASP->GSIP->SIP_P_ORDER=WCSA_ASP->APROP->SIP_P_ORDER;
+    WCSA_ASP->APAIR->SIP_L_ORDER=WCSA_ASP->GSIP->SIP_L_ORDER=WCSA_ASP->APROP->SIP_L_ORDER;
+
+    if(WCSA_ASP->APROP->STDOUT==2) WCSA_ASP->APROP->F_WCSA_APROP_SHOWAPROP();
+
+//NEW
+    WCSA_ASP->APAIR->F_WCSA_APAIR_NEWAPAIR();
+    WCSA_ASP->GSIP ->F_WCSA_GSIP_NEWGSIP();
+
+//GSIP
+    if(WCSA_ASP->APROP->STDOUT==1||WCSA_ASP->APROP->STDOUT==2)cout << "--- WCS_PL_MAIN : F_WCS_MAKE_GSIP ---" << endl;
+    F_WCSA_MAKEGSIP(camera,WCSA_ASP->APROP,WCSA_ASP->GSIP);
+    if(WCSA_ASP->APROP->STDOUT==2) WCSA_ASP->GSIP->F_WCSA_GSIP_SHOWGSIP();
+//    F_WCSA_SETSIZE_local(matchlist,WCSA_ASP->APROP,WCSA_ASP->GSIP);
+
+//APAIR
+    if(WCSA_ASP->APROP->STDOUT==1||WCSA_ASP->APROP->STDOUT==2)cout << "--- WCS_PL_MAIN : F_WCS_MAKE_PAIR ---" << endl;
+    F_WCSA_MAKEPAIR_local(matchlist,WCSA_ASP->APAIR);
+    if(WCSA_ASP->APROP->STDOUT==2) WCSA_ASP->APAIR->F_WCSA_APAIR_SHOWAPAIR();
+
+//TANSIP
+    F_WCSA_TANSIP(WCSA_ASP->APROP,WCSA_ASP->APAIR,WCSA_ASP->GSIP);
+
+    WCSA_ASP->F_WCS_PLMAIN_SETWCSA_ASP();
+
+    cout << "--- solvetansip : END(local) ---" << endl;
+    return *WCSA_ASP;
+/*    CL_WCSA_ASP *WCSA_ASP;
 
     cout << "--- solvetansip : START(local) ---" << endl;
     WCSA_ASP = new CL_WCSA_ASP[1];
@@ -99,7 +191,24 @@ CL_WCSA_ASP F_WCSA_TANSIP_V_local(string matchlist,dafbase::PropertySet::Ptr &me
     WCSA_ASP->F_WCS_PLMAIN_SETWCSA_ASP();
 
     cout << "--- solvetansip : END(local) ---" << endl;
-    return *WCSA_ASP;
+    return *WCSA_ASP;*/
+}
+void CL_WCSA_ASP::F_WCS_PLMAIN_NEWWCSA_ASP(){
+    APROP= new CL_APROP[1];
+    GSIP = new CL_GSIP[1];
+    APAIR= new CL_APAIR[1];
+}
+void CL_WCSA_ASP::F_WCS_PLMAIN_DELWCSA_ASP(){
+    delete [] APROP;
+    delete [] GSIP ;
+    delete [] APAIR;
+}
+void F_WCSA_PLMAIN_MEMORYDELETE(CL_WCSA_ASP* WCSA_ASP){
+    WCSA_ASP->APROP->F_WCSA_APROP_DELAPROP();
+    WCSA_ASP->APAIR->F_WCSA_APAIR_DELAPAIR();
+    WCSA_ASP->GSIP ->F_WCSA_GSIP_DELGSIP();
+    WCSA_ASP->       F_WCS_PLMAIN_DELWCSA_ASP();
+    delete [] WCSA_ASP;
 }
 void    F_WCSA_MAKEAPROP(lsst::pex::policy::Policy::Ptr &APROPPolicy, CL_APROP *APROP){
     string CMODE,OAMODE,SNAME,CNAME,PNAME,DNAME;
@@ -128,6 +237,7 @@ void    F_WCSA_MAKEAPROP(lsst::pex::policy::Policy::Ptr &APROPPolicy, CL_APROP *
     APROP->BASISPOS[1] =APROPPolicy->getDouble("BASISPOSY");
     APROP->BASISPOS[2] =APROPPolicy->getDouble("BASISPOST");
     APROP->STDOUT      =APROPPolicy->getInt("STDOUT");
+    APROP->CHECKPARAM  = 0;
     APROP->ALLREFNUM   = 0;
     APROP->ALLFITNUM   = 0;
 }
@@ -135,7 +245,6 @@ void    F_WCSA_MAKEGSIP(lsst::afw::cameraGeom::Camera::Ptr &camera, CL_APROP *AP
     int CID;
 
     GSIP->F_WCSA_GSIP_SET0();
-    GSIP->CCDNUM=APROP->CCDNUM;
 
     for(camGeom::Camera::const_iterator iter(camera->begin()); iter != camera->end(); ++iter) { 
         camGeom::DetectorMosaic::Ptr detMosaic = boost::shared_dynamic_cast<camGeom::DetectorMosaic>(*iter);
@@ -143,7 +252,7 @@ void    F_WCSA_MAKEGSIP(lsst::afw::cameraGeom::Camera::Ptr &camera, CL_APROP *AP
         for(CID=0;CID<APROP->CCDNUM;CID++){
             camGeom::Id detId = camGeom::Id(CID);//serial
             camGeom::Detector::Ptr det = detMosaic->findDetector(detId);
-            afwGeom::Point2D offsetXY = det->getCenter().getPixels(det->getPixelSize());
+            afwGeom::Point2D offsetXY = det->getCenter();
 //            double ccdTiltYaw = (det->getOrientation()).getYaw();
   //          int ccdTiltNQuarter = (det->getOrientation()).getNQuarter();
 
@@ -156,7 +265,17 @@ void    F_WCSA_MAKEGSIP(lsst::afw::cameraGeom::Camera::Ptr &camera, CL_APROP *AP
         }
     }
 }
-void    F_WCSA_SETSIZE(vector< vector< afwdetect::SourceMatch  >  > const &matchlist, CL_APROP* APROP, CL_GSIP *GSIP){
+void    F_WCSA_SETREFSIZE(vector< vector< afwdetect::SourceMatch  >  > const &matchlist, CL_APROP* APROP){
+    int ID;
+    for(ID=0;ID<APROP->CCDNUM;ID++){
+        APROP->REFNUM[ID]     =matchlist[ID].size();
+        APROP->FITNUM[ID]     =matchlist[ID].size();
+        APROP->ALLREFNUM     +=matchlist[ID].size();
+    }
+        APROP->ALLFITNUM=APROP->ALLREFNUM;
+}
+/*DEL*/
+/*void    F_WCSA_SETSIZE(vector< vector< afwdetect::SourceMatch  >  > const &matchlist, CL_APROP* APROP, CL_GSIP *GSIP){
     int ID;
     for(ID=0;ID<APROP->CCDNUM;ID++){
         APROP->REFNUM[ID]     =matchlist[ID].size();
@@ -168,8 +287,35 @@ void    F_WCSA_SETSIZE(vector< vector< afwdetect::SourceMatch  >  > const &match
         APROP->ALLFITNUM=APROP->ALLREFNUM;
          GSIP->ALLREFNUM=APROP->ALLREFNUM;
          GSIP->ALLFITNUM=APROP->ALLFITNUM;
+}*/
+void    F_WCSA_SETREFSIZE_local(string matchlist, CL_APROP* APROP){
+    int ID,CID,*CIDNUM;
+    double x,y,RA,DEC;
+    ifstream in;
+
+    CIDNUM = new int[APROP->CCDNUM+1];
+    for(CID=0;CID<APROP->CCDNUM+1;CID++)
+    CIDNUM[CID]=0;
+
+    in.open(matchlist.c_str());
+    while((in >> ID >> CID >> x >> y >> RA >> DEC)!=0){
+        CIDNUM[CID]++;
+        CIDNUM[APROP->CCDNUM]++;
+    }
+
+    for(CID=0;CID<APROP->CCDNUM;CID++){
+    APROP->REFNUM[CID]     = CIDNUM[CID];
+    APROP->FITNUM[CID]     = CIDNUM[CID];
+    }
+
+    APROP->ALLREFNUM = CIDNUM[APROP->CCDNUM];
+    APROP->ALLFITNUM = CIDNUM[APROP->CCDNUM];
+    in.close();
+
+    delete [] CIDNUM;
 }
-void    F_WCSA_SETSIZE_local(string matchlist, CL_APROP* APROP, CL_GSIP *GSIP){
+/*DEL*/
+/*void    F_WCSA_SETSIZE_local(string matchlist, CL_APROP* APROP, CL_GSIP *GSIP){
     int ID,CID,*CIDNUM;
     double x,y,RA,DEC;
     ifstream in;
@@ -198,16 +344,16 @@ void    F_WCSA_SETSIZE_local(string matchlist, CL_APROP* APROP, CL_GSIP *GSIP){
     in.close();
 
     delete [] CIDNUM;
-}
+}*/
 #define PI (4*atan(1.0))
-void    F_WCSA_MAKEPAIR(vector< vector<afwdetect::SourceMatch> > const &matchlist,CL_GSIP* GSIP,CL_APAIR* APAIR){
+void    F_WCSA_MAKEPAIR(vector< vector<afwdetect::SourceMatch> > const &matchlist,CL_APROP* APROP,CL_APAIR* APAIR){
     int CID,NUM,ALLNUM;
 
     APAIR->F_WCSA_APAIR_SET0();
     ALLNUM=0;
 
-    for(CID=0;CID<GSIP->CCDNUM;CID++)
-    for(NUM=0;NUM<GSIP->CSIP[CID].REFNUM;NUM++){
+    for(CID=0;CID<APAIR->CCDNUM;CID++)
+    for(NUM=0;NUM<APROP->REFNUM[CID];NUM++){
         APAIR->PAIR[ALLNUM].ID            =matchlist[CID][NUM].first->getId();
         APAIR->PAIR[ALLNUM].CHIPID        =CID;
         APAIR->PAIR[ALLNUM].FLAG          =1;
@@ -225,7 +371,7 @@ void    F_WCSA_MAKEPAIR(vector< vector<afwdetect::SourceMatch> > const &matchlis
         ALLNUM+=1;
     }
 }
-void    F_WCSA_MAKEPAIR_local(string matchlist,CL_GSIP* GSIP,CL_APAIR* APAIR){
+void    F_WCSA_MAKEPAIR_local(string matchlist,CL_APAIR* APAIR){
     int ID,CID,ALLNUM;
     double x,y,RA,DEC;
     ifstream in;
@@ -571,8 +717,8 @@ void F_WCSA_PLMAIN_INPUTCCD(CL_WCSA_ASP* WCSA_ASP, string CCDFILENAME){
 void F_WCSA_PLMAIN_SIMULATION(int HARD,string CCDPOSfile,string DISTfile,double NSCALE,int RANNUM,int REFNUM){
     F_WCSA_SIMULATION_MAIN(HARD,CCDPOSfile,DISTfile,NSCALE,RANNUM,REFNUM);
 }
-void F_WCSA_PLMAIN_SIMULATIONDIFF(int HARD,string CCDPOSfile,string DISTfile,CL_WCSA_ASP* WCSA_ASP){
-    F_WCSA_SIMULATION_DIFF(HARD,CCDPOSfile,DISTfile,WCSA_ASP);
+void F_WCSA_PLMAIN_SIMULATIONDIFF(int HARD,string CCDPOSfile,string DISTfile,std::string CCDoutfile,std::string RESoutfile,CL_WCSA_ASP* WCSA_ASP){
+    F_WCSA_SIMULATION_DIFF(HARD,CCDPOSfile,DISTfile,CCDoutfile,RESoutfile,WCSA_ASP);
 }
 //-----------------------------------------------------------------
 //Getting Functions : WCSA_ASP : REFERNCE

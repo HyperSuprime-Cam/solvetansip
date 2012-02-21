@@ -64,12 +64,12 @@ void    F_InvM(int MNUM,double **Min,double **Mout){
     }         
 
     for(k=0;k<MNUM;k++){                
-        Mdi=Min[k][k];         
+        Mdi=Min[k][k];  
         for(i=0;i<MNUM;i++){      
             Min[i][k]=Min[i][k]/Mdi;
               I[i][k]=  I[i][k]/Mdi;
         }                        
-	
+
     for(i=0;i<MNUM;i++) 
     for(j=0;j<MNUM;j++) 
     Mtemp[i][j]=Min[i][j];
