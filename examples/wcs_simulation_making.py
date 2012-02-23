@@ -37,7 +37,7 @@ CCDPOS_SC = "CCDPOS_SC_SIM.txt"
 #DIST_SC = "Dummy"
 #CCDPOS_SC = "Dummy"
 REFNUMlist=[11,15,20,30,50,100,1000];
-for REFNUM in range (10,1001):
+for REFNUM in range (100000,1001):
     if REFNUM in REFNUMlist:
         print 'SC  : ' , REFNUM
         for RANNUM in range (1,1001):

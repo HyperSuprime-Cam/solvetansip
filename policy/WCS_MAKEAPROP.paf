@@ -5,7 +5,7 @@ CRPIXMODE:PIX       #AUTO for AUTO MODE, PIX and VAL for MANUAL MODE
 #CRPIXMODE:AUTO      #
 #OAMODE   :       MIN#
 OAMODE   :       REV#
-CCDPMODE :         0#1=DETERMINING CCD POSITION
+CCDPMODE :         1#1=DETERMINING CCD POSITION
 NCCD     :        10#NUMBER of CCD for analysis
 LSIPORDER:         3#SIP ORDER of AP and BP 
 SIPORDER :         5##SIP ORDER of A and B 

@@ -204,11 +204,12 @@ void CL_WCSA_ASP::F_WCS_PLMAIN_DELWCSA_ASP(){
     delete [] APAIR;
 }
 void F_WCSA_PLMAIN_MEMORYDELETE(CL_WCSA_ASP* WCSA_ASP){
+    cout << "--- solvetansip : DELETE MEMORY ---" << endl;
     WCSA_ASP->APROP->F_WCSA_APROP_DELAPROP();
     WCSA_ASP->APAIR->F_WCSA_APAIR_DELAPAIR();
     WCSA_ASP->GSIP ->F_WCSA_GSIP_DELGSIP();
     WCSA_ASP->       F_WCS_PLMAIN_DELWCSA_ASP();
-    delete [] WCSA_ASP;
+//    delete [] WCSA_ASP;
 }
 void    F_WCSA_MAKEAPROP(lsst::pex::policy::Policy::Ptr &APROPPolicy, CL_APROP *APROP){
     string CMODE,OAMODE,SNAME,CNAME,PNAME,DNAME;
