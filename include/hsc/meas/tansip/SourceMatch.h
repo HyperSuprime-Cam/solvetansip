@@ -3,6 +3,7 @@
 
 #include "lsst/afw/coord/Coord.h"
 #include "lsst/afw/geom/Point.h"
+#include "lsst/afw/table/Match.h"
 
 
 // Declarations
@@ -15,7 +16,7 @@ class SourceMatch {
 public:
     typedef long SourceIdType;
 
-    /// Constructor
+    /// Constructors
     SourceMatch(
         SourceIdType id,                // Identifier
         lsst::afw::coord::Coord const& sky, // Sky coordinates
@@ -23,6 +24,8 @@ public:
         lsst::afw::geom::Point2D const& pixelErrors, // Pixel coordinate errors
         double flux                                  // Source flux
         );
+    SourceMatch(lsst::afw::table::ReferenceMatch match);
+
 
     /// Accessors
     SourceIdType getId() const { return _id; }
@@ -45,7 +48,7 @@ private:
 
 // Defintions
 
-/// Constructor
+/// Constructors
 inline SourceMatch::SourceMatch(SourceIdType id, lsst::afw::coord::Coord const& sky,
                                 lsst::afw::geom::Point2D const& pixels,
                                 lsst::afw::geom::Point2D const& pixelErrors,
@@ -58,6 +61,17 @@ inline SourceMatch::SourceMatch(SourceIdType id, lsst::afw::coord::Coord const& 
     _xErr(pixelErrors.getX()),
     _yErr(pixelErrors.getY()),
     _flux(flux)
+{}
+
+inline SourceMatch::SourceMatch(lsst::afw::table::ReferenceMatch match) :  
+    _id(match.first->getId()),
+    _ra(match.first->getRa().asDegrees()),
+    _dec(match.first->getDec().asDegrees()),
+    _x(match.second->getX()),
+    _y(match.second->getY()),
+    _xErr(match.second->get(match.second->getTable()->getCentroidErrKey()(0,0))),
+    _yErr(match.second->get(match.second->getTable()->getCentroidErrKey()(1,1))),
+    _flux(match.second->getPsfFlux())
 {}
 
 
