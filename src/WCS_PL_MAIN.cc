@@ -12,7 +12,6 @@
 #include "hsc/meas/tansip/WCS_TANSIP.h"
 
 using namespace std;
-namespace afwdetect = lsst::afw::detection;
 namespace afwImage = lsst::afw::image;
 namespace afwGeom = lsst::afw::geom; 
 namespace afwCoord = lsst::afw::coord;
@@ -22,16 +21,16 @@ namespace dafbase = lsst::daf::base;
 void    F_WCSA_MAKEAPROP(lsst::pex::policy::Policy::Ptr &,CL_APROP*);
 void    F_WCSA_SHOWAPROP(CL_APROP*);
 void    F_WCSA_MAKEGSIP(lsst::afw::cameraGeom::Camera::Ptr &,CL_APROP*,CL_GSIP*);
-//void    F_WCSA_SETSIZE(vector< vector< afwdetect::SourceMatch  >  > const &,CL_APROP*,CL_GSIP*);
+//void    F_WCSA_SETSIZE(vector<vector<PTR(hsc::meas::tansip::SourceMatch)> > const &,CL_APROP*,CL_GSIP*);
 //void    F_WCSA_SETSIZE_local(string matchlist, CL_APROP*);
-void    F_WCSA_SETREFSIZE(vector< vector< afwdetect::SourceMatch  >  > const &,CL_APROP*);
+void    F_WCSA_SETREFSIZE(vector<vector<PTR(hsc::meas::tansip::SourceMatch)> > const &,CL_APROP*);
 void    F_WCSA_SETREFSIZE_local(string matchlist, CL_APROP*);
-void    F_WCSA_MAKEPAIR(vector< vector< afwdetect::SourceMatch  >  > const &, CL_APROP*,CL_APAIR*);
+void    F_WCSA_MAKEPAIR(vector<vector<PTR(hsc::meas::tansip::SourceMatch)> > const &, CL_APROP*,CL_APAIR*);
 void    F_WCSA_MAKEPAIR_local(string matchlist,CL_APAIR*);
 
 void    F_WCS_DISTORTION(int ,CL_APROP *APROP);
 
-CL_WCSA_ASP F_WCSA_TANSIP_V(vector< vector<afwdetect::SourceMatch> > const &matchlist,dafbase::PropertySet::Ptr &metaTANSIP,lsst::pex::policy::Policy::Ptr &APROPPolicy,lsst::afw::cameraGeom::Camera::Ptr &camera/*,lsst::daf::base::PropertySet::Ptr &metadata,bool verbose*/){
+CL_WCSA_ASP F_WCSA_TANSIP_V(vector<vector<PTR(hsc::meas::tansip::SourceMatch)> > const &matchlist,dafbase::PropertySet::Ptr &metaTANSIP,lsst::pex::policy::Policy::Ptr &APROPPolicy,lsst::afw::cameraGeom::Camera::Ptr &camera/*,lsst::daf::base::PropertySet::Ptr &metadata,bool verbose*/){
     CL_WCSA_ASP *WCSA_ASP;
 
     cout << "--- solvetansip : START(local) ---" << endl;
@@ -253,7 +252,7 @@ void    F_WCSA_MAKEGSIP(lsst::afw::cameraGeom::Camera::Ptr &camera, CL_APROP *AP
         for(CID=0;CID<APROP->CCDNUM;CID++){
             camGeom::Id detId = camGeom::Id(CID);//serial
             camGeom::Detector::Ptr det = detMosaic->findDetector(detId);
-            afwGeom::Point2D offsetXY = det->getCenter();
+            afwGeom::Point2D offsetXY = det->getCenter().getPixels(det->getPixelSize());
 //            double ccdTiltYaw = (det->getOrientation()).getYaw();
   //          int ccdTiltNQuarter = (det->getOrientation()).getNQuarter();
 
@@ -266,7 +265,7 @@ void    F_WCSA_MAKEGSIP(lsst::afw::cameraGeom::Camera::Ptr &camera, CL_APROP *AP
         }
     }
 }
-void    F_WCSA_SETREFSIZE(vector< vector< afwdetect::SourceMatch  >  > const &matchlist, CL_APROP* APROP){
+void    F_WCSA_SETREFSIZE(vector<vector<PTR(hsc::meas::tansip::SourceMatch)> > const &matchlist, CL_APROP* APROP){
     int ID;
     for(ID=0;ID<APROP->CCDNUM;ID++){
         APROP->REFNUM[ID]     =matchlist[ID].size();
@@ -276,7 +275,7 @@ void    F_WCSA_SETREFSIZE(vector< vector< afwdetect::SourceMatch  >  > const &ma
         APROP->ALLFITNUM=APROP->ALLREFNUM;
 }
 /*DEL*/
-/*void    F_WCSA_SETSIZE(vector< vector< afwdetect::SourceMatch  >  > const &matchlist, CL_APROP* APROP, CL_GSIP *GSIP){
+/*void    F_WCSA_SETSIZE(vector<vector<PTR(hsc::meas::tansip::SourceMatch)> > const &matchlist, CL_APROP* APROP, CL_GSIP *GSIP){
     int ID;
     for(ID=0;ID<APROP->CCDNUM;ID++){
         APROP->REFNUM[ID]     =matchlist[ID].size();
@@ -347,7 +346,7 @@ void    F_WCSA_SETREFSIZE_local(string matchlist, CL_APROP* APROP){
     delete [] CIDNUM;
 }*/
 #define PI (4*atan(1.0))
-void    F_WCSA_MAKEPAIR(vector< vector<afwdetect::SourceMatch> > const &matchlist,CL_APROP* APROP,CL_APAIR* APAIR){
+void    F_WCSA_MAKEPAIR(vector<vector<PTR(hsc::meas::tansip::SourceMatch)> > const &matchlist,CL_APROP* APROP,CL_APAIR* APAIR){
     int CID,NUM,ALLNUM;
 
     APAIR->F_WCSA_APAIR_SET0();
@@ -355,20 +354,17 @@ void    F_WCSA_MAKEPAIR(vector< vector<afwdetect::SourceMatch> > const &matchlis
 
     for(CID=0;CID<APAIR->CCDNUM;CID++)
     for(NUM=0;NUM<APROP->REFNUM[CID];NUM++){
-        APAIR->PAIR[ALLNUM].ID            =matchlist[CID][NUM].first->getId();
-        APAIR->PAIR[ALLNUM].CHIPID        =CID;
-        APAIR->PAIR[ALLNUM].FLAG          =1;
-//        afwCoord::Coord::Ptr radec = matchlist[CID][NUM].first->getRaDec();
-//        APAIR->PAIR[ALLNUM].RA    = radec->getLongitude(afwCoord::DEGREES);
-//        APAIR->PAIR[ALLNUM].DEC   = radec->getLatitude(afwCoord::DEGREES);
-        APAIR->PAIR[ALLNUM].X_RADEC[0]    = 180.0/PI*matchlist[CID][NUM].first->getRa();
-        APAIR->PAIR[ALLNUM].X_RADEC[1]    = 180.0/PI*matchlist[CID][NUM].first->getDec();
-        APAIR->PAIR[ALLNUM].X_LOCAL[0]    =matchlist[CID][NUM].second->getXAstrom();
-        APAIR->PAIR[ALLNUM].X_LOCAL[1]    =matchlist[CID][NUM].second->getYAstrom();
-        APAIR->PAIR[ALLNUM].X_LOCALERR[0] =matchlist[CID][NUM].second->getXAstromErr();
-        APAIR->PAIR[ALLNUM].X_LOCALERR[1] =matchlist[CID][NUM].second->getYAstromErr();
-        APAIR->PAIR[ALLNUM].X_RADECERR[0] =1;
-        APAIR->PAIR[ALLNUM].X_RADECERR[1] =1;
+        APAIR->PAIR[ALLNUM].ID            = matchlist[CID][NUM]->getId();
+        APAIR->PAIR[ALLNUM].CHIPID        = CID;
+        APAIR->PAIR[ALLNUM].FLAG          = 1;
+        APAIR->PAIR[ALLNUM].X_RADEC[0]    = matchlist[CID][NUM]->getRa();
+        APAIR->PAIR[ALLNUM].X_RADEC[1]    = matchlist[CID][NUM]->getDec();
+        APAIR->PAIR[ALLNUM].X_LOCAL[0]    = matchlist[CID][NUM]->getX();
+        APAIR->PAIR[ALLNUM].X_LOCAL[1]    = matchlist[CID][NUM]->getY();
+        APAIR->PAIR[ALLNUM].X_LOCALERR[0] = matchlist[CID][NUM]->getXErr();
+        APAIR->PAIR[ALLNUM].X_LOCALERR[1] = matchlist[CID][NUM]->getYErr();
+        APAIR->PAIR[ALLNUM].X_RADECERR[0] = 1;
+        APAIR->PAIR[ALLNUM].X_RADECERR[1] = 1;
         ALLNUM+=1;
     }
 }
