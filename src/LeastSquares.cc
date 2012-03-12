@@ -168,10 +168,10 @@ void    F_LS2(int dataNUM,int Order,double **data,double *Coef){
             for(k=0;k<Order+1;k++)
             for(l=0;l<Order+1;l++)
             if(k+l<Order+1){
-                XA[ij][kl]+=pow(data[NUM][0],i+k)*pow(data[NUM][1],j+l);
+                XA[ij][kl]+=pow(data[NUM][0],(double)(i+k))*pow(data[NUM][1],(double)(j+l));
                 kl+=1;
             }
-            Z[ij]+=data[NUM][2]*pow(data[NUM][0],i)*pow(data[NUM][1],j);   
+            Z[ij]+=data[NUM][2]*pow(data[NUM][0],(double)(i))*pow(data[NUM][1],(double)(j));   
             ij+=1;
         }
     }

@@ -17,6 +17,7 @@ public:
     double GPOS[3];//CPROP has same parameter
     double MAXDRAD;
     double MAXFRAD;
+    double MINFRAD;
 
     double OAVAL[2];
     double OAPIX[2];

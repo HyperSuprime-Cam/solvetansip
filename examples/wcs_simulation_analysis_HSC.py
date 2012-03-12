@@ -54,10 +54,10 @@ metadata = doTansip.F_WCS_EMPTYMETADATA()
 DIST_HSC = "DIST_HSC_SIM.txt"
 CCDPOS_HSC = "CCDPOS_HSC_SIM.txt"
 REFNUMlist=[11,15,20,30,50,100,1000];
-for REFNUM in range (20,21):
+for REFNUM in range (15,16):
     if REFNUM in REFNUMlist:
         print 'HSC : ' , REFNUM
-        for RANNUM in range (3,4):
+        for RANNUM in range (1,2):
             SIMFILENAME = 'RREF/SIMULATIONDATA_HSC_'+str(REFNUM)+'_'+str(RANNUM)+'.dat'
 #making
 #            doTansip.WCS_MAKE_SIMULATIONREFERENCE(1,CCDPOS_HSC,DIST_HSC,0.15,RANNUM,REFNUM)
@@ -67,6 +67,7 @@ for REFNUM in range (20,21):
 #            CCDFILENAME = 'CCDfromWCSA.txt'
 #            doTansip.WCS_OUTPUT_CCD(WCSA_ASP,CCDFILENAME)
 #            doTansip.WCS_INPUT_CCD(WCSA_ASP,CCDFILENAME)
-            CCDPOSFILENAME = 'RREF/CCDPOS_HSC_MODE0_'+str(REFNUM)+'_'+str(RANNUM)+'.dat'
-            RESIDUALFILENAME = 'RREF/RESIDUAL_HSC_MODE0_'+str(REFNUM)+'_'+str(RANNUM)+'.dat'
+            CCDPOSFILENAME = 'RREF/CCDPOS_HSC_MODE1test_'+str(REFNUM)+'_'+str(RANNUM)+'.dat'
+            RESIDUALFILENAME = 'RREF/RESIDUAL_HSC_MODE1test_'+str(REFNUM)+'_'+str(RANNUM)+'.dat'
             doTansip.WCS_CALC_SIMULATIONDIFF(1,CCDPOS_HSC,DIST_HSC,CCDPOSFILENAME,RESIDUALFILENAME,WCSA_ASP)
+            doTansip.memorydelete(WCSA_ASP)

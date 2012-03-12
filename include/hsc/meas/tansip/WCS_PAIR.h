@@ -65,6 +65,7 @@ public:
     int STDOUT;
     double MAXDRAD;
     double MAXFRAD;
+    double MINFRAD;
     double **GPOS;
     double GPOS_AVE[3];
     double BASISPOS[3];

@@ -8,9 +8,9 @@
 #include<stdio.h>
 #include<cmath>
 #include<string.h>
-#include "hsc/meas/tansip/WCS_PAIR.h"
-#include "hsc/meas/tansip/WCS_SUB.h"
-#include "hsc/meas/tansip/LeastSquares.h"
+#include "hsc/meas/tansip/WCS_TANSIP.h"
+//#include "hsc/meas/tansip/WCS_SUB.h"
+//#include "hsc/meas/tansip/LeastSquares.h"
 
 using namespace std;
 //--------------------------------------------------
@@ -112,10 +112,9 @@ void CL_APAIR::F_WCSA_APAIR_SET0(){
 }
 void CL_APAIR::F_WCSA_APAIR_REJECTION(){
     int NUM,CID;
-    F_WCSA_APAIR_CENTERofOBJECTS();
 
 //    if(STDOUT==2)for(CID=0;CID<CCDNUM;CID++)cout << "X : " << setfill ('0') << setw (3) <<CID << fixed<< " : " << GPOS[CID][0] <<endl<< "Y : " << setfill ('0') << setw (3) <<CID << fixed<< " : " << GPOS[CID][1] << endl;
-    F_WCSA_APAIR_CALCRMS(SIP_P_ORDER,11,10);   
+    F_WCSA_APAIR_CALCRMS(SIP_P_ORDER,0,10);   
 
 //for(NUM=0;NUM<ALLREFNUM;NUM++)
 //cout << NUM << "	" << PAIR[NUM].CHIPID << "	" << PAIR[NUM].X_RADEC[0] << "	" << PAIR[NUM].X_RADEC[1] << "	" << fabs(PAIR[NUM].X_CENTER_GLOBAL[0]-F_CALCVALUE(SIP_P_ORDER,TCoef[0],PAIR[NUM].X_RADEC)) << "	" << CLIP_SIGMA*AVERMS[0][1] << "	" << fabs(PAIR[NUM].X_CENTER_GLOBAL[1]-F_CALCVALUE(SIP_P_ORDER,TCoef[1],PAIR[NUM].X_RADEC)) << "	" << CLIP_SIGMA*AVERMS[1][1] << endl;
@@ -126,12 +125,11 @@ void CL_APAIR::F_WCSA_APAIR_REJECTION(){
     REJNUM[PAIR[NUM].CHIPID]++;
     REJNUM[CCDNUM]++;
     }
-
     F_WCSA_APAIR_CENTERofOBJECTS();
     if(STDOUT==2)cout << "CENTER_PIXEL : " << CENTER_PIXEL[0] << " , " << CENTER_PIXEL[1] << endl;
     if(STDOUT==2)cout << "CENTER_RADEC : " << CENTER_RADEC[0] << " , " << CENTER_RADEC[1] << endl;
-    if(STDOUT==2)cout << "RMS RA(deg)  : " << AVERMS[0][1] << endl;
-    if(STDOUT==2)cout << "RMS DEC(deg) : " << AVERMS[1][1] << endl;
+    if(STDOUT==2)cout << "RMS X(pix)   : " << AVERMS[0][1] << endl;
+    if(STDOUT==2)cout << "RMS Y(pix)   : " << AVERMS[1][1] << endl;
     for(CID=0;CID<CCDNUM;CID++)
     if(STDOUT==2)cout << "REJECTED NUM CHIP : " << CID << " : " << REJNUM[CID] << endl;
     if(STDOUT==2)cout << "REJECTED NUM TOTAL: " << REJNUM[CCDNUM] << endl;
@@ -426,6 +424,10 @@ void CL_APAIR::F_WCSA_APAIR_GFITTING(int ORDER,int VARIABLE,int FUNCTION, double
         FNUM++;
     }
     ALLFITNUM=FNUM;
+
+    for(NUM=FNUM;NUM<ALLREFNUM;NUM++)
+    dx[0][NUM][0]=dx[0][NUM][1]=dx[0][NUM][2]=dx[1][NUM][0]=dx[1][NUM][1]=dx[1][NUM][2]=0;
+
     #pragma omp parallel num_threads(2)
     #pragma omp sections
     {
@@ -559,13 +561,15 @@ void CL_APAIR::F_WCSA_APAIR_CALCRMS(int ORDER,int VARIABLE,int FUNCTION){
         FNUM++;
     }
 //--------------------------------------------------
+    FNUM=0;
     for(NUM=0;NUM<ALLREFNUM;NUM++)
     if(PAIR[NUM].FLAG == 1){
-        data[0][NUM]=dx[0][NUM][2]-F_CALCVALUE(ORDER,TCoef[0],dx[0][NUM]);
-        data[1][NUM]=dx[1][NUM][2]-F_CALCVALUE(ORDER,TCoef[1],dx[1][NUM]);
+        data[0][FNUM]=dx[0][NUM][2]-F_CALCVALUE(ORDER,TCoef[0],dx[0][NUM]);
+        data[1][FNUM]=dx[1][NUM][2]-F_CALCVALUE(ORDER,TCoef[1],dx[1][NUM]);
+	FNUM++;
     }
-    F_RMS(NUM,data[0],AVERMS[0]);
-    F_RMS(NUM,data[1],AVERMS[1]);
+    F_RMS(FNUM,data[0],AVERMS[0]);
+    F_RMS(FNUM,data[1],AVERMS[1]);
 //--------------------------------------------------
     F_DELdouble3(2,ALLREFNUM,dx);
     F_DELdouble2(2,data);

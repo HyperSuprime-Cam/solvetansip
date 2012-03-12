@@ -120,6 +120,7 @@ void F_WCSA_SIMULATION_INPUT_CCDPOSITION_SCfromFile(char *filename,CL_GSIP* GSIP
         for(j=0;j< 3;j++)
         in >> GSIP->CSIP[i].GPOS[j];
     }
+    in.close();
 }
 void F_WCSA_SIMULATION_INPUT_CCDPOSITION_SC(CL_GSIP* GSIP){
     GSIP->CSIP[  0].GPOS[0]= 3272.00;
@@ -166,6 +167,7 @@ void F_WCSA_SIMULATION_INPUT_CCDPOSITION_HSCfromFile(char *filename,CL_GSIP* GSI
         for(j=0;j<  3;j++)
         in >> GSIP->CSIP[i].GPOS[j];
     }
+    in.close();
 }
 void F_WCSA_SIMULATION_INPUT_CCDPOSITION_HSC(CL_GSIP* GSIP){
     GSIP->CSIP[  0].GPOS[0]=- 9514.700;
@@ -507,6 +509,7 @@ void F_WCSA_SIMULATION_INPUT_CDSIPDISTORTION_SCfromFile(char *filename,CL_GSIP* 
         for(j=0;j<21;j++)
         in >> GSIP->SIP_ABP[i][j];
     }
+    in.close();
 }
 void F_WCSA_SIMULATION_INPUT_CDSIPDISTORTION_SC(CL_GSIP* GSIP){
     GSIP->CD[0][0]=-5.6*pow(10,-5);
@@ -640,6 +643,7 @@ void F_WCSA_SIMULATION_INPUT_CDSIPDISTORTION_HSCfromFile(char *filename,CL_GSIP*
         for(j=0;j<55;j++)
         in >> GSIP->SIP_ABP[i][j];
     }
+    in.close();
 }
 void F_WCSA_SIMULATION_INPUT_CDSIPDISTORTION_HSC(CL_GSIP* GSIP){
     GSIP->CD[0][0]=-4.7*pow(10,-5);
@@ -936,9 +940,6 @@ void F_WCSA_SIMULATION_CALC_DIFF_SC(CL_WCSA_ASP* WCSA_ASP ,CL_GSIP* GSIP_SIM,std
     GSIP_SIM->InvCD[0][1]=-GSIP_SIM->CD[0][1]/(GSIP_SIM->CD[0][0]*GSIP_SIM->CD[1][1]-GSIP_SIM->CD[1][0]*GSIP_SIM->CD[0][1]);
     GSIP_SIM->InvCD[1][0]=-GSIP_SIM->CD[1][0]/(GSIP_SIM->CD[0][0]*GSIP_SIM->CD[1][1]-GSIP_SIM->CD[1][0]*GSIP_SIM->CD[0][1]);
     GSIP_SIM->InvCD[1][1]= GSIP_SIM->CD[0][0]/(GSIP_SIM->CD[0][0]*GSIP_SIM->CD[1][1]-GSIP_SIM->CD[1][0]*GSIP_SIM->CD[0][1]);
-cout << GSIP_SIM->CD[0][0] << "	" << GSIP_SIM->CD[0][1] << "	" << GSIP_SIM->CD[1][0] << "	" << GSIP_SIM->CD[1][1] << endl;
-cout << WCSA_ASP->GSIP->CSIP[10].CD[0][0] << "	" << WCSA_ASP->GSIP->CSIP[10].CD[0][1] << "	" << WCSA_ASP->GSIP->CSIP[10].CD[1][0] << "	" << WCSA_ASP->GSIP->CSIP[10].CD[1][1] << endl;
-
 
     int i,j,ij;
     double dSIP[2][6*6],dSIPD[2][6*6];
@@ -946,9 +947,6 @@ cout << WCSA_ASP->GSIP->CSIP[10].CD[0][0] << "	" << WCSA_ASP->GSIP->CSIP[10].CD[
     for(i=0;i<GSIP_SIM->SIP_ORDER+1;i++)
     for(j=0;j<GSIP_SIM->SIP_ORDER+1;j++)
     if(i+j<GSIP_SIM->SIP_ORDER+1){
-  //      dSIP[0][ij] =WCSA_ASP->GSIP->CSIP[10].SIP_AB[0][ij] - GSIP_SIM->SIP_AB[0][ij];
-//        dSIP[1][ij] =WCSA_ASP->GSIP->CSIP[10].SIP_AB[1][ij] - GSIP_SIM->SIP_AB[1][ij];
-
 	if(i==1&&j==0)
 	WCSA_ASP->GSIP->CSIP[10].SIP_AB[0][ij]+=1;
 	if(i==0&&j==1)
@@ -958,23 +956,21 @@ cout << WCSA_ASP->GSIP->CSIP[10].CD[0][0] << "	" << WCSA_ASP->GSIP->CSIP[10].CD[
         dSIP[1][ij] =WCSA_ASP->GSIP->CSIP[10].CD[1][0]*WCSA_ASP->GSIP->CSIP[10].SIP_AB[0][ij]+WCSA_ASP->GSIP->CSIP[10].CD[1][1]*WCSA_ASP->GSIP->CSIP[10].SIP_AB[1][ij];
         dSIPD[0][ij]=GSIP_SIM->InvCD[0][0]*dSIP[0][ij]+GSIP_SIM->InvCD[0][1]*dSIP[1][ij];
         dSIPD[1][ij]=GSIP_SIM->InvCD[1][0]*dSIP[0][ij]+GSIP_SIM->InvCD[1][1]*dSIP[1][ij];
-//        dSIP[0][ij] =WCSA_ASP->GSIP->CSIP[10].InvCD[0][0]*WCSA_ASP->GSIP->CSIP[10].SIP_AB[0][ij]+WCSA_ASP->GSIP->CSIP[10].InvCD[0][1]*WCSA_ASP->GSIP->CSIP[10].SIP_AB[1][ij];
-  //      dSIP[1][ij] =WCSA_ASP->GSIP->CSIP[10].InvCD[1][0]*WCSA_ASP->GSIP->CSIP[10].SIP_AB[0][ij]+WCSA_ASP->GSIP->CSIP[10].InvCD[1][1]*WCSA_ASP->GSIP->CSIP[10].SIP_AB[1][ij];
-    //    dSIPD[0][ij]=GSIP_SIM->CD[0][0]*dSIP[0][ij]+GSIP_SIM->CD[0][1]*dSIP[1][ij];
-      //  dSIPD[1][ij]=GSIP_SIM->CD[1][0]*dSIP[0][ij]+GSIP_SIM->CD[1][1]*dSIP[1][ij];
 
-	if(i==1&&j==0)
+/*	if(i==1&&j==0)
 	dSIPD[0][ij]-=1;
 	if(i==0&&j==1)
-	dSIPD[1][ij]-=1;
+	dSIPD[1][ij]-=1;*/
+	if(i==1&&j==0)
+	GSIP_SIM->SIP_AB[0][ij]+=1;
+	if(i==0&&j==1)
+	GSIP_SIM->SIP_AB[1][ij]+=1;
 
         dSIP[0][ij] =dSIPD[0][ij] - GSIP_SIM->SIP_AB[0][ij];
         dSIP[1][ij] =dSIPD[1][ij] - GSIP_SIM->SIP_AB[1][ij];
 
         ij++;
     }
-//cout << dSIPD[0][6] << "	" << GSIP_SIM->SIP_AB[0][6] << endl;
-//cout << dSIPD[1][1] << "	" << GSIP_SIM->SIP_AB[1][1] << endl;
     int REFNUM,NUM[3];
     double *REFDIFdata,DIF[2],REFSTAT[3];
     REFDIFdata = F_NEWdouble1(WCSA_ASP->APAIR->ALLREFNUM);
@@ -1006,7 +1002,7 @@ cout << WCSA_ASP->GSIP->CSIP[10].CD[0][0] << "	" << WCSA_ASP->GSIP->CSIP[10].CD[
     if(X[0]%100==0)
     cout  <<"\r"<<"XLOOP : " << X[0] << " / " << Xmax[0] << "         " << flush;
     for(X[1]=Xmin[1];X[1]<Xmax[1]+1;X[1]+=10){
-        Xd[0]=(double)X[0];
+/*        Xd[0]=(double)X[0];
         Xd[1]=(double)X[1];
         DIF[0]=F_CALCVALUE(GSIP_SIM->SIP_ORDER,dSIP[0],Xd);
         DIF[1]=F_CALCVALUE(GSIP_SIM->SIP_ORDER,dSIP[1],Xd);     
@@ -1022,12 +1018,21 @@ cout << WCSA_ASP->GSIP->CSIP[10].CD[0][0] << "	" << WCSA_ASP->GSIP->CSIP[10].CD[
 	    DIFdata[2][NUM[2]++]=sqrt(DIF[0]*DIF[0]+DIF[1]*DIF[1]);
             if(DIFMAX[2]<sqrt(DIF[0]*DIF[0]+DIF[1]*DIF[1]))
             DIFMAX[2]=sqrt(DIF[0]*DIF[0]+DIF[1]*DIF[1]);
+	}*/
+	if(hypot(X[0],X[1])>WCSA_ASP->APAIR->MAXFRAD){
+            Xd[0]=(double)X[0];
+            Xd[1]=(double)X[1];
+            DIF[0]=F_CALCVALUE(GSIP_SIM->SIP_ORDER,dSIP[0],Xd);
+            DIF[1]=F_CALCVALUE(GSIP_SIM->SIP_ORDER,dSIP[1],Xd);     
+	    DIFdata[2][NUM[2]++]=sqrt(DIF[0]*DIF[0]+DIF[1]*DIF[1]);
+            if(DIFMAX[2]<sqrt(DIF[0]*DIF[0]+DIF[1]*DIF[1]))
+            DIFMAX[2]=sqrt(DIF[0]*DIF[0]+DIF[1]*DIF[1]);
 	}
     }
     }
     cout << endl;
     
-    F_RMS(NUM[0],DIFdata[0],STAT[0]);
+/*    F_RMS(NUM[0],DIFdata[0],STAT[0]);
     F_RMS(NUM[1],DIFdata[1],STAT[1]);
     F_RMS(NUM[2],DIFdata[2],STAT[2]);
     cout << "ALL : " << endl;
@@ -1036,6 +1041,13 @@ cout << WCSA_ASP->GSIP->CSIP[10].CD[0][0] << "	" << WCSA_ASP->GSIP->CSIP[10].CD[
     cout << "MAX : " << DIFMAX[0] << "	"<< DIFMAX[1] << "	" << DIFMAX[2] << endl;
     RESout << STAT[0][0] << "	" <<STAT[0][1] << "	" <<DIFMAX[0] << "	" ; 
     RESout << STAT[1][0] << "	" <<STAT[1][1] << "	" <<DIFMAX[1] << "	" ; 
+    RESout << STAT[2][0] << "	" <<STAT[2][1] << "	" <<DIFMAX[2] << "	" ; 
+*/
+    F_RMS(NUM[2],DIFdata[2],STAT[2]);
+    cout << "ALL : " << endl;
+    cout << "AVE : " << STAT[2][0] << endl;
+    cout << "SDV : " << STAT[2][1] << endl;
+    cout << "MAX : " << DIFMAX[2] << endl;
     RESout << STAT[2][0] << "	" <<STAT[2][1] << "	" <<DIFMAX[2] << "	" ; 
 //-----
     CCDout << scientific;
@@ -1070,12 +1082,7 @@ void F_WCSA_SIMULATION_CALC_DIFF_HSC(CL_WCSA_ASP* WCSA_ASP,CL_GSIP* GSIP_SIM,std
     GSIP_SIM->InvCD[0][1]=-GSIP_SIM->CD[0][1]/(GSIP_SIM->CD[0][0]*GSIP_SIM->CD[1][1]-GSIP_SIM->CD[1][0]*GSIP_SIM->CD[0][1]);
     GSIP_SIM->InvCD[1][0]=-GSIP_SIM->CD[1][0]/(GSIP_SIM->CD[0][0]*GSIP_SIM->CD[1][1]-GSIP_SIM->CD[1][0]*GSIP_SIM->CD[0][1]);
     GSIP_SIM->InvCD[1][1]= GSIP_SIM->CD[0][0]/(GSIP_SIM->CD[0][0]*GSIP_SIM->CD[1][1]-GSIP_SIM->CD[1][0]*GSIP_SIM->CD[0][1]);
-cout << GSIP_SIM->CD[0][0] << "	" << GSIP_SIM->CD[0][1] << "	" << GSIP_SIM->CD[1][0] << "	" << GSIP_SIM->CD[1][1] << endl;
-cout << WCSA_ASP->GSIP->CSIP[100].CD[0][0] << "	" << WCSA_ASP->GSIP->CSIP[100].CD[0][1] << "	" << WCSA_ASP->GSIP->CSIP[100].CD[1][0] << "	" << WCSA_ASP->GSIP->CSIP[100].CD[1][1] << endl;
-//WCSA_ASP->GSIP->CSIP[100].CD[0][0]=-4.7*pow(10,-5);
-//WCSA_ASP->GSIP->CSIP[100].CD[0][1]= 0.0;
-//WCSA_ASP->GSIP->CSIP[100].CD[1][0]= 0.0;
-//WCSA_ASP->GSIP->CSIP[100].CD[1][1]= 4.7*pow(10,-5);
+
     int i,j,ij;
     double dSIP[2][10*10],dSIPD[2][10*10];
     ij=0;
@@ -1091,25 +1098,14 @@ cout << WCSA_ASP->GSIP->CSIP[100].CD[0][0] << "	" << WCSA_ASP->GSIP->CSIP[100].C
         dSIP[1][ij] =WCSA_ASP->GSIP->CSIP[100].CD[1][0]*WCSA_ASP->GSIP->CSIP[100].SIP_AB[0][ij]+WCSA_ASP->GSIP->CSIP[100].CD[1][1]*WCSA_ASP->GSIP->CSIP[100].SIP_AB[1][ij];
         dSIPD[0][ij]=GSIP_SIM->InvCD[0][0]*dSIP[0][ij]+GSIP_SIM->InvCD[0][1]*dSIP[1][ij];
         dSIPD[1][ij]=GSIP_SIM->InvCD[1][0]*dSIP[0][ij]+GSIP_SIM->InvCD[1][1]*dSIP[1][ij];
-//        dSIP[0][ij] =WCSA_ASP->GSIP->CSIP[100].InvCD[0][0]*WCSA_ASP->GSIP->CSIP[100].SIP_AB[0][ij]+WCSA_ASP->GSIP->CSIP[100].InvCD[0][1]*WCSA_ASP->GSIP->CSIP[100].SIP_AB[1][ij];
-  //      dSIP[1][ij] =WCSA_ASP->GSIP->CSIP[100].InvCD[1][0]*WCSA_ASP->GSIP->CSIP[100].SIP_AB[0][ij]+WCSA_ASP->GSIP->CSIP[100].InvCD[1][1]*WCSA_ASP->GSIP->CSIP[100].SIP_AB[1][ij];
-    //    dSIPD[0][ij]=GSIP_SIM->CD[0][0]*dSIP[0][ij]+GSIP_SIM->CD[0][1]*dSIP[1][ij];
-      //  dSIPD[1][ij]=GSIP_SIM->CD[1][0]*dSIP[0][ij]+GSIP_SIM->CD[1][1]*dSIP[1][ij];
 
 	if(i==1&&j==0)
-	dSIPD[0][ij]-=1;
+	GSIP_SIM->SIP_AB[0][ij]+=1;
 	if(i==0&&j==1)
-	dSIPD[1][ij]-=1;
+	GSIP_SIM->SIP_AB[1][ij]+=1;
 
         dSIP[0][ij] =dSIPD[0][ij] - GSIP_SIM->SIP_AB[0][ij];
         dSIP[1][ij] =dSIPD[1][ij] - GSIP_SIM->SIP_AB[1][ij];
-cout << ij << "	" <<dSIP[0][ij] << "	" << dSIP[1][ij]
- << "	" << WCSA_ASP->GSIP->CSIP[100].SIP_AB[0][ij] << "	" << WCSA_ASP->GSIP->CSIP[100].SIP_AB[1][ij]
- << "	" <<dSIPD[0][ij] << "	" << dSIPD[1][ij]
- << "	" << GSIP_SIM->SIP_AB[0][ij] << "	" << GSIP_SIM->SIP_AB[1][ij] << endl;
-//dSIP[0][ij] =WCSA_ASP->GSIP->CSIP[100].SIP_AB[0][ij] - GSIP_SIM->SIP_AB[0][ij];
-//dSIP[1][ij] =WCSA_ASP->GSIP->CSIP[100].SIP_AB[1][ij] - GSIP_SIM->SIP_AB[1][ij];
-
         ij++;
     }
 
@@ -1121,11 +1117,12 @@ cout << ij << "	" <<dSIP[0][ij] << "	" << dSIP[1][ij]
     for(REFNUM=0;REFNUM<WCSA_ASP->APAIR->ALLREFNUM;REFNUM++){
         DIF[0]=F_CALCVALUE(GSIP_SIM->SIP_ORDER,dSIP[0],WCSA_ASP->APAIR->PAIR[REFNUM].X_CRPIX);
         DIF[1]=F_CALCVALUE(GSIP_SIM->SIP_ORDER,dSIP[1],WCSA_ASP->APAIR->PAIR[REFNUM].X_CRPIX); 
-//cout << WCSA_ASP->APAIR->PAIR[REFNUM].ID << "	" << WCSA_ASP->APAIR->PAIR[REFNUM].CHIPID << "	" << WCSA_ASP->APAIR->PAIR[REFNUM].X_CRPIX[0] << "	" << WCSA_ASP->APAIR->PAIR[REFNUM].X_CRPIX[1] << "	" << DIF[0] << "	" << DIF[1] << endl;
         REFDIFdata[NUM[0]++]=sqrt(DIF[0]*DIF[0]+DIF[1]*DIF[1]);
 	if(fabs(REFSTAT[2])<sqrt(DIF[0]*DIF[0]+DIF[1]*DIF[1]))
 	REFSTAT[2]=sqrt(DIF[0]*DIF[0]+DIF[1]*DIF[1]);
+//cout << WCSA_ASP->APAIR->PAIR[REFNUM].X_CRPIX[0] << "	" << WCSA_ASP->APAIR->PAIR[REFNUM].X_CRPIX[1] << "	" << DIF[0] << "	" << DIF[1] << endl;
     }
+
     F_RMS(NUM[0],REFDIFdata,REFSTAT);
     cout << "REF : " << endl;
     cout << "AVE : " << REFSTAT[0] << endl;
@@ -1141,12 +1138,25 @@ cout << ij << "	" <<dSIP[0][ij] << "	" << dSIP[1][ij]
     NUM[0]=NUM[1]=NUM[2]=0;
     DIFMAX[0]=DIFMAX[1]=DIFMAX[2]=0;
 
-    for(X[0]=-RMAX;X[0]<RMAX;X[0]+=10000){
+    for(X[0]=-RMAX;X[0]<RMAX;X[0]+=10){
     if(X[0]%100==0)
     cout  <<"\r"<<"XLOOP : " << X[0] << " / " << RMAX << "         " << flush;
-    for(X[1]=-RMAX;X[1]<RMAX;X[1]+=10000)
-    if(sqrt(X[0]*X[0]+X[1]*X[1])<RMAX){
-        Xd[0]=(double)X[0];
+    for(X[1]=-RMAX;X[1]<RMAX;X[1]+=10)
+    if(sqrt(X[0]*X[0]+X[1]*X[1])>RMAX){
+    }else if(X[0]<-15882.7){
+    }else if(X[0]>13834.7+2048){
+    }else if(X[1]<-17558.35){
+    }else if(X[1]>13462.35+4096){
+    }else if(X[0]<-13760     &&X[1]<- 8608.35){
+    }else if(X[0]<- 7392     &&X[1]<-13083.35){
+    }else if(X[0]> 11712+2048&&X[1]<- 8192.65){
+    }else if(X[0]>  5344+2048&&X[1]<-13387.65){
+    }else if(X[0]<-13760     &&X[1]>  4816.65+4096){
+    }else if(X[0]<- 7392     &&X[1]>  9291.6 +4096){
+    }else if(X[0]> 11712+2048&&X[1]>  4152.35+4096){
+    }else if(X[0]>  5344+2048&&X[1]>  8987.35+4096){
+    }else{
+/*        Xd[0]=(double)X[0];
         Xd[1]=(double)X[1];
         DIF[0]=F_CALCVALUE(GSIP_SIM->SIP_ORDER,dSIP[0],Xd);
         DIF[1]=F_CALCVALUE(GSIP_SIM->SIP_ORDER,dSIP[1],Xd);     
@@ -1154,11 +1164,22 @@ cout << ij << "	" <<dSIP[0][ij] << "	" << dSIP[1][ij]
         DIFdata[0][NUM[0]++]=sqrt(DIF[0]*DIF[0]+DIF[1]*DIF[1]);
         if(DIFMAX[0]<sqrt(DIF[0]*DIF[0]+DIF[1]*DIF[1]))
         DIFMAX[0]=sqrt(DIF[0]*DIF[0]+DIF[1]*DIF[1]);
-	if(hypot(X[0],X[1])<WCSA_ASP->APAIR->MAXFRAD){
+	if(hypot(X[0],X[1])<WCSA_ASP->APAIR->MAXFRAD-1500){
 	    DIFdata[1][NUM[1]++]=sqrt(DIF[0]*DIF[0]+DIF[1]*DIF[1]);
             if(DIFMAX[1]<sqrt(DIF[0]*DIF[0]+DIF[1]*DIF[1]))
             DIFMAX[1]=sqrt(DIF[0]*DIF[0]+DIF[1]*DIF[1]);
-	}else{
+	}else if(hypot(X[0],X[1])>WCSA_ASP->APAIR->MAXFRAD){
+	    DIFdata[2][NUM[2]++]=sqrt(DIF[0]*DIF[0]+DIF[1]*DIF[1]);
+            if(DIFMAX[2]<sqrt(DIF[0]*DIF[0]+DIF[1]*DIF[1]))
+            DIFMAX[2]=sqrt(DIF[0]*DIF[0]+DIF[1]*DIF[1]);
+	}
+*/
+
+	if(hypot(X[0],X[1])>WCSA_ASP->APAIR->MAXFRAD){
+            Xd[0]=(double)X[0];
+            Xd[1]=(double)X[1];
+            DIF[0]=F_CALCVALUE(GSIP_SIM->SIP_ORDER,dSIP[0],Xd);
+            DIF[1]=F_CALCVALUE(GSIP_SIM->SIP_ORDER,dSIP[1],Xd);     
 	    DIFdata[2][NUM[2]++]=sqrt(DIF[0]*DIF[0]+DIF[1]*DIF[1]);
             if(DIFMAX[2]<sqrt(DIF[0]*DIF[0]+DIF[1]*DIF[1]))
             DIFMAX[2]=sqrt(DIF[0]*DIF[0]+DIF[1]*DIF[1]);
@@ -1166,7 +1187,7 @@ cout << ij << "	" <<dSIP[0][ij] << "	" << dSIP[1][ij]
     }
     }
     cout << endl;
-    
+/*    
     F_RMS(NUM[0],DIFdata[0],STAT[0]);
     F_RMS(NUM[1],DIFdata[1],STAT[1]);
     F_RMS(NUM[2],DIFdata[2],STAT[2]);
@@ -1177,6 +1198,14 @@ cout << ij << "	" <<dSIP[0][ij] << "	" << dSIP[1][ij]
     RESout << STAT[0][0] << "	" <<STAT[0][1] << "	" <<DIFMAX[0] << "	" ; 
     RESout << STAT[1][0] << "	" <<STAT[1][1] << "	" <<DIFMAX[1] << "	" ; 
     RESout << STAT[2][0] << "	" <<STAT[2][1] << "	" <<DIFMAX[2] << "	" ; 
+*/
+    F_RMS(NUM[2],DIFdata[2],STAT[2]);
+    cout << "ALL : " << endl;
+    cout << "AVE : " << STAT[2][0] << endl;
+    cout << "SDV : " << STAT[2][1] << endl;
+    cout << "MAX : " << DIFMAX[2] << endl;
+    RESout << STAT[2][0] << "	" <<STAT[2][1] << "	" <<DIFMAX[2] << "	" ; 
+
 //-----
     CCDout << scientific;
     for(CID=0;CID<100;CID++){

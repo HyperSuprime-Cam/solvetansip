@@ -52,10 +52,10 @@ for REFNUM in range (100000,1001):
 DIST_HSC = "DIST_HSC_SIM.txt"
 CCDPOS_HSC = "CCDPOS_HSC_SIM.txt"
 REFNUMlist=[11,15,20,30,50,100,1000];
-for REFNUM in range (10,1001):
+for REFNUM in range (20,21):
     if REFNUM in REFNUMlist:
         print 'HSC : ' , REFNUM
-        for RANNUM in range (1,1001):
+        for RANNUM in range (1,2):
             SIMFILENAME = 'RREF/SIMULATIONDATA_HSC_'+str(REFNUM)+'_'+str(RANNUM)+'.dat'
 #making
             doTansip.WCS_MAKE_SIMULATIONREFERENCE(1,CCDPOS_HSC,DIST_HSC,0.15,RANNUM,REFNUM)

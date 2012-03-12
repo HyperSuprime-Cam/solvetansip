@@ -6,7 +6,7 @@
 #ifndef WCS_TANSIP_H
 #define WCS_TANSIP_H
 
-#include "hsc/meas/tansip/WCS_PL_MAIN.h"
+//#include "hsc/meas/tansip/WCS_PL_MAIN.h"
 #include "hsc/meas/tansip/WCS_APROP.h"
 #include "hsc/meas/tansip/WCS_PAIR.h"
 #include "hsc/meas/tansip/WCS_CSIP.h"

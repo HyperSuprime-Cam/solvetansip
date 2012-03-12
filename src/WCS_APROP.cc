@@ -49,7 +49,7 @@ void	CL_APROP::F_WCSA_APROP_CHECKCRPIXMODE(){
     if(strcmp(CRPIXMODE,"AUTO")==0||strcmp(CRPIXMODE,"PIX")==0||strcmp(CRPIXMODE,"VAL")==0||strcmp(CRPIXMODE,"OAXIS")==0){
         if(STDOUT==1||STDOUT==2)cout << "OK : CRPIXMODE" << endl;
     }else{
-        cout << "CRPIXMODE is " << CRPIXMODE << endl;
+        cout << "CRPIXMODE is '" << CRPIXMODE << "'"<< endl;
         cout << "---------------------------------------------" << endl;
         cout << "Warning : CRPIXMODE isn't 'AUTO' or 'PIX' or 'VAL' or 'OAXIS'" << endl;
         sprintf(CRPIXMODE,"AUTO");
