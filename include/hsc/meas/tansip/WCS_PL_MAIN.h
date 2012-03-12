@@ -6,13 +6,13 @@
 #include<vector>
 #include<string>
 #include "lsst/pex/policy/Policy.h"
-#include "lsst/afw/detection/SourceMatch.h"
 #include "lsst/afw/cameraGeom/Camera.h"
 #include "lsst/afw/image/TanWcs.h"
 #include "hsc/meas/tansip/WCS_APROP.h"
 #include "hsc/meas/tansip/WCS_PAIR.h"
 #include "hsc/meas/tansip/WCS_CSIP.h"
 #include "hsc/meas/tansip/WCS_SIMULATION.h"
+#include "hsc/meas/tansip/SourceMatch.h"
 #ifndef WCS_PL_MAIN_H
 #define WCS_PL_MAIN_H
 class CL_WCSA_ASP{//Chip property
@@ -28,7 +28,7 @@ public:
     void F_WCS_PLMAIN_DELWCSA_ASP();
     void F_WCS_PLMAIN_SETWCSA_ASP();
 };
-CL_WCSA_ASP F_WCSA_TANSIP_V(std::vector< std::vector<lsst::afw::detection::SourceMatch> > const &,lsst::daf::base::PropertySet::Ptr &,lsst::pex::policy::Policy::Ptr &,lsst::afw::cameraGeom::Camera::Ptr &/*,lsst::daf::base::PropertySet::Ptr &,bool*/);
+CL_WCSA_ASP F_WCSA_TANSIP_V(std::vector< std::vector<PTR(hsc::meas::tansip::SourceMatch)> > const &,lsst::daf::base::PropertySet::Ptr &,lsst::pex::policy::Policy::Ptr &,lsst::afw::cameraGeom::Camera::Ptr &/*,lsst::daf::base::PropertySet::Ptr &,bool*/);
 CL_WCSA_ASP F_WCSA_TANSIP_V_local(std::string,lsst::daf::base::PropertySet::Ptr &,lsst::pex::policy::Policy::Ptr &,lsst::afw::cameraGeom::Camera::Ptr &/*,lsst::daf::base::PropertySet::Ptr &,bool*/);
 lsst::daf::base::PropertySet::Ptr F_WCS_EMPTYMETADATA();
 std::vector <lsst::afw::image::TanWcs::Ptr> F_WCSA_PLMAIN_GETWCSLIST(CL_WCSA_ASP* WCSA_ASP);
