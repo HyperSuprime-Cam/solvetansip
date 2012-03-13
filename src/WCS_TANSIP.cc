@@ -7,7 +7,6 @@
 #include<iostream>
 #include<cmath>
 #include<string.h>
-#include<omp.h>
 #include "hsc/meas/tansip/WCS_TANSIP.h"
 
 using namespace std;
