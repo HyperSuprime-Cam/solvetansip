@@ -512,10 +512,10 @@ void CL_GSIP::F_WCSA_GSIP_SETINITIAL(){
     int CID;
 
     ANGLE=0;
-    CD[0][0]=-4.7*pow(10,-5);
+    CD[0][0]=-4.7e-5;
     CD[0][1]= 0.0;
     CD[1][0]= 0.0;
-    CD[1][1]= 4.7*pow(10,-5);
+    CD[1][1]= 4.7e-5;
     InvCD[0][0]=-21429;
     InvCD[0][1]= 0.0;
     InvCD[1][0]= 0.0;
