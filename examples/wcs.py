@@ -84,5 +84,6 @@ del policy
 del matchLists
 del m
 del ml
-del wcsList
 del wcs
+del wcsList
+import gc; gc.collect()

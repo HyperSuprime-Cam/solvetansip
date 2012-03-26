@@ -27,11 +27,13 @@ public:
     void F_WCS_PLMAIN_NEWWCSA_ASP();
     void F_WCS_PLMAIN_DELWCSA_ASP();
     void F_WCS_PLMAIN_SETWCSA_ASP();
+
+    ~CL_WCSA_ASP();
 };
-CL_WCSA_ASP F_WCSA_TANSIP_V(std::vector< std::vector<PTR(hsc::meas::tansip::SourceMatch)> > const &,lsst::daf::base::PropertySet::Ptr &,lsst::pex::policy::Policy::Ptr &,lsst::afw::cameraGeom::Camera::Ptr &/*,lsst::daf::base::PropertySet::Ptr &,bool*/);
-CL_WCSA_ASP F_WCSA_TANSIP_V_local(std::string,lsst::daf::base::PropertySet::Ptr &,lsst::pex::policy::Policy::Ptr &,lsst::afw::cameraGeom::Camera::Ptr &/*,lsst::daf::base::PropertySet::Ptr &,bool*/);
+PTR(CL_WCSA_ASP) F_WCSA_TANSIP_V(std::vector< std::vector<PTR(hsc::meas::tansip::SourceMatch)> > const &,lsst::daf::base::PropertySet::Ptr &,lsst::pex::policy::Policy::Ptr &,lsst::afw::cameraGeom::Camera::Ptr &/*,lsst::daf::base::PropertySet::Ptr &,bool*/);
+PTR(CL_WCSA_ASP) F_WCSA_TANSIP_V_local(std::string,lsst::daf::base::PropertySet::Ptr &,lsst::pex::policy::Policy::Ptr &,lsst::afw::cameraGeom::Camera::Ptr &/*,lsst::daf::base::PropertySet::Ptr &,bool*/);
 lsst::daf::base::PropertySet::Ptr F_WCS_EMPTYMETADATA();
-std::vector <lsst::afw::image::TanWcs::Ptr> F_WCSA_PLMAIN_GETWCSLIST(CL_WCSA_ASP* WCSA_ASP);
+std::vector <lsst::afw::image::TanWcs::Ptr> F_WCSA_PLMAIN_GETWCSLIST(PTR(CL_WCSA_ASP) WCSA_ASP);
 void F_WCSA_PLMAIN_MEMORYDELETE(CL_WCSA_ASP* WCSA_ASP);
 //-----------------------------------------------------------------
 //Output Functions : WCSA_ASP
