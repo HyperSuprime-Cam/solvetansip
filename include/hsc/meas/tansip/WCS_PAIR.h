@@ -5,10 +5,14 @@
 //------------------------------------------------------------
 #ifndef WCS_PAIR_H
 #define WCS_PAIR_H
+
+#include "lsst/afw/table/misc.h"
+
 class CL_PAIR{
 private:
 public:
-    long ID;    //OUTPUT INFO
+//    long ID;    //OUTPUT INFO
+  boost::int64_t ID;    //OUTPUT INFO    
     int CHIPID;//OUTPUT INFO
     int FLAG;  //OUTPUT INFO
     double X_LOCAL[2];//OUTPUT INFO

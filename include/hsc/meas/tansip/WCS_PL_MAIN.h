@@ -8,6 +8,7 @@
 #include "lsst/pex/policy/Policy.h"
 #include "lsst/afw/cameraGeom/Camera.h"
 #include "lsst/afw/image/TanWcs.h"
+#include "lsst/afw/table/misc.h"   // to use int64_t
 #include "hsc/meas/tansip/WCS_APROP.h"
 #include "hsc/meas/tansip/WCS_PAIR.h"
 #include "hsc/meas/tansip/WCS_CSIP.h"
@@ -15,6 +16,9 @@
 #include "hsc/meas/tansip/SourceMatch.h"
 #ifndef WCS_PL_MAIN_H
 #define WCS_PL_MAIN_H
+
+typedef boost::int64_t IntT;
+
 class CL_WCSA_ASP{//Chip property
 private:
 public:
@@ -78,7 +82,7 @@ std::vector< double > F_WCSA_PLMAIN_GETREF_CAMERAPSHEAR1(CL_WCSA_ASP* WCSA_ASP, 
 std::vector< double > F_WCSA_PLMAIN_GETREF_CAMERAPSHEAR2(CL_WCSA_ASP* WCSA_ASP, int CID);
 std::vector< double > F_WCSA_PLMAIN_GETREF_CAMERAPMAGNIFICATION(CL_WCSA_ASP* WCSA_ASP, int CID);
 
-std::vector< double > F_WCSA_PLMAIN_GETREF(CL_WCSA_ASP* WCSA_ASP,int REFID);
+std::vector< double > F_WCSA_PLMAIN_GETREF(CL_WCSA_ASP* WCSA_ASP, boost::int64_t REFID);
 //-----------------------------------------------------------------
 //Getting Functions : WCSA_ASP : CCD
 //-----------------------------------------------------------------

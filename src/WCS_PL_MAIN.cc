@@ -1070,7 +1070,7 @@ std::vector< double > F_WCSA_PLMAIN_GETREF_CAMERAPMAGNIFICATION(CL_WCSA_ASP* WCS
     return REFINFO_CAMERAPMAGNIFICATION;
 }
 
-std::vector< double > F_WCSA_PLMAIN_GETREF(CL_WCSA_ASP* WCSA_ASP,int REFID){
+std::vector< double > F_WCSA_PLMAIN_GETREF(CL_WCSA_ASP* WCSA_ASP, boost::int64_t REFID){
     int RID,CHECK=0,i;
     std::vector< double > REFINFO(27);
 
