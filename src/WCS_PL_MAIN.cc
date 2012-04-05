@@ -30,11 +30,10 @@ void    F_WCSA_MAKEPAIR_local(string matchlist,CL_APAIR*);
 
 void    F_WCS_DISTORTION(int ,CL_APROP *APROP);
 
-CL_WCSA_ASP F_WCSA_TANSIP_V(vector<vector<PTR(hsc::meas::tansip::SourceMatch)> > const &matchlist,dafbase::PropertySet::Ptr &metaTANSIP,lsst::pex::policy::Policy::Ptr &APROPPolicy,lsst::afw::cameraGeom::Camera::Ptr &camera/*,lsst::daf::base::PropertySet::Ptr &metadata,bool verbose*/){
-    CL_WCSA_ASP *WCSA_ASP;
+PTR(CL_WCSA_ASP) F_WCSA_TANSIP_V(vector<vector<PTR(hsc::meas::tansip::SourceMatch)> > const &matchlist,dafbase::PropertySet::Ptr &metaTANSIP,lsst::pex::policy::Policy::Ptr &APROPPolicy,lsst::afw::cameraGeom::Camera::Ptr &camera/*,lsst::daf::base::PropertySet::Ptr &metadata,bool verbose*/){
+    PTR(CL_WCSA_ASP) WCSA_ASP(new CL_WCSA_ASP());
 
     cout << "--- solvetansip : START(local) ---" << endl;
-    WCSA_ASP = new CL_WCSA_ASP[1];
     WCSA_ASP->F_WCS_PLMAIN_NEWWCSA_ASP();
 
 //CCDNUM
@@ -76,7 +75,7 @@ CL_WCSA_ASP F_WCSA_TANSIP_V(vector<vector<PTR(hsc::meas::tansip::SourceMatch)> >
     WCSA_ASP->F_WCS_PLMAIN_SETWCSA_ASP();
 
     cout << "--- solvetansip : END(local) ---" << endl;
-    return *WCSA_ASP;
+    return WCSA_ASP;
 /*
     cout << "--- solvetansip : START ---" << endl;
     WCSA_ASP = new CL_WCSA_ASP[1];
@@ -109,11 +108,10 @@ CL_WCSA_ASP F_WCSA_TANSIP_V(vector<vector<PTR(hsc::meas::tansip::SourceMatch)> >
     cout << "--- solvetansip : END ---" << endl;
     return *WCSA_ASP;*/
 }
-CL_WCSA_ASP F_WCSA_TANSIP_V_local(string matchlist,dafbase::PropertySet::Ptr &metaTANSIP,lsst::pex::policy::Policy::Ptr &APROPPolicy,lsst::afw::cameraGeom::Camera::Ptr &camera/*,lsst::daf::base::PropertySet::Ptr &metadata,bool verbose*/){
-    CL_WCSA_ASP *WCSA_ASP;
+PTR(CL_WCSA_ASP) F_WCSA_TANSIP_V_local(string matchlist,dafbase::PropertySet::Ptr &metaTANSIP,lsst::pex::policy::Policy::Ptr &APROPPolicy,lsst::afw::cameraGeom::Camera::Ptr &camera/*,lsst::daf::base::PropertySet::Ptr &metadata,bool verbose*/){
+    PTR(CL_WCSA_ASP) WCSA_ASP(new CL_WCSA_ASP());
 
     cout << "--- solvetansip : START(local) ---" << endl;
-    WCSA_ASP = new CL_WCSA_ASP[1];
     WCSA_ASP->F_WCS_PLMAIN_NEWWCSA_ASP();
 //CCDNUM
     F_WCSA_MAKEAPROP(APROPPolicy, WCSA_ASP->APROP);
@@ -154,7 +152,7 @@ CL_WCSA_ASP F_WCSA_TANSIP_V_local(string matchlist,dafbase::PropertySet::Ptr &me
     WCSA_ASP->F_WCS_PLMAIN_SETWCSA_ASP();
 
     cout << "--- solvetansip : END(local) ---" << endl;
-    return *WCSA_ASP;
+    return WCSA_ASP;
 /*    CL_WCSA_ASP *WCSA_ASP;
 
     cout << "--- solvetansip : START(local) ---" << endl;
@@ -192,15 +190,18 @@ CL_WCSA_ASP F_WCSA_TANSIP_V_local(string matchlist,dafbase::PropertySet::Ptr &me
     cout << "--- solvetansip : END(local) ---" << endl;
     return *WCSA_ASP;*/
 }
+CL_WCSA_ASP::~CL_WCSA_ASP() {
+    F_WCSA_PLMAIN_MEMORYDELETE(this);
+}
 void CL_WCSA_ASP::F_WCS_PLMAIN_NEWWCSA_ASP(){
-    APROP= new CL_APROP[1];
-    GSIP = new CL_GSIP[1];
-    APAIR= new CL_APAIR[1];
+    APROP= new CL_APROP;
+    GSIP = new CL_GSIP;
+    APAIR= new CL_APAIR;
 }
 void CL_WCSA_ASP::F_WCS_PLMAIN_DELWCSA_ASP(){
-    delete [] APROP;
-    delete [] GSIP ;
-    delete [] APAIR;
+    delete APROP;
+    delete GSIP ;
+    delete APAIR;
 }
 void F_WCSA_PLMAIN_MEMORYDELETE(CL_WCSA_ASP* WCSA_ASP){
     cout << "--- solvetansip : DELETE MEMORY ---" << endl;
@@ -444,7 +445,7 @@ void CL_WCSA_ASP::F_WCS_PLMAIN_SETWCSA_ASP(){
     for(CID=0;CID<APROP->CCDNUM+1;CID++)
     WCSPtr.push_back(F_WCSA_PLMAIN_SETWCSPtr(CID));
 }
-std::vector <lsst::afw::image::TanWcs::Ptr> F_WCSA_PLMAIN_GETWCSLIST(CL_WCSA_ASP* WCSA_ASP){
+std::vector <lsst::afw::image::TanWcs::Ptr> F_WCSA_PLMAIN_GETWCSLIST(PTR(CL_WCSA_ASP) WCSA_ASP){
     return WCSA_ASP->WCSPtr;
 }
 //-----------------------------------------------------------------
