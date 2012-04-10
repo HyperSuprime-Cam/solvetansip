@@ -5,18 +5,27 @@ import os.path
 
 import numpy
 
-import lsst.pipette.readwrite as pipReadWrite
+#import lsst.pipette.readwrite as pipReadWrite
 import lsst.pex.policy as pexPolicy
+import lsst.daf.persistence as dafPersist
+
+import hsc.pipe.base.camera as hscCamera
+import lsst.meas.astrom.astrom          as measAstrom
+import hsc.meas.mosaic.mosaic as hscMosaic
+
 import lsst.obs.hscSim as hscSim
 import lsst.obs.suprimecam as scmapper
-import hsc.meas.tansip.doTansip as tansip
+import hsc.meas.tansip as tansip
+import hsc.meas.tansip.doTansip as doTansip
+import hsc.meas.tansip.WCS_PL_MAINLib    as hscTansip
 import lsst.afw.detection as afwDet
 import lsst.afw.geom as afwGeom
 import lsst.afw.image as afwImage
 import lsst.afw.coord as afwCoord
-import lsst.pipette.plotter as pipPlot
-
-plot = pipPlot.Plotter('wcs')
+import lsst.afw.table as afwTable
+#import lsst.pipette.plotter as pipPlot
+#
+#plot = pipPlot.Plotter('wcs')
     
 
 # Need setup a modified obs_subaru for policy/HscSimMapper.paf
@@ -25,31 +34,55 @@ plot = pipPlot.Plotter('wcs')
 def main(hsc_or_sc, rerun, visit):    
 
     do_solveTansip = True
-    do_writeNewWcs = True # New FITS file will be created
-    #do_writeNewWcs = False # Only solve 
+    #do_writeNewWcs = True # New FITS file will be created
+    do_writeNewWcs = False # Only solve 
 
     data = {'visit': visit} # for SC
     
     if (hsc_or_sc == 'hsc'):
         mapper = hscSim.HscSimMapper(rerun=rerun)
-    elif(hsc_or_sc == 'sc'):
+    elif(hsc_or_sc == 'suprimecam'):
         mapper = scmapper.SuprimecamMapper(rerun=rerun)
     else:
         mapper = scmapper.SuprimecamMapper(rerun=rerun)        
     
-    #mapper = hscSim.HscSimMapper(rerun="pre-DC2.4")
-    io = pipReadWrite.ReadWrite(mapper, ['visit'], fileKeys=['visit', 'ccd'])
-    #data = {'visit': 220}
-    #data = data
-    
-    sources = io.read('src', data, ignore=True)
-    metadata = io.read('calexp_md', data, ignore=True)
-    matches = io.readMatches(data, ignore=True)
+    butler = dafPersist.ButlerFactory(mapper=mapper).create()
+
+    # reading matchlist of each CCD in a shot
+    dataExp = {'visit': visit}
+    dataIdList = [{'visit': visit, 'ccd': ccd} for ccd in range(hscCamera.getNumCcds(hsc_or_sc))]
+
+    metadataList = []
+    matchLists = []
+    for dataId in dataIdList:
+
+        print '*** querying: %s'% dataId
+        metadata = butler.get('calexp_md', dataId)
+        metadataList.append(metadata)
+
+        print '*** reading matches: %s'% dataId
+        matches = measAstrom.readMatches(butler, dataId)
+        if False: # you use only stars.
+            matches = hscMosaic.selectStars(matches)
+
+        matchLists.append(matches)        
+
+
+    matchListsForSolveTansip = [[
+        tansip.SourceMatch(m.first.getId(),
+                           afwCoord.IcrsCoord(m.first.getRa(),
+                                              m.first.getDec()),
+                           afwGeom.Point2D(m.second.getX(), m.second.getY()),
+                           afwGeom.Point2D(m.second.get(m.second.getTable().getCentroidErrKey()[0,0]),
+                                           m.second.get(m.second.getTable().getCentroidErrKey()[1,1])),
+                           m.second.getPsfFlux())
+        for m in ml ] for ml in matchLists ]
+
 
     # showing CCD ID's which are available
     if True:
         ccdIds = []
-        for metaccd in metadata:
+        for metaccd in metadataList:
             ccdId = metaccd.get('DET-ID')
             ccdIds.append(ccdId)
             print '*************** available CCD %d' % ccdId
@@ -57,14 +90,17 @@ def main(hsc_or_sc, rerun, visit):
         nCcd = len(ccdIds)
 
     print '---------- reading done.'
-    
+
+    refSchema = matchLists[0][0].first.schema
+    fluxKey = refSchema.find("flux").key
+
     ra = []
     dec = []
     raFix = []
     decFix = []
     mag1=[]
     mag2=[]
-    for matchList, md in zip(matches, metadata):
+    for matchList, md in zip(matchLists, metadataList):
 
         wcs = afwImage.makeWcs(md)
         calib = afwImage.Calib(md)
@@ -78,10 +114,10 @@ def main(hsc_or_sc, rerun, visit):
             #m.second.setRa(sky[0])
             #m.second.setDec(sky[1])
             
-            ra.append(m.first.getRa())
-            dec.append(m.first.getDec())
+            ra.append(m.first.getRa().asDegrees())
+            dec.append(m.first.getDec().asDegrees())
             
-            mag1.append(-2.5 * numpy.log10(m.first.getPsfFlux()))
+            mag1.append(-2.5 * numpy.log10(m.first.get(fluxKey)) )
             try:
                 mag2.append(calib.getMagnitude(m.second.getApFlux()))
             except:
@@ -98,18 +134,31 @@ def main(hsc_or_sc, rerun, visit):
     bins = 101
     histRange = [-2, 2] 
 #    plot.histogram(mag1-mag2, histRange, bins=bins, gaussFit=True)
-    
-    if do_solveTansip == True:
+
+    if do_solveTansip is True:
         policyPath = os.path.join(os.getenv("SOLVETANSIP_DIR"), "policy", "WCS_MAKEAPROP.paf")
         policy = pexPolicy.Policy.createPolicy(policyPath)
     
         #policy.set("LSIPORDER", 1)
-        #policy.set("SIPORDER", 6)
+        #policy.set("SIPORDER", e6)
+        policy.set("CRPIXMODE", "AUTO")
+        policy.set("CCDPMODE", 0)   # determines CCD positions?
         policy.set("NCCD", nCcd)
-    
-        WCSA_ASP = tansip.doTansip(matches, policy=policy, camera=mapper.camera)
-        wcsList  = tansip.getwcsList(WCSA_ASP)
-        doTansip.memorydelete(WCSA_ASP)
+        policy.set("LSIPORDER", 3) #SIP ORDER of AP and BP
+
+        if nCcd > 10:
+            policy.set("SIPORDER", 9) ##SIP ORDER of A and B
+            policy.set("PSIPORDER", 9) #SIP ORDER of AP and BP
+            policy.set("PREORDER", 9) #PREDICTED SIP ORDER of AP and BP
+        else:
+            policy.set("SIPORDER", 5) ##SIP ORDER of A and B
+            policy.set("PSIPORDER", 5) #SIP ORDER of AP and BP
+            policy.set("PREORDER", 5) #PREDICTED SIP ORDER of AP and BP
+
+        solvetansipOutput = doTansip.doTansip(matchListsForSolveTansip, policy=policy, camera=mapper.camera)
+        wcsList  = doTansip.getwcsList(solvetansipOutput)
+
+        #doTansip.memorydelete()
 
         wcsList = list(wcsList)
         wcsList.pop() #  last item is a summary
@@ -123,14 +172,15 @@ def main(hsc_or_sc, rerun, visit):
 
 
     if do_writeNewWcs == True:
-        dataId = data.copy()
+        dataId = {'visit': visit} 
         #for i, wcs in enumerate(wcsList):
         for ccdId, wcs in zip(ccdIds, wcsList):        
             dataId['ccd'] = ccdId
             print 'dataId: ', dataId
-            corrFile = io.read('calexp', dataId, ignore=True)
-            exposure = corrFile[0]
-            writeFitsWithNewWcs(exposure, wcs, dataId, io)
+            corrFile = butler.get('calexp', dataId)
+            #exposure = corrFile[0]
+            exposure = corrFile
+            writeFitsWithNewWcs(exposure, wcs, dataId, butler)
         
 
     # below lines are for evaluation of the fitting result
@@ -151,16 +201,18 @@ def main(hsc_or_sc, rerun, visit):
     y2_2 = []
     dXY_2 = []    
 
-    for wcs, matchList in zip(wcsList, matches):
+    for wcs, matchList in zip(wcsList, matchLists):
         print '** wcs.hasDistortion():', wcs.hasDistortion()
         #print wcs.getFitsMetadata()
 
+        #import pdb
+        #pdb.set_trace()
+   
         coordRaDec00 = wcs.pixelToSky(0, 0) # should be (1,1)? which is the coodinate origin?
         radec00 = [coordRaDec00.getLongitude().asDegrees(), coordRaDec00.getLatitude().asDegrees()]
-        ccdPosXy = tansip.getxglobal(radec00, WCSA_ASP)
+        ccdPosXy = doTansip.getxglobal(radec00, solvetansipOutput)
         xCcdPos = ccdPosXy[0]
         yCcdPos = ccdPosXy[1]
-        
 
         pix0 = afwGeom.Point2D(123, 456)
         sky = wcs.pixelToSky(pix0)
@@ -171,14 +223,15 @@ def main(hsc_or_sc, rerun, visit):
 
         for m in matchList:
             # First is catalogue and second is detection
-            radec = m.first.getRaDec()
-                        
-            xDet = m.second.getXAstrom()
-            yDet = m.second.getYAstrom()
+            #radec = m.first.getRaDec() # somehow this does not work. probably, due to simple catalog
+            raAngle = m.first.getRa()
+            decAngle = m.first.getDec()
+            radec = afwCoord.Coord(raAngle, decAngle)            
+            ra1.append(raAngle.asDegrees())
+            dec1.append(decAngle.asDegrees())
     
-            ra1.append(radec.getLongitude().asDegrees())
-            dec1.append(radec.getLatitude().asDegrees())
-    
+            xDet = m.second.getX()
+            yDet = m.second.getY()
             x1.append(xDet)
             y1.append(yDet)
 
@@ -187,17 +240,16 @@ def main(hsc_or_sc, rerun, visit):
             ra2.append(coordRadecFromXy.getLongitude().asDegrees())
             dec2.append(coordRadecFromXy.getLatitude().asDegrees())
 
-            ccdpixFromRadec = wcs.skyToPixel(radec)
+            ccdpixFromRadec = wcs.skyToPixel(raAngle, decAngle)
             x2.append(ccdpixFromRadec.getX())
             y2.append(ccdpixFromRadec.getY())
-    
 
             # using okura-kun's functions
-            radecRef = [radec.getLongitude().asDegrees(), radec.getLatitude().asDegrees()]
-            xyFromRadec2 = tansip.getxglobal(radecRef, WCSA_ASP)
+            radecRef = [raAngle.asDegrees(), decAngle.asDegrees()]
+            xyFromRadec2 = doTansip.getxglobal(radecRef, solvetansipOutput)
             x2_2.append(xyFromRadec2[0] - xCcdPos)
             y2_2.append(xyFromRadec2[1] - yCcdPos)
-            
+
             dSky.append(radec.angularSeparation(coordRadecFromXy).asDegrees() * 3600.0 )  # holds in arcsec
             dXY.append(numpy.hypot(xDet-ccdpixFromRadec.getX(), yDet-ccdpixFromRadec.getY()))
             dXY_2.append(numpy.hypot(xDet-xyFromRadec2[0], yDet-xyFromRadec2[1]))
@@ -240,30 +292,32 @@ def main(hsc_or_sc, rerun, visit):
     print "Offset stats XY_2 (pix):", dXY_2.mean(), dXY_2.std()
 
 
-    plot.histogram(dSky, None, bins=bins, clip=3.0, gaussFit=None)
-    plot.quivers(ra1, dec1, dRa, dDec, addUnitQuiver=1./3600)
-    plot.close()
+    if False:
+        plot.histogram(dSky, None, bins=bins, clip=3.0, gaussFit=None)
+        plot.quivers(ra1, dec1, dRa, dDec, addUnitQuiver=1./3600)
+        plot.close()
 
 
-def writeFitsWithNewWcs(exposure, wcs, dataId, pipRW):
-    return
-
-    print '*** Writing New FITS Files with New WCS for %s ...' % dataId
+def writeFitsWithNewWcs(exposure, wcs, dataId, butler):
 
     exposure.setWcs(wcs)
-    pipRW.outButler.put(exposure, 'revexp', dataId)
-        
+    butler.log.log(butler.log.INFO, "writing a new FITS file with new WCS for %s" % dataId)
+    try:
+        #butler.outButler.put(exposure, 'revexp', dataId)
+        butler.put(exposure, 'revexp', dataId)        
+    except Exception, e:
+        print "failed to write something: %s" % (e)
 
 
 if __name__ == '__main__':
 
-    hsc_or_sc = 'sc'
+    hsc_or_sc = 'suprimecam'
 #    hsc_or_sc = 'hsc'
-    do_solveTansip = True
-#    do_writeNewWcs = True # New FITS file will be created
-    do_writeNewWcs = False # Only solve 
 
-    rerun = sys.argv[1]
-    visit = int(sys.argv[2])
-    
+    visit = int(sys.argv[1])
+    if len(sys.argv) == 3:
+        rerun = sys.argv[2]
+    else:
+        rerun = None
+ 
     main(hsc_or_sc, rerun, visit)
