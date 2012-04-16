@@ -139,8 +139,8 @@ cout << "-- REJECTION VALUE --" << endl;
     if(STDOUT==2)cout << "BEFORE REJECTION" << endl;
     if(STDOUT==2)cout << "RMS X(degree): " << AVERMS[0][1] << endl;
     if(STDOUT==2)cout << "RMS Y(degree): " << AVERMS[1][1] << endl;
-    if(STDOUT==2)cout << "RMS X(pix)   : " << AVERMS[0][1]/(4.7*pow(10,-5)) << endl;
-    if(STDOUT==2)cout << "RMS Y(pix)   : " << AVERMS[1][1]/(4.7*pow(10,-5)) << endl;
+    if(STDOUT==2)cout << "RMS X(pix)   : " << AVERMS[0][1]/4.7e-5 << endl;
+    if(STDOUT==2)cout << "RMS Y(pix)   : " << AVERMS[1][1]/4.7e-5 << endl;
     F_WCSA_APAIR_CALCRMS(SIP_ORDER,10,0);   
 //for(NUM=0;NUM<ALLREFNUM;NUM++)
 //if(PAIR[NUM].FLAG == 1)
@@ -149,8 +149,8 @@ cout << "-- REJECTION VALUE --" << endl;
     if(STDOUT==2)cout << "AFTER REJECTION" << endl;
     if(STDOUT==2)cout << "RMS X(degree): " << AVERMS[0][1] << endl;
     if(STDOUT==2)cout << "RMS Y(degree): " << AVERMS[1][1] << endl;
-    if(STDOUT==2)cout << "RMS X(pix)   : " << AVERMS[0][1]/(4.7*pow(10,-5)) << endl;
-    if(STDOUT==2)cout << "RMS Y(pix)   : " << AVERMS[1][1]/(4.7*pow(10,-5)) << endl;
+    if(STDOUT==2)cout << "RMS X(pix)   : " << AVERMS[0][1]/4.7e-5 << endl;
+    if(STDOUT==2)cout << "RMS Y(pix)   : " << AVERMS[1][1]/4.7e-5 << endl;
     for(CID=0;CID<CCDNUM;CID++)
     if(STDOUT==2)cout << "REJECTED NUM CHIP : " << CID << " : " << REJNUM[CID] << endl;
     if(STDOUT==2)cout << "REJECTED NUM TOTAL: " << REJNUM[CCDNUM] << endl;
@@ -826,7 +826,7 @@ void CL_APAIR::F_WCSA_APAIR_CCDPOSITIONS_T(){
 
         TCHECK=0;
         for(CID=0;CID<CCDNUM;CID++)
-        if(fabs(Tcheck[CID]-GPOS[CID][2])>pow(10,-6.0))
+        if(fabs(Tcheck[CID]-GPOS[CID][2])>1e-6)
         TCHECK++;
 
         if(TCHECK==0)
