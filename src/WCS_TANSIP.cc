@@ -12,6 +12,9 @@
 using namespace std;
 
 void    F_WCSA_TANSIP(CL_APROP *APROP,CL_APAIR *APAIR,CL_GSIP *GSIP){
+cout << "APROP->STDOUT : " << APROP->STDOUT << endl;
+APROP->STDOUT=2;
+cout << "CHANGE APROP->STDOUT TO 2" << endl; 
     if(APROP->STDOUT==1||APROP->STDOUT==2)cout << "--------------------------------------------------" << endl;
     if(APROP->STDOUT==1||APROP->STDOUT==2)cout << "--- WCS_TANSIP ---" << endl;
 //--------------------------------------------------
@@ -20,14 +23,17 @@ void    F_WCSA_TANSIP(CL_APROP *APROP,CL_APAIR *APAIR,CL_GSIP *GSIP){
         F_WCSA_TANSIP_SET_GSIP (APROP,APAIR,GSIP);
         F_WCSA_TANSIP_SET_APAIR(APROP,APAIR,GSIP);
         APAIR->F_WCSA_APAIR_CENTERofOBJECTS();
+
     if(APROP->CHECKPARAM == 1){
         cout << "Error : in parameters" << endl;
     }else{
 //if rejection
+        if(APROP->REJMODE==1){
         if(APROP->STDOUT==1||APROP->STDOUT==2)cout << "--- WCS_TANSIP : REJECTING BAD REFERENCES ---" << endl;
-        APAIR->F_WCSA_APAIR_REJECTION();
-        F_WCSA_TANSIP_SET_GETREJECTIONRESULT(APROP,APAIR,GSIP);
-        F_WCSA_TANSIP_SET_APROP(APROP,APAIR,GSIP);
+            APAIR->F_WCSA_APAIR_REJECTION();
+            F_WCSA_TANSIP_SET_GETREJECTIONRESULT(APROP,APAIR,GSIP);
+            F_WCSA_TANSIP_SET_APROP(APROP,APAIR,GSIP);
+        }
 
         if(APROP->STDOUT==1||APROP->STDOUT==2)cout << "--- WCS_TANSIP : DETERMINING CCD POSITION ---" << endl;
         if(APROP->CCDPOSMODE==1)

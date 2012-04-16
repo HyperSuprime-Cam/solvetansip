@@ -114,10 +114,12 @@ void CL_APAIR::F_WCSA_APAIR_REJECTION(){
     int NUM,CID;
 
 //    if(STDOUT==2)for(CID=0;CID<CCDNUM;CID++)cout << "X : " << setfill ('0') << setw (3) <<CID << fixed<< " : " << GPOS[CID][0] <<endl<< "Y : " << setfill ('0') << setw (3) <<CID << fixed<< " : " << GPOS[CID][1] << endl;
+
     F_WCSA_APAIR_CALCRMS(SIP_P_ORDER,0,10);   
 
-//for(NUM=0;NUM<ALLREFNUM;NUM++)
-//cout << NUM << "	" << PAIR[NUM].CHIPID << "	" << PAIR[NUM].X_RADEC[0] << "	" << PAIR[NUM].X_RADEC[1] << "	" << fabs(PAIR[NUM].X_CENTER_GLOBAL[0]-F_CALCVALUE(SIP_P_ORDER,TCoef[0],PAIR[NUM].X_RADEC)) << "	" << CLIP_SIGMA*AVERMS[0][1] << "	" << fabs(PAIR[NUM].X_CENTER_GLOBAL[1]-F_CALCVALUE(SIP_P_ORDER,TCoef[1],PAIR[NUM].X_RADEC)) << "	" << CLIP_SIGMA*AVERMS[1][1] << endl;
+cout << "-- REJECTION VALUE --" << endl;
+for(NUM=0;NUM<ALLREFNUM;NUM++)
+cout << NUM << "	" << PAIR[NUM].CHIPID << "	" << PAIR[NUM].X_RADEC[0] << "	" << PAIR[NUM].X_RADEC[1] << "	" << PAIR[NUM].X_CENTER_GLOBAL[0] << "	" << PAIR[NUM].X_CENTER_GLOBAL[1] << "	" << F_CALCVALUE(SIP_P_ORDER,TCoef[0],PAIR[NUM].X_RADEC) << "	" << F_CALCVALUE(SIP_P_ORDER,TCoef[1],PAIR[NUM].X_RADEC) << "	" <<  fabs(PAIR[NUM].X_CENTER_GLOBAL[0]-F_CALCVALUE(SIP_P_ORDER,TCoef[0],PAIR[NUM].X_RADEC)) << "	" << CLIP_SIGMA*AVERMS[0][1] << "	" << fabs(PAIR[NUM].X_CENTER_GLOBAL[1]-F_CALCVALUE(SIP_P_ORDER,TCoef[1],PAIR[NUM].X_RADEC)) << "	" << CLIP_SIGMA*AVERMS[1][1] << endl;
 
     for(NUM=0;NUM<ALLREFNUM;NUM++)
     if(fabs(PAIR[NUM].X_CENTER_GLOBAL[0]-F_CALCVALUE(SIP_P_ORDER,TCoef[0],PAIR[NUM].X_RADEC)) > CLIP_SIGMA*AVERMS[0][1] || fabs(PAIR[NUM].X_CENTER_GLOBAL[1]-F_CALCVALUE(SIP_P_ORDER,TCoef[1],PAIR[NUM].X_RADEC)) > CLIP_SIGMA*AVERMS[1][1]){
@@ -162,6 +164,7 @@ void CL_APAIR::F_WCSA_APAIR_GPOS(){
     F_WCSA_APAIR_CCDPOSITIONS_XY_SETAVERAGE();//CENTER = (1024, 2048)
     if(STDOUT==2)for(CID=0;CID<CCDNUM;CID++)cout << "X : " << setfill ('0') << setw (3) <<CID << fixed<< " : " << GPOS[CID][0] <<endl<< "Y : " << setfill ('0') << setw (3) <<CID << fixed<< " : " << GPOS[CID][1] << endl;
 }
+
 void CL_APAIR::F_WCSA_APAIR_WCS(){
     if(STDOUT==1||STDOUT==2)cout << "--- WCS_TANSIP : CALCULATING GLOBAL WCS : GET CR--" << endl;
     F_WCSA_APAIR_CALCCR();
@@ -260,10 +263,12 @@ void CL_APAIR::F_WCSA_APAIR_CENTERofOBJECTS(){
     ALLFITNUM=FNUM;
     CENTER_PIXEL[0]/=FNUM;
     CENTER_PIXEL[1]/=FNUM;
+//cout << "CENTER : " << CENTER_PIXEL[0] << " : " << CENTER_PIXEL[1] << endl;
     for(NUM=0;NUM<ALLREFNUM;NUM++){
         PAIR[NUM].X_CENTER_GLOBAL[0]=PAIR[NUM].X_GLOBAL[0]-CENTER_PIXEL[0];
         PAIR[NUM].X_CENTER_GLOBAL[1]=PAIR[NUM].X_GLOBAL[1]-CENTER_PIXEL[1];
-    }
+//cout << NUM << "	" << PAIR[NUM].X_GLOBAL[0] << "	" << PAIR[NUM].X_GLOBAL[1] << "	" << PAIR[NUM].X_CENTER_GLOBAL[0] << "	" << PAIR[NUM].X_CENTER_GLOBAL[1] << endl;
+   }
 
     F_WCSA_APAIR_GFITTING(SIP_ORDER,6,0,TCoef);
     CENTER_RADEC[0]=TCoef[0][0];
@@ -510,6 +515,7 @@ void CL_APAIR::F_WCSA_APAIR_CALCRMS(int ORDER,int VARIABLE,int FUNCTION){
     dx = F_NEWdouble3(2,ALLREFNUM,3);
     data = F_NEWdouble2(2,ALLREFNUM);
 //--------------------------------------------------
+
     F_WCSA_APAIR_GFITTING(ORDER,VARIABLE,FUNCTION,TCoef);
 
     for(NUM=0;NUM<ALLREFNUM;NUM++)
@@ -560,6 +566,7 @@ void CL_APAIR::F_WCSA_APAIR_CALCRMS(int ORDER,int VARIABLE,int FUNCTION){
         }
         FNUM++;
     }
+
 //--------------------------------------------------
     FNUM=0;
     for(NUM=0;NUM<ALLREFNUM;NUM++)
@@ -793,7 +800,7 @@ void CL_APAIR::F_WCSA_APAIR_CCDPOSITIONS_T(){
     Tcheck = F_NEWdouble1(CCDNUM);
 //--------------------------------------------------
 
-    for(IterNUM_T=0;IterNUM_T<10;IterNUM_T++){
+    for(IterNUM_T=0;IterNUM_T<20;IterNUM_T++){
         for(CID=0;CID<CCDNUM;CID++)
         Tcheck[CID]=GPOS[CID][2];
 
@@ -802,7 +809,7 @@ void CL_APAIR::F_WCSA_APAIR_CCDPOSITIONS_T(){
 
         TCHECK=0;
         for(CID=0;CID<CCDNUM;CID++)
-        if(fabs(Tcheck[CID]-GPOS[CID][2])>pow(10,-5.0))
+        if(fabs(Tcheck[CID]-GPOS[CID][2])>pow(10,-6.0))
         TCHECK++;
 
         if(TCHECK==0)
@@ -1117,4 +1124,13 @@ void CL_APAIR::F_WCSA_APAIR_SHOWAPAIR(){
     cout << "InvCD22   : " << InvCD[1][1] << endl;
     cout << "ANGLE     : " << ANGLE<< endl;
     cout <<endl;
+}
+void  CL_APAIR::F_WCSA_APAIR_SHOWCCDPOS(){
+    int CID;
+        cout << "-- DEFAULT CCD POSITION --" << endl;
+    for(CID=0;CID<CCDNUM;CID++){
+        cout << GPOS[CID][0] << "	"
+             << GPOS[CID][1] << "	"
+             << GPOS[CID][2] << endl;
+    }
 }

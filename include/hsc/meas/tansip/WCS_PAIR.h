@@ -6,13 +6,14 @@
 #ifndef WCS_PAIR_H
 #define WCS_PAIR_H
 
-#include "lsst/afw/table/misc.h"
+//#include "lsst/afw/table/misc.h"
 
 class CL_PAIR{
 private:
 public:
 //    long ID;    //OUTPUT INFO
-  boost::int64_t ID;    //OUTPUT INFO    
+//  boost::int64_t ID;    //OUTPUT INFO    
+    long long int ID;
     int CHIPID;//OUTPUT INFO
     int FLAG;  //OUTPUT INFO
     double X_LOCAL[2];//OUTPUT INFO
@@ -57,6 +58,7 @@ public:
     char CRPIXMODE[11];//AUTO or PIX or VAL or LAXIS
     char OAMODE[11];//MIN or REV
     int CCDPOSMODE;
+    int REJMODE;//REJECTION MODE
     int CCDNUM;
     int ALLREFNUM;
     int ALLFITNUM;
@@ -139,5 +141,7 @@ public:
 //ETC
     void F_WCSA_APAIR_SET0();
     void F_WCSA_APAIR_SHOWAPAIR();
+    void F_WCSA_APAIR_SHOWCCDPOS();
+
 };
 #endif

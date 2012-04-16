@@ -8,7 +8,7 @@
 #include "lsst/pex/policy/Policy.h"
 #include "lsst/afw/cameraGeom/Camera.h"
 #include "lsst/afw/image/TanWcs.h"
-#include "lsst/afw/table/misc.h"   // to use int64_t
+//#include "lsst/afw/table/misc.h"   // to use int64_t
 #include "hsc/meas/tansip/WCS_APROP.h"
 #include "hsc/meas/tansip/WCS_PAIR.h"
 #include "hsc/meas/tansip/WCS_CSIP.h"
@@ -17,7 +17,7 @@
 #ifndef WCS_PL_MAIN_H
 #define WCS_PL_MAIN_H
 
-typedef boost::int64_t IntT;
+//typedef boost::int64_t IntT;
 
 class CL_WCSA_ASP{//Chip property
 private:

@@ -23,9 +23,9 @@ import hsc.meas.tansip.doTansip as doTansip
 
 #WCS_POSITION.F_WCS_POSITION_TEST()
 
-mapper = obsSc.SuprimecamMapper(rerun="solvetansip")
+mapper = obsSc.SuprimecamMapper(rerun="miyatake_takada_data")
 butler = dafPersist.ButlerFactory(mapper=mapper).create()
-matchLists = [ measAst.readMatches(butler, {'visit':126969, 'ccd': ccd}) for ccd in range(10) ]
+matchLists = [ measAst.readMatches(butler, {'visit':126933, 'ccd': ccd}) for ccd in range(10) ]
 
 if False:
     ra = []

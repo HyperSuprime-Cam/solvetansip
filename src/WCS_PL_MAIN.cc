@@ -226,6 +226,7 @@ void    F_WCSA_MAKEAPROP(lsst::pex::policy::Policy::Ptr &APROPPolicy, CL_APROP *
     strncpy(APROP->OAMODE,OAMODE.c_str(), CL_APROP::STRING_LENGTH);
     APROP->CCDNUM      =APROPPolicy->getInt("NCCD");
     APROP->CCDPOSMODE  =APROPPolicy->getInt("CCDPMODE");
+    APROP->REJMODE     =APROPPolicy->getInt("REJMODE");
     APROP->CRPIX[0]    =APROPPolicy->getDouble("CRPIX1");
     APROP->CRPIX[1]    =APROPPolicy->getDouble("CRPIX2");
     APROP->CRVAL[0]    =APROPPolicy->getDouble("CRVAL1");

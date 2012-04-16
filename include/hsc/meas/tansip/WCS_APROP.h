@@ -15,6 +15,7 @@ public:
     char CRPIXMODE[STRING_LENGTH];//AUTO or PIX or VAL or LAXIS
     char OAMODE[STRING_LENGTH];//MIN or REV
     int  CCDPOSMODE;
+    int  REJMODE;
     int  CCDNUM;//CSIP has same parameter
     int  ALLREFNUM;
     int  ALLFITNUM;
