@@ -148,6 +148,23 @@ def WCS_GET_POSITION_CCDIDLOCALfromGLOBAL(WCSA_ASP,XY):
 def WCS_GET_POSITION_GLOBALfromCCDIDLOCAL(WCSA_ASP,CCDID,XY):
     return hscTansip.F_WCSA_PLMAIN_GETPOSITION_GLOBALfromCCDIDLOCAL(WCSA_ASP,CCDID,XY)
 #-----------------------------------------------------------------
+#Getting Functions : WCSA_ASP : POSITION (Grid)
+#-----------------------------------------------------------------
+def WCS_GET_POSITION_RADECfromGRID(WCSA_ASP,CID,GRID):
+    return hscTansip.F_WCSA_PLMAIN_GETPOSITION_RADECfromGRID(WCSA_ASP,CID,GRID)
+def WCS_GET_POSITION_LOCALfromGRID(WCSA_ASP,CID,GRID):
+    return hscTansip.F_WCSA_PLMAIN_GETPOSITION_LOCALfromGRID(WCSA_ASP,CID,GRID)
+
+#-----------------------------------------------------------------
+#Getting Functions : WCSA_ASP : JACOBIAN (Values at arbitrary position)
+#-----------------------------------------------------------------
+#-----------------------------------------------------------------
+#Getting Functions : WCSA_ASP : JACOBIAN (Grid)
+#-----------------------------------------------------------------
+def WCS_GET_CRSMA_atLOCALGRID(WCSA_ASP,CID,GRID):
+    return hscTansip.F_WCSA_PLMAIN_GETCRSMA_atLOCALGRID(WCSA_ASP,CID,GRID)
+
+#-----------------------------------------------------------------
 #Getting Functions : WCSA_ASP : REFERENCES (Values of References having)
 #-----------------------------------------------------------------
 def WCS_GET_REFERENCE_ID(WCSA_ASP,CID):

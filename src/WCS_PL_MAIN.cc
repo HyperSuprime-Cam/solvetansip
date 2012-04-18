@@ -465,7 +465,7 @@ std::vector< double > F_WCSA_PLMAIN_GETPOSITION_RADECfromLOCAL(CL_WCSA_ASP* WCSA
 
     LOCAL[0]=XY[0];
     LOCAL[1]=XY[1];
-    WCSA_ASP->GSIP->CSIP[CHIPID].F_WCSA_CSIP_XLOCALtoXRADEC(LOCAL,RD);
+    WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXRADEC(CHIPID,LOCAL,RD);
     RADEC[0]=RD[0];
     RADEC[1]=RD[1];
 
@@ -484,7 +484,7 @@ std::vector< double > F_WCSA_PLMAIN_GETPOSITION_RADECfromCRPIX(CL_WCSA_ASP* WCSA
 
     XCRPIX[0]=XY[0];
     XCRPIX[1]=XY[1];
-    WCSA_ASP->GSIP->CSIP[CHIPID].F_WCSA_CSIP_XCRPIXtoXRADEC(XCRPIX,RD);
+    WCSA_ASP->GSIP->F_WCSA_GSIP_XCRPIXtoXRADEC(CHIPID,XCRPIX,RD);
     RADEC[0]=RD[0];
     RADEC[1]=RD[1];
 
@@ -503,7 +503,7 @@ std::vector< double > F_WCSA_PLMAIN_GETPOSITION_LOCALfromRADEC(CL_WCSA_ASP* WCSA
 
     RADEC[0]=XY[0];
     RADEC[1]=XY[1];
-    WCSA_ASP->GSIP->CSIP[CHIPID].F_WCSA_CSIP_XRADECtoXLOCAL(RADEC,RD);
+    WCSA_ASP->GSIP->F_WCSA_GSIP_XRADECtoXLOCAL(CHIPID,RADEC,RD);
     LOCAL[0]=RD[0];
     LOCAL[1]=RD[1];
 
@@ -522,7 +522,7 @@ std::vector< double > F_WCSA_PLMAIN_GETPOSITION_CRPIXfromRADEC(CL_WCSA_ASP* WCSA
 
     RADEC[0]=XY[0];
     RADEC[1]=XY[1];
-    WCSA_ASP->GSIP->CSIP[CHIPID].F_WCSA_CSIP_XRADECtoXCRPIX(RADEC,RD);
+    WCSA_ASP->GSIP->F_WCSA_GSIP_XRADECtoXCRPIX(CHIPID,RADEC,RD);
     XCRPIX[0]=RD[0];
     XCRPIX[1]=RD[1];
 
@@ -541,11 +541,11 @@ std::vector< double > F_WCSA_PLMAIN_GETPOSITION_CCDIDLOCALfromGLOBAL(CL_WCSA_ASP
     std::vector< double > CCDIDLOCAL(3);
     int CID,CHECK=0;
     double XLOCAL[2];
-cout << XY[0] << "	" << XY[1] << endl;
+//cout << XY[0] << "	" << XY[1] << endl;
     for(CID=0;CID<WCSA_ASP->APROP->CCDNUM;CID++){
         XLOCAL[0]=(XY[0]-WCSA_ASP->GSIP->CSIP[CID].GPOS[0])*cos(-WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-(XY[1]-WCSA_ASP->GSIP->CSIP[CID].GPOS[1])*sin(-WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
         XLOCAL[1]=(XY[1]-WCSA_ASP->GSIP->CSIP[CID].GPOS[1])*cos(-WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+(XY[0]-WCSA_ASP->GSIP->CSIP[CID].GPOS[0])*sin(-WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
-cout << CID << "	" << XLOCAL[0] << "	" << XLOCAL[1] << endl;
+//cout << CID << "	" << XLOCAL[0] << "	" << XLOCAL[1] << endl;
         if(XLOCAL[0]>0&&XLOCAL[0]<2048&&XLOCAL[1]>0&&XLOCAL[1]<4096){
             CCDIDLOCAL[0]=CID;
             CCDIDLOCAL[1]=XLOCAL[0];
@@ -564,6 +564,95 @@ cout << CHECK << "	" << CID << "	" << XLOCAL[0] << "	" << XLOCAL[1] << endl;
 cout << CHECK << "	" << CID << "	" << XLOCAL[0] << "	" << XLOCAL[1] << endl;
 
     return CCDIDLOCAL;
+}
+//-----------------------------------------------------------------
+//Getting Functions : WCSA_ASP : GRID POSITION 
+//-----------------------------------------------------------------
+std::vector< std::vector< double > > F_WCSA_PLMAIN_GETPOSITION_RADECfromGRID(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > GRID){
+    int CHIPID;
+    double LOCAL[2],RD[2];
+    std::vector< double > RADEC(4);
+    std::vector< std::vector< double > > GRIDRADEC;
+
+    if(CID>-0.5&&CID<WCSA_ASP->APROP->CCDNUM-0.5){
+        CHIPID=CID;
+    }else{
+        CHIPID=WCSA_ASP->APROP->CCDNUM;
+    }
+
+    for(LOCAL[0]=GRID[0];LOCAL[0]<GRID[2]+0.5*GRID[4];LOCAL[0]+=GRID[4])
+    for(LOCAL[1]=GRID[1];LOCAL[1]<GRID[3]+0.5*GRID[5];LOCAL[1]+=GRID[5]){
+//    WCSA_ASP->GSIP->CSIP[CHIPID].F_WCSA_CSIP_XLOCALtoXRADEC(LOCAL,RD);
+    WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXRADEC(CHIPID,LOCAL,RD);
+        RADEC[0]=LOCAL[0];
+        RADEC[1]=LOCAL[1];
+        RADEC[2]=RD[0];
+        RADEC[3]=RD[1];
+        GRIDRADEC.push_back(RADEC);
+    }
+
+    return GRIDRADEC;
+}
+std::vector< std::vector< double > > F_WCSA_PLMAIN_GETPOSITION_LOCALfromGRID(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > GRID){
+    int CHIPID;
+    double RADEC[2],RD[2];
+    std::vector< double > LOCAL(4);
+    std::vector< std::vector< double > > GRIDLOCAL;
+
+    if(CID>-0.5&&CID<WCSA_ASP->APROP->CCDNUM-0.5){
+        CHIPID=CID;
+    }else{
+        CHIPID=WCSA_ASP->APROP->CCDNUM;
+    }
+
+    for(RADEC[0]=GRID[0];RADEC[0]<GRID[2]+0.5*GRID[4];RADEC[0]+=GRID[4])
+    for(RADEC[1]=GRID[1];RADEC[1]<GRID[3]+0.5*GRID[5];RADEC[1]+=GRID[5]){
+//    WCSA_ASP->GSIP->CSIP[CHIPID].F_WCSA_CSIP_XRADECtoXLOCAL(RADEC,RD);
+    WCSA_ASP->GSIP->F_WCSA_GSIP_XRADECtoXLOCAL(CHIPID,RADEC,RD);
+        LOCAL[0]=RADEC[0];
+        LOCAL[1]=RADEC[1];
+        LOCAL[2]=RD[0];
+        LOCAL[3]=RD[1];
+        GRIDLOCAL.push_back(LOCAL);
+    }
+
+    return GRIDLOCAL;
+}
+//-----------------------------------------------------------------
+//Getting Functions : WCSA_ASP : GRID JACOBIAN 
+//-----------------------------------------------------------------
+std::vector< std::vector< double > > F_WCSA_PLMAIN_GETCRSMA_atLOCALGRID(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > GRID){
+    int CHIPID;
+    double LOCAL[2],RD[6];
+    std::vector< double > CRSMA(8);
+    std::vector< std::vector< double > > GRIDCRSMA;
+
+    if(CID>-0.5&&CID<WCSA_ASP->APROP->CCDNUM-0.5){
+        CHIPID=CID;
+    }else{
+        CHIPID=WCSA_ASP->APROP->CCDNUM;
+    }
+
+    for(LOCAL[0]=GRID[0];LOCAL[0]<GRID[2]+0.5*GRID[4];LOCAL[0]+=GRID[4])
+    for(LOCAL[1]=GRID[1];LOCAL[1]<GRID[3]+0.5*GRID[5];LOCAL[1]+=GRID[5]){
+//    WCSA_ASP->GSIP->CSIP[CHIPID].F_WCSA_CSIP_XLOCALtoXRADEC(LOCAL,RD);
+    WCSA_ASP->GSIP->F_WCSA_GSIP_CRSMAatXLOCAL(CHIPID,LOCAL,RD);
+        CRSMA[0]=LOCAL[0];
+        CRSMA[1]=LOCAL[1];
+        CRSMA[2]=RD[0];
+        CRSMA[3]=RD[1];
+        CRSMA[4]=RD[2];
+        CRSMA[5]=RD[3];
+        CRSMA[6]=RD[4];
+        CRSMA[7]=RD[5];
+        GRIDCRSMA.push_back(CRSMA);
+    }
+
+    return GRIDCRSMA;
+}
+std::vector< std::vector< double > > F_WCSA_PLMAIN_GETCRSMA_atCRPIXGRID(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > GRID){
+}
+std::vector< std::vector< double > > F_WCSA_PLMAIN_GETCRSMA_atRADECGRID(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > GRID){
 }
 //-----------------------------------------------------------------
 //Output Functions : WCSA_ASP : SIP
@@ -1219,7 +1308,7 @@ std::vector< double > F_WCSA_PLMAIN_GETRADEC(std::vector< double > X_GLOBAL,CL_W
     
     XX[0]=X_GLOBAL[0];
     XX[1]=X_GLOBAL[1];
-    WCSA_ASP->GSIP->F_WCSA_GSIP_PIXELtoRADEC(XX,YY);
+    WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXRADEC(WCSA_ASP->APROP->CCDNUM,XX,YY);
     RADEC[0]=YY[0];
     RADEC[1]=YY[1];    
 
@@ -1231,7 +1320,7 @@ std::vector< double > F_WCSA_PLMAIN_GETX_GLOBAL(std::vector< double > RADEC,CL_W
     
     XX[0]=RADEC[0];
     XX[1]=RADEC[1];
-    WCSA_ASP->GSIP->F_WCSA_GSIP_RADECtoPIXEL(XX,YY);
+    WCSA_ASP->GSIP->F_WCSA_GSIP_XRADECtoXLOCAL(WCSA_ASP->APROP->CCDNUM,XX,YY);
     X_GLOBAL[0]=YY[0];
     X_GLOBAL[1]=YY[1];    
 

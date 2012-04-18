@@ -30,10 +30,6 @@ void CL_APAIR::F_WCSA_APAIR_NEWAPAIR(){
     CDSIP_AB[1]         =F_NEWdouble1((SIP_ORDER  +1)*(SIP_ORDER  +2));
     CDSIP_ABP[0]        =F_NEWdouble1((SIP_P_ORDER+1)*(SIP_P_ORDER+2));
     CDSIP_ABP[1]        =F_NEWdouble1((SIP_P_ORDER+1)*(SIP_P_ORDER+2));
-    MAGNIFICATION_AB[0] =F_NEWdouble1((SIP_ORDER  +1)*(SIP_ORDER  +2));
-    MAGNIFICATION_AB[1] =F_NEWdouble1((SIP_ORDER  +1)*(SIP_ORDER  +2));
-    MAGNIFICATION_ABP[0]=F_NEWdouble1((SIP_P_ORDER+1)*(SIP_P_ORDER+2));
-    MAGNIFICATION_ABP[1]=F_NEWdouble1((SIP_P_ORDER+1)*(SIP_P_ORDER+2));
     TCoef[0]            =F_NEWdouble1((SIP_ORDER  +1)*(SIP_ORDER  +2));
     TCoef[1]            =F_NEWdouble1((SIP_ORDER  +1)*(SIP_ORDER  +2));
     TdCoef[0][0]        =F_NEWdouble1((SIP_ORDER  +1)*(SIP_ORDER  +2));
@@ -65,10 +61,6 @@ void CL_APAIR::F_WCSA_APAIR_DELAPAIR(){
     F_DELdouble1(CDSIP_AB[1]         );
     F_DELdouble1(CDSIP_ABP[0]        );
     F_DELdouble1(CDSIP_ABP[1]        );
-    F_DELdouble1(MAGNIFICATION_AB[0] );
-    F_DELdouble1(MAGNIFICATION_AB[1] );
-    F_DELdouble1(MAGNIFICATION_ABP[0]);
-    F_DELdouble1(MAGNIFICATION_ABP[1]);
     F_DELdouble1(TCoef[0]            );
     F_DELdouble1(TCoef[1]            );
     F_DELdouble1(TdCoef[0][0]        );
@@ -637,7 +629,7 @@ void CL_APAIR::F_WCSA_APAIR_SETCDPSIP(){
 }
 void CL_APAIR::F_WCSA_APAIR_CALCCONVROTSHEARMAG(){
     int NUM;
-    double dGdI[2][2],InvdGdI[2][2],dIdG[2][2];
+    double dGdI[2][2],InvdGdI[2][2],dIdG[2][2],InvdIdG[2][2];
 
     F_DIFFSIP(SIP_ORDER,SIP_AB[0],TdCoef[0][0],TdCoef[0][1]);
     F_DIFFSIP(SIP_ORDER,SIP_AB[1],TdCoef[1][0],TdCoef[1][1]);
@@ -657,21 +649,27 @@ void CL_APAIR::F_WCSA_APAIR_CALCCONVROTSHEARMAG(){
         dIdG[0][1]=F_CALCVALUE(SIP_P_ORDER,TdPCoef[0][1],PAIR[NUM].X_IM_PIXEL);
         dIdG[1][0]=F_CALCVALUE(SIP_P_ORDER,TdPCoef[1][0],PAIR[NUM].X_IM_PIXEL);
         dIdG[1][1]=F_CALCVALUE(SIP_P_ORDER,TdPCoef[1][1],PAIR[NUM].X_IM_PIXEL);
+        InvdIdG[0][0]=(1+dIdG[1][1])/((1+dIdG[0][0])*(1+dIdG[1][1])-dIdG[0][1]*dIdG[1][0])-1;
+        InvdIdG[0][1]=( -dIdG[0][1])/((1+dIdG[0][0])*(1+dIdG[1][1])-dIdG[0][1]*dIdG[1][0]);
+        InvdIdG[1][0]=( -dIdG[1][0])/((1+dIdG[0][0])*(1+dIdG[1][1])-dIdG[0][1]*dIdG[1][0]);
+        InvdIdG[1][1]=(1+dIdG[0][0])/((1+dIdG[0][0])*(1+dIdG[1][1])-dIdG[0][1]*dIdG[1][0])-1;
 
-        PAIR[NUM].CAMERA_PCONVROT[0]   =0.5*(dIdG[0][0]+dIdG[1][1]);
-        PAIR[NUM].CAMERA_PCONVROT[1]   =0.5*(dIdG[0][1]-dIdG[1][0]);
-        PAIR[NUM].CAMERA_PSHEAR[0]     =0.5*(dIdG[0][0]-dIdG[1][1]);
-        PAIR[NUM].CAMERA_PSHEAR[1]     =0.5*(dIdG[0][1]+dIdG[1][0]);
-        PAIR[NUM].CAMERA_PMAGNIFICATION=((1+PAIR[NUM].CAMERA_PCONVROT[0])*(1+PAIR[NUM].CAMERA_PCONVROT[0])-(PAIR[NUM].CAMERA_PSHEAR[0]*PAIR[NUM].CAMERA_PSHEAR[0]+PAIR[NUM].CAMERA_PSHEAR[1]*PAIR[NUM].CAMERA_PSHEAR[1]));
-        PAIR[NUM].CAMERA_CONVROT[0]    =0.5*(InvdGdI[0][0]+InvdGdI[1][1]);
-        PAIR[NUM].CAMERA_CONVROT[1]    =0.5*(InvdGdI[0][1]-InvdGdI[1][0]);
-        PAIR[NUM].CAMERA_SHEAR[0]      =0.5*(InvdGdI[0][0]-InvdGdI[1][1]);
-        PAIR[NUM].CAMERA_SHEAR[1]      =0.5*(InvdGdI[0][1]+InvdGdI[1][0]);
-        PAIR[NUM].CAMERA_MAGNIFICATION =((1+PAIR[NUM].CAMERA_CONVROT[0])*(1+PAIR[NUM].CAMERA_CONVROT[0])-(PAIR[NUM].CAMERA_SHEAR[0]*PAIR[NUM].CAMERA_SHEAR[0]+PAIR[NUM].CAMERA_SHEAR[1]*PAIR[NUM].CAMERA_SHEAR[1]));
+        PAIR[NUM].CAMERA_PCONVROT[0]   =0.5*(1+dIdG[0][0]+1+dIdG[1][1]);
+        PAIR[NUM].CAMERA_PCONVROT[1]   =0.5*(  dIdG[0][1]-  dIdG[1][0]);
+        PAIR[NUM].CAMERA_PSHEAR[0]     =0.5*(  dIdG[0][0]-  dIdG[1][1]);
+        PAIR[NUM].CAMERA_PSHEAR[1]     =0.5*(  dIdG[0][1]+  dIdG[1][0]);
+        PAIR[NUM].CAMERA_PMAGNIFICATION=(PAIR[NUM].CAMERA_PCONVROT[0]*PAIR[NUM].CAMERA_PCONVROT[0]-(PAIR[NUM].CAMERA_PSHEAR[0]*PAIR[NUM].CAMERA_PSHEAR[0]+PAIR[NUM].CAMERA_PSHEAR[1]*PAIR[NUM].CAMERA_PSHEAR[1]));
+        PAIR[NUM].CAMERA_PJACOBIAN     =(1+dIdG[0][0])*(1+dIdG[1][1])-dIdG[0][1]*dIdG[1][0];
+        PAIR[NUM].CAMERA_PPIXELAREA    =(1+InvdIdG[0][0])*(1+InvdIdG[1][1])-InvdIdG[0][1]*InvdIdG[1][0];
+
+        PAIR[NUM].CAMERA_CONVROT[0]    =0.5*(1+InvdGdI[0][0]+1+InvdGdI[1][1]);
+        PAIR[NUM].CAMERA_CONVROT[1]    =0.5*(  InvdGdI[0][1]-  InvdGdI[1][0]);
+        PAIR[NUM].CAMERA_SHEAR[0]      =0.5*(  InvdGdI[0][0]-  InvdGdI[1][1]);
+        PAIR[NUM].CAMERA_SHEAR[1]      =0.5*(  InvdGdI[0][1]+  InvdGdI[1][0]);
+        PAIR[NUM].CAMERA_MAGNIFICATION =PAIR[NUM].CAMERA_CONVROT[0]*PAIR[NUM].CAMERA_CONVROT[0]-(PAIR[NUM].CAMERA_SHEAR[0]*PAIR[NUM].CAMERA_SHEAR[0]+PAIR[NUM].CAMERA_SHEAR[1]*PAIR[NUM].CAMERA_SHEAR[1]);
+        PAIR[NUM].CAMERA_JACOBIAN      =(1+InvdGdI[0][0])*(1+InvdGdI[1][1])-InvdGdI[0][1]*InvdGdI[1][0];
+        PAIR[NUM].CAMERA_PIXELAREA     =(1+dGdI[0][0])*(1+dGdI[1][1])-dGdI[0][1]*dGdI[1][0];
     }
-
-    F_WCSA_APAIR_GFITTING(SIP_ORDER  ,3,8,MAGNIFICATION_AB);
-    F_WCSA_APAIR_GFITTING(SIP_P_ORDER,3,9,MAGNIFICATION_ABP);
 
 }
 void CL_APAIR::F_WCSA_APAIR_CHANGEVARIABLE(int ORDER, double SR[2][2], double* F, double* G){
@@ -833,8 +831,13 @@ void CL_APAIR::F_WCSA_APAIR_CCDPOSITIONS_T(){
         break;
     }
     GPOS_AVE[2]=0;
+    int AVENUM=0;
     for(CID=0;CID<CCDNUM;CID++)
-    GPOS_AVE[2]+=GPOS[CID][2]/CCDNUM;
+    if(CID<100){
+        GPOS_AVE[2]+=GPOS[CID][2];
+        AVENUM++;
+    }
+    GPOS_AVE[2]/=AVENUM;
 
 //--------------------------------------------------
     F_DELdouble1(Tcheck);
@@ -1089,12 +1092,17 @@ void CL_APAIR::F_WCSA_APAIR_CCDPOSITIONS_XY(){
     }
 
     GPOS_AVE[0]=GPOS_AVE[1]=0;
-    for(CID=0;CID<CCDNUM;CID++){
+    int AVENUM=0;
+    for(CID=0;CID<CCDNUM;CID++)
+    if(CID<100){
         GPOS[CID][0]=dX[CID][1]/dX[CID][0];
         GPOS[CID][1]=dX[CID][2]/dX[CID][0];
-        GPOS_AVE[0]+=GPOS[CID][0]/CCDNUM;
-        GPOS_AVE[1]+=GPOS[CID][1]/CCDNUM;
+        GPOS_AVE[0]+=GPOS[CID][0];
+        GPOS_AVE[1]+=GPOS[CID][1];
+        AVENUM++;
     }
+    GPOS_AVE[0]/=AVENUM;
+    GPOS_AVE[1]/=AVENUM;
 
 //--------------------------------------------------
     F_DELdouble4(2,2,ALLREFNUM,dGdI);

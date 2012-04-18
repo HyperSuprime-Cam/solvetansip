@@ -1,0 +1,56 @@
+source /data08/ana/products/eups/1.2.23/bin/setups.sh 
+setup lsst
+setup -t price-HSC.17 pipette
+setup -r /data/ana/local/hg/1.8.2/
+setup -r /data/ana/local/matplotlib/1.0.0/
+setup -r /data/ana/astrometry_net_data/sdss-dr8/
+export SUPRIME_DATA_DIR=/data/Subaru/SUPA/miyatake_takada_data/
+setup -v -r . -j
+
+setup -r /data/ana/products/Linux64/astrometry_net_data/sdss-dr8/
+export SUPRIME_DATA_DIR=/data
+setup -t DC2.9 pipette
+setup -r /data/work/furu/dc2.16/pipette/HSC-DC2.16
+
+
+Mercurial
+source /data08/ana/products/eups/1.2.28/bin/setups.sh 
+setup lsst
+setup hg
+
+numpyは以下を指定
+/data08/ana/products/Linux64/external/numpy/1.5.1+1/
+
+IPMU:
+source /data/ana/products/loadLSST.sh
+source /data/ana/products-20111117/eups/1.2.26/bin/setups.sh 
+setup -r /data/ana/products-20111117/Linux64/pipette/4.7.1.1/
+setup -r /data/ana/products-20111117/Linux64/sconsUtils/4.7.1.1+1
+setup -v -r . -j
+
+scp -r examples/*.py hsca.ipmu.jp://home/okura/20111210/solvetansip/examples
+scp -r src/*.cc hsca.ipmu.jp://home/okura/20111210/solvetansip/src/
+scp -r include/hsc/meas/tansip/*.h hsca.ipmu.jp://home/okura/20111210/solvetansip/include/hsc/meas/tansip/
+scp -r python/hsc/meas/tansip/doTansip.py hsca.ipmu.jp://home/okura/20111210/solvetansip/python/hsc/meas/tansip/
+
+scp -r hsca.ipmu.jp://home/okura/20111210/solvetansip/src/*.os src/
+scp -r hsca.ipmu.jp://home/okura/20111210/solvetansip/python/hsc/meas/tansip/* ./python/hsc/meas/tansip/
+scp -r hsca.ipmu.jp://home/okura/20111210/solvetansip/lib/libsolvetansip.so ./lib
+scp -r hsca.ipmu.jp://home/okura/20111210/solvetansip/examples/RREF/SIMULATIONDATA* examples/RREF/
+
+source /data/ana/products/loadLSST.sh
+setup dc2_pipeline 1.1.0
+108
+ssh 133.40.210.108 
+cd HSC/120215/solvetansip/
+source /data/ana/products.hscPipe1.3.0/loadLSST.sh 
+setup hscPipe 1.3.0
+setup -r /data/ana/astrometry_net_data/sdss-dr8/
+export SUPRIME_DATA_DIR=/data/Subaru
+setup hg
+setup -v -r . -j
+
+meas_astrom           HSC-1.1.0         setup
+
+hg clone ssh://hsc-gw2//ana/hgrepo/solvetansip
+hg clone ssh://133.40.7.143//ana/hgrepo/solvetansip

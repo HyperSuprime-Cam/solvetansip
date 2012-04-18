@@ -44,10 +44,10 @@ public:
 /*DEL*/
 /*    int ALIGN;
     int PHASE;*/
-    void F_WCSA_CSIP_XLOCALtoXRADEC(double *PIXEL,double *RADEC);
-    void F_WCSA_CSIP_XCRPIXtoXRADEC(double *PIXEL,double *RADEC);
-    void F_WCSA_CSIP_XRADECtoXLOCAL(double *RADEC,double *PIXEL);
-    void F_WCSA_CSIP_XRADECtoXCRPIX(double *RADEC,double *PIXEL);
+//    void F_WCSA_CSIP_XLOCALtoXRADEC(double *PIXEL,double *RADEC);
+//    void F_WCSA_CSIP_XCRPIXtoXRADEC(double *PIXEL,double *RADEC);
+//    void F_WCSA_CSIP_XRADECtoXLOCAL(double *RADEC,double *PIXEL);
+//    void F_WCSA_CSIP_XRADECtoXCRPIX(double *RADEC,double *PIXEL);
 
 };
 class CL_GSIP{//GLOBAL SIP
@@ -94,7 +94,13 @@ public:
     void F_WCSA_GSIP_SETDEFAULTPOSITIONS_HSC();
     void F_WCSA_GSIP_SETDEFAULTPOSITIONS_SCfromPAF();
     void F_WCSA_GSIP_SETDEFAULTPOSITIONS_HSCfromPAF();
-    void F_WCSA_GSIP_PIXELtoRADEC(double *PIXEL,double *RADEC);
-    void F_WCSA_GSIP_RADECtoPIXEL(double *RADEC,double *PIXEL);
+    void F_WCSA_GSIP_XLOCALtoXRADEC(int CID, double *PIXEL, double *RADEC);
+    void F_WCSA_GSIP_XRADECtoXLOCAL(int CID, double *RADEC, double *PIXEL);
+    void F_WCSA_GSIP_XCRPIXtoXRADEC(int CID, double *CRPIX, double *RADEC);
+    void F_WCSA_GSIP_XRADECtoXCRPIX(int CID, double *RADEC, double *CRPIX);
+    void F_WCSA_GSIP_CRSMAatXLOCAL (int CID, double *LOCAL, double *CRSMA);
+    void F_WCSA_GSIP_CRSMAatXCRPIX (int CID, double *LOCAL, double *CRSMA);
+    void F_WCSA_GSIP_CRSMAatXRADEC (int CID, double *LOCAL, double *CRSMA);
+
 };
 #endif

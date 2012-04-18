@@ -35,9 +35,13 @@ public:
     double CAMERA_CONVROT[2];    //OUTPUT INFO//Convergence by camera
     double CAMERA_SHEAR[2];      //OUTPUT INFO//Shear by camera
     double CAMERA_MAGNIFICATION; //OUTPUT INFO//Magnification by camera
+    double CAMERA_JACOBIAN;      //OUTPUT INFO//JACOBIAN by camera
+    double CAMERA_PIXELAREA;      //OUTPUT INFO//JACOBIAN by camera
     double CAMERA_PCONVROT[2];   //OUTPUT INFO//Convergence by camera
     double CAMERA_PSHEAR[2];     //OUTPUT INFO//Shear by camera
     double CAMERA_PMAGNIFICATION;//OUTPUT INFO//Magnification by camera
+    double CAMERA_PJACOBIAN;     //OUTPUT INFO//JACOBIAN by camera
+    double CAMERA_PPIXELAREA;      //OUTPUT INFO//JACOBIAN by camera
     double dxLdxI;//Diferential value of xL by xCRPIX
     double dxLdyI;
     double dyLdxI;
@@ -88,8 +92,6 @@ public:
     double *SIP_ABP[2];
     double *CDSIP_AB[2];//CD*SIP
     double *CDSIP_ABP[2];//InvCD*SIP
-    double *MAGNIFICATION_AB[2];
-    double *MAGNIFICATION_ABP[2];
     double ANGLE;
     double AVERMS[2][2];
     double  SIPRMS[2][3];

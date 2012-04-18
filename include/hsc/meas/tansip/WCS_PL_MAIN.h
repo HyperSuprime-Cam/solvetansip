@@ -61,6 +61,17 @@ std::vector< double > F_WCSA_PLMAIN_GETPOSITION_CRPIXfromRADEC(CL_WCSA_ASP* WCSA
 std::vector< double > F_WCSA_PLMAIN_GETPOSITION_CCDIDLOCALfromGLOBAL(CL_WCSA_ASP* WCSA_ASP,std::vector< double > XY);
 std::vector< double > F_WCSA_PLMAIN_GETPOSITION_GLOBALfromCCDIDLOCAL(CL_WCSA_ASP* WCSA_ASP,int CCDID,std::vector< double > XY);
 //-----------------------------------------------------------------
+//Getting Functions : WCSA_ASP : POSITION GRID
+//-----------------------------------------------------------------
+std::vector< std::vector< double > > F_WCSA_PLMAIN_GETPOSITION_RADECfromGRID(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > GRID);
+std::vector< std::vector< double > > F_WCSA_PLMAIN_GETPOSITION_LOCALfromGRID(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > GRID);
+//-----------------------------------------------------------------
+//Getting Functions : WCSA_ASP : JACOBIAN GRID
+//-----------------------------------------------------------------
+std::vector< std::vector< double > > F_WCSA_PLMAIN_GETCRSMA_atLOCALGRID(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > GRID);
+std::vector< std::vector< double > > F_WCSA_PLMAIN_GETCRSMA_atCRPIXGRID(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > GRID);
+std::vector< std::vector< double > > F_WCSA_PLMAIN_GETCRSMA_atRADECGRID(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > GRID);
+//-----------------------------------------------------------------
 //Getting Functions : WCSA_ASP : REFERENCE
 //-----------------------------------------------------------------
 std::vector< double > F_WCSA_PLMAIN_GETREF_ID(CL_WCSA_ASP* WCSA_ASP, int CID);
