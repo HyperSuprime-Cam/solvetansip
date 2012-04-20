@@ -14,7 +14,8 @@ public:
     int SIP_ORDER;
     int SIP_P_ORDER;
     int SIP_L_ORDER;
-    double GPOS[3];//CPROP has same parameter
+    double GPOS[3];//determining by astrometry
+    double GPOS_INIT[3];//getting from paffiles
     double MAXDRAD;
     double MAXFRAD;
     double MINFRAD;
@@ -39,6 +40,8 @@ public:
     double *PSIP_MAG;
     double *SIP_CRS[4];//(CONVERGENCE,ROTATION,SHEAR)
     double *PSIP_CRS[4];//(CONVERGENCE,ROTATION,SHEAR)
+//for distortion check
+
 
     int POSID[2];
 /*DEL*/
@@ -72,8 +75,17 @@ public:
     double CD[2][2];
     double InvCD[2][2];
     double ANGLE;
+//for SIMULATION
     double *SIP_AB[2];
     double *SIP_ABP[2];
+//for DISTORTION CHECK
+    int SIP_ORDER_INIT;
+    int SIP_P_ORDER_INIT;
+    double MAXFRAD_INIT;
+    double CD_INIT[2][2];
+    double InvCD_INIT[2][2];
+    double *SIP_AB_INIT[2];
+    double *SIP_ABP_INIT[2];
 
 //MAIN
     void F_WCSA_GSIP_NEWGSIP();
@@ -92,8 +104,12 @@ public:
     void F_WCSA_GSIP_SETINITIAL();
     void F_WCSA_GSIP_SETDEFAULTPOSITIONS_SC();
     void F_WCSA_GSIP_SETDEFAULTPOSITIONS_HSC();
-    void F_WCSA_GSIP_SETDEFAULTPOSITIONS_SCfromPAF();
-    void F_WCSA_GSIP_SETDEFAULTPOSITIONS_HSCfromPAF();
+//    void F_WCSA_GSIP_SETDEFAULTPOSITIONS_SCfromPAF();
+//    void F_WCSA_GSIP_SETDEFAULTPOSITIONS_HSCfromPAF();
+//    void F_WCSA_GSIP_SETDEFAULTDISTORTION_SC();
+//    void F_WCSA_GSIP_SETDEFAULTDISTORTION_HSC();
+//    void F_WCSA_GSIP_SETDEFAULTDISTORTION_SCfromPAF();
+//    void F_WCSA_GSIP_SETDEFAULTDISTORTION_HSCfromPAF();
     void F_WCSA_GSIP_XLOCALtoXRADEC(int CID, double *PIXEL, double *RADEC);
     void F_WCSA_GSIP_XRADECtoXLOCAL(int CID, double *RADEC, double *PIXEL);
     void F_WCSA_GSIP_XCRPIXtoXRADEC(int CID, double *CRPIX, double *RADEC);

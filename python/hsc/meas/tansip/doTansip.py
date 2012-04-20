@@ -163,7 +163,13 @@ def WCS_GET_POSITION_LOCALfromGRID(WCSA_ASP,CID,GRID):
 #-----------------------------------------------------------------
 def WCS_GET_CRSMA_atLOCALGRID(WCSA_ASP,CID,GRID):
     return hscTansip.F_WCSA_PLMAIN_GETCRSMA_atLOCALGRID(WCSA_ASP,CID,GRID)
-
+#-----------------------------------------------------------------
+#Getting Functions : WCSA_ASP : DISTORTION (Grid)
+#-----------------------------------------------------------------
+def WCS_GET_DISTORTION_atCRPIXGRID(WCSA_ASP,GRID):
+    return hscTansip.F_WCSA_PLMAIN_GETDISTORTION_atCRPIXGRID(WCSA_ASP,GRID)
+def WCS_GET_DISTORTION_atRADECGRID(WCSA_ASP,GRID):
+    return hscTansip.F_WCSA_PLMAIN_GETDISTORTION_atRADECGRID(WCSA_ASP,GRID)
 #-----------------------------------------------------------------
 #Getting Functions : WCSA_ASP : REFERENCES (Values of References having)
 #-----------------------------------------------------------------

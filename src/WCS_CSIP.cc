@@ -26,7 +26,6 @@ void CL_GSIP::F_WCSA_GSIP_NEWGSIP(){
             CSIP[CID].PCoef[i]   = F_NEWdouble1((SIP_P_ORDER+1)*(SIP_P_ORDER+2));
             CSIP[CID].LCoef[i]   = F_NEWdouble1((SIP_L_ORDER+1)*(SIP_L_ORDER+2));
         }
-
         CSIP[CID].SIP_MAG    = F_NEWdouble1((SIP_ORDER+1)*(SIP_ORDER+2));
         CSIP[CID].SIP_CRS[0] = F_NEWdouble1((SIP_ORDER+1)*(SIP_ORDER+2));
         CSIP[CID].SIP_CRS[1] = F_NEWdouble1((SIP_ORDER+1)*(SIP_ORDER+2));
@@ -38,6 +37,11 @@ void CL_GSIP::F_WCSA_GSIP_NEWGSIP(){
         CSIP[CID].PSIP_CRS[2]= F_NEWdouble1((SIP_P_ORDER+1)*(SIP_P_ORDER+2));
         CSIP[CID].PSIP_CRS[3]= F_NEWdouble1((SIP_P_ORDER+1)*(SIP_P_ORDER+2));
     }
+    SIP_AB_INIT[0]  = F_NEWdouble1((SIP_ORDER  +1)*(SIP_ORDER  +2));
+    SIP_AB_INIT[1]  = F_NEWdouble1((SIP_ORDER  +1)*(SIP_ORDER  +2));
+    SIP_ABP_INIT[0] = F_NEWdouble1((SIP_P_ORDER+1)*(SIP_P_ORDER+2));
+    SIP_ABP_INIT[1] = F_NEWdouble1((SIP_P_ORDER+1)*(SIP_P_ORDER+2));
+
 }
 void CL_GSIP::F_WCSA_GSIP_DELGSIP(){
 //2
@@ -49,11 +53,6 @@ void CL_GSIP::F_WCSA_GSIP_DELGSIP(){
             F_DELdouble1(CSIP[CID].Coef[i]   );
             F_DELdouble1(CSIP[CID].PCoef[i]  );
             F_DELdouble1(CSIP[CID].LCoef[i]  );
-/*            delete [] CSIP[CID].SIP_AB[i] ;
-            delete [] CSIP[CID].SIP_ABP[i];
-            delete [] CSIP[CID].Coef[i]   ;
-            delete [] CSIP[CID].PCoef[i]  ;
-            delete [] CSIP[CID].LCoef[i]  ;*/
         }
     
         F_DELdouble1(CSIP[CID].SIP_MAG    );
@@ -67,6 +66,10 @@ void CL_GSIP::F_WCSA_GSIP_DELGSIP(){
         F_DELdouble1(CSIP[CID].PSIP_CRS[2]);
         F_DELdouble1(CSIP[CID].PSIP_CRS[3]);
     }  
+        F_DELdouble1(SIP_AB_INIT[0] );
+        F_DELdouble1(SIP_AB_INIT[1] );
+        F_DELdouble1(SIP_ABP_INIT[0]);
+        F_DELdouble1(SIP_ABP_INIT[1]);
 //1
     delete [] CSIP;
 }
@@ -74,12 +77,6 @@ void CL_GSIP::F_WCSA_GSIP_SET0(){
     sprintf(CRPIXMODE,"AUTO");
     sprintf(   OAMODE,"MIN");
     CCDPOSMODE =0;
-//    CCDNUM     =0;
-//    ALLREFNUM  =0;
-//    ALLFITNUM  =0;
-//    SIP_ORDER  =0;
-//    SIP_P_ORDER=0;
-//    SIP_L_ORDER=0;
     STDOUT     =0;
     CLIP_SIGMA =0;
     OAVAL[0]=OAVAL[1]=0;
@@ -212,20 +209,34 @@ void CL_GSIP::F_WCSA_GSIP_XRADECtoXLOCAL(int CID, double *RADEC,double *PIXEL){
 void CL_GSIP::F_WCSA_GSIP_XCRPIXtoXRADEC(int CID, double *CRPIX,double *RADEC){
     double XX[2],YY[2];
 
-    YY[0]=F_CALCVALUE(SIP_ORDER,CSIP[CID].SIP_AB[0],CRPIX)+CRPIX[0];
-    YY[1]=F_CALCVALUE(SIP_ORDER,CSIP[CID].SIP_AB[1],CRPIX)+CRPIX[1];
-    XX[0]=CD[0][0]*YY[0]+CD[0][1]*YY[1];
-    XX[1]=CD[1][0]*YY[0]+CD[1][1]*YY[1];
+    if(CID==-1){
+        YY[0]=F_CALCVALUE(SIP_ORDER_INIT,SIP_AB_INIT[0],CRPIX)+CRPIX[0];
+        YY[1]=F_CALCVALUE(SIP_ORDER_INIT,SIP_AB_INIT[1],CRPIX)+CRPIX[1];
+        XX[0]=CD_INIT[0][0]*YY[0]+CD_INIT[0][1]*YY[1];
+        XX[1]=CD_INIT[1][0]*YY[0]+CD_INIT[1][1]*YY[1];
+    }else{
+        YY[0]=F_CALCVALUE(SIP_ORDER,CSIP[CID].SIP_AB[0],CRPIX)+CRPIX[0];
+        YY[1]=F_CALCVALUE(SIP_ORDER,CSIP[CID].SIP_AB[1],CRPIX)+CRPIX[1];
+        XX[0]=CD[0][0]*YY[0]+CD[0][1]*YY[1];
+        XX[1]=CD[1][0]*YY[0]+CD[1][1]*YY[1];
+    }
     F_InvPROJECTION(XX,RADEC,CRVAL);
 }
 void CL_GSIP::F_WCSA_GSIP_XRADECtoXCRPIX(int CID, double *RADEC,double *CRPIX){
     double XX[2],YY[2];
 
     F_PROJECTION(RADEC,YY,CRVAL);
-    XX[0]=InvCD[0][0]*YY[0]+InvCD[0][1]*YY[1];
-    XX[1]=InvCD[1][0]*YY[0]+InvCD[1][1]*YY[1];
-    CRPIX[0]=F_CALCVALUE(SIP_P_ORDER,CSIP[CID].SIP_ABP[0],XX)+XX[0];
-    CRPIX[1]=F_CALCVALUE(SIP_P_ORDER,CSIP[CID].SIP_ABP[1],XX)+XX[1];
+    if(CID==-1){
+        XX[0]=InvCD_INIT[0][0]*YY[0]+InvCD_INIT[0][1]*YY[1];
+        XX[1]=InvCD_INIT[1][0]*YY[0]+InvCD_INIT[1][1]*YY[1];
+        CRPIX[0]=F_CALCVALUE(SIP_P_ORDER_INIT,SIP_ABP_INIT[0],XX)+XX[0];
+        CRPIX[1]=F_CALCVALUE(SIP_P_ORDER_INIT,SIP_ABP_INIT[1],XX)+XX[1];
+    }else{
+        XX[0]=InvCD[0][0]*YY[0]+InvCD[0][1]*YY[1];
+        XX[1]=InvCD[1][0]*YY[0]+InvCD[1][1]*YY[1];
+        CRPIX[0]=F_CALCVALUE(SIP_P_ORDER,CSIP[CID].SIP_ABP[0],XX)+XX[0];
+        CRPIX[1]=F_CALCVALUE(SIP_P_ORDER,CSIP[CID].SIP_ABP[1],XX)+XX[1];
+    }
 }
 void CL_GSIP::F_WCSA_GSIP_CRSMAatXLOCAL(int CID,double *LOCAL, double *CRSMA){
     double X_CRPIX[2];
@@ -680,19 +691,17 @@ void CL_GSIP::F_WCSA_GSIP_SETINITIAL(){
     CSIP[CID].SIP_ABP_ERR[1][0]=0;
     CSIP[CID].SIP_ABP_ERR[1][1]=0;
     }
-
+/*
     if(CCDNUM<11){
     F_WCSA_GSIP_SETDEFAULTPOSITIONS_SCfromPAF();
     }else{
     F_WCSA_GSIP_SETDEFAULTPOSITIONS_HSCfromPAF();
     }
-
+*/
     
 }
 void CL_GSIP::F_WCSA_GSIP_SETDEFAULTPOSITIONS_SC(){
     int CID;
-    for(CID=0;CID<10;CID++)
-    CSIP[CID].ID=CID;
 /*    CSIP[  0].GPOS[0]=   4243.45;
     CSIP[  0].GPOS[1]=   1951.42;
     CSIP[  0].GPOS[2]=9.42553e-05;
@@ -752,11 +761,16 @@ void CL_GSIP::F_WCSA_GSIP_SETDEFAULTPOSITIONS_SC(){
     CSIP[  8].GPOS[2]= 0.00000;
     CSIP[  9].GPOS[0]=-3172.00;
     CSIP[  9].GPOS[1]=-4146.00;
+    for(CID=0;CID<CCDNUM;CID++){
+        CSIP[CID].ID=CID;
+        CSIP[CID].GPOS_INIT[0]=CSIP[CID].GPOS[0];
+        CSIP[CID].GPOS_INIT[1]=CSIP[CID].GPOS[1];
+        CSIP[CID].GPOS_INIT[2]=CSIP[CID].GPOS[2];
+    }
+
 }
 void CL_GSIP::F_WCSA_GSIP_SETDEFAULTPOSITIONS_HSC(){
     int CID;
-    for(CID=0;CID<CCDNUM;CID++)
-    CSIP[CID].ID=CID;
     CSIP[  0].GPOS[0]=- 9514.700;
     CSIP[  0].GPOS[1]=    37.350;
     CSIP[  0].GPOS[2]=  0.000000;
@@ -1070,387 +1084,19 @@ void CL_GSIP::F_WCSA_GSIP_SETDEFAULTPOSITIONS_HSC(){
     CSIP[103].GPOS[0]=- 7467.700;
     CSIP[103].GPOS[1]=-15341.350;
     CSIP[103].GPOS[2]=  0.785398;
-}
+
+    for(CID=0;CID<CCDNUM;CID++){
+        CSIP[CID].ID=CID;
+        CSIP[CID].GPOS_INIT[0]=CSIP[CID].GPOS[0];
+        CSIP[CID].GPOS_INIT[1]=CSIP[CID].GPOS[1];
+        CSIP[CID].GPOS_INIT[2]=CSIP[CID].GPOS[2];
+    }
+
+}/*
 void CL_GSIP::F_WCSA_GSIP_SETDEFAULTPOSITIONS_SCfromPAF(){
-    int CID;
-    for(CID=0;CID<10;CID++)
-    CSIP[CID].ID=CID;
-    CSIP[  0].GPOS[0]= 3272.00;
-    CSIP[  0].GPOS[1]=   50.00;
-    CSIP[  0].GPOS[2]= 0.00000;
-    CSIP[  1].GPOS[0]= 1124.00;
-    CSIP[  1].GPOS[1]=   50.00;
-    CSIP[  1].GPOS[2]= 0.00000;
-    CSIP[  2].GPOS[0]=-1024.00;
-    CSIP[  2].GPOS[1]=   50.00;
-    CSIP[  2].GPOS[2]= 0.00000;
-    CSIP[  3].GPOS[0]= 3272.00;
-    CSIP[  3].GPOS[1]=-4146.00;
-    CSIP[  3].GPOS[2]= 0.00000;
-    CSIP[  4].GPOS[0]= 1124.00;
-    CSIP[  4].GPOS[1]=-4146.00;
-    CSIP[  4].GPOS[2]= 0.00000;
-    CSIP[  5].GPOS[0]=-1024.00;
-    CSIP[  5].GPOS[1]=-4146.00;
-    CSIP[  5].GPOS[2]= 0.00000;
-    CSIP[  6].GPOS[0]=-5320.00;
-    CSIP[  6].GPOS[1]=   50.00;
-    CSIP[  6].GPOS[2]= 0.00000;
-    CSIP[  7].GPOS[0]=-3172.00;
-    CSIP[  7].GPOS[1]=   50.00;
-    CSIP[  7].GPOS[2]= 0.00000;
-    CSIP[  8].GPOS[0]=-5320.00;
-    CSIP[  8].GPOS[1]=-4146.00;
-    CSIP[  8].GPOS[2]= 0.00000;
-    CSIP[  9].GPOS[0]=-3172.00;
-    CSIP[  9].GPOS[1]=-4146.00;
-/*
-    CSIP[  0].GPOS[0]=     4243.45;
-    CSIP[  0].GPOS[1]=     1951.42;
-    CSIP[  0].GPOS[2]= 9.42553e-05;
-    CSIP[  1].GPOS[0]=     2121.68;
-    CSIP[  1].GPOS[1]=     1951.15;
-    CSIP[  1].GPOS[2]= 0.000213211;
-    CSIP[  2].GPOS[0]=   -0.632341;
-    CSIP[  2].GPOS[1]=     1952.32;
-    CSIP[  2].GPOS[2]= 0.000308735;
-    CSIP[  3].GPOS[0]=     4244.21;
-    CSIP[  3].GPOS[1]=    -2300.46;
-    CSIP[  3].GPOS[2]= 0.000100736;
-    CSIP[  4].GPOS[0]=     2126.83;
-    CSIP[  4].GPOS[1]=    -2299.38;
-    CSIP[  4].GPOS[2]= 0.000100736;
-    CSIP[  5].GPOS[0]=    -2.09345;
-    CSIP[  5].GPOS[1]=    -2305.18;
-    CSIP[  5].GPOS[2]= -6.8067e-05;
-    CSIP[  6].GPOS[0]=    -4246.74;
-    CSIP[  6].GPOS[1]=     1950.66;
-    CSIP[  6].GPOS[2]= 0.000425587;
-    CSIP[  7].GPOS[0]=    -2123.46;
-    CSIP[  7].GPOS[1]=     1952.01;
-    CSIP[  7].GPOS[2]= 0.000272656;
-    CSIP[  8].GPOS[0]=    -4244.22;
-    CSIP[  8].GPOS[1]=    -2299.95;
-    CSIP[  8].GPOS[2]=-2.88434e-05;
-    CSIP[  9].GPOS[0]=    -2122.81;
-    CSIP[  9].GPOS[1]=    -2299.69;
-    CSIP[  9].GPOS[2]=  0.00026042;*/
+    F_WCSA_GSIP_SETDEFAULTPOSITIONS_SC();
 }
 void CL_GSIP::F_WCSA_GSIP_SETDEFAULTPOSITIONS_HSCfromPAF(){
-    int CID;
-    for(CID=0;CID<CCDNUM;CID++)
-    CSIP[CID].ID=CID;
-    CSIP[  0].GPOS[0]=- 9514.700;
-    CSIP[  0].GPOS[1]=    37.350;
-    CSIP[  0].GPOS[2]=  0.000000;
-    CSIP[  1].GPOS[0]=  7466.700;
-    CSIP[  1].GPOS[1]=- 4133.350;
-    CSIP[  1].GPOS[2]=  0.000000;
-    CSIP[  2].GPOS[0]=- 7392.000;
-    CSIP[  2].GPOS[1]=    37.350;
-    CSIP[  2].GPOS[2]=  0.000000;
-    CSIP[  3].GPOS[0]=  5344.000;
-    CSIP[  3].GPOS[1]=- 4133.350;
-    CSIP[  3].GPOS[2]=  0.000000;
-    CSIP[  4].GPOS[0]=- 5269.300;
-    CSIP[  4].GPOS[1]=    37.350;
-    CSIP[  4].GPOS[2]=  0.000000;
-    CSIP[  5].GPOS[0]=  3221.300;
-    CSIP[  5].GPOS[1]=- 4133.350;
-    CSIP[  5].GPOS[2]=  0.000000;
-    CSIP[  6].GPOS[0]=- 3146.700;
-    CSIP[  6].GPOS[1]=    37.350;
-    CSIP[  6].GPOS[2]=  0.000000;
-    CSIP[  7].GPOS[0]=  1098.700;
-    CSIP[  7].GPOS[1]=- 4133.350;
-    CSIP[  7].GPOS[2]=  0.000000;
-    CSIP[  8].GPOS[0]=- 1024.000;
-    CSIP[  8].GPOS[1]=    37.350;
-    CSIP[  8].GPOS[2]=  0.000000;
-    CSIP[  9].GPOS[0]=- 1024.000;
-    CSIP[  9].GPOS[1]=- 4133.350;
-    CSIP[  9].GPOS[2]=  0.000000;
-    CSIP[ 10].GPOS[0]=  1098.700;
-    CSIP[ 10].GPOS[1]=    37.350;
-    CSIP[ 10].GPOS[2]=  0.000000;
-    CSIP[ 11].GPOS[0]=- 3146.700;
-    CSIP[ 11].GPOS[1]=- 4133.350;
-    CSIP[ 11].GPOS[2]=  0.000000;
-    CSIP[ 12].GPOS[0]=  3221.300;
-    CSIP[ 12].GPOS[1]=    37.350;
-    CSIP[ 12].GPOS[2]=  0.000000;
-    CSIP[ 13].GPOS[0]=- 5269.300;
-    CSIP[ 13].GPOS[1]=- 4133.350;
-    CSIP[ 13].GPOS[2]=  0.000000;
-    CSIP[ 14].GPOS[0]=  5344.000;
-    CSIP[ 14].GPOS[1]=    37.350;
-    CSIP[ 14].GPOS[2]=  0.000000;
-    CSIP[ 15].GPOS[0]=- 7392.000;
-    CSIP[ 15].GPOS[1]=- 4133.350;
-    CSIP[ 15].GPOS[2]=  0.000000;
-    CSIP[ 16].GPOS[0]=  7466.700;
-    CSIP[ 16].GPOS[1]=    37.350;
-    CSIP[ 16].GPOS[2]=  0.000000;
-    CSIP[ 17].GPOS[0]=- 9514.700;
-    CSIP[ 17].GPOS[1]=- 4133.350;
-    CSIP[ 17].GPOS[2]=  0.000000;
-    CSIP[ 18].GPOS[0]=  9589.300;
-    CSIP[ 18].GPOS[1]=    37.350;
-    CSIP[ 18].GPOS[2]=  0.000000;
-    CSIP[ 19].GPOS[0]=-11637.300;
-    CSIP[ 19].GPOS[1]=- 4133.350;
-    CSIP[ 19].GPOS[2]=  0.000000;
-    CSIP[ 20].GPOS[0]= 11712.000;
-    CSIP[ 20].GPOS[1]=    37.350;
-    CSIP[ 20].GPOS[2]=  0.000000;
-    CSIP[ 21].GPOS[0]=-13760.000;
-    CSIP[ 21].GPOS[1]=- 4133.350;
-    CSIP[ 21].GPOS[2]=  0.000000;
-    CSIP[ 22].GPOS[0]= 13834.700;
-    CSIP[ 22].GPOS[1]=    37.350;
-    CSIP[ 22].GPOS[2]=  0.000000;
-    CSIP[ 23].GPOS[0]=-15882.700;
-    CSIP[ 23].GPOS[1]=- 4133.350;
-    CSIP[ 23].GPOS[2]=  0.000000;
-    CSIP[ 24].GPOS[0]=- 9514.700;
-    CSIP[ 24].GPOS[1]=  4512.350;
-    CSIP[ 24].GPOS[2]=  0.000000;
-    CSIP[ 25].GPOS[0]=  7466.700;
-    CSIP[ 25].GPOS[1]=- 8608.350;
-    CSIP[ 25].GPOS[2]=  0.000000;
-    CSIP[ 26].GPOS[0]=- 7392.000;
-    CSIP[ 26].GPOS[1]=  4512.350;
-    CSIP[ 26].GPOS[2]=  0.000000;
-    CSIP[ 27].GPOS[0]=  5344.000;
-    CSIP[ 27].GPOS[1]=- 8608.350;
-    CSIP[ 27].GPOS[2]=  0.000000;
-    CSIP[ 28].GPOS[0]=- 5269.300;
-    CSIP[ 28].GPOS[1]=  4512.350;
-    CSIP[ 28].GPOS[2]=  0.000000;
-    CSIP[ 29].GPOS[0]=  3221.300;
-    CSIP[ 29].GPOS[1]=- 8608.350;
-    CSIP[ 29].GPOS[2]=  0.000000;
-    CSIP[ 30].GPOS[0]=- 3146.700;
-    CSIP[ 30].GPOS[1]=  4512.350;
-    CSIP[ 30].GPOS[2]=  0.000000;
-    CSIP[ 31].GPOS[0]=  1098.700;
-    CSIP[ 31].GPOS[1]=- 8608.350;
-    CSIP[ 31].GPOS[2]=  0.000000;
-    CSIP[ 32].GPOS[0]=- 1024.000;
-    CSIP[ 32].GPOS[1]=  4512.350;
-    CSIP[ 32].GPOS[2]=  0.000000;
-    CSIP[ 33].GPOS[0]=- 1024.000;
-    CSIP[ 33].GPOS[1]=- 8608.350;
-    CSIP[ 33].GPOS[2]=  0.000000;
-    CSIP[ 34].GPOS[0]=  1098.700;
-    CSIP[ 34].GPOS[1]=  4512.350;
-    CSIP[ 34].GPOS[2]=  0.000000;
-    CSIP[ 35].GPOS[0]=- 3146.700;
-    CSIP[ 35].GPOS[1]=- 8608.350;
-    CSIP[ 35].GPOS[2]=  0.000000;
-    CSIP[ 36].GPOS[0]=  3221.300;
-    CSIP[ 36].GPOS[1]=  4512.350;
-    CSIP[ 36].GPOS[2]=  0.000000;
-    CSIP[ 37].GPOS[0]=- 5269.300;
-    CSIP[ 37].GPOS[1]=- 8608.350;
-    CSIP[ 37].GPOS[2]=  0.000000;
-    CSIP[ 38].GPOS[0]=  5344.000;
-    CSIP[ 38].GPOS[1]=  4512.350;
-    CSIP[ 38].GPOS[2]=  0.000000;
-    CSIP[ 39].GPOS[0]=- 7392.000;
-    CSIP[ 39].GPOS[1]=- 8608.350;
-    CSIP[ 39].GPOS[2]=  0.000000;
-    CSIP[ 40].GPOS[0]=  7466.700;
-    CSIP[ 40].GPOS[1]=  4512.350;
-    CSIP[ 40].GPOS[2]=  0.000000;
-    CSIP[ 41].GPOS[0]=- 9514.700;
-    CSIP[ 41].GPOS[1]=- 8608.350;
-    CSIP[ 41].GPOS[2]=  0.000000;
-    CSIP[ 42].GPOS[0]=  9589.300;
-    CSIP[ 42].GPOS[1]=  4512.350;
-    CSIP[ 42].GPOS[2]=  0.000000;
-    CSIP[ 43].GPOS[0]=-11637.300;
-    CSIP[ 43].GPOS[1]=- 8608.350;
-    CSIP[ 43].GPOS[2]=  0.000000;
-    CSIP[ 44].GPOS[0]= 11712.000;
-    CSIP[ 44].GPOS[1]=  4512.350;
-    CSIP[ 44].GPOS[2]=  0.000000;
-    CSIP[ 45].GPOS[0]=-13760.000;
-    CSIP[ 45].GPOS[1]=- 8608.350;
-    CSIP[ 45].GPOS[2]=  0.000000;
-    CSIP[ 46].GPOS[0]= 13834.700;
-    CSIP[ 46].GPOS[1]=  4512.350;
-    CSIP[ 46].GPOS[2]=  0.000000;
-    CSIP[ 47].GPOS[0]=-15882.700;
-    CSIP[ 47].GPOS[1]=- 8608.350;
-    CSIP[ 47].GPOS[2]=  0.000000;
-    CSIP[ 48].GPOS[0]=- 9514.700;
-    CSIP[ 48].GPOS[1]=  8987.350;
-    CSIP[ 48].GPOS[2]=  0.000000;
-    CSIP[ 49].GPOS[0]=  7466.700;
-    CSIP[ 49].GPOS[1]=-13083.350;
-    CSIP[ 49].GPOS[2]=  0.000000;
-    CSIP[ 50].GPOS[0]=- 7392.000;
-    CSIP[ 50].GPOS[1]=  8987.350;
-    CSIP[ 50].GPOS[2]=  0.000000;
-    CSIP[ 51].GPOS[0]=  5344.000;
-    CSIP[ 51].GPOS[1]=-13083.350;
-    CSIP[ 51].GPOS[2]=  0.000000;
-    CSIP[ 52].GPOS[0]=- 5269.300;
-    CSIP[ 52].GPOS[1]=  8987.350;
-    CSIP[ 52].GPOS[2]=  0.000000;
-    CSIP[ 53].GPOS[0]=  3221.300;
-    CSIP[ 53].GPOS[1]=-13083.350;
-    CSIP[ 53].GPOS[2]=  0.000000;
-    CSIP[ 54].GPOS[0]=- 3146.700;
-    CSIP[ 54].GPOS[1]=  8987.350;
-    CSIP[ 54].GPOS[2]=  0.000000;
-    CSIP[ 55].GPOS[0]=  1098.700;
-    CSIP[ 55].GPOS[1]=-13083.350;
-    CSIP[ 55].GPOS[2]=  0.000000;
-    CSIP[ 56].GPOS[0]=- 1024.000;
-    CSIP[ 56].GPOS[1]=  8987.350;
-    CSIP[ 56].GPOS[2]=  0.000000;
-    CSIP[ 57].GPOS[0]=- 1024.000;
-    CSIP[ 57].GPOS[1]=-13083.350;
-    CSIP[ 57].GPOS[2]=  0.000000;
-    CSIP[ 58].GPOS[0]=  1098.700;
-    CSIP[ 58].GPOS[1]=  8987.350;
-    CSIP[ 58].GPOS[2]=  0.000000;
-    CSIP[ 59].GPOS[0]=- 3146.700;
-    CSIP[ 59].GPOS[1]=-13083.350;
-    CSIP[ 59].GPOS[2]=  0.000000;
-    CSIP[ 60].GPOS[0]=  3221.300;
-    CSIP[ 60].GPOS[1]=  8987.350;
-    CSIP[ 60].GPOS[2]=  0.000000;
-    CSIP[ 61].GPOS[0]=- 5269.300;
-    CSIP[ 61].GPOS[1]=-13083.350;
-    CSIP[ 61].GPOS[2]=  0.000000;
-    CSIP[ 62].GPOS[0]=  5344.000;
-    CSIP[ 62].GPOS[1]=  8987.350;
-    CSIP[ 62].GPOS[2]=  0.000000;
-    CSIP[ 63].GPOS[0]=- 7392.000;
-    CSIP[ 63].GPOS[1]=-13083.350;
-    CSIP[ 63].GPOS[2]=  0.000000;
-    CSIP[ 64].GPOS[0]=  7466.700;
-    CSIP[ 64].GPOS[1]=  8987.350;
-    CSIP[ 64].GPOS[2]=  0.000000;
-    CSIP[ 65].GPOS[0]=- 9514.700;
-    CSIP[ 65].GPOS[1]=-13083.350;
-    CSIP[ 65].GPOS[2]=  0.000000;
-    CSIP[ 66].GPOS[0]=  9589.300;
-    CSIP[ 66].GPOS[1]=  8987.350;
-    CSIP[ 66].GPOS[2]=  0.000000;
-    CSIP[ 67].GPOS[0]=-11637.300;
-    CSIP[ 67].GPOS[1]=-13083.350;
-    CSIP[ 67].GPOS[2]=  0.000000;
-    CSIP[ 68].GPOS[0]= 11712.000;
-    CSIP[ 68].GPOS[1]=  8987.350;
-    CSIP[ 68].GPOS[2]=  0.000000;
-    CSIP[ 69].GPOS[0]=-13760.000;
-    CSIP[ 69].GPOS[1]=-13083.350;
-    CSIP[ 69].GPOS[2]=  0.000000;
-    CSIP[ 70].GPOS[0]=- 7392.000;
-    CSIP[ 70].GPOS[1]= 13462.350;
-    CSIP[ 70].GPOS[2]=  0.000000;
-    CSIP[ 71].GPOS[0]=  5344.000;
-    CSIP[ 71].GPOS[1]=-17558.350;
-    CSIP[ 71].GPOS[2]=  0.000000;
-    CSIP[ 72].GPOS[0]=- 5269.300;
-    CSIP[ 72].GPOS[1]= 13462.350;
-    CSIP[ 72].GPOS[2]=  0.000000;
-    CSIP[ 73].GPOS[0]=  3221.300;
-    CSIP[ 73].GPOS[1]=-17558.350;
-    CSIP[ 73].GPOS[2]=  0.000000;
-    CSIP[ 74].GPOS[0]=- 3146.700;
-    CSIP[ 74].GPOS[1]= 13462.350;
-    CSIP[ 74].GPOS[2]=  0.000000;
-    CSIP[ 75].GPOS[0]=  1098.700;
-    CSIP[ 75].GPOS[1]=-17558.350;
-    CSIP[ 75].GPOS[2]=  0.000000;
-    CSIP[ 76].GPOS[0]=- 1024.000;
-    CSIP[ 76].GPOS[1]= 13462.350;
-    CSIP[ 76].GPOS[2]=  0.000000;
-    CSIP[ 77].GPOS[0]=- 1024.000;
-    CSIP[ 77].GPOS[1]=-17558.350;
-    CSIP[ 77].GPOS[2]=  0.000000;
-    CSIP[ 78].GPOS[0]=  1098.700;
-    CSIP[ 78].GPOS[1]= 13462.350;
-    CSIP[ 78].GPOS[2]=  0.000000;
-    CSIP[ 79].GPOS[0]=- 3146.700;
-    CSIP[ 79].GPOS[1]=-17558.350;
-    CSIP[ 79].GPOS[2]=  0.000000;
-    CSIP[ 80].GPOS[0]=  3221.300;
-    CSIP[ 80].GPOS[1]= 13462.350;
-    CSIP[ 80].GPOS[2]=  0.000000;
-    CSIP[ 81].GPOS[0]=- 5269.300;
-    CSIP[ 81].GPOS[1]=-17558.350;
-    CSIP[ 81].GPOS[2]=  0.000000;
-    CSIP[ 82].GPOS[0]=  5344.000;
-    CSIP[ 82].GPOS[1]= 13462.350;
-    CSIP[ 82].GPOS[2]=  0.000000;
-    CSIP[ 83].GPOS[0]=- 7392.000;
-    CSIP[ 83].GPOS[1]=-17558.350;
-    CSIP[ 83].GPOS[2]=  0.000000;
-    CSIP[ 84].GPOS[0]=  9589.300;
-    CSIP[ 84].GPOS[1]=- 4437.650;
-    CSIP[ 84].GPOS[2]=  0.000000;
-    CSIP[ 85].GPOS[0]=-11637.300;
-    CSIP[ 85].GPOS[1]=   341.650;
-    CSIP[ 85].GPOS[2]=  0.000000;
-    CSIP[ 86].GPOS[0]= 11712.000;
-    CSIP[ 86].GPOS[1]=- 4437.650;
-    CSIP[ 86].GPOS[2]=  0.000000;
-    CSIP[ 87].GPOS[0]=-13760.000;
-    CSIP[ 87].GPOS[1]=   341.650;
-    CSIP[ 87].GPOS[2]=  0.000000;
-    CSIP[ 88].GPOS[0]= 13834.700;
-    CSIP[ 88].GPOS[1]=- 4437.650;
-    CSIP[ 88].GPOS[2]=  0.000000;
-    CSIP[ 89].GPOS[0]=-15882.700;
-    CSIP[ 89].GPOS[1]=   341.650;
-    CSIP[ 89].GPOS[2]=  0.000000;
-    CSIP[ 90].GPOS[0]=  9589.300;
-    CSIP[ 90].GPOS[1]=- 8912.650;
-    CSIP[ 90].GPOS[2]=  0.000000;
-    CSIP[ 91].GPOS[0]=-11637.300;
-    CSIP[ 91].GPOS[1]=  4816.650;
-    CSIP[ 91].GPOS[2]=  0.000000;
-    CSIP[ 92].GPOS[0]= 11712.000;
-    CSIP[ 92].GPOS[1]=- 8912.650;
-    CSIP[ 92].GPOS[2]=  0.000000;
-    CSIP[ 93].GPOS[0]=-13760.000;
-    CSIP[ 93].GPOS[1]=  4816.650;
-    CSIP[ 93].GPOS[2]=  0.000000;
-    CSIP[ 94].GPOS[0]= 13834.700;
-    CSIP[ 94].GPOS[1]=- 8912.650;
-    CSIP[ 94].GPOS[2]=  0.000000;
-    CSIP[ 95].GPOS[0]=-15882.700;
-    CSIP[ 95].GPOS[1]=  4816.650;
-    CSIP[ 95].GPOS[2]=  0.000000;
-    CSIP[ 96].GPOS[0]=  9589.300;
-    CSIP[ 96].GPOS[1]=-13387.650;
-    CSIP[ 96].GPOS[2]=  0.000000;
-    CSIP[ 97].GPOS[0]=-11637.300;
-    CSIP[ 97].GPOS[1]=  9291.650;
-    CSIP[ 97].GPOS[2]=  0.000000;
-    CSIP[ 98].GPOS[0]= 11712.000;
-    CSIP[ 98].GPOS[1]=-13387.650;
-    CSIP[ 98].GPOS[2]=  0.000000;
-    CSIP[ 99].GPOS[0]=-13760.000;
-    CSIP[ 99].GPOS[1]=  9291.650;
-    CSIP[ 99].GPOS[2]=  0.000000;
-
-    CSIP[100].GPOS[0]=- 7467.700;
-    CSIP[100].GPOS[1]= 13543.650;
-    CSIP[100].GPOS[2]=  0.785398;
-    CSIP[101].GPOS[0]= 11643.000;
-    CSIP[101].GPOS[1]= 13543.650;
-    CSIP[101].GPOS[2]=  0.785398;
-    CSIP[102].GPOS[0]= 11643.000;
-    CSIP[102].GPOS[1]=-15341.350;
-    CSIP[102].GPOS[2]=  0.785398;
-    CSIP[103].GPOS[0]=- 7467.700;
-    CSIP[103].GPOS[1]=-15341.350;
-    CSIP[103].GPOS[2]=  0.785398;
+    F_WCSA_GSIP_SETDEFAULTPOSITIONS_HSC();
 }
+*/

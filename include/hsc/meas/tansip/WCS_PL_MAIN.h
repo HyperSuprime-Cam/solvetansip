@@ -72,6 +72,11 @@ std::vector< std::vector< double > > F_WCSA_PLMAIN_GETCRSMA_atLOCALGRID(CL_WCSA_
 std::vector< std::vector< double > > F_WCSA_PLMAIN_GETCRSMA_atCRPIXGRID(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > GRID);
 std::vector< std::vector< double > > F_WCSA_PLMAIN_GETCRSMA_atRADECGRID(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > GRID);
 //-----------------------------------------------------------------
+//Getting Functions : WCSA_ASP : DSITORTION GRID
+//-----------------------------------------------------------------
+std::vector< std::vector< double > > F_WCSA_PLMAIN_GETDISTORTION_atCRPIXGRID(CL_WCSA_ASP* WCSA_ASP,std::vector< double > GRID);
+std::vector< std::vector< double > > F_WCSA_PLMAIN_GETDISTORTION_atRADECGRID(CL_WCSA_ASP* WCSA_ASP,std::vector< double > GRID);
+//-----------------------------------------------------------------
 //Getting Functions : WCSA_ASP : REFERENCE
 //-----------------------------------------------------------------
 std::vector< double > F_WCSA_PLMAIN_GETREF_ID(CL_WCSA_ASP* WCSA_ASP, int CID);

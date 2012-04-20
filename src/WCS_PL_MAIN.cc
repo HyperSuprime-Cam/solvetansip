@@ -20,7 +20,7 @@ namespace dafbase = lsst::daf::base;
 
 void    F_WCSA_MAKEAPROP(lsst::pex::policy::Policy::Ptr &,CL_APROP*);
 void    F_WCSA_SHOWAPROP(CL_APROP*);
-void    F_WCSA_MAKEGSIP(lsst::afw::cameraGeom::Camera::Ptr &,CL_APROP*,CL_GSIP*);
+void    F_WCSA_MAKEGSIP(lsst::pex::policy::Policy::Ptr &,lsst::afw::cameraGeom::Camera::Ptr &,CL_APROP*,CL_GSIP*);
 //void    F_WCSA_SETSIZE(vector<vector<PTR(hsc::meas::tansip::SourceMatch)> > const &,CL_APROP*,CL_GSIP*);
 //void    F_WCSA_SETSIZE_local(string matchlist, CL_APROP*);
 void    F_WCSA_SETREFSIZE(vector<vector<PTR(hsc::meas::tansip::SourceMatch)> > const &,CL_APROP*);
@@ -60,7 +60,7 @@ PTR(CL_WCSA_ASP) F_WCSA_TANSIP_V(vector<vector<PTR(hsc::meas::tansip::SourceMatc
 
 //GSIP
     if(WCSA_ASP->APROP->STDOUT==1||WCSA_ASP->APROP->STDOUT==2)cout << "--- WCS_PL_MAIN : F_WCS_MAKE_GSIP ---" << endl;
-    F_WCSA_MAKEGSIP(camera,WCSA_ASP->APROP,WCSA_ASP->GSIP);
+    F_WCSA_MAKEGSIP(APROPPolicy,camera,WCSA_ASP->APROP,WCSA_ASP->GSIP);
     if(WCSA_ASP->APROP->STDOUT==2) WCSA_ASP->GSIP->F_WCSA_GSIP_SHOWGSIP();
 //    F_WCSA_SETSIZE_local(matchlist,WCSA_ASP->APROP,WCSA_ASP->GSIP);
 
@@ -137,7 +137,7 @@ PTR(CL_WCSA_ASP) F_WCSA_TANSIP_V_local(string matchlist,dafbase::PropertySet::Pt
 
 //GSIP
     if(WCSA_ASP->APROP->STDOUT==1||WCSA_ASP->APROP->STDOUT==2)cout << "--- WCS_PL_MAIN : F_WCS_MAKE_GSIP ---" << endl;
-    F_WCSA_MAKEGSIP(camera,WCSA_ASP->APROP,WCSA_ASP->GSIP);
+    F_WCSA_MAKEGSIP(APROPPolicy, camera,WCSA_ASP->APROP,WCSA_ASP->GSIP);
     if(WCSA_ASP->APROP->STDOUT==2) WCSA_ASP->GSIP->F_WCSA_GSIP_SHOWGSIP();
 //    F_WCSA_SETSIZE_local(matchlist,WCSA_ASP->APROP,WCSA_ASP->GSIP);
 
@@ -243,7 +243,7 @@ void    F_WCSA_MAKEAPROP(lsst::pex::policy::Policy::Ptr &APROPPolicy, CL_APROP *
     APROP->ALLREFNUM   = 0;
     APROP->ALLFITNUM   = 0;
 }
-void    F_WCSA_MAKEGSIP(lsst::afw::cameraGeom::Camera::Ptr &camera, CL_APROP *APROP, CL_GSIP *GSIP){
+void    F_WCSA_MAKEGSIP(lsst::pex::policy::Policy::Ptr &APROPPolicy, lsst::afw::cameraGeom::Camera::Ptr &camera, CL_APROP *APROP, CL_GSIP *GSIP){
     int CID;
 
     GSIP->F_WCSA_GSIP_SET0();
@@ -266,6 +266,286 @@ void    F_WCSA_MAKEGSIP(lsst::afw::cameraGeom::Camera::Ptr &camera, CL_APROP *AP
             GSIP->CSIP[CID].POSID[1]=detId.getIndex().second;
         }
     }
+//INITIAL POSITION
+    lsst::pex::policy::DefaultPolicyFile const defaultsFile("solvetansip", "WCS_MAKEAPROP_Dictionary.paf","policy");
+    lsst::pex::policy::Policy const defaults(defaultsFile);
+    APROPPolicy->mergeDefaults(defaults);
+
+    char GPOSX[100],GPOSY[100],GPOST[100];
+    
+cout << "INIT" << endl;
+    if(APROP->CCDNUM<11){
+        for(CID=0;CID<APROP->CCDNUM;CID++){
+            sprintf(GPOSX,"SCIGPOS%03d_X",CID);
+            sprintf(GPOSY,"SCIGPOS%03d_Y",CID);
+            sprintf(GPOST,"SCIGPOS%03d_T",CID);
+            GSIP->CSIP[CID].GPOS[0]=GSIP->CSIP[CID].GPOS_INIT[0]=APROPPolicy->getDouble(GPOSX);
+            GSIP->CSIP[CID].GPOS[1]=GSIP->CSIP[CID].GPOS_INIT[1]=APROPPolicy->getDouble(GPOSY);
+            GSIP->CSIP[CID].GPOS[2]=GSIP->CSIP[CID].GPOS_INIT[2]=APROPPolicy->getDouble(GPOST);
+        }
+    }else{
+        for(CID=0;CID<APROP->CCDNUM;CID++){
+            sprintf(GPOSX,"HSCIGPOS%03d_X",CID);
+            sprintf(GPOSY,"HSCIGPOS%03d_Y",CID);
+            sprintf(GPOST,"HSCIGPOS%03d_T",CID);
+            GSIP->CSIP[CID].GPOS[0]=GSIP->CSIP[CID].GPOS_INIT[0]=APROPPolicy->getDouble(GPOSX);
+            GSIP->CSIP[CID].GPOS[1]=GSIP->CSIP[CID].GPOS_INIT[1]=APROPPolicy->getDouble(GPOSY);
+            GSIP->CSIP[CID].GPOS[2]=GSIP->CSIP[CID].GPOS_INIT[2]=APROPPolicy->getDouble(GPOST);
+        }
+    }
+//INITIAL DISTORTION
+    GSIP->SIP_ORDER_INIT     =APROPPolicy->getInt("ISIPORDER");
+    GSIP->SIP_P_ORDER_INIT   =APROPPolicy->getInt("IPSIPORDER");
+    GSIP->MAXFRAD_INIT       =APROPPolicy->getDouble("IMAXFRAD");
+    GSIP->CD_INIT[0][0]      =APROPPolicy->getDouble("ICD_1_1");
+    GSIP->CD_INIT[0][1]      =APROPPolicy->getDouble("ICD_1_2");
+    GSIP->CD_INIT[1][0]      =APROPPolicy->getDouble("ICD_2_1");
+    GSIP->CD_INIT[1][1]      =APROPPolicy->getDouble("ICD_2_2");
+    GSIP->InvCD_INIT[0][0]   = GSIP->CD_INIT[1][1]/(GSIP->CD_INIT[0][0]*GSIP->CD_INIT[1][1]-GSIP->CD_INIT[1][0]*GSIP->CD_INIT[0][1]);
+    GSIP->InvCD_INIT[0][1]   =-GSIP->CD_INIT[0][1]/(GSIP->CD_INIT[0][0]*GSIP->CD_INIT[1][1]-GSIP->CD_INIT[1][0]*GSIP->CD_INIT[0][1]);
+    GSIP->InvCD_INIT[1][0]   =-GSIP->CD_INIT[1][0]/(GSIP->CD_INIT[0][0]*GSIP->CD_INIT[1][1]-GSIP->CD_INIT[1][0]*GSIP->CD_INIT[0][1]);
+    GSIP->InvCD_INIT[1][1]   = GSIP->CD_INIT[0][0]/(GSIP->CD_INIT[0][0]*GSIP->CD_INIT[1][1]-GSIP->CD_INIT[1][0]*GSIP->CD_INIT[0][1]);
+    GSIP->SIP_AB_INIT[0][ 0] =APROPPolicy->getDouble("IA_0_0");
+    GSIP->SIP_AB_INIT[0][ 1] =APROPPolicy->getDouble("IA_0_1");
+    GSIP->SIP_AB_INIT[0][ 2] =APROPPolicy->getDouble("IA_0_2");
+    GSIP->SIP_AB_INIT[0][ 3] =APROPPolicy->getDouble("IA_0_3");
+    GSIP->SIP_AB_INIT[0][ 4] =APROPPolicy->getDouble("IA_0_4");
+    GSIP->SIP_AB_INIT[0][ 5] =APROPPolicy->getDouble("IA_0_5");
+    GSIP->SIP_AB_INIT[0][ 6] =APROPPolicy->getDouble("IA_0_6");
+    GSIP->SIP_AB_INIT[0][ 7] =APROPPolicy->getDouble("IA_0_7");
+    GSIP->SIP_AB_INIT[0][ 8] =APROPPolicy->getDouble("IA_0_8");
+    GSIP->SIP_AB_INIT[0][ 9] =APROPPolicy->getDouble("IA_0_9");
+    GSIP->SIP_AB_INIT[0][10] =APROPPolicy->getDouble("IA_1_0");
+    GSIP->SIP_AB_INIT[0][11] =APROPPolicy->getDouble("IA_1_1");
+    GSIP->SIP_AB_INIT[0][12] =APROPPolicy->getDouble("IA_1_2");
+    GSIP->SIP_AB_INIT[0][13] =APROPPolicy->getDouble("IA_1_3");
+    GSIP->SIP_AB_INIT[0][14] =APROPPolicy->getDouble("IA_1_4");
+    GSIP->SIP_AB_INIT[0][15] =APROPPolicy->getDouble("IA_1_5");
+    GSIP->SIP_AB_INIT[0][16] =APROPPolicy->getDouble("IA_1_6");
+    GSIP->SIP_AB_INIT[0][17] =APROPPolicy->getDouble("IA_1_7");
+    GSIP->SIP_AB_INIT[0][18] =APROPPolicy->getDouble("IA_1_8");
+    GSIP->SIP_AB_INIT[0][19] =APROPPolicy->getDouble("IA_2_0");
+    GSIP->SIP_AB_INIT[0][10] =APROPPolicy->getDouble("IA_2_1");
+    GSIP->SIP_AB_INIT[0][21] =APROPPolicy->getDouble("IA_2_2");
+    GSIP->SIP_AB_INIT[0][22] =APROPPolicy->getDouble("IA_2_3");
+    GSIP->SIP_AB_INIT[0][23] =APROPPolicy->getDouble("IA_2_4");
+    GSIP->SIP_AB_INIT[0][24] =APROPPolicy->getDouble("IA_2_5");
+    GSIP->SIP_AB_INIT[0][25] =APROPPolicy->getDouble("IA_2_6");
+    GSIP->SIP_AB_INIT[0][26] =APROPPolicy->getDouble("IA_2_7");
+    GSIP->SIP_AB_INIT[0][27] =APROPPolicy->getDouble("IA_3_0");
+    GSIP->SIP_AB_INIT[0][28] =APROPPolicy->getDouble("IA_3_1");
+    GSIP->SIP_AB_INIT[0][29] =APROPPolicy->getDouble("IA_3_2");
+    GSIP->SIP_AB_INIT[0][30] =APROPPolicy->getDouble("IA_3_3");
+    GSIP->SIP_AB_INIT[0][31] =APROPPolicy->getDouble("IA_3_4");
+    GSIP->SIP_AB_INIT[0][32] =APROPPolicy->getDouble("IA_3_5");
+    GSIP->SIP_AB_INIT[0][33] =APROPPolicy->getDouble("IA_3_6");
+    GSIP->SIP_AB_INIT[0][34] =APROPPolicy->getDouble("IA_4_0");
+    GSIP->SIP_AB_INIT[0][35] =APROPPolicy->getDouble("IA_4_1");
+    GSIP->SIP_AB_INIT[0][36] =APROPPolicy->getDouble("IA_4_2");
+    GSIP->SIP_AB_INIT[0][37] =APROPPolicy->getDouble("IA_4_3");
+    GSIP->SIP_AB_INIT[0][38] =APROPPolicy->getDouble("IA_4_4");
+    GSIP->SIP_AB_INIT[0][39] =APROPPolicy->getDouble("IA_4_5");
+    GSIP->SIP_AB_INIT[0][40] =APROPPolicy->getDouble("IA_5_0");
+    GSIP->SIP_AB_INIT[0][41] =APROPPolicy->getDouble("IA_5_1");
+    GSIP->SIP_AB_INIT[0][42] =APROPPolicy->getDouble("IA_5_2");
+    GSIP->SIP_AB_INIT[0][43] =APROPPolicy->getDouble("IA_5_3");
+    GSIP->SIP_AB_INIT[0][44] =APROPPolicy->getDouble("IA_5_4");
+    GSIP->SIP_AB_INIT[0][45] =APROPPolicy->getDouble("IA_6_0");
+    GSIP->SIP_AB_INIT[0][46] =APROPPolicy->getDouble("IA_6_1");
+    GSIP->SIP_AB_INIT[0][47] =APROPPolicy->getDouble("IA_6_2");
+    GSIP->SIP_AB_INIT[0][48] =APROPPolicy->getDouble("IA_6_3");
+    GSIP->SIP_AB_INIT[0][49] =APROPPolicy->getDouble("IA_7_0");
+    GSIP->SIP_AB_INIT[0][50] =APROPPolicy->getDouble("IA_7_1");
+    GSIP->SIP_AB_INIT[0][51] =APROPPolicy->getDouble("IA_7_2");
+    GSIP->SIP_AB_INIT[0][52] =APROPPolicy->getDouble("IA_8_0");
+    GSIP->SIP_AB_INIT[0][53] =APROPPolicy->getDouble("IA_8_1");
+    GSIP->SIP_AB_INIT[0][54] =APROPPolicy->getDouble("IA_9_0");
+    GSIP->SIP_AB_INIT[1][ 0] =APROPPolicy->getDouble("IB_0_0");
+    GSIP->SIP_AB_INIT[1][ 1] =APROPPolicy->getDouble("IB_0_1");
+    GSIP->SIP_AB_INIT[1][ 2] =APROPPolicy->getDouble("IB_0_2");
+    GSIP->SIP_AB_INIT[1][ 3] =APROPPolicy->getDouble("IB_0_3");
+    GSIP->SIP_AB_INIT[1][ 4] =APROPPolicy->getDouble("IB_0_4");
+    GSIP->SIP_AB_INIT[1][ 5] =APROPPolicy->getDouble("IB_0_5");
+    GSIP->SIP_AB_INIT[1][ 6] =APROPPolicy->getDouble("IB_0_6");
+    GSIP->SIP_AB_INIT[1][ 7] =APROPPolicy->getDouble("IB_0_7");
+    GSIP->SIP_AB_INIT[1][ 8] =APROPPolicy->getDouble("IB_0_8");
+    GSIP->SIP_AB_INIT[1][ 9] =APROPPolicy->getDouble("IB_0_9");
+    GSIP->SIP_AB_INIT[1][10] =APROPPolicy->getDouble("IB_1_0");
+    GSIP->SIP_AB_INIT[1][11] =APROPPolicy->getDouble("IB_1_1");
+    GSIP->SIP_AB_INIT[1][12] =APROPPolicy->getDouble("IB_1_2");
+    GSIP->SIP_AB_INIT[1][13] =APROPPolicy->getDouble("IB_1_3");
+    GSIP->SIP_AB_INIT[1][14] =APROPPolicy->getDouble("IB_1_4");
+    GSIP->SIP_AB_INIT[1][15] =APROPPolicy->getDouble("IB_1_5");
+    GSIP->SIP_AB_INIT[1][16] =APROPPolicy->getDouble("IB_1_6");
+    GSIP->SIP_AB_INIT[1][17] =APROPPolicy->getDouble("IB_1_7");
+    GSIP->SIP_AB_INIT[1][18] =APROPPolicy->getDouble("IB_1_8");
+    GSIP->SIP_AB_INIT[1][19] =APROPPolicy->getDouble("IB_2_0");
+    GSIP->SIP_AB_INIT[1][10] =APROPPolicy->getDouble("IB_2_1");
+    GSIP->SIP_AB_INIT[1][21] =APROPPolicy->getDouble("IB_2_2");
+    GSIP->SIP_AB_INIT[1][22] =APROPPolicy->getDouble("IB_2_3");
+    GSIP->SIP_AB_INIT[1][23] =APROPPolicy->getDouble("IB_2_4");
+    GSIP->SIP_AB_INIT[1][24] =APROPPolicy->getDouble("IB_2_5");
+    GSIP->SIP_AB_INIT[1][25] =APROPPolicy->getDouble("IB_2_6");
+    GSIP->SIP_AB_INIT[1][26] =APROPPolicy->getDouble("IB_2_7");
+    GSIP->SIP_AB_INIT[1][27] =APROPPolicy->getDouble("IB_3_0");
+    GSIP->SIP_AB_INIT[1][28] =APROPPolicy->getDouble("IB_3_1");
+    GSIP->SIP_AB_INIT[1][29] =APROPPolicy->getDouble("IB_3_2");
+    GSIP->SIP_AB_INIT[1][30] =APROPPolicy->getDouble("IB_3_3");
+    GSIP->SIP_AB_INIT[1][31] =APROPPolicy->getDouble("IB_3_4");
+    GSIP->SIP_AB_INIT[1][32] =APROPPolicy->getDouble("IB_3_5");
+    GSIP->SIP_AB_INIT[1][33] =APROPPolicy->getDouble("IB_3_6");
+    GSIP->SIP_AB_INIT[1][34] =APROPPolicy->getDouble("IB_4_0");
+    GSIP->SIP_AB_INIT[1][35] =APROPPolicy->getDouble("IB_4_1");
+    GSIP->SIP_AB_INIT[1][36] =APROPPolicy->getDouble("IB_4_2");
+    GSIP->SIP_AB_INIT[1][37] =APROPPolicy->getDouble("IB_4_3");
+    GSIP->SIP_AB_INIT[1][38] =APROPPolicy->getDouble("IB_4_4");
+    GSIP->SIP_AB_INIT[1][39] =APROPPolicy->getDouble("IB_4_5");
+    GSIP->SIP_AB_INIT[1][40] =APROPPolicy->getDouble("IB_5_0");
+    GSIP->SIP_AB_INIT[1][41] =APROPPolicy->getDouble("IB_5_1");
+    GSIP->SIP_AB_INIT[1][42] =APROPPolicy->getDouble("IB_5_2");
+    GSIP->SIP_AB_INIT[1][43] =APROPPolicy->getDouble("IB_5_3");
+    GSIP->SIP_AB_INIT[1][44] =APROPPolicy->getDouble("IB_5_4");
+    GSIP->SIP_AB_INIT[1][45] =APROPPolicy->getDouble("IB_6_0");
+    GSIP->SIP_AB_INIT[1][46] =APROPPolicy->getDouble("IB_6_1");
+    GSIP->SIP_AB_INIT[1][47] =APROPPolicy->getDouble("IB_6_2");
+    GSIP->SIP_AB_INIT[1][48] =APROPPolicy->getDouble("IB_6_3");
+    GSIP->SIP_AB_INIT[1][49] =APROPPolicy->getDouble("IB_7_0");
+    GSIP->SIP_AB_INIT[1][50] =APROPPolicy->getDouble("IB_7_1");
+    GSIP->SIP_AB_INIT[1][51] =APROPPolicy->getDouble("IB_7_2");
+    GSIP->SIP_AB_INIT[1][52] =APROPPolicy->getDouble("IB_8_0");
+    GSIP->SIP_AB_INIT[1][53] =APROPPolicy->getDouble("IB_8_1");
+    GSIP->SIP_AB_INIT[1][54] =APROPPolicy->getDouble("IB_9_0");
+    GSIP->SIP_ABP_INIT[0][ 0]=APROPPolicy->getDouble("IAP_0_0");
+    GSIP->SIP_ABP_INIT[0][ 1]=APROPPolicy->getDouble("IAP_0_1");
+    GSIP->SIP_ABP_INIT[0][ 2]=APROPPolicy->getDouble("IAP_0_2");
+    GSIP->SIP_ABP_INIT[0][ 3]=APROPPolicy->getDouble("IAP_0_3");
+    GSIP->SIP_ABP_INIT[0][ 4]=APROPPolicy->getDouble("IAP_0_4");
+    GSIP->SIP_ABP_INIT[0][ 5]=APROPPolicy->getDouble("IAP_0_5");
+    GSIP->SIP_ABP_INIT[0][ 6]=APROPPolicy->getDouble("IAP_0_6");
+    GSIP->SIP_ABP_INIT[0][ 7]=APROPPolicy->getDouble("IAP_0_7");
+    GSIP->SIP_ABP_INIT[0][ 8]=APROPPolicy->getDouble("IAP_0_8");
+    GSIP->SIP_ABP_INIT[0][ 9]=APROPPolicy->getDouble("IAP_0_9");
+    GSIP->SIP_ABP_INIT[0][10]=APROPPolicy->getDouble("IAP_1_0");
+    GSIP->SIP_ABP_INIT[0][11]=APROPPolicy->getDouble("IAP_1_1");
+    GSIP->SIP_ABP_INIT[0][12]=APROPPolicy->getDouble("IAP_1_2");
+    GSIP->SIP_ABP_INIT[0][13]=APROPPolicy->getDouble("IAP_1_3");
+    GSIP->SIP_ABP_INIT[0][14]=APROPPolicy->getDouble("IAP_1_4");
+    GSIP->SIP_ABP_INIT[0][15]=APROPPolicy->getDouble("IAP_1_5");
+    GSIP->SIP_ABP_INIT[0][16]=APROPPolicy->getDouble("IAP_1_6");
+    GSIP->SIP_ABP_INIT[0][17]=APROPPolicy->getDouble("IAP_1_7");
+    GSIP->SIP_ABP_INIT[0][18]=APROPPolicy->getDouble("IAP_1_8");
+    GSIP->SIP_ABP_INIT[0][19]=APROPPolicy->getDouble("IAP_2_0");
+    GSIP->SIP_ABP_INIT[0][10]=APROPPolicy->getDouble("IAP_2_1");
+    GSIP->SIP_ABP_INIT[0][21]=APROPPolicy->getDouble("IAP_2_2");
+    GSIP->SIP_ABP_INIT[0][22]=APROPPolicy->getDouble("IAP_2_3");
+    GSIP->SIP_ABP_INIT[0][23]=APROPPolicy->getDouble("IAP_2_4");
+    GSIP->SIP_ABP_INIT[0][24]=APROPPolicy->getDouble("IAP_2_5");
+    GSIP->SIP_ABP_INIT[0][25]=APROPPolicy->getDouble("IAP_2_6");
+    GSIP->SIP_ABP_INIT[0][26]=APROPPolicy->getDouble("IAP_2_7");
+    GSIP->SIP_ABP_INIT[0][27]=APROPPolicy->getDouble("IAP_3_0");
+    GSIP->SIP_ABP_INIT[0][28]=APROPPolicy->getDouble("IAP_3_1");
+    GSIP->SIP_ABP_INIT[0][29]=APROPPolicy->getDouble("IAP_3_2");
+    GSIP->SIP_ABP_INIT[0][30]=APROPPolicy->getDouble("IAP_3_3");
+    GSIP->SIP_ABP_INIT[0][31]=APROPPolicy->getDouble("IAP_3_4");
+    GSIP->SIP_ABP_INIT[0][32]=APROPPolicy->getDouble("IAP_3_5");
+    GSIP->SIP_ABP_INIT[0][33]=APROPPolicy->getDouble("IAP_3_6");
+    GSIP->SIP_ABP_INIT[0][34]=APROPPolicy->getDouble("IAP_4_0");
+    GSIP->SIP_ABP_INIT[0][35]=APROPPolicy->getDouble("IAP_4_1");
+    GSIP->SIP_ABP_INIT[0][36]=APROPPolicy->getDouble("IAP_4_2");
+    GSIP->SIP_ABP_INIT[0][37]=APROPPolicy->getDouble("IAP_4_3");
+    GSIP->SIP_ABP_INIT[0][38]=APROPPolicy->getDouble("IAP_4_4");
+    GSIP->SIP_ABP_INIT[0][39]=APROPPolicy->getDouble("IAP_4_5");
+    GSIP->SIP_ABP_INIT[0][40]=APROPPolicy->getDouble("IAP_5_0");
+    GSIP->SIP_ABP_INIT[0][41]=APROPPolicy->getDouble("IAP_5_1");
+    GSIP->SIP_ABP_INIT[0][42]=APROPPolicy->getDouble("IAP_5_2");
+    GSIP->SIP_ABP_INIT[0][43]=APROPPolicy->getDouble("IAP_5_3");
+    GSIP->SIP_ABP_INIT[0][44]=APROPPolicy->getDouble("IAP_5_4");
+    GSIP->SIP_ABP_INIT[0][45]=APROPPolicy->getDouble("IAP_6_0");
+    GSIP->SIP_ABP_INIT[0][46]=APROPPolicy->getDouble("IAP_6_1");
+    GSIP->SIP_ABP_INIT[0][47]=APROPPolicy->getDouble("IAP_6_2");
+    GSIP->SIP_ABP_INIT[0][48]=APROPPolicy->getDouble("IAP_6_3");
+    GSIP->SIP_ABP_INIT[0][49]=APROPPolicy->getDouble("IAP_7_0");
+    GSIP->SIP_ABP_INIT[0][50]=APROPPolicy->getDouble("IAP_7_1");
+    GSIP->SIP_ABP_INIT[0][51]=APROPPolicy->getDouble("IAP_7_2");
+    GSIP->SIP_ABP_INIT[0][52]=APROPPolicy->getDouble("IAP_8_0");
+    GSIP->SIP_ABP_INIT[0][53]=APROPPolicy->getDouble("IAP_8_1");
+    GSIP->SIP_ABP_INIT[0][54]=APROPPolicy->getDouble("IAP_9_0");
+    GSIP->SIP_ABP_INIT[1][ 0]=APROPPolicy->getDouble("IBP_0_0");
+    GSIP->SIP_ABP_INIT[1][ 1]=APROPPolicy->getDouble("IBP_0_1");
+    GSIP->SIP_ABP_INIT[1][ 2]=APROPPolicy->getDouble("IBP_0_2");
+    GSIP->SIP_ABP_INIT[1][ 3]=APROPPolicy->getDouble("IBP_0_3");
+    GSIP->SIP_ABP_INIT[1][ 4]=APROPPolicy->getDouble("IBP_0_4");
+    GSIP->SIP_ABP_INIT[1][ 5]=APROPPolicy->getDouble("IBP_0_5");
+    GSIP->SIP_ABP_INIT[1][ 6]=APROPPolicy->getDouble("IBP_0_6");
+    GSIP->SIP_ABP_INIT[1][ 7]=APROPPolicy->getDouble("IBP_0_7");
+    GSIP->SIP_ABP_INIT[1][ 8]=APROPPolicy->getDouble("IBP_0_8");
+    GSIP->SIP_ABP_INIT[1][ 9]=APROPPolicy->getDouble("IBP_0_9");
+    GSIP->SIP_ABP_INIT[1][10]=APROPPolicy->getDouble("IBP_1_0");
+    GSIP->SIP_ABP_INIT[1][11]=APROPPolicy->getDouble("IBP_1_1");
+    GSIP->SIP_ABP_INIT[1][12]=APROPPolicy->getDouble("IBP_1_2");
+    GSIP->SIP_ABP_INIT[1][13]=APROPPolicy->getDouble("IBP_1_3");
+    GSIP->SIP_ABP_INIT[1][14]=APROPPolicy->getDouble("IBP_1_4");
+    GSIP->SIP_ABP_INIT[1][15]=APROPPolicy->getDouble("IBP_1_5");
+    GSIP->SIP_ABP_INIT[1][16]=APROPPolicy->getDouble("IBP_1_6");
+    GSIP->SIP_ABP_INIT[1][17]=APROPPolicy->getDouble("IBP_1_7");
+    GSIP->SIP_ABP_INIT[1][18]=APROPPolicy->getDouble("IBP_1_8");
+    GSIP->SIP_ABP_INIT[1][19]=APROPPolicy->getDouble("IBP_2_0");
+    GSIP->SIP_ABP_INIT[1][10]=APROPPolicy->getDouble("IBP_2_1");
+    GSIP->SIP_ABP_INIT[1][21]=APROPPolicy->getDouble("IBP_2_2");
+    GSIP->SIP_ABP_INIT[1][22]=APROPPolicy->getDouble("IBP_2_3");
+    GSIP->SIP_ABP_INIT[1][23]=APROPPolicy->getDouble("IBP_2_4");
+    GSIP->SIP_ABP_INIT[1][24]=APROPPolicy->getDouble("IBP_2_5");
+    GSIP->SIP_ABP_INIT[1][25]=APROPPolicy->getDouble("IBP_2_6");
+    GSIP->SIP_ABP_INIT[1][26]=APROPPolicy->getDouble("IBP_2_7");
+    GSIP->SIP_ABP_INIT[1][27]=APROPPolicy->getDouble("IBP_3_0");
+    GSIP->SIP_ABP_INIT[1][28]=APROPPolicy->getDouble("IBP_3_1");
+    GSIP->SIP_ABP_INIT[1][29]=APROPPolicy->getDouble("IBP_3_2");
+    GSIP->SIP_ABP_INIT[1][30]=APROPPolicy->getDouble("IBP_3_3");
+    GSIP->SIP_ABP_INIT[1][31]=APROPPolicy->getDouble("IBP_3_4");
+    GSIP->SIP_ABP_INIT[1][32]=APROPPolicy->getDouble("IBP_3_5");
+    GSIP->SIP_ABP_INIT[1][33]=APROPPolicy->getDouble("IBP_3_6");
+    GSIP->SIP_ABP_INIT[1][34]=APROPPolicy->getDouble("IBP_4_0");
+    GSIP->SIP_ABP_INIT[1][35]=APROPPolicy->getDouble("IBP_4_1");
+    GSIP->SIP_ABP_INIT[1][36]=APROPPolicy->getDouble("IBP_4_2");
+    GSIP->SIP_ABP_INIT[1][37]=APROPPolicy->getDouble("IBP_4_3");
+    GSIP->SIP_ABP_INIT[1][38]=APROPPolicy->getDouble("IBP_4_4");
+    GSIP->SIP_ABP_INIT[1][39]=APROPPolicy->getDouble("IBP_4_5");
+    GSIP->SIP_ABP_INIT[1][40]=APROPPolicy->getDouble("IBP_5_0");
+    GSIP->SIP_ABP_INIT[1][41]=APROPPolicy->getDouble("IBP_5_1");
+    GSIP->SIP_ABP_INIT[1][42]=APROPPolicy->getDouble("IBP_5_2");
+    GSIP->SIP_ABP_INIT[1][43]=APROPPolicy->getDouble("IBP_5_3");
+    GSIP->SIP_ABP_INIT[1][44]=APROPPolicy->getDouble("IBP_5_4");
+    GSIP->SIP_ABP_INIT[1][45]=APROPPolicy->getDouble("IBP_6_0");
+    GSIP->SIP_ABP_INIT[1][46]=APROPPolicy->getDouble("IBP_6_1");
+    GSIP->SIP_ABP_INIT[1][47]=APROPPolicy->getDouble("IBP_6_2");
+    GSIP->SIP_ABP_INIT[1][48]=APROPPolicy->getDouble("IBP_6_3");
+    GSIP->SIP_ABP_INIT[1][49]=APROPPolicy->getDouble("IBP_7_0");
+    GSIP->SIP_ABP_INIT[1][50]=APROPPolicy->getDouble("IBP_7_1");
+    GSIP->SIP_ABP_INIT[1][51]=APROPPolicy->getDouble("IBP_7_2");
+    GSIP->SIP_ABP_INIT[1][52]=APROPPolicy->getDouble("IBP_8_0");
+    GSIP->SIP_ABP_INIT[1][53]=APROPPolicy->getDouble("IBP_8_1");
+    GSIP->SIP_ABP_INIT[1][54]=APROPPolicy->getDouble("IBP_9_0");
+/*
+cout << "INIT" << endl;
+cout << GSIP->SIP_ORDER_INIT      << endl;
+cout << GSIP->SIP_P_ORDER_INIT    << endl;
+cout << GSIP->MAXFRAD_INIT        << endl;
+cout << GSIP->CD_INIT[0][0]       << endl;
+cout << GSIP->CD_INIT[0][1]       << endl;
+cout << GSIP->CD_INIT[1][0]       << endl;
+cout << GSIP->CD_INIT[1][1]       << endl;
+cout << GSIP->InvCD_INIT[0][0]    << endl;
+cout << GSIP->InvCD_INIT[0][1]    << endl;
+cout << GSIP->InvCD_INIT[1][0]    << endl;
+cout << GSIP->InvCD_INIT[1][1]    << endl;
+int i,j;
+for(i=0;i<2;i++)
+for(j=0;j<55;j++)
+cout << GSIP->SIP_AB_INIT[i][j] << endl;
+for(i=0;i<2;i++)
+for(j=0;j<55;j++)
+cout << GSIP->SIP_ABP_INIT[i][j] << endl;
+*/
 }
 void    F_WCSA_SETREFSIZE(vector<vector<PTR(hsc::meas::tansip::SourceMatch)> > const &matchlist, CL_APROP* APROP){
     int ID;
@@ -653,6 +933,50 @@ std::vector< std::vector< double > > F_WCSA_PLMAIN_GETCRSMA_atLOCALGRID(CL_WCSA_
 std::vector< std::vector< double > > F_WCSA_PLMAIN_GETCRSMA_atCRPIXGRID(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > GRID){
 }
 std::vector< std::vector< double > > F_WCSA_PLMAIN_GETCRSMA_atRADECGRID(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > GRID){
+}
+
+//-----------------------------------------------------------------
+//Getting Functions : WCSA_ASP : GRID DISTORTION 
+//-----------------------------------------------------------------
+std::vector< std::vector< double > > F_WCSA_PLMAIN_GETDISTORTION_atCRPIXGRID(CL_WCSA_ASP* WCSA_ASP,std::vector< double > GRID){
+    double CRPIX[2],RD[2],RDINIT[2];
+    std::vector< double > RADEC(6);
+    std::vector< std::vector< double > > GRIDRADEC;
+
+    for(CRPIX[0]=GRID[0];CRPIX[0]<GRID[2]+0.5*GRID[4];CRPIX[0]+=GRID[4])
+    for(CRPIX[1]=GRID[1];CRPIX[1]<GRID[3]+0.5*GRID[5];CRPIX[1]+=GRID[5]){
+        WCSA_ASP->GSIP->F_WCSA_GSIP_XCRPIXtoXRADEC(WCSA_ASP->APROP->CCDNUM,CRPIX,RD);
+        WCSA_ASP->GSIP->F_WCSA_GSIP_XCRPIXtoXRADEC(-1,CRPIX,RDINIT);
+        RADEC[0]=CRPIX[0];
+        RADEC[1]=CRPIX[1];
+        RADEC[2]=RD[0];
+        RADEC[3]=RD[1];
+        RADEC[4]=RDINIT[0];
+        RADEC[5]=RDINIT[1];
+        GRIDRADEC.push_back(RADEC);
+    }
+
+    return GRIDRADEC;
+}
+std::vector< std::vector< double > > F_WCSA_PLMAIN_GETDISTORTION_atRADECGRID(CL_WCSA_ASP* WCSA_ASP,std::vector< double > GRID){
+    double RADEC[2],RD[2],RDINIT[2];
+    std::vector< double > CRPIX(6);
+    std::vector< std::vector< double > > GRIDCRPIX;
+
+    for(RADEC[0]=GRID[0];RADEC[0]<GRID[2]+0.5*GRID[4];RADEC[0]+=GRID[4])
+    for(RADEC[1]=GRID[1];RADEC[1]<GRID[3]+0.5*GRID[5];RADEC[1]+=GRID[5]){
+        WCSA_ASP->GSIP->F_WCSA_GSIP_XRADECtoXCRPIX(WCSA_ASP->APROP->CCDNUM,RADEC,RD);
+        WCSA_ASP->GSIP->F_WCSA_GSIP_XRADECtoXCRPIX(-1,RADEC,RDINIT);
+        CRPIX[0]=RADEC[0];
+        CRPIX[1]=RADEC[1];
+        CRPIX[2]=RD[0];
+        CRPIX[3]=RD[1];
+        CRPIX[4]=RDINIT[0];
+        CRPIX[5]=RDINIT[1];
+        GRIDCRPIX.push_back(CRPIX);
+    }
+
+    return GRIDCRPIX;
 }
 //-----------------------------------------------------------------
 //Output Functions : WCSA_ASP : SIP
