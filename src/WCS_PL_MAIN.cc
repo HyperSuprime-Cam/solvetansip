@@ -62,6 +62,7 @@ PTR(CL_WCSA_ASP) F_WCSA_TANSIP_V(vector<vector<PTR(hsc::meas::tansip::SourceMatc
     if(WCSA_ASP->APROP->STDOUT==1||WCSA_ASP->APROP->STDOUT==2)cout << "--- WCS_PL_MAIN : F_WCS_MAKE_GSIP ---" << endl;
     F_WCSA_MAKEGSIP(APROPPolicy,camera,WCSA_ASP->APROP,WCSA_ASP->GSIP);
     if(WCSA_ASP->APROP->STDOUT==2) WCSA_ASP->GSIP->F_WCSA_GSIP_SHOWGSIP();
+    if(WCSA_ASP->APROP->STDOUT==2) WCSA_ASP->GSIP->F_WCSA_GSIP_SHOWGPOS();
 //    F_WCSA_SETSIZE_local(matchlist,WCSA_ASP->APROP,WCSA_ASP->GSIP);
 
 //APAIR
@@ -139,6 +140,7 @@ PTR(CL_WCSA_ASP) F_WCSA_TANSIP_V_local(string matchlist,dafbase::PropertySet::Pt
     if(WCSA_ASP->APROP->STDOUT==1||WCSA_ASP->APROP->STDOUT==2)cout << "--- WCS_PL_MAIN : F_WCS_MAKE_GSIP ---" << endl;
     F_WCSA_MAKEGSIP(APROPPolicy, camera,WCSA_ASP->APROP,WCSA_ASP->GSIP);
     if(WCSA_ASP->APROP->STDOUT==2) WCSA_ASP->GSIP->F_WCSA_GSIP_SHOWGSIP();
+    if(WCSA_ASP->APROP->STDOUT==2) WCSA_ASP->GSIP->F_WCSA_GSIP_SHOWGPOS();
 //    F_WCSA_SETSIZE_local(matchlist,WCSA_ASP->APROP,WCSA_ASP->GSIP);
 
 //APAIR
@@ -248,6 +250,8 @@ void    F_WCSA_MAKEGSIP(lsst::pex::policy::Policy::Ptr &APROPPolicy, lsst::afw::
 
     GSIP->F_WCSA_GSIP_SET0();
 
+//double GPOSAVE[2];
+//GPOSAVE[0]=GPOSAVE[1]=0;
     for(camGeom::Camera::const_iterator iter(camera->begin()); iter != camera->end(); ++iter) { 
         camGeom::DetectorMosaic::Ptr detMosaic = boost::shared_dynamic_cast<camGeom::DetectorMosaic>(*iter);
 
@@ -264,8 +268,15 @@ void    F_WCSA_MAKEGSIP(lsst::pex::policy::Policy::Ptr &APROPPolicy, lsst::afw::
             GSIP->CSIP[CID].GPOS[2]=0;//ccdTiltNQuarter * 90.0;//?
             GSIP->CSIP[CID].POSID[0]=detId.getIndex().first;
             GSIP->CSIP[CID].POSID[1]=detId.getIndex().second;
+//GPOSAVE[0]+=GSIP->CSIP[CID].GPOS[0];
+//GPOSAVE[1]+=GSIP->CSIP[CID].GPOS[1];
         }
     }
+/*cout << "-GPOSAVE-" << endl;
+cout << GPOSAVE[0]/100 << "	" << GPOSAVE[1]/100 << endl;
+for(CID=0;CID<APROP->CCDNUM;CID++){
+cout <<fixed<< CID << "	" << GSIP->CSIP[CID].GPOS[0]-GPOSAVE[0]/100-1024 << "	" << GSIP->CSIP[CID].GPOS[1]+174-2048 << endl;
+}*/
 //INITIAL POSITION
     lsst::pex::policy::DefaultPolicyFile const defaultsFile("solvetansip", "WCS_MAKEAPROP_Dictionary.paf","policy");
     lsst::pex::policy::Policy const defaults(defaultsFile);
@@ -288,11 +299,18 @@ cout << "INIT" << endl;
             sprintf(GPOSX,"HSCIGPOS%03d_X",CID);
             sprintf(GPOSY,"HSCIGPOS%03d_Y",CID);
             sprintf(GPOST,"HSCIGPOS%03d_T",CID);
+//cout << GSIP->CSIP[CID].ID << "	" << GSIP->CSIP[CID].GPOS[0]
+ //                          << "	" << GSIP->CSIP[CID].GPOS[1];
             GSIP->CSIP[CID].GPOS[0]=GSIP->CSIP[CID].GPOS_INIT[0]=APROPPolicy->getDouble(GPOSX);
             GSIP->CSIP[CID].GPOS[1]=GSIP->CSIP[CID].GPOS_INIT[1]=APROPPolicy->getDouble(GPOSY);
+//cout                << "	" << GSIP->CSIP[CID].GPOS[0]
+//                           << "	" << GSIP->CSIP[CID].GPOS[1] << endl;
             GSIP->CSIP[CID].GPOS[2]=GSIP->CSIP[CID].GPOS_INIT[2]=APROPPolicy->getDouble(GPOST);
         }
     }
+//cout << "GLOBPOS: " << GSIP->CSIP[0].GPOS[0] << "	" << GSIP->CSIP[0].GPOS[1] << "	" << GSIP->CSIP[0].GPOS[2] << "	" << endl;
+//cout << "GLOBPOS: " << GSIP->CSIP[1].GPOS[0] << "	" << GSIP->CSIP[1].GPOS[1] << "	" << GSIP->CSIP[1].GPOS[2] << "	" << endl;
+//cout << "GLOBPOS: " << GSIP->CSIP[APROP->CCDNUM].GPOS[0] << "	" << GSIP->CSIP[APROP->CCDNUM].GPOS[1] << "	" << GSIP->CSIP[APROP->CCDNUM].GPOS[2] << "	" << endl;
 //INITIAL DISTORTION
     GSIP->SIP_ORDER_INIT     =APROPPolicy->getInt("ISIPORDER");
     GSIP->SIP_P_ORDER_INIT   =APROPPolicy->getInt("IPSIPORDER");
@@ -555,6 +573,7 @@ void    F_WCSA_SETREFSIZE(vector<vector<PTR(hsc::meas::tansip::SourceMatch)> > c
         APROP->ALLREFNUM     +=matchlist[ID].size();
     }
         APROP->ALLFITNUM=APROP->ALLREFNUM;
+    if(APROP->STDOUT==2)cout << "ALLREFNUM:" << APROP->ALLREFNUM << endl;
 }
 /*DEL*/
 /*void    F_WCSA_SETSIZE(vector<vector<PTR(hsc::meas::tansip::SourceMatch)> > const &matchlist, CL_APROP* APROP, CL_GSIP *GSIP){
@@ -593,6 +612,7 @@ void    F_WCSA_SETREFSIZE_local(string matchlist, CL_APROP* APROP){
     APROP->ALLREFNUM = CIDNUM[APROP->CCDNUM];
     APROP->ALLFITNUM = CIDNUM[APROP->CCDNUM];
     in.close();
+    if(APROP->STDOUT==2)cout << "ALLREFNUM:" << APROP->ALLREFNUM << endl;
 
     delete [] CIDNUM;
 }
@@ -647,6 +667,14 @@ void    F_WCSA_MAKEPAIR(vector<vector<PTR(hsc::meas::tansip::SourceMatch)> > con
         APAIR->PAIR[ALLNUM].X_LOCALERR[1] = matchlist[CID][NUM]->getYErr();
         APAIR->PAIR[ALLNUM].X_RADECERR[0] = 1;
         APAIR->PAIR[ALLNUM].X_RADECERR[1] = 1;
+        if(isnan(APAIR->PAIR[ALLNUM].ID)||isinf(APAIR->PAIR[ALLNUM].ID)||
+           isnan(APAIR->PAIR[ALLNUM].CHIPID)||isinf(APAIR->PAIR[ALLNUM].CHIPID)||
+           isnan(APAIR->PAIR[ALLNUM].X_RADEC[0])||isinf(APAIR->PAIR[ALLNUM].X_RADEC[0])||
+           isnan(APAIR->PAIR[ALLNUM].X_RADEC[1])||isinf(APAIR->PAIR[ALLNUM].X_RADEC[1])||
+           isnan(APAIR->PAIR[ALLNUM].X_LOCAL[0])||isinf(APAIR->PAIR[ALLNUM].X_LOCAL[0])||
+           isnan(APAIR->PAIR[ALLNUM].X_LOCAL[1])||isinf(APAIR->PAIR[ALLNUM].X_LOCAL[1]))
+        APAIR->PAIR[ALLNUM].FLAG=0;
+cout << fixed << APAIR->PAIR[ALLNUM].ID << "	" << APAIR->PAIR[ALLNUM].CHIPID << "	" << APAIR->PAIR[ALLNUM].X_LOCAL[0] << "	" << APAIR->PAIR[ALLNUM].X_LOCAL[1] << "	" << APAIR->PAIR[ALLNUM].X_RADEC[0] << "	" << APAIR->PAIR[ALLNUM].X_RADEC[1] << endl;
         ALLNUM+=1;
     }
 }
@@ -671,6 +699,13 @@ void    F_WCSA_MAKEPAIR_local(string matchlist,CL_APAIR* APAIR){
         APAIR->PAIR[ALLNUM].X_LOCALERR[1]=1;
         APAIR->PAIR[ALLNUM].X_RADECERR[0]=1;
         APAIR->PAIR[ALLNUM].X_RADECERR[1]=1;
+        if(isnan(APAIR->PAIR[ALLNUM].ID)||isinf(APAIR->PAIR[ALLNUM].ID)||
+           isnan(APAIR->PAIR[ALLNUM].CHIPID)||isinf(APAIR->PAIR[ALLNUM].CHIPID)||
+           isnan(APAIR->PAIR[ALLNUM].X_RADEC[0])||isinf(APAIR->PAIR[ALLNUM].X_RADEC[0])||
+           isnan(APAIR->PAIR[ALLNUM].X_RADEC[1])||isinf(APAIR->PAIR[ALLNUM].X_RADEC[1])||
+           isnan(APAIR->PAIR[ALLNUM].X_LOCAL[0])||isinf(APAIR->PAIR[ALLNUM].X_LOCAL[0])||
+           isnan(APAIR->PAIR[ALLNUM].X_LOCAL[1])||isinf(APAIR->PAIR[ALLNUM].X_LOCAL[1]))
+        APAIR->PAIR[ALLNUM].FLAG=0;
         ALLNUM++;
     }
 }
@@ -730,6 +765,231 @@ std::vector <lsst::afw::image::TanWcs::Ptr> F_WCSA_PLMAIN_GETWCSLIST(PTR(CL_WCSA
     return WCSA_ASP->WCSPtr;
 }
 //-----------------------------------------------------------------
+//Output Functions : WCSA_ASP : SIP
+//-----------------------------------------------------------------
+void F_WCSA_PLMAIN_OUTPUTREFERENCES(CL_WCSA_ASP* WCSA_ASP, string REFERENCESFILENAME){
+    cout << "F_WCSA_PLMAIN_OUTPUTREFERENCES" << endl;
+    cout << REFERENCESFILENAME << endl;
+    ofstream fout;
+    fout.open(REFERENCESFILENAME.c_str());
+    fout << fixed;
+
+    int NUM;
+    for(NUM=0;NUM<WCSA_ASP->APROP->ALLREFNUM;NUM++)
+    fout << WCSA_ASP->APAIR->PAIR[NUM].ID << "	" 
+         << WCSA_ASP->APAIR->PAIR[NUM].CHIPID << "	"
+         << WCSA_ASP->APAIR->PAIR[NUM].FLAG << "	"
+         << WCSA_ASP->APAIR->PAIR[NUM].X_LOCAL[0] << "	" << WCSA_ASP->APAIR->PAIR[NUM].X_LOCAL[1] << "	"
+         << WCSA_ASP->APAIR->PAIR[NUM].X_GLOBAL[0] << "	" << WCSA_ASP->APAIR->PAIR[NUM].X_GLOBAL[1] << "	"
+         << WCSA_ASP->APAIR->PAIR[NUM].X_GLOBALCRPIX[0] << "	" << WCSA_ASP->APAIR->PAIR[NUM].X_GLOBALCRPIX[1] << "	"
+         << WCSA_ASP->APAIR->PAIR[NUM].X_PSIP_GLOBALCRPIX[0] << "	" << WCSA_ASP->APAIR->PAIR[NUM].X_PSIP_GLOBALCRPIX[1] << "	"
+         << WCSA_ASP->APAIR->PAIR[NUM].X_SIP_IM_PIXEL[0] << "	" << WCSA_ASP->APAIR->PAIR[NUM].X_SIP_IM_PIXEL[1] << "	"
+         << WCSA_ASP->APAIR->PAIR[NUM].X_IM_PIXEL[0] << "	" << WCSA_ASP->APAIR->PAIR[NUM].X_IM_PIXEL[1] << "	"
+         << WCSA_ASP->APAIR->PAIR[NUM].X_IM_WORLD[0] << "	" << WCSA_ASP->APAIR->PAIR[NUM].X_IM_WORLD[1] << "	"
+         << WCSA_ASP->APAIR->PAIR[NUM].X_RADEC[0] << "	" << WCSA_ASP->APAIR->PAIR[NUM].X_RADEC[1] << "	"
+         << WCSA_ASP->APAIR->GPOS[WCSA_ASP->APAIR->PAIR[NUM].CHIPID][0] << "	" << WCSA_ASP->APAIR->GPOS[WCSA_ASP->APAIR->PAIR[NUM].CHIPID][1] << "	" << WCSA_ASP->APAIR->GPOS[WCSA_ASP->APAIR->PAIR[NUM].CHIPID][2] << "	"
+         << WCSA_ASP->APAIR->CRPIX[0] << "	" << WCSA_ASP->APAIR->CRPIX[1] << "	"
+         << WCSA_ASP->APAIR->CRVAL[0] << "	" << WCSA_ASP->APAIR->CRVAL[1] << "	"
+         << WCSA_ASP->APAIR->CD[0][0] << "	" << WCSA_ASP->APAIR->CD[0][1] << "	"
+         << WCSA_ASP->APAIR->CD[1][0] << "	" << WCSA_ASP->APAIR->CD[1][1] << endl;
+}
+void F_WCSA_PLMAIN_OUTPUTSIPFIT(CL_WCSA_ASP* WCSA_ASP, string SIPFITFILENAME){
+    int NUM;
+    double RD[2];
+    cout << "F_WCSA_PLMAIN_OUTPUTSIPFIT" << endl;
+    cout << SIPFITFILENAME << endl;
+    ofstream fout;
+    fout.open(SIPFITFILENAME.c_str());
+    fout << fixed;
+
+    for(NUM=0;NUM<WCSA_ASP->APROP->ALLREFNUM;NUM++)
+    if(WCSA_ASP->APAIR->PAIR[NUM].FLAG==1){
+        WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXRADEC(WCSA_ASP->APROP->CCDNUM,WCSA_ASP->APAIR->PAIR[NUM].X_GLOBAL,RD);
+        fout << WCSA_ASP->APAIR->PAIR[NUM].ID << "	" << WCSA_ASP->APAIR->PAIR[NUM].X_RADEC[0] << "	" << WCSA_ASP->APAIR->PAIR[NUM].X_RADEC[1] << "	" << RD[0] << "	" << RD[1] << endl;
+    }
+}
+void F_WCSA_PLMAIN_OUTPUTPSIPFIT(CL_WCSA_ASP* WCSA_ASP, string PSIPFITFILENAME){
+    int NUM;
+    double RD[2];
+    cout << "F_WCSA_PLMAIN_OUTPUTPSIPFIT" << endl;
+    cout << PSIPFITFILENAME << endl;
+    ofstream fout;
+    fout.open(PSIPFITFILENAME.c_str());
+    fout << fixed;
+
+    for(NUM=0;NUM<WCSA_ASP->APROP->ALLREFNUM;NUM++)
+    if(WCSA_ASP->APAIR->PAIR[NUM].FLAG==1){
+        WCSA_ASP->GSIP->F_WCSA_GSIP_XRADECtoXLOCAL(WCSA_ASP->APROP->CCDNUM,WCSA_ASP->APAIR->PAIR[NUM].X_RADEC,RD);
+        fout << WCSA_ASP->APAIR->PAIR[NUM].ID << "	" << WCSA_ASP->APAIR->PAIR[NUM].X_GLOBAL[0] << "	" << WCSA_ASP->APAIR->PAIR[NUM].X_GLOBAL[1] << "	" << RD[0] << "	" << RD[1] << endl;
+    }
+}
+void F_WCSA_PLMAIN_OUTPUTSIP(CL_WCSA_ASP* WCSA_ASP, string SIPFILENAME){
+    int i,j,ij;
+    int TCCDNUM,SORDER,SPORDER;
+    cout << "F_WCSA_PLMAIN_OUTPUTSIP" << endl;
+    cout << SIPFILENAME << endl;
+    ofstream fout;
+
+    TCCDNUM = WCSA_ASP->APROP->CCDNUM;
+    SORDER  = WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_ORDER;
+    SPORDER = WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_P_ORDER;
+
+    fout.open(SIPFILENAME.c_str());
+    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].ID << endl;
+    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].REFNUM << endl;
+    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].FITNUM << endl;
+    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_ORDER << endl;
+    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_P_ORDER << endl;
+    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].GPOS[0] << endl;
+    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].GPOS[1] << endl;
+    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].GPOS[2] << endl;
+    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].MAXDRAD << endl;
+    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].MAXFRAD << endl;
+    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].CRPIX[0] << endl;
+    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].CRPIX[1] << endl;
+    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].CRVAL[0] << endl;
+    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].CRVAL[1] << endl;
+    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].CD[0][0] << endl;
+    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].CD[0][1] << endl;
+    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].CD[1][0] << endl;
+    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].CD[1][1] << endl;
+
+    ij=0;
+    for(i=0;i<SORDER+1;i++)
+    for(j=0;j<SORDER+1;j++)
+    if(i+j<SORDER+1)
+    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_AB[0][ij++] << endl;
+    ij=0;
+    for(i=0;i<SORDER+1;i++)
+    for(j=0;j<SORDER+1;j++)
+    if(i+j<SORDER+1)
+    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_AB[1][ij++] << endl;
+    ij=0;
+    for(i=0;i<SPORDER+1;i++)
+    for(j=0;j<SPORDER+1;j++)
+    if(i+j<SPORDER+1)
+    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_ABP[0][ij++] << endl;
+    ij=0;
+    for(i=0;i<SPORDER+1;i++)
+    for(j=0;j<SPORDER+1;j++)
+    if(i+j<SPORDER+1)
+    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_ABP[1][ij++] << endl;
+
+    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_AB_ERR[0][0] << endl;
+    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_AB_ERR[0][1] << endl;
+    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_AB_ERR[0][2] << endl;
+    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_AB_ERR[1][0] << endl;
+    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_AB_ERR[1][1] << endl;
+    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_AB_ERR[1][2] << endl;
+    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_ABP_ERR[0][0] << endl;
+    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_ABP_ERR[0][1] << endl;
+    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_ABP_ERR[0][2] << endl;
+    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_ABP_ERR[1][0] << endl;
+    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_ABP_ERR[1][1] << endl;
+    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_ABP_ERR[1][2] << endl;
+}
+void F_WCSA_PLMAIN_INPUTSIP(CL_WCSA_ASP* WCSA_ASP, string SIPFILENAME){
+    int i,j,ij;
+    int TCCDNUM,SORDER,SPORDER;
+    cout << "F_WCSA_PLMAIN_INPUTSIP" << endl;
+    cout << SIPFILENAME << endl;
+    ifstream fin;
+
+    fin.open(SIPFILENAME.c_str());
+    TCCDNUM = WCSA_ASP->APROP->CCDNUM;
+    
+    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].ID;
+    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].REFNUM;
+    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].FITNUM;
+    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_ORDER;
+    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_P_ORDER;
+    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].GPOS[0];
+    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].GPOS[1];
+    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].GPOS[2];
+    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].MAXDRAD;
+    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].MAXFRAD;
+    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].CRPIX[0];
+    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].CRPIX[1];
+    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].CRVAL[0];
+    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].CRVAL[1];
+    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].CD[0][0];
+    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].CD[0][1];
+    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].CD[1][0];
+    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].CD[1][1];
+
+    SORDER  = WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_ORDER;
+    SPORDER = WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_P_ORDER;
+
+
+    ij=0;
+    for(i=0;i<SORDER+1;i++)
+    for(j=0;j<SORDER+1;j++)
+    if(i+j<SORDER+1)
+    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_AB[0][ij++];
+    ij=0;
+    for(i=0;i<SORDER+1;i++)
+    for(j=0;j<SORDER+1;j++)
+    if(i+j<SORDER+1)
+    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_AB[1][ij++];
+    ij=0;
+    for(i=0;i<SPORDER+1;i++)
+    for(j=0;j<SPORDER+1;j++)
+    if(i+j<SPORDER+1)
+    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_ABP[0][ij++];
+    ij=0;
+    for(i=0;i<SPORDER+1;i++)
+    for(j=0;j<SPORDER+1;j++)
+    if(i+j<SPORDER+1)
+    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_ABP[1][ij++];
+
+    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_AB_ERR[0][0];
+    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_AB_ERR[0][1];
+    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_AB_ERR[0][2];
+    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_AB_ERR[1][0];
+    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_AB_ERR[1][1];
+    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_AB_ERR[1][2];
+    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_ABP_ERR[0][0];
+    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_ABP_ERR[0][1];
+    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_ABP_ERR[0][2];
+    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_ABP_ERR[1][0];
+    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_ABP_ERR[1][1];
+    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_ABP_ERR[1][2];
+
+//    WCSA_ASP->GSIP->F_WCSA_GSIP_SHOWCSIP(TCCDNUM);
+}
+void F_WCSA_PLMAIN_OUTPUTCCD(CL_WCSA_ASP* WCSA_ASP, string CCDFILENAME){
+    int CID,TCCDNUM;
+    cout << "F_WCSA_PLMAIN_OUTPUTCCD" << endl;
+    cout << CCDFILENAME << endl;
+    ofstream fout;
+
+    fout.open(CCDFILENAME.c_str());
+    TCCDNUM = WCSA_ASP->APROP->CCDNUM;
+    for(CID=0;CID<TCCDNUM;CID++){
+        fout << WCSA_ASP->GSIP->CSIP[CID].ID      << "	";
+        fout << WCSA_ASP->GSIP->CSIP[CID].GPOS[0] << "	";
+        fout << WCSA_ASP->GSIP->CSIP[CID].GPOS[1] << "	";
+        fout << WCSA_ASP->GSIP->CSIP[CID].GPOS[2] << endl;
+    }
+}
+void F_WCSA_PLMAIN_INPUTCCD(CL_WCSA_ASP* WCSA_ASP, string CCDFILENAME){
+    int CID,TCCDNUM;
+    cout << "F_WCSA_PLMAIN_INPUTCCD" << endl;
+    cout << CCDFILENAME << endl;
+    ifstream fin;
+
+    fin.open(CCDFILENAME.c_str());
+    TCCDNUM = WCSA_ASP->APROP->CCDNUM;
+    for(CID=0;CID<TCCDNUM;CID++){
+        fin >> WCSA_ASP->GSIP->CSIP[CID].ID     ;
+        fin >> WCSA_ASP->GSIP->CSIP[CID].GPOS[0];
+        fin >> WCSA_ASP->GSIP->CSIP[CID].GPOS[1];
+        fin >> WCSA_ASP->GSIP->CSIP[CID].GPOS[2];
+//    cout << WCSA_ASP->GSIP->CSIP[CID].ID << "	" << WCSA_ASP->GSIP->CSIP[CID].GPOS[0] << "	" << WCSA_ASP->GSIP->CSIP[CID].GPOS[1] << "	" << WCSA_ASP->GSIP->CSIP[CID].GPOS[2] << endl;
+    }
+
+}
+//-----------------------------------------------------------------
 //Getting Functions : WCSA_ASP : POSITION
 //-----------------------------------------------------------------
 std::vector< double > F_WCSA_PLMAIN_GETPOSITION_RADECfromLOCAL(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > XY){
@@ -742,7 +1002,6 @@ std::vector< double > F_WCSA_PLMAIN_GETPOSITION_RADECfromLOCAL(CL_WCSA_ASP* WCSA
     }else{
         CHIPID=WCSA_ASP->APROP->CCDNUM;
     }
-
     LOCAL[0]=XY[0];
     LOCAL[1]=XY[1];
     WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXRADEC(CHIPID,LOCAL,RD);
@@ -848,7 +1107,7 @@ cout << CHECK << "	" << CID << "	" << XLOCAL[0] << "	" << XLOCAL[1] << endl;
 //-----------------------------------------------------------------
 //Getting Functions : WCSA_ASP : GRID POSITION 
 //-----------------------------------------------------------------
-std::vector< std::vector< double > > F_WCSA_PLMAIN_GETPOSITION_RADECfromGRID(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > GRID){
+std::vector< std::vector< double > > F_WCSA_PLMAIN_GETPOSITION_RADECfromLOCALGRID(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > GRID){
     int CHIPID;
     double LOCAL[2],RD[2];
     std::vector< double > RADEC(4);
@@ -873,7 +1132,31 @@ std::vector< std::vector< double > > F_WCSA_PLMAIN_GETPOSITION_RADECfromGRID(CL_
 
     return GRIDRADEC;
 }
-std::vector< std::vector< double > > F_WCSA_PLMAIN_GETPOSITION_LOCALfromGRID(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > GRID){
+std::vector< std::vector< double > > F_WCSA_PLMAIN_GETPOSITION_RADECfromCRPIXGRID(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > GRID){
+    int CHIPID;
+    double CRPIX[2],RD[2];
+    std::vector< double > RADEC(4);
+    std::vector< std::vector< double > > GRIDRADEC;
+
+    if(CID>-0.5&&CID<WCSA_ASP->APROP->CCDNUM-0.5){
+        CHIPID=CID;
+    }else{
+        CHIPID=WCSA_ASP->APROP->CCDNUM;
+    }
+
+    for(CRPIX[0]=GRID[0];CRPIX[0]<GRID[2]+0.5*GRID[4];CRPIX[0]+=GRID[4])
+    for(CRPIX[1]=GRID[1];CRPIX[1]<GRID[3]+0.5*GRID[5];CRPIX[1]+=GRID[5]){
+        WCSA_ASP->GSIP->F_WCSA_GSIP_XCRPIXtoXRADEC(CHIPID,CRPIX,RD);
+        RADEC[0]=CRPIX[0];
+        RADEC[1]=CRPIX[1];
+        RADEC[2]=RD[0];
+        RADEC[3]=RD[1];
+        GRIDRADEC.push_back(RADEC);
+    }
+
+    return GRIDRADEC;
+}
+std::vector< std::vector< double > > F_WCSA_PLMAIN_GETPOSITION_LOCALfromRADECGRID(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > GRID){
     int CHIPID;
     double RADEC[2],RD[2];
     std::vector< double > LOCAL(4);
@@ -887,8 +1170,7 @@ std::vector< std::vector< double > > F_WCSA_PLMAIN_GETPOSITION_LOCALfromGRID(CL_
 
     for(RADEC[0]=GRID[0];RADEC[0]<GRID[2]+0.5*GRID[4];RADEC[0]+=GRID[4])
     for(RADEC[1]=GRID[1];RADEC[1]<GRID[3]+0.5*GRID[5];RADEC[1]+=GRID[5]){
-//    WCSA_ASP->GSIP->CSIP[CHIPID].F_WCSA_CSIP_XRADECtoXLOCAL(RADEC,RD);
-    WCSA_ASP->GSIP->F_WCSA_GSIP_XRADECtoXLOCAL(CHIPID,RADEC,RD);
+        WCSA_ASP->GSIP->F_WCSA_GSIP_XRADECtoXLOCAL(CHIPID,RADEC,RD);
         LOCAL[0]=RADEC[0];
         LOCAL[1]=RADEC[1];
         LOCAL[2]=RD[0];
@@ -897,6 +1179,30 @@ std::vector< std::vector< double > > F_WCSA_PLMAIN_GETPOSITION_LOCALfromGRID(CL_
     }
 
     return GRIDLOCAL;
+}
+std::vector< std::vector< double > > F_WCSA_PLMAIN_GETPOSITION_CRPIXfromRADECGRID(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > GRID){
+    int CHIPID;
+    double RADEC[2],RD[2];
+    std::vector< double > CRPIX(4);
+    std::vector< std::vector< double > > GRIDCRPIX;
+
+    if(CID>-0.5&&CID<WCSA_ASP->APROP->CCDNUM-0.5){
+        CHIPID=CID;
+    }else{
+        CHIPID=WCSA_ASP->APROP->CCDNUM;
+    }
+
+    for(RADEC[0]=GRID[0];RADEC[0]<GRID[2]+0.5*GRID[4];RADEC[0]+=GRID[4])
+    for(RADEC[1]=GRID[1];RADEC[1]<GRID[3]+0.5*GRID[5];RADEC[1]+=GRID[5]){
+        WCSA_ASP->GSIP->F_WCSA_GSIP_XRADECtoXLOCAL(CHIPID,RADEC,RD);
+        CRPIX[0]=RADEC[0];
+        CRPIX[1]=RADEC[1];
+        CRPIX[2]=RD[0];
+        CRPIX[3]=RD[1];
+        GRIDCRPIX.push_back(CRPIX);
+    }
+
+    return GRIDCRPIX;
 }
 //-----------------------------------------------------------------
 //Getting Functions : WCSA_ASP : GRID JACOBIAN 
@@ -977,150 +1283,6 @@ std::vector< std::vector< double > > F_WCSA_PLMAIN_GETDISTORTION_atRADECGRID(CL_
     }
 
     return GRIDCRPIX;
-}
-//-----------------------------------------------------------------
-//Output Functions : WCSA_ASP : SIP
-//-----------------------------------------------------------------
-void F_WCSA_PLMAIN_OUTPUTSIP(CL_WCSA_ASP* WCSA_ASP, string SIPFILENAME){
-    int i,j,ij;
-    int TCCDNUM,SORDER,SPORDER;
-    cout << "F_WCSA_PLMAIN_OUTPUTSIP" << endl;
-    cout << SIPFILENAME << endl;
-    ofstream fout;
-
-    TCCDNUM = WCSA_ASP->APROP->CCDNUM;
-    SORDER  = WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_ORDER;
-    SPORDER = WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_P_ORDER;
-
-    fout.open(SIPFILENAME.c_str());
-    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].ID << endl;
-    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].REFNUM << endl;
-    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].FITNUM << endl;
-    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_ORDER << endl;
-    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_P_ORDER << endl;
-    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].GPOS[0] << endl;
-    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].GPOS[1] << endl;
-    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].GPOS[2] << endl;
-    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].MAXDRAD << endl;
-    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].MAXFRAD << endl;
-    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].CRPIX[0] << endl;
-    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].CRPIX[1] << endl;
-    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].CRVAL[0] << endl;
-    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].CRVAL[1] << endl;
-    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].CD[0][0] << endl;
-    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].CD[0][1] << endl;
-    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].CD[1][0] << endl;
-    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].CD[1][1] << endl;
-
-    ij=0;
-    for(i=0;i<SORDER+1;i++)
-    for(j=0;j<SORDER+1;j++)
-    if(i+j<SORDER+1)
-    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_AB[0][ij++] << endl;
-    ij=0;
-    for(i=0;i<SORDER+1;i++)
-    for(j=0;j<SORDER+1;j++)
-    if(i+j<SORDER+1)
-    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_AB[1][ij++] << endl;
-    ij=0;
-    for(i=0;i<SPORDER+1;i++)
-    for(j=0;j<SPORDER+1;j++)
-    if(i+j<SPORDER+1)
-    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_ABP[0][ij++] << endl;
-    ij=0;
-    for(i=0;i<SPORDER+1;i++)
-    for(j=0;j<SPORDER+1;j++)
-    if(i+j<SPORDER+1)
-    fout << WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_ABP[1][ij++] << endl;
-
-}
-void F_WCSA_PLMAIN_INPUTSIP(CL_WCSA_ASP* WCSA_ASP, string SIPFILENAME){
-    int i,j,ij;
-    int TCCDNUM,SORDER,SPORDER;
-    cout << "F_WCSA_PLMAIN_INPUTSIP" << endl;
-    cout << SIPFILENAME << endl;
-    ifstream fin;
-
-    fin.open(SIPFILENAME.c_str());
-    TCCDNUM = WCSA_ASP->APROP->CCDNUM;
-    
-    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].ID;
-    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].REFNUM;
-    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].FITNUM;
-    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_ORDER;
-    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_P_ORDER;
-    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].GPOS[0];
-    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].GPOS[1];
-    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].GPOS[2];
-    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].MAXDRAD;
-    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].MAXFRAD;
-    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].CRPIX[0];
-    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].CRPIX[1];
-    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].CRVAL[0];
-    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].CRVAL[1];
-    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].CD[0][0];
-    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].CD[0][1];
-    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].CD[1][0];
-    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].CD[1][1];
-
-    SORDER  = WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_ORDER;
-    SPORDER = WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_P_ORDER;
-
-
-    ij=0;
-    for(i=0;i<SORDER+1;i++)
-    for(j=0;j<SORDER+1;j++)
-    if(i+j<SORDER+1)
-    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_AB[0][ij++];
-    ij=0;
-    for(i=0;i<SORDER+1;i++)
-    for(j=0;j<SORDER+1;j++)
-    if(i+j<SORDER+1)
-    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_AB[1][ij++];
-    ij=0;
-    for(i=0;i<SPORDER+1;i++)
-    for(j=0;j<SPORDER+1;j++)
-    if(i+j<SPORDER+1)
-    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_ABP[0][ij++];
-    ij=0;
-    for(i=0;i<SPORDER+1;i++)
-    for(j=0;j<SPORDER+1;j++)
-    if(i+j<SPORDER+1)
-    fin >> WCSA_ASP->GSIP->CSIP[TCCDNUM].SIP_ABP[1][ij++];
-
-//    WCSA_ASP->GSIP->F_WCSA_GSIP_SHOWCSIP(TCCDNUM);
-}
-void F_WCSA_PLMAIN_OUTPUTCCD(CL_WCSA_ASP* WCSA_ASP, string CCDFILENAME){
-    int CID,TCCDNUM;
-    cout << "F_WCSA_PLMAIN_OUTPUTCCD" << endl;
-    cout << CCDFILENAME << endl;
-    ofstream fout;
-
-    fout.open(CCDFILENAME.c_str());
-    TCCDNUM = WCSA_ASP->APROP->CCDNUM;
-    for(CID=0;CID<TCCDNUM;CID++){
-        fout << WCSA_ASP->GSIP->CSIP[CID].ID      << "	";
-        fout << WCSA_ASP->GSIP->CSIP[CID].GPOS[0] << "	";
-        fout << WCSA_ASP->GSIP->CSIP[CID].GPOS[1] << "	";
-        fout << WCSA_ASP->GSIP->CSIP[CID].GPOS[2] << endl;
-    }
-}
-void F_WCSA_PLMAIN_INPUTCCD(CL_WCSA_ASP* WCSA_ASP, string CCDFILENAME){
-    int CID,TCCDNUM;
-    cout << "F_WCSA_PLMAIN_INPUTCCD" << endl;
-    cout << CCDFILENAME << endl;
-    ifstream fin;
-
-    fin.open(CCDFILENAME.c_str());
-    TCCDNUM = WCSA_ASP->APROP->CCDNUM;
-    for(CID=0;CID<TCCDNUM;CID++){
-        fin >> WCSA_ASP->GSIP->CSIP[CID].ID     ;
-        fin >> WCSA_ASP->GSIP->CSIP[CID].GPOS[0];
-        fin >> WCSA_ASP->GSIP->CSIP[CID].GPOS[1];
-        fin >> WCSA_ASP->GSIP->CSIP[CID].GPOS[2];
-    cout << WCSA_ASP->GSIP->CSIP[CID].ID << "	" << WCSA_ASP->GSIP->CSIP[CID].GPOS[0] << "	" << WCSA_ASP->GSIP->CSIP[CID].GPOS[1] << "	" << WCSA_ASP->GSIP->CSIP[CID].GPOS[2] << endl;
-    }
-
 }
 //-----------------------------------------------------------------
 //Simulation Functions : WCSA_ASP
@@ -1534,26 +1696,18 @@ std::vector< double > F_WCSA_PLMAIN_GETREF(CL_WCSA_ASP* WCSA_ASP, boost::int64_t
 //-----------------------------------------------------------------
 //Getting Functions : WCSA_ASP : CCD
 //-----------------------------------------------------------------
-std::vector< std::vector< double > >F_WCSA_PLMAIN_GETCCDPOSITIONS(CL_WCSA_ASP* WCSA_ASP){
+/*std::vector< std::vector< double > >F_WCSA_PLMAIN_GETCCDPOSITIONS(CL_WCSA_ASP* WCSA_ASP){
     std::vector< std::vector< double > > CCDPOSITIONS;
     std::vector< double > CCDPOSITION(4);
     int CID;
-/*test ->*/
-int i;
-ofstream out;
-out.open("CCDPOS00000.dat");
-/*<- test */
+
     for(CID=0;CID<WCSA_ASP->APROP->CCDNUM;CID++){
         CCDPOSITION[0]=WCSA_ASP->GSIP->CSIP[CID].ID;
         CCDPOSITION[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0];
         CCDPOSITION[2]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1];
         CCDPOSITION[3]=WCSA_ASP->GSIP->CSIP[CID].GPOS[2];
         CCDPOSITIONS.push_back(CCDPOSITION);
-/*test ->*/
-for(i=0;i<4;i++)
-out << CCDPOSITION[i] << "	" ;
-out << endl;
-/*<- test */
+
     }
     
     return CCDPOSITIONS;
@@ -1574,6 +1728,28 @@ std::vector< double > F_WCSA_PLMAIN_GETCCDPOSITION(CL_WCSA_ASP* WCSA_ASP,int CID
     }
     
     return CCDPOSITION;
+}*/
+std::vector< std::vector< double > > F_WCSA_PLMAIN_GETCCDPOSITIONS(CL_WCSA_ASP* WCSA_ASP,int CID){
+    std::vector< std::vector< double > > CCDPOSITIONS;
+    std::vector< double > CCDPOSITION(4);
+
+    if(CID>-0.5&&CID<WCSA_ASP->APROP->CCDNUM-0.5){
+        CCDPOSITION[0]=WCSA_ASP->GSIP->CSIP[CID].ID;
+        CCDPOSITION[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0];
+        CCDPOSITION[2]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1];
+        CCDPOSITION[3]=WCSA_ASP->GSIP->CSIP[CID].GPOS[2];
+        CCDPOSITIONS.push_back(CCDPOSITION);
+        return CCDPOSITIONS;
+    }else{
+        for(CID=0;CID<WCSA_ASP->APROP->CCDNUM;CID++){
+            CCDPOSITION[0]=WCSA_ASP->GSIP->CSIP[CID].ID;
+            CCDPOSITION[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0];
+            CCDPOSITION[2]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1];
+            CCDPOSITION[3]=WCSA_ASP->GSIP->CSIP[CID].GPOS[2];
+            CCDPOSITIONS.push_back(CCDPOSITION);
+        }
+        return CCDPOSITIONS;
+    }    
 }
 
 //-----------------------------------------------------------------

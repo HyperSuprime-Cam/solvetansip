@@ -5,7 +5,7 @@ import os.path
 import sys
 import numpy
 
-import lsst.pipette.readwrite as pipReadWrite
+#import lsst.pipette.readwrite as pipReadWrite
 import lsst.pex.policy as pexPolicy
 import lsst.obs.hscSim as hscSim
 import lsst.obs.suprimecam as scmapper
@@ -16,7 +16,7 @@ import lsst.afw.detection as afwDet
 import lsst.afw.geom as afwGeom
 import lsst.afw.image as afwImage
 import lsst.afw.coord as afwCoord
-import lsst.pipette.plotter as pipPlot
+#import lsst.pipette.plotter as pipPlot
 
 #WCS_POSITION.F_WCS_POSITION_TEST()
 
@@ -46,6 +46,12 @@ WCSA_ASP = doTansip.getresultWcs_local(matches_address, metadata, policy=policy,
 #-----------------------------------------------------------------
 #Output Functions : WCSA_ASP
 #-----------------------------------------------------------------
+REFERENCESFILENAME = 'REFERENCESfromWCSA.txt'
+doTansip.WCS_OUTPUT_REFERENCES(WCSA_ASP,REFERENCESFILENAME)
+SIPFITFILENAME = 'SIPFITfromWCSA.txt'
+doTansip.WCS_OUTPUT_SIPFIT(WCSA_ASP,SIPFITFILENAME)
+PSIPFITFILENAME = 'PSIPFITfromWCSA.txt'
+doTansip.WCS_OUTPUT_PSIPFIT(WCSA_ASP,PSIPFITFILENAME)
 SIPFILENAME = 'SIPfromWCSA.txt'
 doTansip.WCS_OUTPUT_SIP(WCSA_ASP,SIPFILENAME)
 doTansip.WCS_INPUT_SIP(WCSA_ASP,SIPFILENAME)
@@ -98,7 +104,7 @@ print 'CRPIX : ', POSITIONinfo_CRPIXfromRADEC
 
 print ''
 GRID=[-1000, -1000,1000, 1000, 1000, 1000]
-POSITIONinfo_RADECfromGRID = doTansip.WCS_GET_POSITION_RADECfromGRID(WCSA_ASP,-1,GRID)
+POSITIONinfo_RADECfromGRID = doTansip.WCS_GET_POSITION_RADECfromLOCALGRID(WCSA_ASP,-1,GRID)
 print 'RADEC : ', POSITIONinfo_RADECfromGRID[0][0], POSITIONinfo_RADECfromGRID[0][1], POSITIONinfo_RADECfromGRID[0][2], POSITIONinfo_RADECfromGRID[0][3]
 print 'RADEC : ', POSITIONinfo_RADECfromGRID[1][0], POSITIONinfo_RADECfromGRID[1][1], POSITIONinfo_RADECfromGRID[1][2], POSITIONinfo_RADECfromGRID[1][3]
 print 'RADEC : ', POSITIONinfo_RADECfromGRID[2][0], POSITIONinfo_RADECfromGRID[2][1], POSITIONinfo_RADECfromGRID[2][2], POSITIONinfo_RADECfromGRID[2][3]
@@ -108,6 +114,7 @@ print 'RADEC : ', POSITIONinfo_RADECfromGRID[5][0], POSITIONinfo_RADECfromGRID[5
 print 'RADEC : ', POSITIONinfo_RADECfromGRID[6][0], POSITIONinfo_RADECfromGRID[6][1], POSITIONinfo_RADECfromGRID[6][2], POSITIONinfo_RADECfromGRID[6][3]
 print 'RADEC : ', POSITIONinfo_RADECfromGRID[7][0], POSITIONinfo_RADECfromGRID[7][1], POSITIONinfo_RADECfromGRID[7][2], POSITIONinfo_RADECfromGRID[7][3]
 print 'RADEC : ', POSITIONinfo_RADECfromGRID[8][0], POSITIONinfo_RADECfromGRID[8][1], POSITIONinfo_RADECfromGRID[8][2], POSITIONinfo_RADECfromGRID[8][3]
+#POSITIONinfo_RADECfromGRID = doTansip.WCS_GET_POSITION_RADECfromCRPIXGRID(WCSA_ASP,-1,GRID)
 
 XSTR=POSITIONinfo_RADECfromGRID[1][2]-0.1
 YSTR=POSITIONinfo_RADECfromGRID[1][3]-0.1
@@ -119,7 +126,7 @@ GRID[2]=XEND
 GRID[3]=YEND
 GRID[4]=0.1
 GRID[5]=0.1
-POSITIONinfo_LOCALfromGRID = doTansip.WCS_GET_POSITION_LOCALfromGRID(WCSA_ASP,-1,GRID)
+POSITIONinfo_LOCALfromGRID = doTansip.WCS_GET_POSITION_LOCALfromRADECGRID(WCSA_ASP,-1,GRID)
 print 'LOCAL : ', POSITIONinfo_LOCALfromGRID[0][0], POSITIONinfo_LOCALfromGRID[0][1], POSITIONinfo_LOCALfromGRID[0][2], POSITIONinfo_LOCALfromGRID[0][3]
 print 'LOCAL : ', POSITIONinfo_LOCALfromGRID[1][0], POSITIONinfo_LOCALfromGRID[1][1], POSITIONinfo_LOCALfromGRID[1][2], POSITIONinfo_LOCALfromGRID[1][3]
 print 'LOCAL : ', POSITIONinfo_LOCALfromGRID[2][0], POSITIONinfo_LOCALfromGRID[2][1], POSITIONinfo_LOCALfromGRID[2][2], POSITIONinfo_LOCALfromGRID[2][3]
@@ -330,73 +337,58 @@ ALLrefinfo_CAMERA_PMAGNIFICATION = doTansip.WCS_GET_REFERENCE_CAMERA_PMAGNIFICAT
 print ALLrefinfo_CAMERA_PMAGNIFICATION[0]
 print ALLrefinfo_CAMERA_PMAGNIFICATION[1]
 
-refinfo = doTansip.WCS_GET_REFERENCE_INIDIVIDUAL(WCSA_ASP,0)
+refinfo = doTansip.WCS_GET_REFERENCE_INDIVIDUAL(WCSA_ASP,0)
 print refinfo
-refinfo = doTansip.WCS_GET_REFERENCE_INIDIVIDUAL(WCSA_ASP,7)
+refinfo = doTansip.WCS_GET_REFERENCE_INDIVIDUAL(WCSA_ASP,7)
 print refinfo
-refinfo = doTansip.WCS_GET_REFERENCE_INIDIVIDUAL(WCSA_ASP,-1)
+refinfo = doTansip.WCS_GET_REFERENCE_INDIVIDUAL(WCSA_ASP,-1)
 print refinfo
-refinfo = doTansip.WCS_GET_REFERENCE_INIDIVIDUAL(WCSA_ASP,1000000000)
+refinfo = doTansip.WCS_GET_REFERENCE_INDIVIDUAL(WCSA_ASP,1000000000)
 print refinfo
 
 #-----------------------------------------------------------------
 #Getting Functions : WCSA_ASP : CCD
 #-----------------------------------------------------------------
 print "--- getting function : ccd ---"
-ccdpositions = doTansip.WCS_GET_CCD_ALL_CCDPOS(WCSA_ASP)
-print ccdpositions
-ccdposition = doTansip.WCS_GET_CCD_CCD_CCDPOS(WCSA_ASP,0)
-print ccdposition
-ccdposition = doTansip.WCS_GET_CCD_CCD_CCDPOS(WCSA_ASP,1)
-print ccdposition
-ccdposition = doTansip.WCS_GET_CCD_CCD_CCDPOS(WCSA_ASP,2)
-print ccdposition
-ccdposition = doTansip.WCS_GET_CCD_CCD_CCDPOS(WCSA_ASP,3)
-print ccdposition
-ccdposition = doTansip.WCS_GET_CCD_CCD_CCDPOS(WCSA_ASP,4)
-print ccdposition
-ccdposition = doTansip.WCS_GET_CCD_CCD_CCDPOS(WCSA_ASP,5)
-print ccdposition
-ccdposition = doTansip.WCS_GET_CCD_CCD_CCDPOS(WCSA_ASP,6)
-print ccdposition
-ccdposition = doTansip.WCS_GET_CCD_CCD_CCDPOS(WCSA_ASP,7)
-print ccdposition
-ccdposition = doTansip.WCS_GET_CCD_CCD_CCDPOS(WCSA_ASP,8)
-print ccdposition
-ccdposition = doTansip.WCS_GET_CCD_CCD_CCDPOS(WCSA_ASP,9)
-print ccdposition
-ccdposition = doTansip.WCS_GET_CCD_CCD_CCDPOS(WCSA_ASP,10)
-print ccdposition
-ccdposition = doTansip.WCS_GET_CCD_CCD_CCDPOS(WCSA_ASP,-1)
-print ccdposition
+ccdposition = doTansip.WCS_GET_CCD_CCDPOS(WCSA_ASP,0)
+print ccdposition[0]
+ccdpositions = doTansip.WCS_GET_CCD_CCDPOS(WCSA_ASP,-1)
+print ccdpositions[0]
+print ccdpositions[1]
+print ccdpositions[98]
+print ccdpositions[99]
+#print ccdpositions[100]
+#print ccdpositions[101]
+#print ccdpositions[102]
+#print ccdpositions[103]
 
 #-----------------------------------------------------------------
 #Getting Functions : OLD
 #-----------------------------------------------------------------
-print "--- get wcsList ---"
-wcsList = doTansip.getwcsList(WCSA_ASP)
-print wcsList
-print "--- get references ---"
-references = doTansip.getreferences(WCSA_ASP)
-#print references
-print "--- get RADEC ---"
-X_GLOBAL = (0.0,0.0)
-RADEC = doTansip.getradec(X_GLOBAL,WCSA_ASP)
-print X_GLOBAL
-print RADEC
-print "--- get X_GLOBAL ---"
-X_GLOBAL = doTansip.getxglobal(RADEC,WCSA_ASP)
-print RADEC
-print X_GLOBAL
-print "--- get RADEC ---"
-X_GLOBAL = (2000.0,2000.0)
-RADEC = doTansip.getradec(X_GLOBAL,WCSA_ASP)
-print X_GLOBAL
-print RADEC
-print "--- get X_GLOBAL ---"
-X_GLOBAL = doTansip.getxglobal(RADEC,WCSA_ASP)
-print RADEC
-print X_GLOBAL
+#print "--- get wcsList ---"
+#wcsList = doTansip.getwcsList(WCSA_ASP)
+#print wcsList
+#print "--- get references ---"
+#references = doTansip.getreferences(WCSA_ASP)
+##print references
+#print "--- get RADEC ---"
+#X_GLOBAL = (0.0,0.0)
+#RADEC = doTansip.getradec(X_GLOBAL,WCSA_ASP)
+#print X_GLOBAL
+#print RADEC
+#print "--- get X_GLOBAL ---"
+#X_GLOBAL = doTansip.getxglobal(RADEC,WCSA_ASP)
+#print RADEC
+#print X_GLOBAL
+#print "--- get RADEC ---"
+#X_GLOBAL = (2000.0,2000.0)
+#RADEC = doTansip.getradec(X_GLOBAL,WCSA_ASP)
+#print X_GLOBAL
+#print RADEC
+#print "--- get X_GLOBAL ---"
+#X_GLOBAL = doTansip.getxglobal(RADEC,WCSA_ASP)
+#print RADEC
+#print X_GLOBAL
 #print "--- get PAIR ID ---"
 #PAIR_ID = doTansip.getpair_ID(WCSA_ASP)
 #print PAIR_ID
@@ -443,4 +435,4 @@ print X_GLOBAL
 #PAIR_LOCAL_Y = doTansip.getpair_LOCAL_Y(WCSA_ASP)
 #print PAIR_LOCAL_Y
 
-doTansip.memorydelete(WCSA_ASP)
+#doTansip.memorydelete(WCSA_ASP)

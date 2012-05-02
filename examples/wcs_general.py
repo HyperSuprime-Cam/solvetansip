@@ -34,8 +34,8 @@ import lsst.afw.table as afwTable
 def main(hsc_or_sc, rerun, visit):    
 
     do_solveTansip = True
-    #do_writeNewWcs = True # New FITS file will be created
-    do_writeNewWcs = False # Only solve 
+    do_writeNewWcs = True # New FITS file will be created
+    #do_writeNewWcs = False # Only solve 
 
     data = {'visit': visit} # for SC
     
@@ -50,23 +50,27 @@ def main(hsc_or_sc, rerun, visit):
 
     # reading matchlist of each CCD in a shot
     dataExp = {'visit': visit}
-    dataIdList = [{'visit': visit, 'ccd': ccd} for ccd in range(hscCamera.getNumCcds(hsc_or_sc))]
+    dataIdList = [{'visit': visit, 'ccd': ccd} for ccd in range(104)]
+#    dataIdList = [{'visit': visit, 'ccd': ccd} for ccd in range(hscCamera.getNumCcds(hsc_or_sc))]
 
     metadataList = []
     matchLists = []
     for dataId in dataIdList:
 
-        print '*** querying: %s'% dataId
+        print '*** reading matches: %s'% dataId
+        try:
+            print '*** querying: %s'% dataId
+            matches = measAstrom.readMatches(butler, dataId)
+            matchLists.append(matches)        
+        except:
+            continue
         metadata = butler.get('calexp_md', dataId)
         metadataList.append(metadata)
-
-        print '*** reading matches: %s'% dataId
-        matches = measAstrom.readMatches(butler, dataId)
         if False: # you use only stars.
             matches = hscMosaic.selectStars(matches)
 
-        matchLists.append(matches)        
-
+    print '*** len(matchLists): %s'% len(matchLists)
+    
 
     matchListsForSolveTansip = [[
         tansip.SourceMatch(m.first.getId(),
@@ -88,9 +92,11 @@ def main(hsc_or_sc, rerun, visit):
             print '*************** available CCD %d' % ccdId
             sys.stdout.flush()
         nCcd = len(ccdIds)
+        print '*** len(ccdIds): %s'% len(ccdIds)
 
     print '---------- reading done.'
 
+    ####import pdb; pdb.set_trace()
     refSchema = matchLists[0][0].first.schema
     fluxKey = refSchema.find("flux").key
 
@@ -138,12 +144,14 @@ def main(hsc_or_sc, rerun, visit):
     if do_solveTansip is True:
         policyPath = os.path.join(os.getenv("SOLVETANSIP_DIR"), "policy", "WCS_MAKEAPROP.paf")
         policy = pexPolicy.Policy.createPolicy(policyPath)
-    
+
         #policy.set("LSIPORDER", 1)
         #policy.set("SIPORDER", e6)
         policy.set("CRPIXMODE", "AUTO")
+#        policy.set("CCDPMODE", 1)   # determines CCD positions?
         policy.set("CCDPMODE", 0)   # determines CCD positions?
-        policy.set("NCCD", nCcd)
+        policy.set("NCCD", 100)
+#        policy.set("NCCD", nCcd)
         policy.set("LSIPORDER", 3) #SIP ORDER of AP and BP
 
         if nCcd > 10:
@@ -311,12 +319,13 @@ def writeFitsWithNewWcs(exposure, wcs, dataId, butler):
 
 if __name__ == '__main__':
 
-    hsc_or_sc = 'suprimecam'
-#    hsc_or_sc = 'hsc'
+#    hsc_or_sc = 'suprimecam'
+#    hsc_or_sc = 'hscsim'
 
-    visit = int(sys.argv[1])
-    if len(sys.argv) == 3:
-        rerun = sys.argv[2]
+    hsc_or_sc = sys.argv[1]
+    visit = int(sys.argv[2])
+    if len(sys.argv) == 4:
+        rerun = sys.argv[3]
     else:
         rerun = None
  

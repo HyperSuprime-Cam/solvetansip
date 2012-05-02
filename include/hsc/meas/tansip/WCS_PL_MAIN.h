@@ -42,6 +42,9 @@ void F_WCSA_PLMAIN_MEMORYDELETE(CL_WCSA_ASP* WCSA_ASP);
 //-----------------------------------------------------------------
 //Output Functions : WCSA_ASP
 //-----------------------------------------------------------------
+void F_WCSA_PLMAIN_OUTPUTREFERENCES(CL_WCSA_ASP* WCSA_ASP, std::string REFERENCESFILENAME);
+void F_WCSA_PLMAIN_OUTPUTSIPFIT (CL_WCSA_ASP* WCSA_ASP, std::string  SIPFITFILENAME);
+void F_WCSA_PLMAIN_OUTPUTPSIPFIT(CL_WCSA_ASP* WCSA_ASP, std::string PSIPFITFILENAME);
 void F_WCSA_PLMAIN_OUTPUTSIP(CL_WCSA_ASP* WCSA_ASP, std::string SIPFILENAME);
 void F_WCSA_PLMAIN_INPUTSIP (CL_WCSA_ASP* WCSA_ASP, std::string SIPFILENAME);
 void F_WCSA_PLMAIN_OUTPUTCCD(CL_WCSA_ASP* WCSA_ASP, std::string CCDFILENAME);
@@ -63,8 +66,10 @@ std::vector< double > F_WCSA_PLMAIN_GETPOSITION_GLOBALfromCCDIDLOCAL(CL_WCSA_ASP
 //-----------------------------------------------------------------
 //Getting Functions : WCSA_ASP : POSITION GRID
 //-----------------------------------------------------------------
-std::vector< std::vector< double > > F_WCSA_PLMAIN_GETPOSITION_RADECfromGRID(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > GRID);
-std::vector< std::vector< double > > F_WCSA_PLMAIN_GETPOSITION_LOCALfromGRID(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > GRID);
+std::vector< std::vector< double > > F_WCSA_PLMAIN_GETPOSITION_RADECfromLOCALGRID(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > GRID);
+std::vector< std::vector< double > > F_WCSA_PLMAIN_GETPOSITION_RADECfromCRPIXGRID(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > GRID);
+std::vector< std::vector< double > > F_WCSA_PLMAIN_GETPOSITION_LOCALfromRADECGRID(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > GRID);
+std::vector< std::vector< double > > F_WCSA_PLMAIN_GETPOSITION_CRPIXfromRADECGRID(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > GRID);
 //-----------------------------------------------------------------
 //Getting Functions : WCSA_ASP : JACOBIAN GRID
 //-----------------------------------------------------------------
@@ -104,8 +109,8 @@ std::vector< double > F_WCSA_PLMAIN_GETREF(CL_WCSA_ASP* WCSA_ASP, boost::int64_t
 //-----------------------------------------------------------------
 //Getting Functions : WCSA_ASP : CCD
 //-----------------------------------------------------------------
-std::vector< std::vector< double > >F_WCSA_PLMAIN_GETCCDPOSITIONS(CL_WCSA_ASP* WCSA_ASP);
-std::vector< double > F_WCSA_PLMAIN_GETCCDPOSITION(CL_WCSA_ASP* WCSA_ASP, int CID);
+std::vector< std::vector< double > > F_WCSA_PLMAIN_GETCCDPOSITIONS(CL_WCSA_ASP* WCSA_ASP, int CID);
+//std::vector< double > F_WCSA_PLMAIN_GETCCDPOSITION(CL_WCSA_ASP* WCSA_ASP, int CID);
 //-----------------------------------------------------------------
 //Getting Functions : OLD
 //-----------------------------------------------------------------

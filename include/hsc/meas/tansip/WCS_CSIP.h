@@ -97,6 +97,7 @@ public:
 
 //
     void F_WCSA_GSIP_SET0();
+    void F_WCSA_GSIP_SHOWGPOS();
     void F_WCSA_GSIP_SHOWGSIP();
     void F_WCSA_GSIP_SHOWCSIP(int);
     void F_WCSA_GSIP_SHOWGLOBAL();

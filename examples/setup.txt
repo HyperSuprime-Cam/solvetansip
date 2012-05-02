@@ -54,3 +54,15 @@ meas_astrom           HSC-1.1.0         setup
 
 hg clone ssh://hsc-gw2//ana/hgrepo/solvetansip
 hg clone ssh://133.40.7.143//ana/hgrepo/solvetansip
+
+
+
+source /data/ana/products.hscPipe1.3.0/loadLSST.sh
+setup -t hscPipe1.3.0hscSim hscPipe tip_20120417
+export SUPRIME_DATA_DIR=/data/Subaru/
+setup hg
+setup -j -r /data/work/furu/hscPipeTest/meas_astrom/
+setup -j -r ./
+
+
+

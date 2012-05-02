@@ -191,16 +191,16 @@ void CL_GSIP::F_WCSA_GSIP_XLOCALtoXRADEC(int CID, double *PIXEL,double *RADEC){
     XX[1]=PIXEL[1]-CRPIX[1];
     YY[0]=F_CALCVALUE(SIP_ORDER,CSIP[CID].SIP_AB[0],XX)+XX[0];
     YY[1]=F_CALCVALUE(SIP_ORDER,CSIP[CID].SIP_AB[1],XX)+XX[1];
-    XX[0]=CD[0][0]*YY[0]+CD[0][1]*YY[1];
-    XX[1]=CD[1][0]*YY[0]+CD[1][1]*YY[1];
+    XX[0]=CSIP[CID].CD[0][0]*YY[0]+CSIP[CID].CD[0][1]*YY[1];
+    XX[1]=CSIP[CID].CD[1][0]*YY[0]+CSIP[CID].CD[1][1]*YY[1];
     F_InvPROJECTION(XX,RADEC,CRVAL);
 }
 void CL_GSIP::F_WCSA_GSIP_XRADECtoXLOCAL(int CID, double *RADEC,double *PIXEL){
     double XX[2],YY[2];
 
     F_PROJECTION(RADEC,YY,CRVAL);
-    XX[0]=InvCD[0][0]*YY[0]+InvCD[0][1]*YY[1];
-    XX[1]=InvCD[1][0]*YY[0]+InvCD[1][1]*YY[1];
+    XX[0]=CSIP[CID].InvCD[0][0]*YY[0]+CSIP[CID].InvCD[0][1]*YY[1];
+    XX[1]=CSIP[CID].InvCD[1][0]*YY[0]+CSIP[CID].InvCD[1][1]*YY[1];
     YY[0]=F_CALCVALUE(SIP_P_ORDER,CSIP[CID].SIP_ABP[0],XX)+XX[0];
     YY[1]=F_CALCVALUE(SIP_P_ORDER,CSIP[CID].SIP_ABP[1],XX)+XX[1];
     PIXEL[0]=YY[0]+CRPIX[0];
@@ -209,7 +209,7 @@ void CL_GSIP::F_WCSA_GSIP_XRADECtoXLOCAL(int CID, double *RADEC,double *PIXEL){
 void CL_GSIP::F_WCSA_GSIP_XCRPIXtoXRADEC(int CID, double *CRPIX,double *RADEC){
     double XX[2],YY[2];
 
-    if(CID==-1){
+    if(CID==-1){//Initital
         YY[0]=F_CALCVALUE(SIP_ORDER_INIT,SIP_AB_INIT[0],CRPIX)+CRPIX[0];
         YY[1]=F_CALCVALUE(SIP_ORDER_INIT,SIP_AB_INIT[1],CRPIX)+CRPIX[1];
         XX[0]=CD_INIT[0][0]*YY[0]+CD_INIT[0][1]*YY[1];
@@ -217,8 +217,8 @@ void CL_GSIP::F_WCSA_GSIP_XCRPIXtoXRADEC(int CID, double *CRPIX,double *RADEC){
     }else{
         YY[0]=F_CALCVALUE(SIP_ORDER,CSIP[CID].SIP_AB[0],CRPIX)+CRPIX[0];
         YY[1]=F_CALCVALUE(SIP_ORDER,CSIP[CID].SIP_AB[1],CRPIX)+CRPIX[1];
-        XX[0]=CD[0][0]*YY[0]+CD[0][1]*YY[1];
-        XX[1]=CD[1][0]*YY[0]+CD[1][1]*YY[1];
+        XX[0]=CSIP[CID].CD[0][0]*YY[0]+CSIP[CID].CD[0][1]*YY[1];
+        XX[1]=CSIP[CID].CD[1][0]*YY[0]+CSIP[CID].CD[1][1]*YY[1];
     }
     F_InvPROJECTION(XX,RADEC,CRVAL);
 }
@@ -226,14 +226,14 @@ void CL_GSIP::F_WCSA_GSIP_XRADECtoXCRPIX(int CID, double *RADEC,double *CRPIX){
     double XX[2],YY[2];
 
     F_PROJECTION(RADEC,YY,CRVAL);
-    if(CID==-1){
+    if(CID==-1){//Initital
         XX[0]=InvCD_INIT[0][0]*YY[0]+InvCD_INIT[0][1]*YY[1];
         XX[1]=InvCD_INIT[1][0]*YY[0]+InvCD_INIT[1][1]*YY[1];
         CRPIX[0]=F_CALCVALUE(SIP_P_ORDER_INIT,SIP_ABP_INIT[0],XX)+XX[0];
         CRPIX[1]=F_CALCVALUE(SIP_P_ORDER_INIT,SIP_ABP_INIT[1],XX)+XX[1];
     }else{
-        XX[0]=InvCD[0][0]*YY[0]+InvCD[0][1]*YY[1];
-        XX[1]=InvCD[1][0]*YY[0]+InvCD[1][1]*YY[1];
+        XX[0]=CSIP[CID].InvCD[0][0]*YY[0]+CSIP[CID].InvCD[0][1]*YY[1];
+        XX[1]=CSIP[CID].InvCD[1][0]*YY[0]+CSIP[CID].InvCD[1][1]*YY[1];
         CRPIX[0]=F_CALCVALUE(SIP_P_ORDER,CSIP[CID].SIP_ABP[0],XX)+XX[0];
         CRPIX[1]=F_CALCVALUE(SIP_P_ORDER,CSIP[CID].SIP_ABP[1],XX)+XX[1];
     }
@@ -468,6 +468,17 @@ void CL_GSIP::F_WCSA_GSIP_SETPSIP(){
         CSIP[CID].SIP_ABP[1][0*(SIP_P_ORDER+1)+1]-=1.0;
     }
 }
+void CL_GSIP::F_WCSA_GSIP_SHOWGPOS(){
+    cout << "-- CCD POSITIONS --" << endl;
+    int CID;
+    for(CID=0;CID<CCDNUM+1;CID++)
+    cout << CSIP[CID].ID << "	" << CSIP[CID].GPOS_INIT[0]
+                         << "	" << CSIP[CID].GPOS_INIT[1]
+                         << "	" << CSIP[CID].GPOS_INIT[2]
+                         << "	" << CSIP[CID].GPOS[0]
+                         << "	" << CSIP[CID].GPOS[1]
+                         << "	" << CSIP[CID].GPOS[2] << endl;
+}
 void CL_GSIP::F_WCSA_GSIP_SHOWGSIP(){
     cout << "-- GSIP CHECK --" << endl;
     cout << fixed;
@@ -575,19 +586,19 @@ void CL_GSIP::F_WCSA_GSIP_SHOWGLOBAL(){
     cout << "REFERENCE NUM: " << ALLREFNUM<< endl;
     cout << "FITTING   NUM: " << ALLFITNUM<< endl;
     cout << fixed;
-    cout << "CRPIX(pix)   : " << CRPIX[0] << " , " << CRPIX[1]<< endl;
-    cout << "CRVAL(deg)   : " << CRVAL[0] << " , " << CRVAL[1]<< endl;
-    cout << "OAPIX(pix)   : " << OAPIX[0] << " , " << OAPIX[1]<< endl;
-    cout << "OAVAL(deg)   : " << OAVAL[0] << " , " << OAVAL[1]<< endl;
+    cout << "CRPIX(pix)   : " << CSIP[CCDNUM].CRPIX[0] << " , " << CSIP[CCDNUM].CRPIX[1]<< endl;
+    cout << "CRVAL(deg)   : " << CSIP[CCDNUM].CRVAL[0] << " , " << CSIP[CCDNUM].CRVAL[1]<< endl;
+    cout << "OAPIX(pix)   : " << CSIP[CCDNUM].OAPIX[0] << " , " << CSIP[CCDNUM].OAPIX[1]<< endl;
+    cout << "OAVAL(deg)   : " << CSIP[CCDNUM].OAVAL[0] << " , " << CSIP[CCDNUM].OAVAL[1]<< endl;
     cout.unsetf(ios::fixed);
-    cout << "CD_1_1       : " << CD[0][0] << endl;
-    cout << "CD_1_2       : " << CD[0][1] << endl;
-    cout << "CD_2_1       : " << CD[1][0] << endl;
-    cout << "CD_2_2       : " << CD[1][1] << endl;
-    cout << "InvCD_1_1    : " << InvCD[0][0] << endl;
-    cout << "InvCD_1_2    : " << InvCD[0][1] << endl;
-    cout << "InvCD_2_1    : " << InvCD[1][0] << endl;
-    cout << "InvCD_2_2    : " << InvCD[1][1] << endl;
+    cout << "CD_1_1       : " << CSIP[CCDNUM].CD[0][0] << endl;
+    cout << "CD_1_2       : " << CSIP[CCDNUM].CD[0][1] << endl;
+    cout << "CD_2_1       : " << CSIP[CCDNUM].CD[1][0] << endl;
+    cout << "CD_2_2       : " << CSIP[CCDNUM].CD[1][1] << endl;
+    cout << "InvCD_1_1    : " << CSIP[CCDNUM].InvCD[0][0] << endl;
+    cout << "InvCD_1_2    : " << CSIP[CCDNUM].InvCD[0][1] << endl;
+    cout << "InvCD_2_1    : " << CSIP[CCDNUM].InvCD[1][0] << endl;
+    cout << "InvCD_2_2    : " << CSIP[CCDNUM].InvCD[1][1] << endl;
     cout << scientific;
     int i,j,ij;
     ij=0;
@@ -666,7 +677,6 @@ void CL_GSIP::F_WCSA_GSIP_SETINITIAL(){
     CSIP[CID].ID=0;
     CSIP[CID].FITNUM=0;
     CSIP[CID].REFNUM=0;
-    CSIP[CID].GPOS[0] =CSIP[CID].GPOS[1] =CSIP[CID].GPOS[2]=0;
     CSIP[CID].OAVAL[0]=CSIP[CID].OAVAL[1]=0;
     CSIP[CID].OAPIX[0]=CSIP[CID].OAPIX[1]=0;
     CSIP[CID].CRVAL[0]=CSIP[CID].CRVAL[1]=0;
@@ -1072,6 +1082,7 @@ void CL_GSIP::F_WCSA_GSIP_SETDEFAULTPOSITIONS_HSC(){
     CSIP[ 99].GPOS[1]=  9291.650;
     CSIP[ 99].GPOS[2]=  0.000000;
 
+if(CCDNUM>100){
     CSIP[100].GPOS[0]=- 7467.700;
     CSIP[100].GPOS[1]= 13543.650;
     CSIP[100].GPOS[2]=  0.785398;
@@ -1084,7 +1095,7 @@ void CL_GSIP::F_WCSA_GSIP_SETDEFAULTPOSITIONS_HSC(){
     CSIP[103].GPOS[0]=- 7467.700;
     CSIP[103].GPOS[1]=-15341.350;
     CSIP[103].GPOS[2]=  0.785398;
-
+}
     for(CID=0;CID<CCDNUM;CID++){
         CSIP[CID].ID=CID;
         CSIP[CID].GPOS_INIT[0]=CSIP[CID].GPOS[0];

@@ -28,6 +28,9 @@ public:
     double X_IM_WORLD[2];   //OUTPUT INFO
     double X_CRPIX[2];
 
+    double X_SIP_IM_PIXEL[2];
+    double X_PSIP_GLOBALCRPIX[2];
+
     double X_CENTER_GLOBAL[2];
     double X_CENTER_IM_PIXEL[2];
     double X_CENTER_IM_WORLD[2];
@@ -112,8 +115,9 @@ public:
 //X
     void F_WCSA_APAIR_SETX();
     void F_WCSA_APAIR_SETXG();
-    void F_WCSA_APAIR_SETCRPIX();
-    void F_WCSA_APAIR_SETIM();
+    void F_WCSA_APAIR_SETXCRPIX();
+    void F_WCSA_APAIR_SETXIM();
+    void F_WCSA_APAIR_SETXSIP();
     void F_WCSA_APAIR_CALCMAXR();
     void F_WCSA_APAIR_PROJECTION();
     void F_WCSA_APAIR_CENTERPROJECTION();

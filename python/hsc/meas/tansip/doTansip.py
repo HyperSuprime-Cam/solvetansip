@@ -100,6 +100,12 @@ def memorydelete(WCSA_ASP):
 #-----------------------------------------------------------------
 #Output Functions : WCSA_ASP
 #-----------------------------------------------------------------
+def WCS_OUTPUT_REFERENCES(WCSA_ASP,REFERENCESFILENAME):
+    hscTansip.F_WCSA_PLMAIN_OUTPUTREFERENCES(WCSA_ASP,REFERENCESFILENAME)
+def WCS_OUTPUT_SIPFIT(WCSA_ASP,SIPFITFILENAME):
+    hscTansip.F_WCSA_PLMAIN_OUTPUTSIPFIT(WCSA_ASP,SIPFITFILENAME)
+def WCS_OUTPUT_PSIPFIT(WCSA_ASP,PSIPFITFILENAME):
+    hscTansip.F_WCSA_PLMAIN_OUTPUTPSIPFIT(WCSA_ASP,PSIPFITFILENAME)
 def WCS_OUTPUT_SIP(WCSA_ASP,SIPFILENAME):
     hscTansip.F_WCSA_PLMAIN_OUTPUTSIP(WCSA_ASP,SIPFILENAME)
 def WCS_INPUT_SIP(WCSA_ASP,SIPFILENAME):
@@ -119,18 +125,6 @@ def WCS_CALC_SIMULATIONDIFF(HARD,CCDPOSfile,DISTfile,CCDoutfile,RESoutfile,WCSA_
 #Getting Functions : WCSA_ASP : SIP (Values of SIP having)
 #-----------------------------------------------------------------
 
-
-#-----------------------------------------------------------------
-#Getting Functions : WCS : POSITION
-#-----------------------------------------------------------------
-
-#-----------------------------------------------------------------
-#Getting Functions : WCS : SIP
-#-----------------------------------------------------------------
-
-#-----------------------------------------------------------------
-#Getting Functions : WCS : CCD
-#-----------------------------------------------------------------
 #-----------------------------------------------------------------
 #Getting Functions : WCSA_ASP : POSITION (Values at arbitrary position)
 #-----------------------------------------------------------------
@@ -150,10 +144,14 @@ def WCS_GET_POSITION_GLOBALfromCCDIDLOCAL(WCSA_ASP,CCDID,XY):
 #-----------------------------------------------------------------
 #Getting Functions : WCSA_ASP : POSITION (Grid)
 #-----------------------------------------------------------------
-def WCS_GET_POSITION_RADECfromGRID(WCSA_ASP,CID,GRID):
-    return hscTansip.F_WCSA_PLMAIN_GETPOSITION_RADECfromGRID(WCSA_ASP,CID,GRID)
-def WCS_GET_POSITION_LOCALfromGRID(WCSA_ASP,CID,GRID):
-    return hscTansip.F_WCSA_PLMAIN_GETPOSITION_LOCALfromGRID(WCSA_ASP,CID,GRID)
+def WCS_GET_POSITION_RADECfromLOCALGRID(WCSA_ASP,CID,GRID):
+    return hscTansip.F_WCSA_PLMAIN_GETPOSITION_RADECfromLOCALGRID(WCSA_ASP,CID,GRID)
+def WCS_GET_POSITION_RADECfromCRPIXGRID(WCSA_ASP,CID,GRID):
+    return hscTansip.F_WCSA_PLMAIN_GETPOSITION_RADECfromCRPIXGRID(WCSA_ASP,CID,GRID)
+def WCS_GET_POSITION_LOCALfromRADECGRID(WCSA_ASP,CID,GRID):
+    return hscTansip.F_WCSA_PLMAIN_GETPOSITION_LOCALfromRADECGRID(WCSA_ASP,CID,GRID)
+def WCS_GET_POSITION_CRPIXfromRADECGRID(WCSA_ASP,CID,GRID):
+    return hscTansip.F_WCSA_PLMAIN_GETPOSITION_CRPIXfromRADECGRID(WCSA_ASP,CID,GRID)
 
 #-----------------------------------------------------------------
 #Getting Functions : WCSA_ASP : JACOBIAN (Values at arbitrary position)
@@ -220,10 +218,12 @@ def WCS_GET_REFERENCE_INDIVIDUAL(WCSA_ASP,REFID):
 #-----------------------------------------------------------------
 #Getting Functions : WCSA_ASP : CCD (Values of CCD having)
 #-----------------------------------------------------------------
-def WCS_GET_CCD_ALL_CCDPOS(WCSA_ASP):#Vector((CCDID, X(pixel), Y(pixel), T(radian)))
-    return hscTansip.F_WCSA_PLMAIN_GETCCDPOSITIONS(WCSA_ASP)
-def WCS_GET_CCD_CCD_CCDPOS(WCSA_ASP,CID):#(CCDID, X(pixel), Y(pixel), T(radian))
-    return hscTansip.F_WCSA_PLMAIN_GETCCDPOSITION(WCSA_ASP,CID)
+#def WCS_GET_CCD_ALL_CCDPOS(WCSA_ASP):#Vector((CCDID, X(pixel), Y(pixel), T(radian)))
+#    return hscTansip.F_WCSA_PLMAIN_GETCCDPOSITIONS(WCSA_ASP)
+#def WCS_GET_CCD_CCD_CCDPOS(WCSA_ASP,CID):#(CCDID, X(pixel), Y(pixel), T(radian))
+#    return hscTansip.F_WCSA_PLMAIN_GETCCDPOSITION(WCSA_ASP,CID)
+def WCS_GET_CCD_CCDPOS(WCSA_ASP,CID):#(CCDID, X(pixel), Y(pixel), T(radian))
+    return hscTansip.F_WCSA_PLMAIN_GETCCDPOSITIONS(WCSA_ASP,CID)
 
 #-----
 #OLD
