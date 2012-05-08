@@ -25,6 +25,7 @@ public:
     double X_GLOBALCRPIX[2];//OUTPUT INFO
     double X_LOCALCRPIX[2]; //OUTPUT INFO
     double X_IM_PIXEL[2];   //OUTPUT INFO
+    double X_LOCALIM_PIXEL[2]; //
     double X_IM_WORLD[2];   //OUTPUT INFO
     double X_CRPIX[2];
 

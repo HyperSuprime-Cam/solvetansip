@@ -58,6 +58,9 @@ doTansip.WCS_INPUT_SIP(WCSA_ASP,SIPFILENAME)
 CCDFILENAME = 'CCDfromWCSA.txt'
 doTansip.WCS_OUTPUT_CCD(WCSA_ASP,CCDFILENAME)
 doTansip.WCS_INPUT_CCD(WCSA_ASP,CCDFILENAME)
+
+CCDRMSFILENAME = 'CCDRMSfromWCSA.txt'
+doTansip.WCS_OUTPUT_CCDRMS(WCSA_ASP,CCDRMSFILENAME)
 #-----------------------------------------------------------------
 #Simulation Functions : WCSA_ASP
 #-----------------------------------------------------------------

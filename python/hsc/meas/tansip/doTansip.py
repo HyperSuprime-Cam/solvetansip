@@ -91,6 +91,7 @@ def F_WCS_EMPTYMETADATA():
     return metadata
 
 def getwcsList(WCSA_ASP):
+    print '--- getWCSlist ---'
     return hscTansip.F_WCSA_PLMAIN_GETWCSLIST(WCSA_ASP)
 
 
@@ -114,6 +115,8 @@ def WCS_OUTPUT_CCD(WCSA_ASP,CCDFILENAME):
     hscTansip.F_WCSA_PLMAIN_OUTPUTCCD(WCSA_ASP,CCDFILENAME)
 def WCS_INPUT_CCD(WCSA_ASP,CCDFILENAME):
     hscTansip.F_WCSA_PLMAIN_INPUTCCD(WCSA_ASP,CCDFILENAME)
+def WCS_OUTPUT_CCDRMS(WCSA_ASP,REFERENCESFILENAME):
+    hscTansip.F_WCSA_PLMAIN_OUTPUTCCDRMS(WCSA_ASP,REFERENCESFILENAME)
 #-----------------------------------------------------------------
 #Simulation Functions : WCSA_ASP
 #-----------------------------------------------------------------

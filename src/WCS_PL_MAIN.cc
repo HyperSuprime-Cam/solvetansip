@@ -33,7 +33,7 @@ void    F_WCS_DISTORTION(int ,CL_APROP *APROP);
 PTR(CL_WCSA_ASP) F_WCSA_TANSIP_V(vector<vector<PTR(hsc::meas::tansip::SourceMatch)> > const &matchlist,dafbase::PropertySet::Ptr &metaTANSIP,lsst::pex::policy::Policy::Ptr &APROPPolicy,lsst::afw::cameraGeom::Camera::Ptr &camera/*,lsst::daf::base::PropertySet::Ptr &metadata,bool verbose*/){
     PTR(CL_WCSA_ASP) WCSA_ASP(new CL_WCSA_ASP());
 
-    cout << "--- solvetansip : START(local) ---" << endl;
+    cout << "--- solvetansip : START ---" << endl;
     WCSA_ASP->F_WCS_PLMAIN_NEWWCSA_ASP();
 
 //CCDNUM
@@ -75,7 +75,7 @@ PTR(CL_WCSA_ASP) F_WCSA_TANSIP_V(vector<vector<PTR(hsc::meas::tansip::SourceMatc
 
     WCSA_ASP->F_WCS_PLMAIN_SETWCSA_ASP();
 
-    cout << "--- solvetansip : END(local) ---" << endl;
+    cout << "--- solvetansip : END ---" << endl;
     return WCSA_ASP;
 /*
     cout << "--- solvetansip : START ---" << endl;
@@ -268,15 +268,8 @@ void    F_WCSA_MAKEGSIP(lsst::pex::policy::Policy::Ptr &APROPPolicy, lsst::afw::
             GSIP->CSIP[CID].GPOS[2]=0;//ccdTiltNQuarter * 90.0;//?
             GSIP->CSIP[CID].POSID[0]=detId.getIndex().first;
             GSIP->CSIP[CID].POSID[1]=detId.getIndex().second;
-//GPOSAVE[0]+=GSIP->CSIP[CID].GPOS[0];
-//GPOSAVE[1]+=GSIP->CSIP[CID].GPOS[1];
         }
     }
-/*cout << "-GPOSAVE-" << endl;
-cout << GPOSAVE[0]/100 << "	" << GPOSAVE[1]/100 << endl;
-for(CID=0;CID<APROP->CCDNUM;CID++){
-cout <<fixed<< CID << "	" << GSIP->CSIP[CID].GPOS[0]-GPOSAVE[0]/100-1024 << "	" << GSIP->CSIP[CID].GPOS[1]+174-2048 << endl;
-}*/
 //INITIAL POSITION
     lsst::pex::policy::DefaultPolicyFile const defaultsFile("solvetansip", "WCS_MAKEAPROP_Dictionary.paf","policy");
     lsst::pex::policy::Policy const defaults(defaultsFile);
@@ -284,7 +277,6 @@ cout <<fixed<< CID << "	" << GSIP->CSIP[CID].GPOS[0]-GPOSAVE[0]/100-1024 << "	" 
 
     char GPOSX[100],GPOSY[100],GPOST[100];
     
-cout << "INIT" << endl;
     if(APROP->CCDNUM<11){
         for(CID=0;CID<APROP->CCDNUM;CID++){
             sprintf(GPOSX,"SCIGPOS%03d_X",CID);
@@ -299,19 +291,21 @@ cout << "INIT" << endl;
             sprintf(GPOSX,"HSCIGPOS%03d_X",CID);
             sprintf(GPOSY,"HSCIGPOS%03d_Y",CID);
             sprintf(GPOST,"HSCIGPOS%03d_T",CID);
-//cout << GSIP->CSIP[CID].ID << "	" << GSIP->CSIP[CID].GPOS[0]
- //                          << "	" << GSIP->CSIP[CID].GPOS[1];
             GSIP->CSIP[CID].GPOS[0]=GSIP->CSIP[CID].GPOS_INIT[0]=APROPPolicy->getDouble(GPOSX);
             GSIP->CSIP[CID].GPOS[1]=GSIP->CSIP[CID].GPOS_INIT[1]=APROPPolicy->getDouble(GPOSY);
-//cout                << "	" << GSIP->CSIP[CID].GPOS[0]
-//                           << "	" << GSIP->CSIP[CID].GPOS[1] << endl;
             GSIP->CSIP[CID].GPOS[2]=GSIP->CSIP[CID].GPOS_INIT[2]=APROPPolicy->getDouble(GPOST);
         }
     }
-//cout << "GLOBPOS: " << GSIP->CSIP[0].GPOS[0] << "	" << GSIP->CSIP[0].GPOS[1] << "	" << GSIP->CSIP[0].GPOS[2] << "	" << endl;
-//cout << "GLOBPOS: " << GSIP->CSIP[1].GPOS[0] << "	" << GSIP->CSIP[1].GPOS[1] << "	" << GSIP->CSIP[1].GPOS[2] << "	" << endl;
-//cout << "GLOBPOS: " << GSIP->CSIP[APROP->CCDNUM].GPOS[0] << "	" << GSIP->CSIP[APROP->CCDNUM].GPOS[1] << "	" << GSIP->CSIP[APROP->CCDNUM].GPOS[2] << "	" << endl;
+
 //INITIAL DISTORTION
+    if(APROP->CCDNUM<11){
+    GSIP->SIP_ORDER_INIT     =5;
+    GSIP->SIP_P_ORDER_INIT   =5;
+    GSIP->CD_INIT[0][0]      =-5.6e-9;
+    GSIP->CD_INIT[0][1]      = 0;
+    GSIP->CD_INIT[1][0]      = 0;
+    GSIP->CD_INIT[1][1]      = 5.6e-9;
+    }else{
     GSIP->SIP_ORDER_INIT     =APROPPolicy->getInt("ISIPORDER");
     GSIP->SIP_P_ORDER_INIT   =APROPPolicy->getInt("IPSIPORDER");
     GSIP->MAXFRAD_INIT       =APROPPolicy->getDouble("IMAXFRAD");
@@ -543,6 +537,7 @@ cout << "INIT" << endl;
     GSIP->SIP_ABP_INIT[1][52]=APROPPolicy->getDouble("IBP_8_0");
     GSIP->SIP_ABP_INIT[1][53]=APROPPolicy->getDouble("IBP_8_1");
     GSIP->SIP_ABP_INIT[1][54]=APROPPolicy->getDouble("IBP_9_0");
+    }
 /*
 cout << "INIT" << endl;
 cout << GSIP->SIP_ORDER_INIT      << endl;
@@ -674,7 +669,7 @@ void    F_WCSA_MAKEPAIR(vector<vector<PTR(hsc::meas::tansip::SourceMatch)> > con
            isnan(APAIR->PAIR[ALLNUM].X_LOCAL[0])||isinf(APAIR->PAIR[ALLNUM].X_LOCAL[0])||
            isnan(APAIR->PAIR[ALLNUM].X_LOCAL[1])||isinf(APAIR->PAIR[ALLNUM].X_LOCAL[1]))
         APAIR->PAIR[ALLNUM].FLAG=0;
-cout << fixed << APAIR->PAIR[ALLNUM].ID << "	" << APAIR->PAIR[ALLNUM].CHIPID << "	" << APAIR->PAIR[ALLNUM].X_LOCAL[0] << "	" << APAIR->PAIR[ALLNUM].X_LOCAL[1] << "	" << APAIR->PAIR[ALLNUM].X_RADEC[0] << "	" << APAIR->PAIR[ALLNUM].X_RADEC[1] << endl;
+//cout << fixed << APAIR->PAIR[ALLNUM].ID << "	" << APAIR->PAIR[ALLNUM].CHIPID << "	" << APAIR->PAIR[ALLNUM].X_LOCAL[0] << "	" << APAIR->PAIR[ALLNUM].X_LOCAL[1] << "	" << APAIR->PAIR[ALLNUM].X_RADEC[0] << "	" << APAIR->PAIR[ALLNUM].X_RADEC[1] << endl;
         ALLNUM+=1;
     }
 }
@@ -988,6 +983,36 @@ void F_WCSA_PLMAIN_INPUTCCD(CL_WCSA_ASP* WCSA_ASP, string CCDFILENAME){
 //    cout << WCSA_ASP->GSIP->CSIP[CID].ID << "	" << WCSA_ASP->GSIP->CSIP[CID].GPOS[0] << "	" << WCSA_ASP->GSIP->CSIP[CID].GPOS[1] << "	" << WCSA_ASP->GSIP->CSIP[CID].GPOS[2] << endl;
     }
 
+}
+void F_WCSA_PLMAIN_OUTPUTCCDRMS(CL_WCSA_ASP* WCSA_ASP, string CCDRMSFILENAME){
+    int CID,TCCDNUM;
+    cout << "F_WCSA_PLMAIN_OUTPUTCCDEMS" << endl;
+    cout << CCDRMSFILENAME << endl;
+    ofstream fout;
+
+    fout.open(CCDRMSFILENAME.c_str());
+    TCCDNUM = WCSA_ASP->APROP->CCDNUM;
+    for(CID=0;CID<TCCDNUM+1;CID++){
+        fout << WCSA_ASP->GSIP->CSIP[CID].ID      << "	";
+        fout << WCSA_ASP->GSIP->CSIP[CID].GPOS_INIT[0] << "	";
+        fout << WCSA_ASP->GSIP->CSIP[CID].GPOS_INIT[1] << "	";
+        fout << WCSA_ASP->GSIP->CSIP[CID].GPOS_INIT[2] << "	";
+        fout << WCSA_ASP->GSIP->CSIP[CID].GPOS[0] << "	";
+        fout << WCSA_ASP->GSIP->CSIP[CID].GPOS[1] << "	";
+        fout << WCSA_ASP->GSIP->CSIP[CID].GPOS[2] << "	";
+        fout << WCSA_ASP->GSIP->CSIP[CID].SIP_AB_ERR[0][0] << "	";
+        fout << WCSA_ASP->GSIP->CSIP[CID].SIP_AB_ERR[1][0] << "	";
+        fout << WCSA_ASP->GSIP->CSIP[CID].SIP_AB_ERR[0][1] << "	";
+        fout << WCSA_ASP->GSIP->CSIP[CID].SIP_AB_ERR[1][1] << "	";
+        fout << WCSA_ASP->GSIP->CSIP[CID].SIP_AB_ERR[0][2] << "	";
+        fout << WCSA_ASP->GSIP->CSIP[CID].SIP_AB_ERR[1][2] << "	";
+        fout << WCSA_ASP->GSIP->CSIP[CID].SIP_ABP_ERR[0][0] << "	";
+        fout << WCSA_ASP->GSIP->CSIP[CID].SIP_ABP_ERR[1][0] << "	";
+        fout << WCSA_ASP->GSIP->CSIP[CID].SIP_ABP_ERR[0][1] << "	";
+        fout << WCSA_ASP->GSIP->CSIP[CID].SIP_ABP_ERR[1][1] << "	";
+        fout << WCSA_ASP->GSIP->CSIP[CID].SIP_ABP_ERR[0][2] << "	";
+        fout << WCSA_ASP->GSIP->CSIP[CID].SIP_ABP_ERR[1][2] << endl;
+    }
 }
 //-----------------------------------------------------------------
 //Getting Functions : WCSA_ASP : POSITION

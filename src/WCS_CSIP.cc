@@ -89,33 +89,36 @@ void CL_GSIP::F_WCSA_GSIP_SET0(){
 
     int CID;
     for(CID=0;CID<CCDNUM+1;CID++){
-        CSIP[CID].ID         =0;
-        CSIP[CID].FITNUM     =0;
-        CSIP[CID].REFNUM     =0;
-        CSIP[CID].SIP_ORDER  =0;
-        CSIP[CID].SIP_P_ORDER=0;
-        CSIP[CID].SIP_L_ORDER=0;
-        CSIP[CID].GPOS[0]    =0;
-        CSIP[CID].GPOS[1]    =0;
-        CSIP[CID].GPOS[2]    =0;
-        CSIP[CID].MAXDRAD    =0;
-        CSIP[CID].MAXFRAD    =0;
-        CSIP[CID].OAVAL[0]   =0;
-        CSIP[CID].OAVAL[1]   =0;
-        CSIP[CID].OAPIX[0]   =0;
-        CSIP[CID].OAPIX[1]   =0;
-        CSIP[CID].CRVAL[0]   =0;
-        CSIP[CID].CRVAL[1]   =0;
-        CSIP[CID].CRPIX[0]   =0;
-        CSIP[CID].CRPIX[1]   =0;
-        CSIP[CID].CD[0][0]   =0;
-        CSIP[CID].CD[0][1]   =0;
-        CSIP[CID].CD[1][0]   =0;
-        CSIP[CID].CD[1][1]   =0;
-        CSIP[CID].InvCD[0][0]=0;
-        CSIP[CID].InvCD[0][1]=0;
-        CSIP[CID].InvCD[1][0]=0;
-        CSIP[CID].InvCD[1][1]=0;
+        CSIP[CID].ID          =0;
+        CSIP[CID].FITNUM      =0;
+        CSIP[CID].REFNUM      =0;
+        CSIP[CID].SIP_ORDER   =0;
+        CSIP[CID].SIP_P_ORDER =0;
+        CSIP[CID].SIP_L_ORDER =0;
+        CSIP[CID].GPOS[0]     =0;
+        CSIP[CID].GPOS[1]     =0;
+        CSIP[CID].GPOS[2]     =0;
+        CSIP[CID].GPOS_INIT[0]=0;
+        CSIP[CID].GPOS_INIT[1]=0;
+        CSIP[CID].GPOS_INIT[2]=0;
+        CSIP[CID].MAXDRAD     =0;
+        CSIP[CID].MAXFRAD     =0;
+        CSIP[CID].OAVAL[0]    =0;
+        CSIP[CID].OAVAL[1]    =0;
+        CSIP[CID].OAPIX[0]    =0;
+        CSIP[CID].OAPIX[1]    =0;
+        CSIP[CID].CRVAL[0]    =0;
+        CSIP[CID].CRVAL[1]    =0;
+        CSIP[CID].CRPIX[0]    =0;
+        CSIP[CID].CRPIX[1]    =0;
+        CSIP[CID].CD[0][0]    =0;
+        CSIP[CID].CD[0][1]    =0;
+        CSIP[CID].CD[1][0]    =0;
+        CSIP[CID].CD[1][1]    =0;
+        CSIP[CID].InvCD[0][0] =0;
+        CSIP[CID].InvCD[0][1] =0;
+        CSIP[CID].InvCD[1][0] =0;
+        CSIP[CID].InvCD[1][1] =0;
         CSIP[CID].SIP_AB_ERR[0][0] =0;
         CSIP[CID].SIP_AB_ERR[0][1] =0;
         CSIP[CID].SIP_AB_ERR[0][2] =0;
@@ -128,9 +131,9 @@ void CL_GSIP::F_WCSA_GSIP_SET0(){
         CSIP[CID].SIP_ABP_ERR[1][0]=0;
         CSIP[CID].SIP_ABP_ERR[1][1]=0;
         CSIP[CID].SIP_ABP_ERR[1][2]=0;
-        CSIP[CID].ANGLE      =0;
-        CSIP[CID].POSID[0]   =0;
-        CSIP[CID].POSID[1]   =0;
+        CSIP[CID].ANGLE       =0;
+        CSIP[CID].POSID[0]    =0;
+        CSIP[CID].POSID[1]    =0;
     }
 }
 
@@ -674,7 +677,6 @@ void CL_GSIP::F_WCSA_GSIP_SETINITIAL(){
 
 
     for(CID=0;CID<CCDNUM+1;CID++){
-    CSIP[CID].ID=0;
     CSIP[CID].FITNUM=0;
     CSIP[CID].REFNUM=0;
     CSIP[CID].OAVAL[0]=CSIP[CID].OAVAL[1]=0;

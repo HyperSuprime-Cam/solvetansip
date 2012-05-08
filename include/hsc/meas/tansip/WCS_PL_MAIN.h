@@ -49,6 +49,7 @@ void F_WCSA_PLMAIN_OUTPUTSIP(CL_WCSA_ASP* WCSA_ASP, std::string SIPFILENAME);
 void F_WCSA_PLMAIN_INPUTSIP (CL_WCSA_ASP* WCSA_ASP, std::string SIPFILENAME);
 void F_WCSA_PLMAIN_OUTPUTCCD(CL_WCSA_ASP* WCSA_ASP, std::string CCDFILENAME);
 void F_WCSA_PLMAIN_INPUTCCD (CL_WCSA_ASP* WCSA_ASP, std::string CCDFILENAME);
+void F_WCSA_PLMAIN_OUTPUTCCDRMS(CL_WCSA_ASP* WCSA_ASP, std::string CCDRMSFILENAME);
 //-----------------------------------------------------------------
 //Simulation Functions : WCSA_ASP
 //-----------------------------------------------------------------

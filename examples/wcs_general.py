@@ -61,8 +61,8 @@ def main(hsc_or_sc, rerun, visit):
 
     # reading matchlist of each CCD in a shot
     dataExp = {'visit': visit}
-    dataIdList = [{'visit': visit, 'ccd': ccd} for ccd in range(104)]
-#    dataIdList = [{'visit': visit, 'ccd': ccd} for ccd in range(hscCamera.getNumCcds(hsc_or_sc))]
+#    dataIdList = [{'visit': visit, 'ccd': ccd} for ccd in range(104)]
+    dataIdList = [{'visit': visit, 'ccd': ccd} for ccd in range(hscCamera.getNumCcds(hsc_or_sc))]
 
     metadataList = []
     matchLists = []
@@ -161,8 +161,8 @@ def main(hsc_or_sc, rerun, visit):
         policy.set("CRPIXMODE", "AUTO")
 #        policy.set("CCDPMODE", 1)   # determines CCD positions?
         policy.set("CCDPMODE", 0)   # determines CCD positions?
-        policy.set("NCCD", 100)
-#        policy.set("NCCD", nCcd)
+#        policy.set("NCCD", 100)
+        policy.set("NCCD", nCcd)
         policy.set("LSIPORDER", 3) #SIP ORDER of AP and BP
 
         if nCcd > 10:
