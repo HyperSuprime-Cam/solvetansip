@@ -38,13 +38,24 @@ def main(hsc_or_sc, rerun, visit):
     #do_writeNewWcs = False # Only solve 
 
     data = {'visit': visit} # for SC
+
+
+    if hsc_or_sc == 'hsc':
+        instrument = 'HSC'
+    elif hsc_or_sc == 'suprimecam':
+        instrument = 'SUPA'
+    else:
+        instrument = 'SUPA'        
+
+    # cameraMapper.__init__() no longer accepts rerun argument.
+    outRoot =  os.path.join(os.getenv("SUPRIME_DATA_DIR"), instrument, "rerun", rerun)
     
     if (hsc_or_sc == 'hsc'):
-        mapper = hscSim.HscSimMapper(rerun=rerun)
+        mapper = hscSim.HscSimMapper(outputRoot=outRoot)
     elif(hsc_or_sc == 'suprimecam'):
-        mapper = scmapper.SuprimecamMapper(rerun=rerun)
+        mapper = scmapper.SuprimecamMapper(outputRoot=outRoot)
     else:
-        mapper = scmapper.SuprimecamMapper(rerun=rerun)        
+        mapper = scmapper.SuprimecamMapper(outputRoot=outRoot)
     
     butler = dafPersist.ButlerFactory(mapper=mapper).create()
 

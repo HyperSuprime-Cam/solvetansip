@@ -23,7 +23,11 @@ import hsc.meas.tansip.doTansip as doTansip
 
 #WCS_POSITION.F_WCS_POSITION_TEST()
 
-mapper = obsSc.SuprimecamMapper(rerun="miyatake_takada_data")
+rerun = "miyatake_takada_data"
+instrument = "SUPA" # or "HSC"
+outRoot =  os.path.join(os.getenv("SUPRIME_DATA_DIR"), instrument, "rerun", rerun)
+            
+mapper = obsSc.SuprimecamMapper(outputRoot=outRoot)
 butler = dafPersist.ButlerFactory(mapper=mapper).create()
 matchLists = [ measAst.readMatches(butler, {'visit':126933, 'ccd': ccd}) for ccd in range(10) ]
 
