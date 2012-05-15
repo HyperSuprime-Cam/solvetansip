@@ -24,6 +24,8 @@ public:
     int  SIP_L_ORDER;//CSIP has same parameter 
     int  SIP_ORDER;//CSIP has same parameter
     int  SIP_P_ORDER;//CSIP has same parameter
+    int  SIP_ORDER_INIT;
+    int  SIP_P_ORDER_INIT;
     double CLIP_SIGMA;
     double CRPIX[2];//for Manual MODE
     double CRVAL[2];//for Manual MODE

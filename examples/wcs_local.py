@@ -43,6 +43,14 @@ metadata = doTansip.F_WCS_EMPTYMETADATA()
 
 #wcsList = doTansip.doTansip(matches, policy=policy, camera=mapper.camera)
 WCSA_ASP = doTansip.getresultWcs_local(matches_address, metadata, policy=policy, camera=mapper.camera)
+print '---metadata---'
+METAKEY = 'ST_A_CCDNUM'
+print metadata.get(METAKEY)
+METAKEY = 'ST_C000_ID'
+print metadata.get(METAKEY)
+METAKEY = 'ST_C100_ID'
+print metadata.get(METAKEY)
+print '---        ---'
 #-----------------------------------------------------------------
 #Output Functions : WCSA_ASP
 #-----------------------------------------------------------------

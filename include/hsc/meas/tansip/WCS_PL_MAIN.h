@@ -14,6 +14,7 @@
 #include "hsc/meas/tansip/WCS_CSIP.h"
 #include "hsc/meas/tansip/WCS_SIMULATION.h"
 #include "hsc/meas/tansip/SourceMatch.h"
+namespace dafbase = lsst::daf::base;
 #ifndef WCS_PL_MAIN_H
 #define WCS_PL_MAIN_H
 
@@ -39,6 +40,11 @@ PTR(CL_WCSA_ASP) F_WCSA_TANSIP_V_local(std::string,lsst::daf::base::PropertySet:
 lsst::daf::base::PropertySet::Ptr F_WCS_EMPTYMETADATA();
 std::vector <lsst::afw::image::TanWcs::Ptr> F_WCSA_PLMAIN_GETWCSLIST(PTR(CL_WCSA_ASP) WCSA_ASP);
 void F_WCSA_PLMAIN_MEMORYDELETE(CL_WCSA_ASP* WCSA_ASP);
+//-----------------------------------------------------------------
+//Output Functions : WCSA_ASP : METADATA
+//-----------------------------------------------------------------
+void setMetadata(PTR(CL_WCSA_ASP) WCSA_ASP, dafbase::PropertySet::Ptr &metaTANSIP);
+void setSummaryToMetadata(PTR(CL_WCSA_ASP) WCSA_ASP, dafbase::PropertySet::Ptr &metaTANSIP);
 //-----------------------------------------------------------------
 //Output Functions : WCSA_ASP
 //-----------------------------------------------------------------

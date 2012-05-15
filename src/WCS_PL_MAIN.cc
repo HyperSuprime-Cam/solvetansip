@@ -73,6 +73,7 @@ PTR(CL_WCSA_ASP) F_WCSA_TANSIP_V(vector<vector<PTR(hsc::meas::tansip::SourceMatc
 //TANSIP
     F_WCSA_TANSIP(WCSA_ASP->APROP,WCSA_ASP->APAIR,WCSA_ASP->GSIP);
 
+    setMetadata(WCSA_ASP,metaTANSIP);
     WCSA_ASP->F_WCS_PLMAIN_SETWCSA_ASP();
 
     cout << "--- solvetansip : END ---" << endl;
@@ -119,7 +120,6 @@ PTR(CL_WCSA_ASP) F_WCSA_TANSIP_V_local(string matchlist,dafbase::PropertySet::Pt
     if(WCSA_ASP->APROP->STDOUT==1||WCSA_ASP->APROP->STDOUT==2)cout << "--- WCS_PL_MAIN : F_WCS_MAKE_APROP ---" << endl;
     WCSA_ASP->APAIR->CCDNUM=WCSA_ASP->GSIP->CCDNUM=WCSA_ASP->APROP->CCDNUM;
     WCSA_ASP->APROP->F_WCSA_APROP_NEWAPROP();
-
 //ALLREFNUM
     F_WCSA_SETREFSIZE_local(matchlist,WCSA_ASP->APROP);
     WCSA_ASP->APAIR->ALLREFNUM=WCSA_ASP->GSIP->ALLREFNUM=WCSA_ASP->APROP->ALLREFNUM;
@@ -129,6 +129,8 @@ PTR(CL_WCSA_ASP) F_WCSA_TANSIP_V_local(string matchlist,dafbase::PropertySet::Pt
     WCSA_ASP->APAIR->SIP_ORDER  =WCSA_ASP->GSIP->SIP_ORDER  =WCSA_ASP->APROP->SIP_ORDER;
     WCSA_ASP->APAIR->SIP_P_ORDER=WCSA_ASP->GSIP->SIP_P_ORDER=WCSA_ASP->APROP->SIP_P_ORDER;
     WCSA_ASP->APAIR->SIP_L_ORDER=WCSA_ASP->GSIP->SIP_L_ORDER=WCSA_ASP->APROP->SIP_L_ORDER;
+    WCSA_ASP->GSIP->SIP_ORDER_INIT  =WCSA_ASP->APROP->SIP_ORDER_INIT;
+    WCSA_ASP->GSIP->SIP_P_ORDER_INIT=WCSA_ASP->APROP->SIP_P_ORDER_INIT;
 
     if(WCSA_ASP->APROP->STDOUT==2) WCSA_ASP->APROP->F_WCSA_APROP_SHOWAPROP();
 
@@ -141,7 +143,8 @@ PTR(CL_WCSA_ASP) F_WCSA_TANSIP_V_local(string matchlist,dafbase::PropertySet::Pt
     F_WCSA_MAKEGSIP(APROPPolicy, camera,WCSA_ASP->APROP,WCSA_ASP->GSIP);
     if(WCSA_ASP->APROP->STDOUT==2) WCSA_ASP->GSIP->F_WCSA_GSIP_SHOWGSIP();
     if(WCSA_ASP->APROP->STDOUT==2) WCSA_ASP->GSIP->F_WCSA_GSIP_SHOWGPOS();
-//    F_WCSA_SETSIZE_local(matchlist,WCSA_ASP->APROP,WCSA_ASP->GSIP);
+//    F_WCSA_SETSIZE_local(matchlist,WCSA_ASP->APROP,WCSA_ASP->GSIP);cout << "AAH" << endl;
+
 
 //APAIR
     if(WCSA_ASP->APROP->STDOUT==1||WCSA_ASP->APROP->STDOUT==2)cout << "--- WCS_PL_MAIN : F_WCS_MAKE_PAIR ---" << endl;
@@ -153,6 +156,7 @@ PTR(CL_WCSA_ASP) F_WCSA_TANSIP_V_local(string matchlist,dafbase::PropertySet::Pt
 
     WCSA_ASP->F_WCS_PLMAIN_SETWCSA_ASP();
 
+    setMetadata(WCSA_ASP,metaTANSIP);
     cout << "--- solvetansip : END(local) ---" << endl;
     return WCSA_ASP;
 /*    CL_WCSA_ASP *WCSA_ASP;
@@ -236,6 +240,9 @@ void    F_WCSA_MAKEAPROP(lsst::pex::policy::Policy::Ptr &APROPPolicy, CL_APROP *
     APROP->SIP_L_ORDER =APROPPolicy->getInt("LSIPORDER");
     APROP->SIP_ORDER   =APROPPolicy->getInt("SIPORDER");
     APROP->SIP_P_ORDER =APROPPolicy->getInt("PSIPORDER");
+    APROP->SIP_ORDER_INIT  =APROPPolicy->getInt("ISIPORDER");
+    APROP->SIP_P_ORDER_INIT=APROPPolicy->getInt("IPSIPORDER");
+    APROP->SIP_ORDER   =APROPPolicy->getInt("IPSIPORDER");
     APROP->CLIP_SIGMA  =APROPPolicy->getDouble("CLIPSIGMA");
     APROP->BASISPOS[0] =APROPPolicy->getDouble("BASISPOSX");
     APROP->BASISPOS[1] =APROPPolicy->getDouble("BASISPOSY");
@@ -759,6 +766,154 @@ void CL_WCSA_ASP::F_WCS_PLMAIN_SETWCSA_ASP(){
 std::vector <lsst::afw::image::TanWcs::Ptr> F_WCSA_PLMAIN_GETWCSLIST(PTR(CL_WCSA_ASP) WCSA_ASP){
     return WCSA_ASP->WCSPtr;
 }
+
+//-----------------------------------------------------------------
+//Output Functions : WCSA_ASP : METADATA
+//-----------------------------------------------------------------
+
+void setMetadata(PTR(CL_WCSA_ASP) WCSA_ASP, dafbase::PropertySet::Ptr &metaTANSIP){
+//    metaTANSIP->add("ST_A_CRPIXMODE" ,WCSA_ASP->APROP->CRPIXMODE);
+    metaTANSIP->add("ST_A_CCDPOSMODE",WCSA_ASP->APROP->CCDPOSMODE);
+    metaTANSIP->add("ST_A_REJMODE"   ,WCSA_ASP->APROP->REJMODE);
+    metaTANSIP->add("ST_A_CCDNUM"    ,WCSA_ASP->APROP->CCDNUM);
+    metaTANSIP->add("ST_A_ALLREFNUM" ,WCSA_ASP->APROP->ALLREFNUM);
+    metaTANSIP->add("ST_A_ALLFITNUM" ,WCSA_ASP->APROP->ALLFITNUM);
+    if(strcmp(WCSA_ASP->APROP->CRPIXMODE,"PIX")==0){
+    metaTANSIP->add("ST_A_CRPIX_1"   ,WCSA_ASP->APROP->CRPIX[0]);
+    metaTANSIP->add("ST_A_CRPIX_2"   ,WCSA_ASP->APROP->CRPIX[1]);
+    }
+    if(strcmp(WCSA_ASP->APROP->CRPIXMODE,"VAL")==0){
+    metaTANSIP->add("ST_A_CRVAL_1"   ,WCSA_ASP->APROP->CRVAL[0]);
+    metaTANSIP->add("ST_A_CRVAL_2"   ,WCSA_ASP->APROP->CRVAL[1]);
+    }
+    if(WCSA_ASP->APROP->REJMODE==1)
+    metaTANSIP->add("ST_A_CLIPSIGMA" ,WCSA_ASP->APROP->CLIP_SIGMA);
+    if(WCSA_ASP->APROP->CCDPOSMODE==1){
+    metaTANSIP->add("ST_A_BASISPOS_X",WCSA_ASP->APROP->BASISPOS[0]);
+    metaTANSIP->add("ST_A_BASISPOS_Y",WCSA_ASP->APROP->BASISPOS[1]);
+    metaTANSIP->add("ST_A_BASISPOS_T",WCSA_ASP->APROP->BASISPOS[2]);
+    }
+
+    int CID;
+    int i,j,ij;
+    char METAKEY[100];
+    for(CID=0;CID<WCSA_ASP->APROP->CCDNUM+1;CID++){
+    sprintf(METAKEY,"ST_C%03d_ID",CID);
+    metaTANSIP->add(METAKEY,WCSA_ASP->GSIP->CSIP[CID].ID);
+    sprintf(METAKEY,"ST_C%03d_FITNUM",CID);
+    metaTANSIP->add(METAKEY,WCSA_ASP->GSIP->CSIP[CID].FITNUM);
+    sprintf(METAKEY,"ST_C%03d_REFNUM",CID);
+    metaTANSIP->add(METAKEY,WCSA_ASP->GSIP->CSIP[CID].REFNUM);
+    sprintf(METAKEY,"ST_C%03d_GPOS_X",CID);
+    metaTANSIP->add(METAKEY,WCSA_ASP->GSIP->CSIP[CID].GPOS[0]);
+    sprintf(METAKEY,"ST_C%03d_GPOS_Y",CID);
+    metaTANSIP->add(METAKEY,WCSA_ASP->GSIP->CSIP[CID].GPOS[1]);
+    sprintf(METAKEY,"ST_C%03d_GPOS_T",CID);
+    metaTANSIP->add(METAKEY,WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+    sprintf(METAKEY,"ST_C%03d_CRPIX_1",CID);
+    metaTANSIP->add(METAKEY,WCSA_ASP->GSIP->CSIP[CID].CRPIX[0]);
+    sprintf(METAKEY,"ST_C%03d_CRPIX_2",CID);
+    metaTANSIP->add(METAKEY,WCSA_ASP->GSIP->CSIP[CID].CRPIX[1]);
+    sprintf(METAKEY,"ST_C%03d_CRVAL_1",CID);
+    metaTANSIP->add(METAKEY,WCSA_ASP->GSIP->CSIP[CID].CRVAL[0]);
+    sprintf(METAKEY,"ST_C%03d_CRVAL_2",CID);
+    metaTANSIP->add(METAKEY,WCSA_ASP->GSIP->CSIP[CID].CRVAL[1]);
+    sprintf(METAKEY,"ST_C%03d_CD_1_1",CID);
+    metaTANSIP->add(METAKEY,WCSA_ASP->GSIP->CSIP[CID].CD[0][0]);
+    sprintf(METAKEY,"ST_C%03d_CD_1_2",CID);
+    metaTANSIP->add(METAKEY,WCSA_ASP->GSIP->CSIP[CID].CD[0][1]);
+    sprintf(METAKEY,"ST_C%03d_CD_2_1",CID);
+    metaTANSIP->add(METAKEY,WCSA_ASP->GSIP->CSIP[CID].CD[1][0]);
+    sprintf(METAKEY,"ST_C%03d_CD_2_2",CID);
+    metaTANSIP->add(METAKEY,WCSA_ASP->GSIP->CSIP[CID].CD[1][1]);
+    sprintf(METAKEY,"ST_C%03d_InvCD_1_1",CID);
+    metaTANSIP->add(METAKEY,WCSA_ASP->GSIP->CSIP[CID].InvCD[0][0]);
+    sprintf(METAKEY,"ST_C%03d_InvCD_1_2",CID);
+    metaTANSIP->add(METAKEY,WCSA_ASP->GSIP->CSIP[CID].InvCD[0][1]);
+    sprintf(METAKEY,"ST_C%03d_InvCD_2_1",CID);
+    metaTANSIP->add(METAKEY,WCSA_ASP->GSIP->CSIP[CID].InvCD[1][0]);
+    sprintf(METAKEY,"ST_C%03d_InvCD_2_2",CID);
+    metaTANSIP->add(METAKEY,WCSA_ASP->GSIP->CSIP[CID].InvCD[1][1]);
+
+    sprintf(METAKEY,"ST_C%03d_SIP_ORDER",CID);
+    metaTANSIP->add(METAKEY,WCSA_ASP->GSIP->CSIP[CID].SIP_ORDER);
+    ij=0;
+    for(i=0;i<WCSA_ASP->GSIP->CSIP[CID].SIP_ORDER+1;i++)
+    for(j=0;j<WCSA_ASP->GSIP->CSIP[CID].SIP_ORDER+1;j++)
+    if(i+j<WCSA_ASP->GSIP->CSIP[CID].SIP_ORDER+1){
+    sprintf(METAKEY,"ST_C%03d_SIP_X_%d_%d",CID,i,j);
+    metaTANSIP->add(METAKEY,WCSA_ASP->GSIP->CSIP[CID].SIP_AB[0][ij]);
+    ij++;
+    }
+    ij=0;
+    for(i=0;i<WCSA_ASP->GSIP->CSIP[CID].SIP_ORDER+1;i++)
+    for(j=0;j<WCSA_ASP->GSIP->CSIP[CID].SIP_ORDER+1;j++)
+    if(i+j<WCSA_ASP->GSIP->CSIP[CID].SIP_ORDER+1){
+    sprintf(METAKEY,"ST_C%03d_SIP_Y_%d_%d",CID,i,j);
+    metaTANSIP->add(METAKEY,WCSA_ASP->GSIP->CSIP[CID].SIP_AB[1][ij]);
+    ij++;
+    }
+    sprintf(METAKEY,"ST_C%03d_SIP_AVERES_X",CID);
+    metaTANSIP->add(METAKEY,WCSA_ASP->GSIP->CSIP[CID].SIP_AB_ERR[0][0]);
+    sprintf(METAKEY,"ST_C%03d_SIP_AVERES_Y",CID);
+    metaTANSIP->add(METAKEY,WCSA_ASP->GSIP->CSIP[CID].SIP_AB_ERR[0][1]);
+    sprintf(METAKEY,"ST_C%03d_SIP_RMSRES_X",CID);
+    metaTANSIP->add(METAKEY,WCSA_ASP->GSIP->CSIP[CID].SIP_AB_ERR[0][2]);
+    sprintf(METAKEY,"ST_C%03d_SIP_RMSRES_Y",CID);
+    metaTANSIP->add(METAKEY,WCSA_ASP->GSIP->CSIP[CID].SIP_AB_ERR[1][0]);
+    sprintf(METAKEY,"ST_C%03d_SIP_MAXRES_X",CID);
+    metaTANSIP->add(METAKEY,WCSA_ASP->GSIP->CSIP[CID].SIP_AB_ERR[1][1]);
+    sprintf(METAKEY,"ST_C%03d_SIP_MAXRES_Y",CID);
+    metaTANSIP->add(METAKEY,WCSA_ASP->GSIP->CSIP[CID].SIP_AB_ERR[1][2]);
+
+    sprintf(METAKEY,"ST_C%03d_SIP_P_ORDER",CID);
+    metaTANSIP->add(METAKEY,WCSA_ASP->GSIP->CSIP[CID].SIP_P_ORDER);
+    ij=0;
+    for(i=0;i<WCSA_ASP->GSIP->CSIP[CID].SIP_ORDER+1;i++)
+    for(j=0;j<WCSA_ASP->GSIP->CSIP[CID].SIP_ORDER+1;j++)
+    if(i+j<WCSA_ASP->GSIP->CSIP[CID].SIP_ORDER+1){
+    sprintf(METAKEY,"ST_C%03d_PSIP_X_%d_%d",CID,i,j);
+    metaTANSIP->add(METAKEY,WCSA_ASP->GSIP->CSIP[CID].SIP_ABP[0][ij]);
+    ij++;
+    }
+    ij=0;
+    for(i=0;i<WCSA_ASP->GSIP->CSIP[CID].SIP_ORDER+1;i++)
+    for(j=0;j<WCSA_ASP->GSIP->CSIP[CID].SIP_ORDER+1;j++)
+    if(i+j<WCSA_ASP->GSIP->CSIP[CID].SIP_ORDER+1){
+    sprintf(METAKEY,"ST_C%03d_PSIP_Y_%d_%d",CID,i,j);
+    metaTANSIP->add(METAKEY,WCSA_ASP->GSIP->CSIP[CID].SIP_ABP[1][ij]);
+    ij++;
+    }
+    sprintf(METAKEY,"ST_C%03d_PSIP_AVERES_X",CID);
+    metaTANSIP->add(METAKEY,WCSA_ASP->GSIP->CSIP[CID].SIP_ABP_ERR[0][0]);
+    sprintf(METAKEY,"ST_C%03d_PSIP_AVERES_Y",CID);
+    metaTANSIP->add(METAKEY,WCSA_ASP->GSIP->CSIP[CID].SIP_ABP_ERR[0][1]);
+    sprintf(METAKEY,"ST_C%03d_PSIP_RMSRES_X",CID);
+    metaTANSIP->add(METAKEY,WCSA_ASP->GSIP->CSIP[CID].SIP_ABP_ERR[0][2]);
+    sprintf(METAKEY,"ST_C%03d_PSIP_RMSRES_Y",CID);
+    metaTANSIP->add(METAKEY,WCSA_ASP->GSIP->CSIP[CID].SIP_ABP_ERR[1][0]);
+    sprintf(METAKEY,"ST_C%03d_PSIP_MAXRES_X",CID);
+    metaTANSIP->add(METAKEY,WCSA_ASP->GSIP->CSIP[CID].SIP_ABP_ERR[1][1]);
+    sprintf(METAKEY,"ST_C%03d_PSIP_MAXRES_Y",CID);
+    metaTANSIP->add(METAKEY,WCSA_ASP->GSIP->CSIP[CID].SIP_ABP_ERR[1][2]);
+
+    }
+}
+
+void setSummaryToMetadata(PTR(CL_WCSA_ASP) WCSA_ASP, dafbase::PropertySet::Ptr &metaTANSIP)
+{
+    metaTANSIP->add("sip_residuals_rms_x", WCSA_ASP->APAIR->SIPRMS[0][1]);
+    metaTANSIP->add("sip_residuals_rms_y", WCSA_ASP->APAIR->SIPRMS[1][1]);        
+    metaTANSIP->add("sip_residuals_ave_x", WCSA_ASP->APAIR->SIPRMS[0][0]);        
+    metaTANSIP->add("sip_residuals_ave_y", WCSA_ASP->APAIR->SIPRMS[1][0]);        
+    metaTANSIP->add("psip_residuals_rms_x", WCSA_ASP->APAIR->PSIPRMS[0][1]);
+    metaTANSIP->add("psip_residuals_rms_y", WCSA_ASP->APAIR->PSIPRMS[1][1]);        
+    metaTANSIP->add("psip_residuals_ave_x", WCSA_ASP->APAIR->PSIPRMS[0][0]);        
+    metaTANSIP->add("psip_residuals_ave_y", WCSA_ASP->APAIR->PSIPRMS[1][0]);        
+    metaTANSIP->add("nref_all", WCSA_ASP->APAIR->ALLREFNUM);        
+    metaTANSIP->add("nref_fitting", WCSA_ASP->APAIR->ALLFITNUM);        
+}
+
 //-----------------------------------------------------------------
 //Output Functions : WCSA_ASP : SIP
 //-----------------------------------------------------------------

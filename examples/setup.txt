@@ -65,4 +65,5 @@ setup -j -r /data/work/furu/hscPipeTest/meas_astrom/
 setup -j -r ./
 
 
+/data/work/furu/mySubaru/SUPA/illuminationCorrection/Subaru
 

@@ -37,6 +37,8 @@ void    CL_APROP::F_WCSA_APROP_SHOWAPROP(){
     cout << "SIP_L_ORDER : " << SIP_L_ORDER << endl;
     cout << "SIP_ORDER   : " << SIP_ORDER   << endl;
     cout << "SIP_PORDER  : " << SIP_P_ORDER << endl;
+    cout << "ISIP_ORDER  : " << SIP_ORDER_INIT<< endl;
+    cout << "IPSIP_ORDER : " << SIP_P_ORDER_INIT<< endl;
     cout << "CRIP_SIGMA  : " << CLIP_SIGMA  << endl;
     cout << "BASISPOSX   : " << BASISPOS[0] << endl;
     cout << "BASISPOSY   : " << BASISPOS[1] << endl;
