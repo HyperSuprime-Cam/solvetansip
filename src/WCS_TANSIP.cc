@@ -12,9 +12,9 @@
 using namespace std;
 
 void    F_WCSA_TANSIP(CL_APROP *APROP,CL_APAIR *APAIR,CL_GSIP *GSIP){
-cout << "APROP->STDOUT : " << APROP->STDOUT << endl;
-APROP->STDOUT=2;
-cout << "CHANGE APROP->STDOUT TO 2" << endl; 
+//cout << "APROP->STDOUT : " << APROP->STDOUT << endl;
+//APROP->STDOUT=2;
+//cout << "CHANGE APROP->STDOUT TO 2" << endl; 
     if(APROP->STDOUT==1||APROP->STDOUT==2)cout << "--------------------------------------------------" << endl;
     if(APROP->STDOUT==1||APROP->STDOUT==2)cout << "--- WCS_TANSIP ---" << endl;
 //--------------------------------------------------
