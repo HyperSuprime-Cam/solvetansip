@@ -12,6 +12,7 @@ public:
     enum {
         STRING_LENGTH = 11,             // Length of strings, including \0
     };
+//    char INSTRUMENT[STRING_LENGTH];
     char CRPIXMODE[STRING_LENGTH];//AUTO or PIX or VAL or OAXIS
     char OAMODE[STRING_LENGTH];//MIN or REV
     int  CCDPOSMODE;

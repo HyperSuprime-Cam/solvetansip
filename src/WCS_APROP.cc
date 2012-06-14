@@ -21,15 +21,16 @@ void    CL_APROP::F_WCSA_APROP_DELAPROP(){
 void    CL_APROP::F_WCSA_APROP_SHOWAPROP(){
     int CID;
     cout << "-- APROP CHECK --" << endl;
+//    cout << "INSTRUMENT  : " << INSTRUMENT   << endl;
     cout << "CRPIXMODE   : " << CRPIXMODE   << endl;
     cout << "OAMODE      : " << OAMODE   << endl;
     cout << "CCDPOSMODE  : " << CCDPOSMODE  << endl;
     cout << "ALLREFNUM   : " << ALLREFNUM   << endl;
-    for(CID=0;CID<CCDNUM;CID++)
-    cout << "REFNUM      : " << CID << " : " <<  REFNUM[CID] << endl;
+//    for(CID=0;CID<CCDNUM;CID++)
+//    cout << "REFNUM      : " << CID << " : " <<  REFNUM[CID] << endl;
     cout << "ALLFITNUM   : " << ALLFITNUM   << endl;
-    for(CID=0;CID<CCDNUM;CID++)
-    cout << "FITNUM      : " << CID << " : " <<  FITNUM[CID] << endl;
+//    for(CID=0;CID<CCDNUM;CID++)
+//    cout << "FITNUM      : " << CID << " : " <<  FITNUM[CID] << endl;
     cout << "CRPIX1      : " << CRPIX[0]    << endl;
     cout << "CRPIX2      : " << CRPIX[1]    << endl;
     cout << "CRVAL1      : " << CRVAL[0]    << endl;

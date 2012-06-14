@@ -51,6 +51,8 @@ PTR(CL_WCSA_ASP) F_WCSA_TANSIP_V(vector<vector<PTR(hsc::meas::tansip::SourceMatc
     WCSA_ASP->APAIR->SIP_ORDER  =WCSA_ASP->GSIP->SIP_ORDER  =WCSA_ASP->APROP->SIP_ORDER;
     WCSA_ASP->APAIR->SIP_P_ORDER=WCSA_ASP->GSIP->SIP_P_ORDER=WCSA_ASP->APROP->SIP_P_ORDER;
     WCSA_ASP->APAIR->SIP_L_ORDER=WCSA_ASP->GSIP->SIP_L_ORDER=WCSA_ASP->APROP->SIP_L_ORDER;
+    WCSA_ASP->GSIP->SIP_ORDER_INIT  =WCSA_ASP->APROP->SIP_ORDER_INIT;
+    WCSA_ASP->GSIP->SIP_P_ORDER_INIT=WCSA_ASP->APROP->SIP_P_ORDER_INIT;
 
     if(WCSA_ASP->APROP->STDOUT==2) WCSA_ASP->APROP->F_WCSA_APROP_SHOWAPROP();
 
@@ -218,7 +220,7 @@ void F_WCSA_PLMAIN_MEMORYDELETE(CL_WCSA_ASP* WCSA_ASP){
 //    delete [] WCSA_ASP;
 }
 void    F_WCSA_MAKEAPROP(lsst::pex::policy::Policy::Ptr &APROPPolicy, CL_APROP *APROP){
-    string CMODE,OAMODE,SNAME,CNAME,PNAME,DNAME;
+    string INSTR,CMODE,OAMODE,SNAME,CNAME,PNAME,DNAME;
 
     // Validate policy with dictionary
     lsst::pex::policy::DefaultPolicyFile const defaultsFile("solvetansip", "WCS_MAKEAPROP_Dictionary.paf",
@@ -226,6 +228,8 @@ void    F_WCSA_MAKEAPROP(lsst::pex::policy::Policy::Ptr &APROPPolicy, CL_APROP *
     lsst::pex::policy::Policy const defaults(defaultsFile);
     APROPPolicy->mergeDefaults(defaults);
 
+//    INSTR              =APROPPolicy->getString("INSTR");
+//    strncpy(APROP->INSTRUMENT,INSTR.c_str(), CL_APROP::STRING_LENGTH);
     CMODE              =APROPPolicy->getString("CRPIXMODE");
     strncpy(APROP->CRPIXMODE,CMODE.c_str(), CL_APROP::STRING_LENGTH);
     OAMODE             =APROPPolicy->getString("OAMODE");
@@ -242,7 +246,6 @@ void    F_WCSA_MAKEAPROP(lsst::pex::policy::Policy::Ptr &APROPPolicy, CL_APROP *
     APROP->SIP_P_ORDER =APROPPolicy->getInt("PSIPORDER");
     APROP->SIP_ORDER_INIT  =APROPPolicy->getInt("ISIPORDER");
     APROP->SIP_P_ORDER_INIT=APROPPolicy->getInt("IPSIPORDER");
-    APROP->SIP_ORDER   =APROPPolicy->getInt("IPSIPORDER");
     APROP->CLIP_SIGMA  =APROPPolicy->getDouble("CLIPSIGMA");
     APROP->BASISPOS[0] =APROPPolicy->getDouble("BASISPOSX");
     APROP->BASISPOS[1] =APROPPolicy->getDouble("BASISPOSY");
@@ -592,8 +595,8 @@ void    F_WCSA_SETREFSIZE(vector<vector<PTR(hsc::meas::tansip::SourceMatch)> > c
          GSIP->ALLFITNUM=APROP->ALLFITNUM;
 }*/
 void    F_WCSA_SETREFSIZE_local(string matchlist, CL_APROP* APROP){
-    int ID,CID,*CIDNUM;
-    double x,y,RA,DEC;
+    int CID,*CIDNUM;
+    char cID[100],cCID[100],cx[100],cy[100],cRA[100],cDEC[100];
     ifstream in;
 
     CIDNUM = new int[APROP->CCDNUM+1];
@@ -601,7 +604,8 @@ void    F_WCSA_SETREFSIZE_local(string matchlist, CL_APROP* APROP){
     CIDNUM[CID]=0;
 
     in.open(matchlist.c_str());
-    while((in >> ID >> CID >> x >> y >> RA >> DEC)!=0){
+    while((in >> cID >> cCID >> cx >> cy >> cRA >> cDEC)!=0){
+	CID=atoi(cCID);
         CIDNUM[CID]++;
         CIDNUM[APROP->CCDNUM]++;
     }
@@ -681,22 +685,22 @@ void    F_WCSA_MAKEPAIR(vector<vector<PTR(hsc::meas::tansip::SourceMatch)> > con
     }
 }
 void    F_WCSA_MAKEPAIR_local(string matchlist,CL_APAIR* APAIR){
-    int ID,CID,ALLNUM;
-    double x,y,RA,DEC;
+    int ALLNUM;
+    char cID[100],cCID[100],cx[100],cy[100],cRA[100],cDEC[100];
     ifstream in;
 
     APAIR->F_WCSA_APAIR_SET0();
     in.open(matchlist.c_str());
     cout << matchlist.c_str() << endl;
     ALLNUM=0;
-    while((in >> ID >> CID >> x >> y >> RA >> DEC)!=0){
-        APAIR->PAIR[ALLNUM].ID           =ID;
-        APAIR->PAIR[ALLNUM].CHIPID       =CID;
+    while((in >> cID >> cCID >> cx >> cy >> cRA >> cDEC)!=0){
+        APAIR->PAIR[ALLNUM].ID           =atoi(cID);
+        APAIR->PAIR[ALLNUM].CHIPID       =atoi(cCID);
         APAIR->PAIR[ALLNUM].FLAG         =1;
-        APAIR->PAIR[ALLNUM].X_LOCAL[0]   =x;
-        APAIR->PAIR[ALLNUM].X_LOCAL[1]   =y;
-        APAIR->PAIR[ALLNUM].X_RADEC[0]   =RA;
-        APAIR->PAIR[ALLNUM].X_RADEC[1]   =DEC;
+        APAIR->PAIR[ALLNUM].X_LOCAL[0]   =atof(cx);
+        APAIR->PAIR[ALLNUM].X_LOCAL[1]   =atof(cy);
+        APAIR->PAIR[ALLNUM].X_RADEC[0]   =atof(cRA);
+        APAIR->PAIR[ALLNUM].X_RADEC[1]   =atof(cDEC);
         APAIR->PAIR[ALLNUM].X_LOCALERR[0]=1;
         APAIR->PAIR[ALLNUM].X_LOCALERR[1]=1;
         APAIR->PAIR[ALLNUM].X_RADECERR[0]=1;
@@ -708,6 +712,7 @@ void    F_WCSA_MAKEPAIR_local(string matchlist,CL_APAIR* APAIR){
            isnan(APAIR->PAIR[ALLNUM].X_LOCAL[0])||isinf(APAIR->PAIR[ALLNUM].X_LOCAL[0])||
            isnan(APAIR->PAIR[ALLNUM].X_LOCAL[1])||isinf(APAIR->PAIR[ALLNUM].X_LOCAL[1]))
         APAIR->PAIR[ALLNUM].FLAG=0;
+//cout << fixed << APAIR->PAIR[ALLNUM].ID << "	" << APAIR->PAIR[ALLNUM].CHIPID << "	" <<APAIR->PAIR[ALLNUM].FLAG <<"	" << APAIR->PAIR[ALLNUM].X_LOCAL[0] << "	" << APAIR->PAIR[ALLNUM].X_LOCAL[1] << "	" << APAIR->PAIR[ALLNUM].X_RADEC[0] << "	" << APAIR->PAIR[ALLNUM].X_RADEC[1] << endl;
         ALLNUM++;
     }
 }
@@ -913,7 +918,78 @@ void setSummaryToMetadata(PTR(CL_WCSA_ASP) WCSA_ASP, dafbase::PropertySet::Ptr &
     metaTANSIP->add("nref_all", WCSA_ASP->APAIR->ALLREFNUM);        
     metaTANSIP->add("nref_fitting", WCSA_ASP->APAIR->ALLFITNUM);        
 }
+//-----------------------------------------------------------------
+//Getting Functions : WCSA_ASP : APROP
+//-----------------------------------------------------------------
+int F_WCSA_PLMAIN_GET_CCDNUM(CL_WCSA_ASP* WCSA_ASP){
+    return WCSA_ASP->APROP->CCDNUM;
+}
+int F_WCSA_PLMAIN_GET_ALLREFNUM(CL_WCSA_ASP* WCSA_ASP){
+    return WCSA_ASP->APROP->ALLREFNUM;
+}
+int F_WCSA_PLMAIN_GET_ALLFITNUM(CL_WCSA_ASP* WCSA_ASP){
+    return WCSA_ASP->APROP->ALLFITNUM;
+}
+std::vector< double > F_WCSA_PLMAIN_GET_CRPIX(CL_WCSA_ASP* WCSA_ASP){
+    std::vector< double > CRPIX(2);
+    CRPIX[0]=WCSA_ASP->APROP->CRPIX[0];
+    CRPIX[1]=WCSA_ASP->APROP->CRPIX[1];
+    return CRPIX;
+}
+std::vector< double > F_WCSA_PLMAIN_GET_CRVAL(CL_WCSA_ASP* WCSA_ASP){
+    std::vector< double > CRVAL(2);
+    CRVAL[0]=WCSA_ASP->APROP->CRVAL[0];
+    CRVAL[1]=WCSA_ASP->APROP->CRVAL[1];
+    return CRVAL;
+}
+std::vector< double > F_WCSA_PLMAIN_GET_REFNUM(CL_WCSA_ASP* WCSA_ASP){
+    int CID;
+    std::vector< double > REFNUM;
+    for(CID=0;CID<WCSA_ASP->APROP->CCDNUM;CID++)
+    REFNUM.push_back(WCSA_ASP->GSIP->CSIP[CID].REFNUM);
 
+    return REFNUM;
+}
+std::vector< double > F_WCSA_PLMAIN_GET_FITNUM(CL_WCSA_ASP* WCSA_ASP){
+    int CID;
+    std::vector< double > FITNUM;
+    for(CID=0;CID<WCSA_ASP->APROP->CCDNUM;CID++)
+    FITNUM.push_back(WCSA_ASP->GSIP->CSIP[CID].FITNUM);
+
+    return FITNUM;
+}
+std::vector< double > F_WCSA_PLMAIN_GET_SIPRMSX(CL_WCSA_ASP* WCSA_ASP){
+    int CID;
+    std::vector< double > SIPRMS;
+    for(CID=0;CID<WCSA_ASP->APROP->CCDNUM;CID++)
+    SIPRMS.push_back(WCSA_ASP->GSIP->CSIP[CID].SIP_AB_ERR[0][1]);
+
+    return SIPRMS;
+}
+std::vector< double > F_WCSA_PLMAIN_GET_SIPRMSY(CL_WCSA_ASP* WCSA_ASP){
+    int CID;
+    std::vector< double > SIPRMS;
+    for(CID=0;CID<WCSA_ASP->APROP->CCDNUM;CID++)
+    SIPRMS.push_back(WCSA_ASP->GSIP->CSIP[CID].SIP_AB_ERR[1][1]);
+
+    return SIPRMS;
+}
+std::vector< double > F_WCSA_PLMAIN_GET_PSIPRMSX(CL_WCSA_ASP* WCSA_ASP){
+    int CID;
+    std::vector< double > SIPRMS;
+    for(CID=0;CID<WCSA_ASP->APROP->CCDNUM;CID++)
+    SIPRMS.push_back(WCSA_ASP->GSIP->CSIP[CID].SIP_ABP_ERR[0][1]);
+
+    return SIPRMS;
+}
+std::vector< double > F_WCSA_PLMAIN_GET_PSIPRMSY(CL_WCSA_ASP* WCSA_ASP){
+    int CID;
+    std::vector< double > SIPRMS;
+    for(CID=0;CID<WCSA_ASP->APROP->CCDNUM;CID++)
+    SIPRMS.push_back(WCSA_ASP->GSIP->CSIP[CID].SIP_ABP_ERR[1][1]);
+
+    return SIPRMS;
+}
 //-----------------------------------------------------------------
 //Output Functions : WCSA_ASP : SIP
 //-----------------------------------------------------------------
@@ -1284,6 +1360,43 @@ cout << CHECK << "	" << CID << "	" << XLOCAL[0] << "	" << XLOCAL[1] << endl;
 
     return CCDIDLOCAL;
 }
+std::vector< double > F_WCSA_PLMAIN_GETPOSITION_IMPIXELfromLOCAL(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > XY){
+    int CHIPID;
+    double LOCAL[2],IM_PIXEL[2];
+    std::vector< double > IMPIXEL(2);
+
+    if(CID>-0.5&&CID<WCSA_ASP->APROP->CCDNUM-0.5){
+        CHIPID=CID;
+    }else{
+        CHIPID=WCSA_ASP->APROP->CCDNUM;
+    }
+    LOCAL[0]=XY[0];
+    LOCAL[1]=XY[1];
+    WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXIMPIXEL(CHIPID,LOCAL,IM_PIXEL);
+    IMPIXEL[0]=IM_PIXEL[0];
+    IMPIXEL[1]=IM_PIXEL[1];
+
+    return IMPIXEL;
+}
+std::vector< double > F_WCSA_PLMAIN_GETPOSITION_LOCALfromIMPIXEL(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > XY){
+    int CHIPID;
+    double IMPIXEL[2],LOCAL[2];
+    std::vector< double > XLOCAL(2);
+
+    if(CID>-0.5&&CID<WCSA_ASP->APROP->CCDNUM-0.5){
+        CHIPID=CID;
+    }else{
+        CHIPID=WCSA_ASP->APROP->CCDNUM;
+    }
+
+    IMPIXEL[0]=XY[0];
+    IMPIXEL[1]=XY[1];
+    WCSA_ASP->GSIP->F_WCSA_GSIP_XIMPIXELtoXLOCAL(CHIPID,IMPIXEL,LOCAL);
+    XLOCAL[0]=IMPIXEL[0];
+    XLOCAL[1]=IMPIXEL[1];
+
+    return XLOCAL;
+}
 //-----------------------------------------------------------------
 //Getting Functions : WCSA_ASP : GRID POSITION 
 //-----------------------------------------------------------------
@@ -1420,7 +1533,39 @@ std::vector< std::vector< double > > F_WCSA_PLMAIN_GETCRSMA_atCRPIXGRID(CL_WCSA_
 }
 std::vector< std::vector< double > > F_WCSA_PLMAIN_GETCRSMA_atRADECGRID(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > GRID){
 }
+std::vector< std::vector< double > > F_WCSA_PLMAIN_GETCRSM_atLOCALGRID(CL_WCSA_ASP* WCSA_ASP,int CID,int CRSMID,std::vector< double > X,std::vector< double > Y){
+    int CHIPID,intX,intY;
+    double LOCAL[2],CRSM[6],OUTDATA;
+    std::vector< double > VCRSM_YFIX;
+    std::vector< std::vector< double > > VCRSM;
 
+    if(CID>-0.5&&CID<WCSA_ASP->APROP->CCDNUM-0.5){
+        CHIPID=CID;
+    }else{
+        CHIPID=WCSA_ASP->APROP->CCDNUM;
+    }
+
+    LOCAL[0]=0.5*(X[0]+X[X.size()]);
+    LOCAL[1]=0.5*(Y[0]+Y[Y.size()]);
+    WCSA_ASP->GSIP->F_WCSA_GSIP_CRSMAatXLOCAL(CHIPID,LOCAL,CRSM);
+    OUTDATA=CRSM[CRSMID];
+    for(intY=0;intY<Y.size();intY++){
+    for(intX=0;intX<X.size();intX++){
+	LOCAL[0]=X[intX];
+	LOCAL[1]=Y[intY];
+        if(hypot(LOCAL[0],LOCAL[1])<20000){
+        WCSA_ASP->GSIP->F_WCSA_GSIP_CRSMAatXLOCAL(CHIPID,LOCAL,CRSM);
+	VCRSM_YFIX.push_back(CRSM[CRSMID]);
+        }else{
+        VCRSM_YFIX.push_back(OUTDATA);
+        }
+    }
+        VCRSM.push_back(VCRSM_YFIX);
+        VCRSM_YFIX.clear();
+    }
+
+    return VCRSM;
+}
 //-----------------------------------------------------------------
 //Getting Functions : WCSA_ASP : GRID DISTORTION 
 //-----------------------------------------------------------------
@@ -1932,6 +2077,383 @@ std::vector< std::vector< double > > F_WCSA_PLMAIN_GETCCDPOSITIONS(CL_WCSA_ASP* 
     }    
 }
 
+//-----------------------------------------------------------------
+//plotting Regions : CCD
+//-----------------------------------------------------------------
+std::vector< double > F_WCSA_PLMAIN_GET_CORNAR(CL_WCSA_ASP* WCSA_ASP,int CID){
+    std::vector< double > CCDCORNAR;
+    if(CID>-0.5&&CID<WCSA_ASP->APROP->CCDNUM-0.5){
+        if(CID<100-0.5){
+            CCDCORNAR.push_back(WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]));
+            CCDCORNAR.push_back(WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]));
+            CCDCORNAR.push_back(WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+2048*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]));
+            CCDCORNAR.push_back(WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+2048*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]));
+            CCDCORNAR.push_back(WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+2048*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-4096*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]));
+            CCDCORNAR.push_back(WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+2048*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+4096*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]));
+            CCDCORNAR.push_back(WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-4096*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]));
+            CCDCORNAR.push_back(WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+4096*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]));
+	    CCDCORNAR.push_back(0.0);
+	    CCDCORNAR.push_back(0.0);
+        }else{
+            CCDCORNAR.push_back(WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]));
+            CCDCORNAR.push_back(WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]));
+            CCDCORNAR.push_back(WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+4096*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]));
+            CCDCORNAR.push_back(WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+4096*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]));
+            CCDCORNAR.push_back(WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+4096*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-2048*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]));
+            CCDCORNAR.push_back(WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+4096*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+2048*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]));
+            CCDCORNAR.push_back(WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-2048*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]));
+            CCDCORNAR.push_back(WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+2048*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]));
+	    CCDCORNAR.push_back(0.0);
+	    CCDCORNAR.push_back(0.0);
+        }
+    }else{
+	    for(CID=0;CID<WCSA_ASP->APROP->CCDNUM;CID++)
+            if(CID<100-0.5){
+                CCDCORNAR.push_back(WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]));
+                CCDCORNAR.push_back(WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]));
+                CCDCORNAR.push_back(WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+2048*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]));
+                CCDCORNAR.push_back(WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+2048*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]));
+                CCDCORNAR.push_back(WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+2048*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-4096*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]));
+                CCDCORNAR.push_back(WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+2048*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+4096*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]));
+                CCDCORNAR.push_back(WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-4096*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]));
+                CCDCORNAR.push_back(WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+4096*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]));
+	        CCDCORNAR.push_back(0.0);
+	        CCDCORNAR.push_back(0.0);
+            }else{
+                CCDCORNAR.push_back(WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]));
+                CCDCORNAR.push_back(WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]));
+                CCDCORNAR.push_back(WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+4096*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]));
+                CCDCORNAR.push_back(WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+4096*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]));
+                CCDCORNAR.push_back(WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+4096*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-2048*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]));
+                CCDCORNAR.push_back(WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+4096*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+2048*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]));
+                CCDCORNAR.push_back(WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-2048*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]));
+                CCDCORNAR.push_back(WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+2048*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]));
+    	        CCDCORNAR.push_back(0.0);
+    	        CCDCORNAR.push_back(0.0);
+            }
+    }
+    return CCDCORNAR;
+}
+std::vector< double > F_WCSA_PLMAIN_GET_DISTCORRCORNAR(CL_WCSA_ASP* WCSA_ASP,int CID){
+    double LOCAL[2],IMPIXEL[2];
+    std::vector< double > DISTCORRCORNAR;
+    if(CID>-0.5&&CID<WCSA_ASP->APROP->CCDNUM-0.5){
+        if(CID<100-0.5){
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXIMPIXEL(CID,LOCAL,IMPIXEL);
+            DISTCORRCORNAR.push_back(IMPIXEL[0]);
+            DISTCORRCORNAR.push_back(IMPIXEL[1]);
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+2048*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+2048*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXIMPIXEL(CID,LOCAL,IMPIXEL);
+            DISTCORRCORNAR.push_back(IMPIXEL[0]);
+            DISTCORRCORNAR.push_back(IMPIXEL[1]);
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+2048*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-4096*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+2048*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+4096*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXIMPIXEL(CID,LOCAL,IMPIXEL);
+            DISTCORRCORNAR.push_back(IMPIXEL[0]);
+            DISTCORRCORNAR.push_back(IMPIXEL[1]);
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-4096*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+4096*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXIMPIXEL(CID,LOCAL,IMPIXEL);
+            DISTCORRCORNAR.push_back(IMPIXEL[0]);
+            DISTCORRCORNAR.push_back(IMPIXEL[1]);
+	    DISTCORRCORNAR.push_back(0.0);
+	    DISTCORRCORNAR.push_back(0.0);
+        }else{
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXIMPIXEL(CID,LOCAL,IMPIXEL);
+            DISTCORRCORNAR.push_back(IMPIXEL[0]);
+            DISTCORRCORNAR.push_back(IMPIXEL[1]);
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+4096*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+4096*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXIMPIXEL(CID,LOCAL,IMPIXEL);
+            DISTCORRCORNAR.push_back(IMPIXEL[0]);
+            DISTCORRCORNAR.push_back(IMPIXEL[1]);
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+4096*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-2048*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+4096*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+2048*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXIMPIXEL(CID,LOCAL,IMPIXEL);
+            DISTCORRCORNAR.push_back(IMPIXEL[0]);
+            DISTCORRCORNAR.push_back(IMPIXEL[1]);
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-2048*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+2048*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXIMPIXEL(CID,LOCAL,IMPIXEL);
+            DISTCORRCORNAR.push_back(IMPIXEL[0]);
+            DISTCORRCORNAR.push_back(IMPIXEL[1]);
+	    DISTCORRCORNAR.push_back(0.0);
+	    DISTCORRCORNAR.push_back(0.0);
+        }
+    }else{
+	    for(CID=0;CID<WCSA_ASP->APROP->CCDNUM;CID++)
+            if(CID<100-0.5){
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXIMPIXEL(WCSA_ASP->APROP->CCDNUM,LOCAL,IMPIXEL);
+            DISTCORRCORNAR.push_back(IMPIXEL[0]);
+            DISTCORRCORNAR.push_back(IMPIXEL[1]);
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+2048*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+2048*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXIMPIXEL(WCSA_ASP->APROP->CCDNUM,LOCAL,IMPIXEL);
+            DISTCORRCORNAR.push_back(IMPIXEL[0]);
+            DISTCORRCORNAR.push_back(IMPIXEL[1]);
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+2048*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-4096*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+2048*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+4096*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXIMPIXEL(WCSA_ASP->APROP->CCDNUM,LOCAL,IMPIXEL);
+            DISTCORRCORNAR.push_back(IMPIXEL[0]);
+            DISTCORRCORNAR.push_back(IMPIXEL[1]);
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-4096*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+4096*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXIMPIXEL(WCSA_ASP->APROP->CCDNUM,LOCAL,IMPIXEL);
+            DISTCORRCORNAR.push_back(IMPIXEL[0]);
+            DISTCORRCORNAR.push_back(IMPIXEL[1]);
+	    DISTCORRCORNAR.push_back(0.0);
+	    DISTCORRCORNAR.push_back(0.0);
+            }else{
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXIMPIXEL(WCSA_ASP->APROP->CCDNUM,LOCAL,IMPIXEL);
+            DISTCORRCORNAR.push_back(IMPIXEL[0]);
+            DISTCORRCORNAR.push_back(IMPIXEL[1]);
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+4096*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+4096*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXIMPIXEL(WCSA_ASP->APROP->CCDNUM,LOCAL,IMPIXEL);
+            DISTCORRCORNAR.push_back(IMPIXEL[0]);
+            DISTCORRCORNAR.push_back(IMPIXEL[1]);
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+4096*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-2048*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+4096*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+2048*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXIMPIXEL(WCSA_ASP->APROP->CCDNUM,LOCAL,IMPIXEL);
+            DISTCORRCORNAR.push_back(IMPIXEL[0]);
+            DISTCORRCORNAR.push_back(IMPIXEL[1]);
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-2048*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+2048*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXIMPIXEL(WCSA_ASP->APROP->CCDNUM,LOCAL,IMPIXEL);
+            DISTCORRCORNAR.push_back(IMPIXEL[0]);
+            DISTCORRCORNAR.push_back(IMPIXEL[1]);
+	    DISTCORRCORNAR.push_back(0.0);
+	    DISTCORRCORNAR.push_back(0.0);
+            }
+    }
+    return DISTCORRCORNAR;
+}
+std::vector< double > F_WCSA_PLMAIN_GET_DISTCORRCORNAR_N(CL_WCSA_ASP* WCSA_ASP,int CID,int N){
+    double LOCAL[2],IMPIXEL[2];
+    std::vector< double > DISTCORRCORNAR;
+    if(CID>-0.5&&CID<WCSA_ASP->APROP->CCDNUM-0.5){
+        if(CID<100-0.5){
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXIMPIXEL(CID,LOCAL,IMPIXEL);
+            DISTCORRCORNAR.push_back(N*(IMPIXEL[0]-LOCAL[0])+LOCAL[0]);
+            DISTCORRCORNAR.push_back(N*(IMPIXEL[1]-LOCAL[1])+LOCAL[1]);
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+2048*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+2048*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXIMPIXEL(CID,LOCAL,IMPIXEL);
+            DISTCORRCORNAR.push_back(N*(IMPIXEL[0]-LOCAL[0])+LOCAL[0]);
+            DISTCORRCORNAR.push_back(N*(IMPIXEL[1]-LOCAL[1])+LOCAL[1]);
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+2048*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-4096*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+2048*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+4096*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXIMPIXEL(CID,LOCAL,IMPIXEL);
+            DISTCORRCORNAR.push_back(N*(IMPIXEL[0]-LOCAL[0])+LOCAL[0]);
+            DISTCORRCORNAR.push_back(N*(IMPIXEL[1]-LOCAL[1])+LOCAL[1]);
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-4096*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+4096*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXIMPIXEL(CID,LOCAL,IMPIXEL);
+            DISTCORRCORNAR.push_back(N*(IMPIXEL[0]-LOCAL[0])+LOCAL[0]);
+            DISTCORRCORNAR.push_back(N*(IMPIXEL[1]-LOCAL[1])+LOCAL[1]);
+	    DISTCORRCORNAR.push_back(0.0);
+	    DISTCORRCORNAR.push_back(0.0);
+        }else{
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXIMPIXEL(CID,LOCAL,IMPIXEL);
+            DISTCORRCORNAR.push_back(N*(IMPIXEL[0]-LOCAL[0])+LOCAL[0]);
+            DISTCORRCORNAR.push_back(N*(IMPIXEL[1]-LOCAL[1])+LOCAL[1]);
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+4096*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+4096*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXIMPIXEL(CID,LOCAL,IMPIXEL);
+            DISTCORRCORNAR.push_back(N*(IMPIXEL[0]-LOCAL[0])+LOCAL[0]);
+            DISTCORRCORNAR.push_back(N*(IMPIXEL[1]-LOCAL[1])+LOCAL[1]);
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+4096*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-2048*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+4096*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+2048*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXIMPIXEL(CID,LOCAL,IMPIXEL);
+            DISTCORRCORNAR.push_back(N*(IMPIXEL[0]-LOCAL[0])+LOCAL[0]);
+            DISTCORRCORNAR.push_back(N*(IMPIXEL[1]-LOCAL[1])+LOCAL[1]);
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-2048*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+2048*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXIMPIXEL(CID,LOCAL,IMPIXEL);
+            DISTCORRCORNAR.push_back(N*(IMPIXEL[0]-LOCAL[0])+LOCAL[0]);
+            DISTCORRCORNAR.push_back(N*(IMPIXEL[1]-LOCAL[1])+LOCAL[1]);
+	    DISTCORRCORNAR.push_back(0.0);
+	    DISTCORRCORNAR.push_back(0.0);
+        }
+    }else{
+	    for(CID=0;CID<WCSA_ASP->APROP->CCDNUM;CID++)
+            if(CID<100-0.5){
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXIMPIXEL(WCSA_ASP->APROP->CCDNUM,LOCAL,IMPIXEL);
+            DISTCORRCORNAR.push_back(N*(IMPIXEL[0]-LOCAL[0])+LOCAL[0]);
+            DISTCORRCORNAR.push_back(N*(IMPIXEL[1]-LOCAL[1])+LOCAL[1]);
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+2048*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+2048*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXIMPIXEL(WCSA_ASP->APROP->CCDNUM,LOCAL,IMPIXEL);
+            DISTCORRCORNAR.push_back(N*(IMPIXEL[0]-LOCAL[0])+LOCAL[0]);
+            DISTCORRCORNAR.push_back(N*(IMPIXEL[1]-LOCAL[1])+LOCAL[1]);
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+2048*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-4096*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+2048*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+4096*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXIMPIXEL(WCSA_ASP->APROP->CCDNUM,LOCAL,IMPIXEL);
+            DISTCORRCORNAR.push_back(N*(IMPIXEL[0]-LOCAL[0])+LOCAL[0]);
+            DISTCORRCORNAR.push_back(N*(IMPIXEL[1]-LOCAL[1])+LOCAL[1]);
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-4096*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+4096*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXIMPIXEL(WCSA_ASP->APROP->CCDNUM,LOCAL,IMPIXEL);
+            DISTCORRCORNAR.push_back(N*(IMPIXEL[0]-LOCAL[0])+LOCAL[0]);
+            DISTCORRCORNAR.push_back(N*(IMPIXEL[1]-LOCAL[1])+LOCAL[1]);
+	    DISTCORRCORNAR.push_back(0.0);
+	    DISTCORRCORNAR.push_back(0.0);
+            }else{
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXIMPIXEL(WCSA_ASP->APROP->CCDNUM,LOCAL,IMPIXEL);
+            DISTCORRCORNAR.push_back(N*(IMPIXEL[0]-LOCAL[0])+LOCAL[0]);
+            DISTCORRCORNAR.push_back(N*(IMPIXEL[1]-LOCAL[1])+LOCAL[1]);
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+4096*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+4096*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXIMPIXEL(WCSA_ASP->APROP->CCDNUM,LOCAL,IMPIXEL);
+            DISTCORRCORNAR.push_back(N*(IMPIXEL[0]-LOCAL[0])+LOCAL[0]);
+            DISTCORRCORNAR.push_back(N*(IMPIXEL[1]-LOCAL[1])+LOCAL[1]);
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+4096*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-2048*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+4096*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+2048*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXIMPIXEL(WCSA_ASP->APROP->CCDNUM,LOCAL,IMPIXEL);
+            DISTCORRCORNAR.push_back(N*(IMPIXEL[0]-LOCAL[0])+LOCAL[0]);
+            DISTCORRCORNAR.push_back(N*(IMPIXEL[1]-LOCAL[1])+LOCAL[1]);
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-2048*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+2048*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXIMPIXEL(WCSA_ASP->APROP->CCDNUM,LOCAL,IMPIXEL);
+            DISTCORRCORNAR.push_back(N*(IMPIXEL[0]-LOCAL[0])+LOCAL[0]);
+            DISTCORRCORNAR.push_back(N*(IMPIXEL[1]-LOCAL[1])+LOCAL[1]);
+	    DISTCORRCORNAR.push_back(0.0);
+	    DISTCORRCORNAR.push_back(0.0);
+            }
+    }
+    return DISTCORRCORNAR;
+}
+std::vector< double > F_WCSA_PLMAIN_GET_RADECCORNAR(CL_WCSA_ASP* WCSA_ASP,int CID){
+    double LOCAL[2],RADEC[2];
+    std::vector< double > RADECCORNAR;
+    if(CID>-0.5&&CID<WCSA_ASP->APROP->CCDNUM-0.5){
+        if(CID<100-0.5){
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXRADEC(CID,LOCAL,RADEC);
+            RADECCORNAR.push_back(RADEC[0]);
+            RADECCORNAR.push_back(RADEC[1]);
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+2048*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+2048*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXRADEC(CID,LOCAL,RADEC);
+            RADECCORNAR.push_back(RADEC[0]);
+            RADECCORNAR.push_back(RADEC[1]);
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+2048*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-4096*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+2048*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+4096*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXRADEC(CID,LOCAL,RADEC);
+            RADECCORNAR.push_back(RADEC[0]);
+            RADECCORNAR.push_back(RADEC[1]);
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-4096*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+4096*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXRADEC(CID,LOCAL,RADEC);
+            RADECCORNAR.push_back(RADEC[0]);
+            RADECCORNAR.push_back(RADEC[1]);
+	    RADECCORNAR.push_back(0.0);
+	    RADECCORNAR.push_back(0.0);
+        }else{
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXRADEC(CID,LOCAL,RADEC);
+            RADECCORNAR.push_back(RADEC[0]);
+            RADECCORNAR.push_back(RADEC[1]);
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+4096*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+4096*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXRADEC(CID,LOCAL,RADEC);
+            RADECCORNAR.push_back(RADEC[0]);
+            RADECCORNAR.push_back(RADEC[1]);
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+4096*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-2048*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+4096*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+2048*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXRADEC(CID,LOCAL,RADEC);
+            RADECCORNAR.push_back(RADEC[0]);
+            RADECCORNAR.push_back(RADEC[1]);
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-2048*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+2048*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXRADEC(CID,LOCAL,RADEC);
+            RADECCORNAR.push_back(RADEC[0]);
+            RADECCORNAR.push_back(RADEC[1]);
+	    RADECCORNAR.push_back(0.0);
+	    RADECCORNAR.push_back(0.0);
+        }
+    }else{
+	    for(CID=0;CID<WCSA_ASP->APROP->CCDNUM;CID++)
+            if(CID<100-0.5){
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXRADEC(WCSA_ASP->APROP->CCDNUM,LOCAL,RADEC);
+            RADECCORNAR.push_back(RADEC[0]);
+            RADECCORNAR.push_back(RADEC[1]);
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+2048*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+2048*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXRADEC(WCSA_ASP->APROP->CCDNUM,LOCAL,RADEC);
+            RADECCORNAR.push_back(RADEC[0]);
+            RADECCORNAR.push_back(RADEC[1]);
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+2048*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-4096*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+2048*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+4096*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXRADEC(WCSA_ASP->APROP->CCDNUM,LOCAL,RADEC);
+            RADECCORNAR.push_back(RADEC[0]);
+            RADECCORNAR.push_back(RADEC[1]);
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-4096*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+4096*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXRADEC(WCSA_ASP->APROP->CCDNUM,LOCAL,RADEC);
+            RADECCORNAR.push_back(RADEC[0]);
+            RADECCORNAR.push_back(RADEC[1]);
+	    RADECCORNAR.push_back(0.0);
+	    RADECCORNAR.push_back(0.0);
+            }else{
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXRADEC(WCSA_ASP->APROP->CCDNUM,LOCAL,RADEC);
+            RADECCORNAR.push_back(RADEC[0]);
+            RADECCORNAR.push_back(RADEC[1]);
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+4096*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+4096*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXRADEC(WCSA_ASP->APROP->CCDNUM,LOCAL,RADEC);
+            RADECCORNAR.push_back(RADEC[0]);
+            RADECCORNAR.push_back(RADEC[1]);
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+4096*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-2048*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+4096*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+2048*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXRADEC(WCSA_ASP->APROP->CCDNUM,LOCAL,RADEC);
+            RADECCORNAR.push_back(RADEC[0]);
+            RADECCORNAR.push_back(RADEC[1]);
+            LOCAL[0]=WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+0000*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])-2048*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            LOCAL[1]=WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+0000*sin(WCSA_ASP->GSIP->CSIP[CID].GPOS[2])+2048*cos(WCSA_ASP->GSIP->CSIP[CID].GPOS[2]);
+            WCSA_ASP->GSIP->F_WCSA_GSIP_XLOCALtoXRADEC(WCSA_ASP->APROP->CCDNUM,LOCAL,RADEC);
+            RADECCORNAR.push_back(RADEC[0]);
+            RADECCORNAR.push_back(RADEC[1]);
+	    RADECCORNAR.push_back(0.0);
+	    RADECCORNAR.push_back(0.0);
+            }
+    }
+    return RADECCORNAR;
+}
+std::vector< int > F_WCSA_PLMAIN_GET_INDEX(CL_WCSA_ASP *WCSA_ASP){
+    int CID;
+    std::vector< int > INDEX;
+    
+    for(CID=0;CID<WCSA_ASP->APROP->CCDNUM;CID++){
+    INDEX.push_back((int)(WCSA_ASP->GSIP->CSIP[CID].GPOS[0]/fabs(WCSA_ASP->GSIP->CSIP[CID].GPOS[0])*(fabs((WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+1024)/2048)+0.1)));
+    INDEX.push_back((int)(WCSA_ASP->GSIP->CSIP[CID].GPOS[1]/fabs(WCSA_ASP->GSIP->CSIP[CID].GPOS[1])*(fabs((WCSA_ASP->GSIP->CSIP[CID].GPOS[1]+0000)/2048)+0.1)));
+//    cout << CID << "	" << WCSA_ASP->GSIP->CSIP[CID].GPOS[0]/(2048)  << "	" << WCSA_ASP->GSIP->CSIP[CID].GPOS[1]/(2048) <<"	"  << (int)(WCSA_ASP->GSIP->CSIP[CID].GPOS[0]/fabs(WCSA_ASP->GSIP->CSIP[CID].GPOS[0])*(fabs((WCSA_ASP->GSIP->CSIP[CID].GPOS[0]+1024)/2048)+0.1)) << "	" << (int)(WCSA_ASP->GSIP->CSIP[CID].GPOS[1]/fabs(WCSA_ASP->GSIP->CSIP[CID].GPOS[1])*(fabs(WCSA_ASP->GSIP->CSIP[CID].GPOS[1]/2048)+0.1)) << endl;
+    }
+    return INDEX;
+}
 //-----------------------------------------------------------------
 //Getting Functions : OLD
 //-----------------------------------------------------------------

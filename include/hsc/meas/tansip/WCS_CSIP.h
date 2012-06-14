@@ -113,6 +113,8 @@ public:
 //    void F_WCSA_GSIP_SETDEFAULTDISTORTION_HSCfromPAF();
     void F_WCSA_GSIP_XLOCALtoXRADEC(int CID, double *PIXEL, double *RADEC);
     void F_WCSA_GSIP_XRADECtoXLOCAL(int CID, double *RADEC, double *PIXEL);
+    void F_WCSA_GSIP_XLOCALtoXIMPIXEL(int CID, double *PIXEL,double *IMPIXEL);
+    void F_WCSA_GSIP_XIMPIXELtoXLOCAL(int CID, double *IMPIXEL,double *PIXEL);
     void F_WCSA_GSIP_XCRPIXtoXRADEC(int CID, double *CRPIX, double *RADEC);
     void F_WCSA_GSIP_XRADECtoXCRPIX(int CID, double *RADEC, double *CRPIX);
     void F_WCSA_GSIP_CRSMAatXLOCAL (int CID, double *LOCAL, double *CRSMA);

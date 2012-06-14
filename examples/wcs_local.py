@@ -34,6 +34,7 @@ mapper = hscSim.HscSimMapper(rerun="fh-dc2.9c-default")
 CNUMBER = 0
 ANGLE=0
 
+print "1"
 policyPath = os.path.join(os.getenv("SOLVETANSIP_DIR"), "policy", "WCS_MAKEAPROP.paf")
 policy = pexPolicy.Policy.createPolicy(policyPath)
 

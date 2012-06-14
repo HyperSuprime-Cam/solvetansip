@@ -3,6 +3,17 @@
 target: DoTansip
 
 definitions: {
+    INSTR: {
+        type: string
+        default: HSC
+        description: INSTRUMENT HSC or SC
+        allowed: {
+            value: HSC
+        }
+        allowed: {
+            value: SC
+        }
+    }
     CRPIXMODE: {
         type: string
         default: AUTO

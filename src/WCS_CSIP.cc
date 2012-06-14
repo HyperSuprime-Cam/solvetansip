@@ -190,13 +190,23 @@ void CL_CSIP::F_WCSA_CSIP_XRADECtoXCRPIX(double *RADEC,double *PIXEL){
 void CL_GSIP::F_WCSA_GSIP_XLOCALtoXRADEC(int CID, double *PIXEL,double *RADEC){
     double XX[2],YY[2];
 
-    XX[0]=PIXEL[0]-CRPIX[0];
-    XX[1]=PIXEL[1]-CRPIX[1];
+    XX[0]=PIXEL[0]-CSIP[CID].CRPIX[0];
+    XX[1]=PIXEL[1]-CSIP[CID].CRPIX[1];
     YY[0]=F_CALCVALUE(SIP_ORDER,CSIP[CID].SIP_AB[0],XX)+XX[0];
     YY[1]=F_CALCVALUE(SIP_ORDER,CSIP[CID].SIP_AB[1],XX)+XX[1];
     XX[0]=CSIP[CID].CD[0][0]*YY[0]+CSIP[CID].CD[0][1]*YY[1];
     XX[1]=CSIP[CID].CD[1][0]*YY[0]+CSIP[CID].CD[1][1]*YY[1];
     F_InvPROJECTION(XX,RADEC,CRVAL);
+}
+void CL_GSIP::F_WCSA_GSIP_XLOCALtoXIMPIXEL(int CID, double *PIXEL,double *IMPIXEL){
+    double XX[2],YY[2];
+
+    XX[0]=PIXEL[0]-CSIP[CID].CRPIX[0];
+    XX[1]=PIXEL[1]-CSIP[CID].CRPIX[1];
+    YY[0]=F_CALCVALUE(SIP_ORDER,CSIP[CID].SIP_AB[0],XX)+XX[0];
+    YY[1]=F_CALCVALUE(SIP_ORDER,CSIP[CID].SIP_AB[1],XX)+XX[1];
+    IMPIXEL[0]=YY[0]+CSIP[CID].CRPIX[0];
+    IMPIXEL[1]=YY[1]+CSIP[CID].CRPIX[1];
 }
 void CL_GSIP::F_WCSA_GSIP_XRADECtoXLOCAL(int CID, double *RADEC,double *PIXEL){
     double XX[2],YY[2];
@@ -206,8 +216,18 @@ void CL_GSIP::F_WCSA_GSIP_XRADECtoXLOCAL(int CID, double *RADEC,double *PIXEL){
     XX[1]=CSIP[CID].InvCD[1][0]*YY[0]+CSIP[CID].InvCD[1][1]*YY[1];
     YY[0]=F_CALCVALUE(SIP_P_ORDER,CSIP[CID].SIP_ABP[0],XX)+XX[0];
     YY[1]=F_CALCVALUE(SIP_P_ORDER,CSIP[CID].SIP_ABP[1],XX)+XX[1];
-    PIXEL[0]=YY[0]+CRPIX[0];
-    PIXEL[1]=YY[1]+CRPIX[1];
+    PIXEL[0]=YY[0]+CSIP[CID].CRPIX[0];
+    PIXEL[1]=YY[1]+CSIP[CID].CRPIX[1];
+}
+void CL_GSIP::F_WCSA_GSIP_XIMPIXELtoXLOCAL(int CID,double *IMPIXEL, double *PIXEL){
+    double XX[2],YY[2];
+
+    XX[0]=IMPIXEL[0]-CSIP[CID].CRPIX[0];
+    XX[1]=IMPIXEL[1]-CSIP[CID].CRPIX[1];
+    YY[0]=F_CALCVALUE(SIP_P_ORDER,CSIP[CID].SIP_ABP[0],XX)+XX[0];
+    YY[1]=F_CALCVALUE(SIP_P_ORDER,CSIP[CID].SIP_ABP[1],XX)+XX[1];
+    PIXEL[0]=YY[0]+CSIP[CID].CRPIX[0];
+    PIXEL[1]=YY[1]+CSIP[CID].CRPIX[1];
 }
 void CL_GSIP::F_WCSA_GSIP_XCRPIXtoXRADEC(int CID, double *CRPIX,double *RADEC){
     double XX[2],YY[2];
@@ -270,7 +290,7 @@ void CL_GSIP::F_WCSA_GSIP_CRSMAatXLOCAL(int CID,double *LOCAL, double *CRSMA){
     CRSMA[2]=0.5*(  InvdGdI[0][0]-  InvdGdI[1][1]);
     CRSMA[3]=0.5*(  InvdGdI[0][1]+  InvdGdI[1][0]);
     CRSMA[4]=(CRSMA[0]*CRSMA[0]-(CRSMA[2]*CRSMA[2]+CRSMA[3]*CRSMA[3]));
-    CRSMA[5]=(1+dGdI[0][0])*(1+dGdI[1][1])-dGdI[0][1]*dGdI[1][0];
+    CRSMA[5]=(1+InvdGdI[0][0])*(1+InvdGdI[1][1])-InvdGdI[0][1]*InvdGdI[1][0];
 
     F_DELdouble1(TdCoef[0][0]);
     F_DELdouble1(TdCoef[0][1]);
