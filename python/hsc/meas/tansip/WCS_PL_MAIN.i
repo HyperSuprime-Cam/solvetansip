@@ -5,6 +5,7 @@
 #include<cstring>
 #include<iomanip>
 #include "hsc/meas/tansip/WCS_PL_MAIN.h"
+#include "hsc/meas/tansip/WCS_PL_GET.h"
 #include "lsst/afw/cameraGeom.h"
 #include "lsst/pex/logging.h"
 %}
@@ -24,3 +25,4 @@
 
 %include "hsc/meas/tansip/SourceMatch.h"
 %include "hsc/meas/tansip/WCS_PL_MAIN.h"
+%include "hsc/meas/tansip/WCS_PL_GET.h"

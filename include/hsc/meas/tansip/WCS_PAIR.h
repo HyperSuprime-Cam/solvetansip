@@ -58,6 +58,8 @@ public:
     double Zyx;
     double Zxy;
     double Zyy;
+    double XYGx;
+    double XYGy;
 };
 class CL_APAIR{
 private:
@@ -142,8 +144,10 @@ public:
     void F_WCSA_APAIR_GDIFFVALUES();
     void F_WCSA_APAIR_CCDPOSITIONS_T();
     void F_WCSA_APAIR_CCDPOSITIONS_T_MAT();
+    void F_WCSA_APAIR_CCDPOSITIONS_T_MAT2();
     void F_WCSA_APAIR_CCDPOSITIONS_T_SETAVERAGE();
     void F_WCSA_APAIR_CCDPOSITIONS_XY();
+    void F_WCSA_APAIR_CCDPOSITIONS_XY_CORRECTION();
     void F_WCSA_APAIR_CCDPOSITIONS_XY_SETAVERAGE();
 //ETC
     void F_WCSA_APAIR_SET0();

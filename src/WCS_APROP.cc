@@ -22,7 +22,8 @@ void    CL_APROP::F_WCSA_APROP_SHOWAPROP(){
     int CID;
     cout << "-- APROP CHECK --" << endl;
 //    cout << "INSTRUMENT  : " << INSTRUMENT   << endl;
-    cout << "CRPIXMODE   : " << CRPIXMODE   << endl;
+    cout << "CRPIXMODE   : " << CRPIXMODE   << endl;;
+    cout << "REJECTMODE  : " << REJMODE   << endl;
     cout << "OAMODE      : " << OAMODE   << endl;
     cout << "CCDPOSMODE  : " << CCDPOSMODE  << endl;
     cout << "ALLREFNUM   : " << ALLREFNUM   << endl;
@@ -45,6 +46,7 @@ void    CL_APROP::F_WCSA_APROP_SHOWAPROP(){
     cout << "BASISPOSY   : " << BASISPOS[1] << endl;
     cout << "BASISPOST   : " << BASISPOS[2] << endl;
     cout << "CCDNUM      : " << CCDNUM      << endl;
+    cout << "STDOUT      : " << STDOUT      << endl;
     cout <<endl;
 }
 /*DEL*/

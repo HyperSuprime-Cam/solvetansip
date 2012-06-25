@@ -8,7 +8,6 @@
 
 #include<cmath>
 
-
 #ifdef USE_EIGEN
 #include <Eigen/Core>
 #include <Eigen/LU>
@@ -31,6 +30,7 @@ void    F_InvM(int MNUM,double **Min,double **Mout){
     }
     return;
 #else
+
     int i,j,k;
     double Mdi,**Mtemp,**Mtemp2,**I,**Itemp;
 
@@ -201,7 +201,7 @@ void    F_LS2(int dataNUM,int Order,double **data,double *Coef){
     delete [] Z;
 } 
 void    F_LS3_2(int dataNUM,double **data,double *Coef){
-    int i,j,k;
+    int i,j;
     double **XA,**XB,Z[10];
 
     XA = new double*[10];

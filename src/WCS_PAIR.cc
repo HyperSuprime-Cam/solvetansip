@@ -13,6 +13,7 @@
 //#include "hsc/meas/tansip/LeastSquares.h"
 
 using namespace std;
+void F_SET_SIMCCDPOS(double **GPOS);
 //--------------------------------------------------
 //MAIN
 //--------------------------------------------------
@@ -109,7 +110,7 @@ void CL_APAIR::F_WCSA_APAIR_REJECTION(){
 //    F_WCSA_APAIR_CALCRMS(SIP_P_ORDER,0,10);   
     F_WCSA_APAIR_CALCRMS(SIP_ORDER,10,0);   
 
-cout << "-- REJECTION VALUE --" << endl;
+//cout << "-- REJECTION VALUE --" << endl;
 //for(NUM=0;NUM<ALLREFNUM;NUM++)
 //if(PAIR[NUM].FLAG == 1)
 //cout << NUM << "	" << PAIR[NUM].CHIPID << "	" << PAIR[NUM].X_RADEC[0] << "	" << PAIR[NUM].X_RADEC[1] << "	" << PAIR[NUM].X_CENTER_GLOBAL[0] << "	" << PAIR[NUM].X_CENTER_GLOBAL[1] << "	" << F_CALCVALUE(SIP_P_ORDER,TCoef[0],PAIR[NUM].X_RADEC) << "	" << F_CALCVALUE(SIP_P_ORDER,TCoef[1],PAIR[NUM].X_RADEC) << "	" <<  fabs(PAIR[NUM].X_CENTER_GLOBAL[0]-F_CALCVALUE(SIP_P_ORDER,TCoef[0],PAIR[NUM].X_RADEC)) << "	" << CLIP_SIGMA*AVERMS[0][1] << "	" << fabs(PAIR[NUM].X_CENTER_GLOBAL[1]-F_CALCVALUE(SIP_P_ORDER,TCoef[1],PAIR[NUM].X_RADEC)) << "	" << CLIP_SIGMA*AVERMS[1][1] << endl;
@@ -169,10 +170,11 @@ void CL_APAIR::F_WCSA_APAIR_GPOS(){
     if(STDOUT==1||STDOUT==2)cout << "--- WCS_TANSIP : DETERMINING CCD POSITION : CALCULATING XY of CCD ---" << endl;
     F_WCSA_APAIR_CCDPOSITIONS_XY();
 //add : SHIFT CCD
-    if(STDOUT==2)for(CID=0;CID<CCDNUM;CID++)cout << "X : " << setfill ('0') << setw (3) <<CID << fixed<< " : " << GPOS[CID][0] <<endl<< "Y : " << setfill ('0') << setw (3) <<CID << fixed<< " : " << GPOS[CID][1] << endl;
-    if(STDOUT==2)cout << "X : AVE : " << GPOS_AVE[0] << endl << "Y : AVE : " << GPOS_AVE[1] << endl;
-    if(STDOUT==1||STDOUT==2)cout << "--- WCS_TANSIP : DETERMINING CCD POSITION : SET AVERAGE of XYs = 0 ---" << endl;
     F_WCSA_APAIR_CCDPOSITIONS_XY_SETAVERAGE();//CENTER = (1024, 2048)
+//HIGH ORDER CORRECTION 
+    F_WCSA_APAIR_CCDPOSITIONS_XY_CORRECTION();
+//    if(STDOUT==2)for(CID=0;CID<CCDNUM;CID++)cout << "X : " << setfill ('0') << setw (3) <<CID << fixed<< " : " << GPOS[CID][0] <<endl<< "Y : " << setfill ('0') << setw (3) <<CID << fixed<< " : " << GPOS[CID][1] << endl;
+ //   if(STDOUT==2)cout << "X : AVE : " << GPOS_AVE[0] << endl << "Y : AVE : " << GPOS_AVE[1] << endl;
     if(STDOUT==2)for(CID=0;CID<CCDNUM;CID++)cout << "X : " << setfill ('0') << setw (3) <<CID << fixed<< " : " << GPOS[CID][0] <<endl<< "Y : " << setfill ('0') << setw (3) <<CID << fixed<< " : " << GPOS[CID][1] << endl;
 }
 
@@ -268,8 +270,13 @@ void CL_APAIR::F_WCSA_APAIR_SETX(){
 }
 void CL_APAIR::F_WCSA_APAIR_CENTERPROJECTION(){
     int NUM;
-    for(NUM=0;NUM<ALLREFNUM;NUM++)
-    F_PROJECTION(PAIR[NUM].X_RADEC,PAIR[NUM].X_CENTER_IM_WORLD,CENTER_RADEC);
+/*    if(strcmp(CRPIXMODE,"VAL")==0){
+        for(NUM=0;NUM<ALLREFNUM;NUM++)
+        F_PROJECTION(PAIR[NUM].X_RADEC,PAIR[NUM].X_CENTER_IM_WORLD,CRVAL);
+    }else{
+*/        for(NUM=0;NUM<ALLREFNUM;NUM++)
+        F_PROJECTION(PAIR[NUM].X_RADEC,PAIR[NUM].X_CENTER_IM_WORLD,CENTER_RADEC);
+//    }
 }
 void CL_APAIR::F_WCSA_APAIR_CENTERofOBJECTS(){
     int NUM,FNUM;
@@ -285,15 +292,17 @@ void CL_APAIR::F_WCSA_APAIR_CENTERofOBJECTS(){
     CENTER_PIXEL[0]/=FNUM;
     CENTER_PIXEL[1]/=FNUM;
 //cout << "CENTER : " << CENTER_PIXEL[0] << " : " << CENTER_PIXEL[1] << endl;
+//CENTER_PIXEL[0]+=124;
+//CENTER_PIXEL[1]+=248;
     for(NUM=0;NUM<ALLREFNUM;NUM++){
         PAIR[NUM].X_CENTER_GLOBAL[0]=PAIR[NUM].X_GLOBAL[0]-CENTER_PIXEL[0];
         PAIR[NUM].X_CENTER_GLOBAL[1]=PAIR[NUM].X_GLOBAL[1]-CENTER_PIXEL[1];
-//cout << NUM << "	" << PAIR[NUM].X_GLOBAL[0] << "	" << PAIR[NUM].X_GLOBAL[1] << "	" << PAIR[NUM].X_CENTER_GLOBAL[0] << "	" << PAIR[NUM].X_CENTER_GLOBAL[1] << endl;
    }
 
     F_WCSA_APAIR_GFITTING(SIP_ORDER,6,0,TCoef);
     CENTER_RADEC[0]=TCoef[0][0];
     CENTER_RADEC[1]=TCoef[1][0];
+
 
 }
 void CL_APAIR::F_WCSA_APAIR_CALCCR(){
@@ -830,7 +839,9 @@ void CL_APAIR::F_WCSA_APAIR_CCDPOSITIONS_T(){
         Tcheck[CID]=GPOS[CID][2];
 
         F_WCSA_APAIR_GDIFFVALUES();
-        F_WCSA_APAIR_CCDPOSITIONS_T_MAT();
+//        F_WCSA_APAIR_CCDPOSITIONS_T_MAT();
+F_WCSA_APAIR_CCDPOSITIONS_T_MAT2();
+
 
         TCHECK=0;
         for(CID=0;CID<CCDNUM;CID++)
@@ -839,7 +850,12 @@ void CL_APAIR::F_WCSA_APAIR_CCDPOSITIONS_T(){
 
         if(TCHECK==0)
         break;
-    }
+
+/*for(CID=0;CID<CCDNUM;CID++)
+GPOS[CID][2]=0;
+GPOS_AVE[2]=0;
+break;
+*/    }
     GPOS_AVE[2]=0;
     int AVENUM=0;
     for(CID=0;CID<CCDNUM;CID++)
@@ -848,7 +864,6 @@ void CL_APAIR::F_WCSA_APAIR_CCDPOSITIONS_T(){
         AVENUM++;
     }
     GPOS_AVE[2]/=AVENUM;
-
 //--------------------------------------------------
     F_DELdouble1(Tcheck);
 }
@@ -1026,6 +1041,131 @@ void CL_APAIR::F_WCSA_APAIR_CCDPOSITIONS_T_MAT(){
     F_DELdouble1(MC);
 
 }
+void CL_APAIR::F_WCSA_APAIR_CCDPOSITIONS_T_MAT2(){
+    int i,j,ij,k,l,kl,CID,CID2,NUM,dCoefNUM;
+    double *MA,**MB,**InvMB,*MC,***XY;
+
+    dCoefNUM=(int)(0.5*(SIP_P_ORDER+1-1)*(SIP_P_ORDER+2-1)+0.5);
+
+       MA = F_NEWdouble1(CCDNUM+4*dCoefNUM);
+       MB = F_NEWdouble2(CCDNUM+4*dCoefNUM,CCDNUM+4*dCoefNUM);
+    InvMB = F_NEWdouble2(CCDNUM+4*dCoefNUM,CCDNUM+4*dCoefNUM);
+       MC = F_NEWdouble1(CCDNUM+4*dCoefNUM);
+       XY = F_NEWdouble3(ALLREFNUM,dCoefNUM+1,dCoefNUM+1);
+//--------------------------------------------------
+//XY
+    for(NUM=0;NUM<ALLREFNUM;NUM++)
+    for(i=0;i<SIP_P_ORDER+1-1;i++)
+    for(j=0;j<SIP_P_ORDER+1-1;j++)
+    if(i+j<SIP_P_ORDER+1-1)
+    XY[NUM][i][j] = pow(PAIR[NUM].X_CENTER_IM_WORLD[0],i)*pow(PAIR[NUM].X_CENTER_IM_WORLD[1],j);
+
+
+//--------------------------------------------------
+//dA1
+    for(NUM=0;NUM<ALLREFNUM;NUM++)
+    if(PAIR[NUM].FLAG==1){
+        MA[PAIR[NUM].CHIPID]-= PAIR[NUM].dyGdxI*PAIR[NUM].Zxx;
+        MA[PAIR[NUM].CHIPID]-=-PAIR[NUM].dxGdxI*PAIR[NUM].Zyx;
+        MA[PAIR[NUM].CHIPID]-= PAIR[NUM].dyGdyI*PAIR[NUM].Zxy;
+        MA[PAIR[NUM].CHIPID]-=-PAIR[NUM].dxGdyI*PAIR[NUM].Zyy;
+    }
+//--------------------------------------------------
+//dA2
+    ij=0;
+    for(i=0;i<SIP_P_ORDER+1-1;i++)
+    for(j=0;j<SIP_P_ORDER+1-1;j++)
+    if(i+j<SIP_P_ORDER+1-1){
+        for(NUM=0;NUM<ALLREFNUM;NUM++)
+        if(PAIR[NUM].FLAG==1){
+            MA[CCDNUM+0*dCoefNUM+ij]+=(PAIR[NUM].dxGdxI-PAIR[NUM].Zxx)*pow(PAIR[NUM].X_CENTER_IM_WORLD[0],i)*pow(PAIR[NUM].X_CENTER_IM_WORLD[1],j);
+            MA[CCDNUM+1*dCoefNUM+ij]+=(PAIR[NUM].dyGdxI-PAIR[NUM].Zyx)*pow(PAIR[NUM].X_CENTER_IM_WORLD[0],i)*pow(PAIR[NUM].X_CENTER_IM_WORLD[1],j);
+            MA[CCDNUM+2*dCoefNUM+ij]+=(PAIR[NUM].dxGdyI-PAIR[NUM].Zxy)*pow(PAIR[NUM].X_CENTER_IM_WORLD[0],i)*pow(PAIR[NUM].X_CENTER_IM_WORLD[1],j);
+            MA[CCDNUM+3*dCoefNUM+ij]+=(PAIR[NUM].dyGdyI-PAIR[NUM].Zyy)*pow(PAIR[NUM].X_CENTER_IM_WORLD[0],i)*pow(PAIR[NUM].X_CENTER_IM_WORLD[1],j);
+        }
+    ij++;
+    }
+//--------------------------------------------------
+//dB11
+    for(NUM=0;NUM<ALLREFNUM;NUM++)
+    if(PAIR[NUM].FLAG==1){
+        MB[PAIR[NUM].CHIPID][PAIR[NUM].CHIPID]+=PAIR[NUM].dxGdxI*PAIR[NUM].dxGdxI;
+        MB[PAIR[NUM].CHIPID][PAIR[NUM].CHIPID]+=PAIR[NUM].dyGdxI*PAIR[NUM].dyGdxI;
+        MB[PAIR[NUM].CHIPID][PAIR[NUM].CHIPID]+=PAIR[NUM].dxGdyI*PAIR[NUM].dxGdyI;
+        MB[PAIR[NUM].CHIPID][PAIR[NUM].CHIPID]+=PAIR[NUM].dyGdyI*PAIR[NUM].dyGdyI;
+    }
+    
+//--------------------------------------------------
+//dB12
+    ij=0;
+    for(i=0;i<SIP_P_ORDER+1-1;i++)
+    for(j=0;j<SIP_P_ORDER+1-1;j++)
+    if(i+j<SIP_P_ORDER+1-1){
+        for(NUM=0;NUM<ALLREFNUM;NUM++)
+        if(PAIR[NUM].FLAG==1){
+            MB[PAIR[NUM].CHIPID][CCDNUM+0*dCoefNUM+ij]+= PAIR[NUM].dyGdxI*pow(PAIR[NUM].X_CENTER_IM_WORLD[0],i)*pow(PAIR[NUM].X_CENTER_IM_WORLD[1],j);
+            MB[PAIR[NUM].CHIPID][CCDNUM+1*dCoefNUM+ij]+=-PAIR[NUM].dxGdxI*pow(PAIR[NUM].X_CENTER_IM_WORLD[0],i)*pow(PAIR[NUM].X_CENTER_IM_WORLD[1],j);
+            MB[PAIR[NUM].CHIPID][CCDNUM+2*dCoefNUM+ij]+= PAIR[NUM].dyGdyI*pow(PAIR[NUM].X_CENTER_IM_WORLD[0],i)*pow(PAIR[NUM].X_CENTER_IM_WORLD[1],j);
+            MB[PAIR[NUM].CHIPID][CCDNUM+3*dCoefNUM+ij]+=-PAIR[NUM].dxGdyI*pow(PAIR[NUM].X_CENTER_IM_WORLD[0],i)*pow(PAIR[NUM].X_CENTER_IM_WORLD[1],j);
+        }
+    ij++;
+    }
+//--------------------------------------------------
+//dB21
+    ij=0;
+    for(i=0;i<SIP_P_ORDER+1-1;i++)
+    for(j=0;j<SIP_P_ORDER+1-1;j++)
+    if(i+j<SIP_P_ORDER+1-1){
+        for(NUM=0;NUM<ALLREFNUM;NUM++)
+        if(PAIR[NUM].FLAG==1){
+            MB[CCDNUM+0*dCoefNUM+ij][PAIR[NUM].CHIPID]+= PAIR[NUM].dyGdxI*pow(PAIR[NUM].X_CENTER_IM_WORLD[0],i)*pow(PAIR[NUM].X_CENTER_IM_WORLD[1],j);
+            MB[CCDNUM+1*dCoefNUM+ij][PAIR[NUM].CHIPID]+=-PAIR[NUM].dxGdxI*pow(PAIR[NUM].X_CENTER_IM_WORLD[0],i)*pow(PAIR[NUM].X_CENTER_IM_WORLD[1],j);
+            MB[CCDNUM+2*dCoefNUM+ij][PAIR[NUM].CHIPID]+= PAIR[NUM].dyGdyI*pow(PAIR[NUM].X_CENTER_IM_WORLD[0],i)*pow(PAIR[NUM].X_CENTER_IM_WORLD[1],j);
+            MB[CCDNUM+3*dCoefNUM+ij][PAIR[NUM].CHIPID]+=-PAIR[NUM].dxGdyI*pow(PAIR[NUM].X_CENTER_IM_WORLD[0],i)*pow(PAIR[NUM].X_CENTER_IM_WORLD[1],j);
+        }
+    ij++;
+    }
+
+//--------------------------------------------------
+//dB22
+    ij=0;
+    for(i=0;i<SIP_P_ORDER+1-1;i++)
+    for(j=0;j<SIP_P_ORDER+1-1;j++)
+    if(i+j<SIP_P_ORDER+1-1){
+    kl=0;
+    for(k=0;k<SIP_P_ORDER+1-1;k++)
+    for(l=0;l<SIP_P_ORDER+1-1;l++)
+    if(k+l<SIP_P_ORDER+1-1){
+        for(NUM=0;NUM<ALLREFNUM;NUM++)
+        if(PAIR[NUM].FLAG==1){
+            MB[CCDNUM+0*dCoefNUM+ij][CCDNUM+0*dCoefNUM+kl]+=pow(PAIR[NUM].X_CENTER_IM_WORLD[0],i+k)*pow(PAIR[NUM].X_CENTER_IM_WORLD[1],j+l);
+            MB[CCDNUM+1*dCoefNUM+ij][CCDNUM+1*dCoefNUM+kl]+=pow(PAIR[NUM].X_CENTER_IM_WORLD[0],i+k)*pow(PAIR[NUM].X_CENTER_IM_WORLD[1],j+l);
+            MB[CCDNUM+2*dCoefNUM+ij][CCDNUM+2*dCoefNUM+kl]+=pow(PAIR[NUM].X_CENTER_IM_WORLD[0],i+k)*pow(PAIR[NUM].X_CENTER_IM_WORLD[1],j+l);
+            MB[CCDNUM+3*dCoefNUM+ij][CCDNUM+3*dCoefNUM+kl]+=pow(PAIR[NUM].X_CENTER_IM_WORLD[0],i+k)*pow(PAIR[NUM].X_CENTER_IM_WORLD[1],j+l);
+        }
+    kl++;
+    }
+    ij++;
+    }
+
+//--------------------------------------------------
+    F_InvM(CCDNUM+4*dCoefNUM,MB,InvMB);
+
+    for(CID =0;CID <CCDNUM+4*dCoefNUM;CID ++)
+    for(CID2=0;CID2<CCDNUM+4*dCoefNUM;CID2++)
+    MC[CID]+=InvMB[CID][CID2]*MA[CID2];
+
+    for(CID=0;CID<CCDNUM;CID++)
+    GPOS[CID][2]+=MC[CID];
+
+//--------------------------------------------------
+    F_DELdouble1(MA);
+    F_DELdouble2(CCDNUM+4*dCoefNUM,   MB);
+    F_DELdouble2(CCDNUM+4*dCoefNUM,InvMB);
+    F_DELdouble1(MC);
+    F_DELdouble3(ALLREFNUM,dCoefNUM+1,XY);
+
+}
 void CL_APAIR::F_WCSA_APAIR_CCDPOSITIONS_T_SETAVERAGE(){
     int CID;
     for(CID=0;CID<CCDNUM;CID++)
@@ -1101,22 +1241,210 @@ void CL_APAIR::F_WCSA_APAIR_CCDPOSITIONS_XY(){
         dX[PAIR[NUM].CHIPID][2]+=PAIR[NUM].X_CENTER_GLOBAL[1]-(PAIR[NUM].X_LOCAL[1]*cos(GPOS[PAIR[NUM].CHIPID][2])+PAIR[NUM].X_LOCAL[0]*sin(GPOS[PAIR[NUM].CHIPID][2]));
     }
 
-    GPOS_AVE[0]=GPOS_AVE[1]=0;
-    int AVENUM=0;
     for(CID=0;CID<CCDNUM;CID++){
         GPOS[CID][0]=dX[CID][1]/dX[CID][0];
         GPOS[CID][1]=dX[CID][2]/dX[CID][0];
+    }
+
+
+//AVERAGE
+    GPOS_AVE[0]=GPOS_AVE[1]=0;
+    int AVENUM=0;
+    for(CID=0;CID<CCDNUM;CID++)
     if(CID<100){
         GPOS_AVE[0]+=GPOS[CID][0];
         GPOS_AVE[1]+=GPOS[CID][1];
         AVENUM++;
-    }}
+    }
     GPOS_AVE[0]/=AVENUM;
     GPOS_AVE[1]/=AVENUM;
-
 //--------------------------------------------------
     F_DELdouble4(2,2,ALLREFNUM,dGdI);
     F_DELdouble2(CCDNUM,dX);
+}
+void CL_APAIR::F_WCSA_APAIR_CCDPOSITIONS_XY_CORRECTION(){
+    int i,j,ij,k,l,kl,CID,CID2,NUM,CoefNUM;
+    double *MAX,**MBX,**InvMBX,*MCX;
+    double *MAY,**MBY,**InvMBY,*MCY;
+    double **Coef,***XY;
+
+
+
+    CoefNUM=(int)(0.5*(SIP_P_ORDER+1)*(SIP_P_ORDER+2)+0.5);
+      Coef = F_NEWdouble2(2,CoefNUM);
+       MAX = F_NEWdouble1(CCDNUM+CoefNUM-1);
+       MBX = F_NEWdouble2(CCDNUM+CoefNUM-1,CCDNUM+CoefNUM-1);
+    InvMBX = F_NEWdouble2(CCDNUM+CoefNUM-1,CCDNUM+CoefNUM-1);
+       MCX = F_NEWdouble1(CCDNUM+CoefNUM-1);
+       MAY = F_NEWdouble1(CCDNUM+CoefNUM-1);
+       MBY = F_NEWdouble2(CCDNUM+CoefNUM-1,CCDNUM+CoefNUM-1);
+    InvMBY = F_NEWdouble2(CCDNUM+CoefNUM-1,CCDNUM+CoefNUM-1);
+       MCY = F_NEWdouble1(CCDNUM+CoefNUM-1);
+        XY = F_NEWdouble3(ALLREFNUM,CoefNUM+1,CoefNUM+1);
+
+    int XYLOOP,ENDFLAG;
+    double **XYINIT,chi2;
+    XYINIT=F_NEWdouble2(CCDNUM,2);
+
+    for(CID =0;CID <CCDNUM;CID ++){
+        XYINIT[CID][0]=GPOS[CID][0];
+        XYINIT[CID][1]=GPOS[CID][1];
+    }
+    
+    for(XYLOOP=0;XYLOOP<10;XYLOOP++){
+        F_WCSA_APAIR_SETXG();    
+        F_WCSA_APAIR_CENTERofOBJECTS();
+        F_WCSA_APAIR_CENTERPROJECTION();
+//--------------------------------------------------
+        F_WCSA_APAIR_GFITTING(SIP_P_ORDER,7,10,Coef);
+        for(NUM=0;NUM<ALLREFNUM;NUM++){
+            PAIR[NUM].XYGx=F_CALCVALUE(SIP_P_ORDER,Coef[0],PAIR[NUM].X_CENTER_IM_WORLD);
+            PAIR[NUM].XYGy=F_CALCVALUE(SIP_P_ORDER,Coef[1],PAIR[NUM].X_CENTER_IM_WORLD);
+//cout <<scientific<<GPOS[PAIR[NUM].CHIPID][0]<<"	"<<GPOS[PAIR[NUM].CHIPID][1]<<"	"<<GPOS[PAIR[NUM].CHIPID][2]<<"	"<< PAIR[NUM].X_CENTER_GLOBAL[0] << "	" << PAIR[NUM].X_CENTER_GLOBAL[1] << "	" <<PAIR[NUM].XYGx << "	" << PAIR[NUM].XYGy << endl;
+        }
+//--------------------------------------------------
+//XY
+        for(NUM=0;NUM<ALLREFNUM;NUM++)
+        for(i=0;i<SIP_P_ORDER+1;i++)
+        for(j=0;j<SIP_P_ORDER+1;j++)
+        if(i+j<SIP_P_ORDER+1)
+        XY[NUM][i][j] = pow(PAIR[NUM].X_CENTER_IM_WORLD[0],i)*pow(PAIR[NUM].X_CENTER_IM_WORLD[1],j);
+
+//--------------------------------------------------
+        for(CID =0;CID <CCDNUM+CoefNUM-1;CID ++){
+        MAX[CID]=MAY[CID]=MCX[CID]=MCY[CID]=0;
+        for(CID2=0;CID2<CCDNUM+CoefNUM-1;CID2++){
+        MBX[CID][CID2]=MBY[CID][CID2]=InvMBX[CID][CID2]=InvMBY[CID][CID2]=0;
+        }}
+//--------------------------------------------------
+//dA1
+        for(NUM=0;NUM<ALLREFNUM;NUM++)
+        if(PAIR[NUM].FLAG==1){
+            MAX[PAIR[NUM].CHIPID]-=(PAIR[NUM].X_CENTER_GLOBAL[0]-PAIR[NUM].XYGx);
+            MAY[PAIR[NUM].CHIPID]-=(PAIR[NUM].X_CENTER_GLOBAL[1]-PAIR[NUM].XYGy);
+        }
+//--------------------------------------------------
+//dA2
+        ij=0;
+        for(i=0;i<SIP_P_ORDER+1;i++)
+        for(j=0;j<SIP_P_ORDER+1;j++)
+        if(i+j<SIP_P_ORDER+1&&i+j!=0){
+            for(NUM=0;NUM<ALLREFNUM;NUM++)
+            if(PAIR[NUM].FLAG==1){
+            MAX[CCDNUM+ij]+=(PAIR[NUM].X_CENTER_GLOBAL[0]-PAIR[NUM].XYGx)*XY[NUM][i][j];
+            MAY[CCDNUM+ij]+=(PAIR[NUM].X_CENTER_GLOBAL[1]-PAIR[NUM].XYGy)*XY[NUM][i][j];
+            }
+        ij++;
+        }
+//--------------------------------------------------
+//dB11
+        for(NUM=0;NUM<ALLREFNUM;NUM++)
+        if(PAIR[NUM].FLAG==1&&i+j!=0){
+            MBX[PAIR[NUM].CHIPID][PAIR[NUM].CHIPID]+=1;
+            MBY[PAIR[NUM].CHIPID][PAIR[NUM].CHIPID]+=1;
+        }
+    
+//--------------------------------------------------
+//dB12
+        ij=0;
+        for(i=0;i<SIP_P_ORDER+1;i++)
+        for(j=0;j<SIP_P_ORDER+1;j++)
+        if(i+j<SIP_P_ORDER+1&&i+j!=0){
+            for(NUM=0;NUM<ALLREFNUM;NUM++)
+            if(PAIR[NUM].FLAG==1){
+                MBX[PAIR[NUM].CHIPID][CCDNUM+ij]-=XY[NUM][i][j];
+                MBY[PAIR[NUM].CHIPID][CCDNUM+ij]-=XY[NUM][i][j];
+            }
+        ij++;
+        }
+//--------------------------------------------------
+//dB21
+        ij=0;
+        for(i=0;i<SIP_P_ORDER+1;i++)
+        for(j=0;j<SIP_P_ORDER+1;j++)
+        if(i+j<SIP_P_ORDER+1&&i+j!=0){
+            for(NUM=0;NUM<ALLREFNUM;NUM++)
+            if(PAIR[NUM].FLAG==1){
+                MBX[CCDNUM+ij][PAIR[NUM].CHIPID]-=XY[NUM][i][j];
+                MBY[CCDNUM+ij][PAIR[NUM].CHIPID]-=XY[NUM][i][j];
+            }
+        ij++;
+        }
+
+//--------------------------------------------------
+//dB22
+        ij=0;
+        for(i=0;i<SIP_P_ORDER+1;i++)
+        for(j=0;j<SIP_P_ORDER+1;j++)
+        if(i+j<SIP_P_ORDER+1&&i+j!=0){
+        kl=0;
+        for(k=0;k<SIP_P_ORDER+1;k++)
+        for(l=0;l<SIP_P_ORDER+1;l++)
+        if(k+l<SIP_P_ORDER+1&&k+l!=0){
+            for(NUM=0;NUM<ALLREFNUM;NUM++)
+            if(PAIR[NUM].FLAG==1){
+                MBX[CCDNUM+ij][CCDNUM+kl]+=pow(PAIR[NUM].X_CENTER_IM_WORLD[0],i+k)*pow(PAIR[NUM].X_CENTER_IM_WORLD[1],j+l);
+                MBY[CCDNUM+ij][CCDNUM+kl]+=pow(PAIR[NUM].X_CENTER_IM_WORLD[0],i+k)*pow(PAIR[NUM].X_CENTER_IM_WORLD[1],j+l);
+            }
+        kl++;
+        }
+        ij++;
+        }
+
+//--------------------------------------------------
+        F_InvM(CCDNUM+CoefNUM-1,MBX,InvMBX);
+        F_InvM(CCDNUM+CoefNUM-1,MBY,InvMBY);
+
+        for(CID =0;CID <CCDNUM+CoefNUM-1;CID ++)
+        for(CID2=0;CID2<CCDNUM+CoefNUM-1;CID2++){
+            MCX[CID]+=InvMBX[CID][CID2]*MAX[CID2];
+            MCY[CID]+=InvMBY[CID][CID2]*MAY[CID2];
+        }
+
+        for(CID=0;CID<CCDNUM;CID++){
+            GPOS[CID][0]+=MCX[CID];
+            GPOS[CID][1]+=MCY[CID];
+        }
+        GPOS_AVE[0]=GPOS_AVE[1]=0;
+        int AVENUM=0;
+        for(CID=0;CID<CCDNUM;CID++)
+        if(CID<100){
+            GPOS_AVE[0]+=GPOS[CID][0];
+            GPOS_AVE[1]+=GPOS[CID][1];
+            AVENUM++;
+        }
+        GPOS_AVE[0]/=AVENUM;
+        GPOS_AVE[1]/=AVENUM;
+        F_WCSA_APAIR_CCDPOSITIONS_XY_SETAVERAGE();
+
+//--------------------------------------------------
+        ENDFLAG=1;
+        for(CID =0;CID <CCDNUM;CID ++)
+        if(hypot(XYINIT[CID][0]-GPOS[CID][0],XYINIT[CID][1]-GPOS[CID][1])>pow(10.0,-3.0))
+        ENDFLAG=0;
+
+        if(ENDFLAG==1){
+            break;
+        }else{
+            if(STDOUT==1||STDOUT==2)
+            cout << "XYLOOP = " << XYLOOP+1 << endl;
+            for(CID =0;CID <CCDNUM;CID ++){
+                XYINIT[CID][0]=GPOS[CID][0];
+                XYINIT[CID][1]=GPOS[CID][1];
+            }
+        }
+
+    }
+    F_DELdouble2(2,Coef);
+    F_DELdouble1(MAX);
+    F_DELdouble2(CCDNUM+CoefNUM-1,   MBY);
+    F_DELdouble2(CCDNUM+CoefNUM-1,InvMBY);
+    F_DELdouble1(MCX);
+    F_DELdouble1(MAY);
+    F_DELdouble2(CCDNUM+CoefNUM-1,   MBX);
+    F_DELdouble2(CCDNUM+CoefNUM-1,InvMBX);
+    F_DELdouble1(MCY);
+    F_DELdouble3(ALLREFNUM,CoefNUM+1,XY);
 }
 void CL_APAIR::F_WCSA_APAIR_CCDPOSITIONS_XY_SETAVERAGE(){
     int CID;
@@ -1128,6 +1456,8 @@ void CL_APAIR::F_WCSA_APAIR_CCDPOSITIONS_XY_SETAVERAGE(){
   //  GPOS[CID][0]-=GPOS_AVE[0]+1024;
 //    GPOS[CID][1]-=GPOS_AVE[1]+2048;
     }
+//            if(STDOUT==1||STDOUT==2)
+//for(CID=0;CID<CCDNUM;CID++)cout << "X : " << setfill ('0') << setw (3) <<CID << fixed<< " : " << GPOS[CID][0] <<endl<< "Y : " << setfill ('0') << setw (3) <<CID << fixed<< " : " << GPOS[CID][1] << endl;
 }
 //ETC
 void CL_APAIR::F_WCSA_APAIR_SHOWAPAIR(){
@@ -1170,4 +1500,310 @@ void  CL_APAIR::F_WCSA_APAIR_SHOWCCDPOS(){
              << GPOS[CID][1] << "	"
              << GPOS[CID][2] << endl;
     }
+}
+void F_SET_SIMCCDPOS(double **GPOS){
+//--------------------------------------------------
+
+GPOS[0][0]=    -9514.700;
+GPOS[0][1]=       78.000;
+GPOS[0][2]=     0.000000;
+GPOS[1][0]=     7466.700;
+GPOS[1][1]=    -4174.000;
+GPOS[1][2]=     0.000000;
+GPOS[2][0]=    -7392.000;
+GPOS[2][1]=       78.000;
+GPOS[2][2]=     0.000000;
+GPOS[3][0]=     5344.000;
+GPOS[3][1]=    -4174.000;
+GPOS[3][2]=     0.000000;
+GPOS[4][0]=    -5269.300;
+GPOS[4][1]=       78.000;
+GPOS[4][2]=     0.000000;
+GPOS[5][0]=     3221.300;
+GPOS[5][1]=    -4174.000;
+GPOS[5][2]=     0.000000;
+GPOS[6][0]=    -3146.700;
+GPOS[6][1]=       78.000;
+GPOS[6][2]=     0.000000;
+GPOS[7][0]=     1098.700;
+GPOS[7][1]=    -4174.000;
+GPOS[7][2]=     0.000000;
+GPOS[8][0]=    -1024.000;
+GPOS[8][1]=       78.000;
+GPOS[8][2]=     0.000000;
+GPOS[9][0]=    -1024.000;
+GPOS[9][1]=    -4174.000;
+GPOS[9][2]=     0.000000;
+GPOS[10][0]=     1098.700;
+GPOS[10][1]=       78.000;
+GPOS[10][2]=     0.000000;
+GPOS[11][0]=    -3146.700;
+GPOS[11][1]=    -4174.000;
+GPOS[11][2]=     0.000000;
+GPOS[12][0]=     3221.300;
+GPOS[12][1]=       78.000;
+GPOS[12][2]=     0.000000;
+GPOS[13][0]=    -5269.300;
+GPOS[13][1]=    -4174.000;
+GPOS[13][2]=     0.000000;
+GPOS[14][0]=     5344.000;
+GPOS[14][1]=       78.000;
+GPOS[14][2]=     0.000000;
+GPOS[15][0]=    -7392.000;
+GPOS[15][1]=    -4174.000;
+GPOS[15][2]=     0.000000;
+GPOS[16][0]=     7466.700;
+GPOS[16][1]=       78.000;
+GPOS[16][2]=     0.000000;
+GPOS[17][0]=    -9514.700;
+GPOS[17][1]=    -4174.000;
+GPOS[17][2]=     0.000000;
+GPOS[18][0]=     9589.300;
+GPOS[18][1]=       78.000;
+GPOS[18][2]=     0.000000;
+GPOS[19][0]=   -11637.300;
+GPOS[19][1]=    -4174.000;
+GPOS[19][2]=     0.000000;
+GPOS[20][0]=    11712.000;
+GPOS[20][1]=       78.000;
+GPOS[20][2]=     0.000000;
+GPOS[21][0]=   -13760.000;
+GPOS[21][1]=    -4174.000;
+GPOS[21][2]=     0.000000;
+GPOS[22][0]=    13835.000;
+GPOS[22][1]=       78.000;
+GPOS[22][2]=     0.000000;
+GPOS[23][0]=   -15883.000;
+GPOS[23][1]=    -4174.000;
+GPOS[23][2]=     0.000000;
+GPOS[24][0]=    -9514.700;
+GPOS[24][1]=     4546.000;
+GPOS[24][2]=     0.000000;
+GPOS[25][0]=     7466.700;
+GPOS[25][1]=    -8642.000;
+GPOS[25][2]=     0.000000;
+GPOS[26][0]=    -7392.000;
+GPOS[26][1]=     4546.000;
+GPOS[26][2]=     0.000000;
+GPOS[27][0]=     5344.000;
+GPOS[27][1]=    -8642.000;
+GPOS[27][2]=     0.000000;
+GPOS[28][0]=    -5269.300;
+GPOS[28][1]=     4546.000;
+GPOS[28][2]=     0.000000;
+GPOS[29][0]=     3221.300;
+GPOS[29][1]=    -8642.000;
+GPOS[29][2]=     0.000000;
+GPOS[30][0]=    -3146.700;
+GPOS[30][1]=     4546.000;
+GPOS[30][2]=     0.000000;
+GPOS[31][0]=     1098.700;
+GPOS[31][1]=    -8642.000;
+GPOS[31][2]=     0.000000;
+GPOS[32][0]=    -1024.000;
+GPOS[32][1]=     4546.000;
+GPOS[32][2]=     0.000000;
+GPOS[33][0]=    -1024.000;
+GPOS[33][1]=    -8642.000;
+GPOS[33][2]=     0.000000;
+GPOS[34][0]=     1098.700;
+GPOS[34][1]=     4546.000;
+GPOS[34][2]=     0.000000;
+GPOS[35][0]=    -3146.700;
+GPOS[35][1]=    -8642.000;
+GPOS[35][2]=     0.000000;
+GPOS[36][0]=     3221.300;
+GPOS[36][1]=     4546.000;
+GPOS[36][2]=     0.000000;
+GPOS[37][0]=    -5269.300;
+GPOS[37][1]=    -8642.000;
+GPOS[37][2]=     0.000000;
+GPOS[38][0]=     5344.000;
+GPOS[38][1]=     4546.000;
+GPOS[38][2]=     0.000000;
+GPOS[39][0]=    -7392.000;
+GPOS[39][1]=    -8642.000;
+GPOS[39][2]=     0.000000;
+GPOS[40][0]=     7466.700;
+GPOS[40][1]=     4546.000;
+GPOS[40][2]=     0.000000;
+GPOS[41][0]=    -9514.700;
+GPOS[41][1]=    -8642.000;
+GPOS[41][2]=     0.000000;
+GPOS[42][0]=     9589.300;
+GPOS[42][1]=     4546.000;
+GPOS[42][2]=     0.000000;
+GPOS[43][0]=   -11637.300;
+GPOS[43][1]=    -8642.000;
+GPOS[43][2]=     0.000000;
+GPOS[44][0]=    11712.000;
+GPOS[44][1]=     4546.000;
+GPOS[44][2]=     0.000000;
+GPOS[45][0]=   -13760.000;
+GPOS[45][1]=    -8642.000;
+GPOS[45][2]=     0.000000;
+GPOS[46][0]=    13835.000;
+GPOS[46][1]=     4546.000;
+GPOS[46][2]=     0.000000;
+GPOS[47][0]=   -15883.000;
+GPOS[47][1]=    -8642.000;
+GPOS[47][2]=     0.000000;
+GPOS[48][0]=    -9514.700;
+GPOS[48][1]=     9014.000;
+GPOS[48][2]=     0.000000;
+GPOS[49][0]=     7466.700;
+GPOS[49][1]=   -13110.000;
+GPOS[49][2]=     0.000000;
+GPOS[50][0]=    -7392.000;
+GPOS[50][1]=     9014.000;
+GPOS[50][2]=     0.000000;
+GPOS[51][0]=     5344.000;
+GPOS[51][1]=   -13110.000;
+GPOS[51][2]=     0.000000;
+GPOS[52][0]=    -5269.300;
+GPOS[52][1]=     9014.000;
+GPOS[52][2]=     0.000000;
+GPOS[53][0]=     3221.300;
+GPOS[53][1]=   -13110.000;
+GPOS[53][2]=     0.000000;
+GPOS[54][0]=    -3146.700;
+GPOS[54][1]=     9014.000;
+GPOS[54][2]=     0.000000;
+GPOS[55][0]=     1098.700;
+GPOS[55][1]=   -13110.000;
+GPOS[55][2]=     0.000000;
+GPOS[56][0]=    -1024.000;
+GPOS[56][1]=     9014.000;
+GPOS[56][2]=     0.000000;
+GPOS[57][0]=    -1024.000;
+GPOS[57][1]=   -13110.000;
+GPOS[57][2]=     0.000000;
+GPOS[58][0]=     1098.700;
+GPOS[58][1]=     9014.000;
+GPOS[58][2]=     0.000000;
+GPOS[59][0]=    -3146.700;
+GPOS[59][1]=   -13110.000;
+GPOS[59][2]=     0.000000;
+GPOS[60][0]=     3221.300;
+GPOS[60][1]=     9014.000;
+GPOS[60][2]=     0.000000;
+GPOS[61][0]=    -5269.300;
+GPOS[61][1]=   -13110.000;
+GPOS[61][2]=     0.000000;
+GPOS[62][0]=     5344.000;
+GPOS[62][1]=     9014.000;
+GPOS[62][2]=     0.000000;
+GPOS[63][0]=    -7392.000;
+GPOS[63][1]=   -13110.000;
+GPOS[63][2]=     0.000000;
+GPOS[64][0]=     7466.700;
+GPOS[64][1]=     9014.000;
+GPOS[64][2]=     0.000000;
+GPOS[65][0]=    -9514.700;
+GPOS[65][1]=   -13110.000;
+GPOS[65][2]=     0.000000;
+GPOS[66][0]=     9589.300;
+GPOS[66][1]=     9014.000;
+GPOS[66][2]=     0.000000;
+GPOS[67][0]=   -11637.300;
+GPOS[67][1]=   -13110.000;
+GPOS[67][2]=     0.000000;
+GPOS[68][0]=    11712.000;
+GPOS[68][1]=     9014.000;
+GPOS[68][2]=     0.000000;
+GPOS[69][0]=   -13760.000;
+GPOS[69][1]=   -13110.000;
+GPOS[69][2]=     0.000000;
+GPOS[70][0]=    -7392.000;
+GPOS[70][1]=    13483.000;
+GPOS[70][2]=     0.000000;
+GPOS[71][0]=     5344.000;
+GPOS[71][1]=   -17579.000;
+GPOS[71][2]=     0.000000;
+GPOS[72][0]=    -5269.300;
+GPOS[72][1]=    13483.000;
+GPOS[72][2]=     0.000000;
+GPOS[73][0]=     3221.300;
+GPOS[73][1]=   -17579.000;
+GPOS[73][2]=     0.000000;
+GPOS[74][0]=    -3146.700;
+GPOS[74][1]=    13483.000;
+GPOS[74][2]=     0.000000;
+GPOS[75][0]=     1098.700;
+GPOS[75][1]=   -17579.000;
+GPOS[75][2]=     0.000000;
+GPOS[76][0]=    -1024.000;
+GPOS[76][1]=    13483.000;
+GPOS[76][2]=     0.000000;
+GPOS[77][0]=    -1024.000;
+GPOS[77][1]=   -17579.000;
+GPOS[77][2]=     0.000000;
+GPOS[78][0]=     1098.700;
+GPOS[78][1]=    13483.000;
+GPOS[78][2]=     0.000000;
+GPOS[79][0]=    -3146.700;
+GPOS[79][1]=   -17579.000;
+GPOS[79][2]=     0.000000;
+GPOS[80][0]=     3221.300;
+GPOS[80][1]=    13483.000;
+GPOS[80][2]=     0.000000;
+GPOS[81][0]=    -5269.300;
+GPOS[81][1]=   -17579.000;
+GPOS[81][2]=     0.000000;
+GPOS[82][0]=     5344.000;
+GPOS[82][1]=    13483.000;
+GPOS[82][2]=     0.000000;
+GPOS[83][0]=    -7392.000;
+GPOS[83][1]=   -17579.000;
+GPOS[83][2]=     0.000000;
+GPOS[84][0]=     9589.300;
+GPOS[84][1]=    -4390.300;
+GPOS[84][2]=     0.000000;
+GPOS[85][0]=   -11637.300;
+GPOS[85][1]=      294.300;
+GPOS[85][2]=     0.000000;
+GPOS[86][0]=    11712.000;
+GPOS[86][1]=    -4390.300;
+GPOS[86][2]=     0.000000;
+GPOS[87][0]=   -13760.000;
+GPOS[87][1]=      294.300;
+GPOS[87][2]=     0.000000;
+GPOS[88][0]=    13835.000;
+GPOS[88][1]=    -4390.300;
+GPOS[88][2]=     0.000000;
+GPOS[89][0]=   -15883.000;
+GPOS[89][1]=      294.300;
+GPOS[89][2]=     0.000000;
+GPOS[90][0]=     9589.300;
+GPOS[90][1]=    -8859.000;
+GPOS[90][2]=     0.000000;
+GPOS[91][0]=   -11637.300;
+GPOS[91][1]=     4763.000;
+GPOS[91][2]=     0.000000;
+GPOS[92][0]=    11712.000;
+GPOS[92][1]=    -8859.000;
+GPOS[92][2]=     0.000000;
+GPOS[93][0]=   -13760.000;
+GPOS[93][1]=     4763.000;
+GPOS[93][2]=     0.000000;
+GPOS[94][0]=    13835.000;
+GPOS[94][1]=    -8859.000;
+GPOS[94][2]=     0.000000;
+GPOS[95][0]=   -15883.000;
+GPOS[95][1]=     4763.000;
+GPOS[95][2]=     0.000000;
+GPOS[96][0]=     9589.300;
+GPOS[96][1]=   -13327.000;
+GPOS[96][2]=     0.000000;
+GPOS[97][0]=   -11637.300;
+GPOS[97][1]=     9231.000;
+GPOS[97][2]=     0.000000;
+GPOS[98][0]=    11712.000;
+GPOS[98][1]=   -13327.000;
+GPOS[98][2]=     0.000000;
+GPOS[99][0]=   -13760.000;
+GPOS[99][1]=     9231.000;
+GPOS[99][2]=     0.000000;
+
+//--------------------------------------------------
 }

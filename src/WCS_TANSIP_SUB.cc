@@ -6,6 +6,8 @@
 //------------------------------------------------------------
 #include <stdlib.h>
 #include<cmath>
+
+#include<iostream>
 //#include "hsc/meas/tansip/WCS_TANSIP.h"
 
 #define PI (4*atan(1.0))
