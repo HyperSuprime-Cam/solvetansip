@@ -30,4 +30,5 @@ void F_WCSA_SIMULATION_MAKE_REFERENCESwithRANDOMNOISE2(int RANNUM,int REFNUM, do
 void F_WCSA_SIMULATION_CALC_DIFF_SC  (CL_WCSA_ASP* ,CL_GSIP* ,std::string CCDoutfile,std::string RESoutfile);
 void F_WCSA_SIMULATION_CALC_DIFF_HSC (CL_WCSA_ASP* ,CL_GSIP* ,std::string CCDoutfile,std::string RESoutfile);
 void F_WCSA_SIMULATION_CALC_DIFF_HSC2(CL_WCSA_ASP* WCSA_ASP,std::string CCDoutfile,std::string RESoutfile);
+void F_WCSA_SIMULATION_CALC_DIFF_HSCP(CL_WCSA_ASP* WCSA_ASP,std::string CCDoutfile,std::string RESoutfile);
 #endif

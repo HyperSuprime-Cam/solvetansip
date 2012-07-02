@@ -172,10 +172,14 @@ void CL_APAIR::F_WCSA_APAIR_GPOS(){
 //add : SHIFT CCD
     F_WCSA_APAIR_CCDPOSITIONS_XY_SETAVERAGE();//CENTER = (1024, 2048)
 //HIGH ORDER CORRECTION 
-    F_WCSA_APAIR_CCDPOSITIONS_XY_CORRECTION();
+    if(STDOUT==2)for(CID=0;CID<CCDNUM;CID++)cout << "X : " << setfill ('0') << setw (3) <<CID << fixed<< " : " << GPOS[CID][0] <<endl<< "Y : " << setfill ('0') << setw (3) <<CID << fixed<< " : " << GPOS[CID][1] << endl;
+    if(STDOUT==1||STDOUT==2)cout << "--- WCS_TANSIP : DETERMINING CCD POSITION : HIGH ORDER CORRECTION ---" << endl;
+//    F_WCSA_APAIR_CCDPOSITIONS_XY_CORRECTION();
+    if(CCDPOSHMODE==1)
+    F_WCSA_APAIR_CCDPOSITIONS_XYT_CORRECTION();
 //    if(STDOUT==2)for(CID=0;CID<CCDNUM;CID++)cout << "X : " << setfill ('0') << setw (3) <<CID << fixed<< " : " << GPOS[CID][0] <<endl<< "Y : " << setfill ('0') << setw (3) <<CID << fixed<< " : " << GPOS[CID][1] << endl;
  //   if(STDOUT==2)cout << "X : AVE : " << GPOS_AVE[0] << endl << "Y : AVE : " << GPOS_AVE[1] << endl;
-    if(STDOUT==2)for(CID=0;CID<CCDNUM;CID++)cout << "X : " << setfill ('0') << setw (3) <<CID << fixed<< " : " << GPOS[CID][0] <<endl<< "Y : " << setfill ('0') << setw (3) <<CID << fixed<< " : " << GPOS[CID][1] << endl;
+    if(STDOUT==2)for(CID=0;CID<CCDNUM;CID++)cout << "CID : " << setfill ('0') << setw (3) <<CID << fixed<< " : X : " << GPOS[CID][0] << " : Y : " << GPOS[CID][1] << " : T : " <<scientific<< GPOS[CID][2] << endl;
 }
 
 void CL_APAIR::F_WCSA_APAIR_WCS(){
@@ -845,7 +849,7 @@ F_WCSA_APAIR_CCDPOSITIONS_T_MAT2();
 
         TCHECK=0;
         for(CID=0;CID<CCDNUM;CID++)
-        if(fabs(Tcheck[CID]-GPOS[CID][2])>1e-6)
+        if(fabs(Tcheck[CID]-GPOS[CID][2])>1e-5)
         TCHECK++;
 
         if(TCHECK==0)
@@ -1171,6 +1175,18 @@ void CL_APAIR::F_WCSA_APAIR_CCDPOSITIONS_T_SETAVERAGE(){
     for(CID=0;CID<CCDNUM;CID++)
     GPOS[CID][2]-=GPOS_AVE[2]-BASISPOS[2];
 }
+void CL_APAIR::F_WCSA_APAIR_CCDPOSITIONS_T_SETAVERAGE_XY(){
+    int CID;
+    double DX,DY,DT;
+    DT=-(GPOS_AVE[2]-BASISPOS[2]);
+    for(CID=0;CID<CCDNUM;CID++){
+    DX=GPOS[CID][0]*cos(DT)-GPOS[CID][1]*sin(DT);
+    DY=GPOS[CID][1]*cos(DT)+GPOS[CID][0]*sin(DT);
+    GPOS[CID][0]=DX;
+    GPOS[CID][1]=DY;
+    GPOS[CID][2]+=DT;
+    }
+}
 void CL_APAIR::F_WCSA_APAIR_CCDPOSITIONS_XY(){
     int i,NUM,FNUM,CID,CoefNUM,dCoefNUM;
     double ****dGdI;
@@ -1446,18 +1462,220 @@ void CL_APAIR::F_WCSA_APAIR_CCDPOSITIONS_XY_CORRECTION(){
     F_DELdouble1(MCY);
     F_DELdouble3(ALLREFNUM,CoefNUM+1,XY);
 }
+void CL_APAIR::F_WCSA_APAIR_CCDPOSITIONS_XYT_CORRECTION(){
+    int i,j,ij,k,l,kl,CID,CID2,NUM,CoefNUM;
+    double *MAXYT,**MBXYT,**InvMBXYT,*MCXYT;
+    double **Coef,***XY,*XLsYLc,*YLsXLc;
+
+
+
+    CoefNUM=(int)(0.5*(SIP_P_ORDER+1)*(SIP_P_ORDER+2)+0.5);
+        Coef = F_NEWdouble2(2,CoefNUM);
+       MAXYT = F_NEWdouble1(3*CCDNUM+2*(CoefNUM-1));
+       MBXYT = F_NEWdouble2(3*CCDNUM+2*(CoefNUM-1),3*CCDNUM+2*(CoefNUM-1));
+    InvMBXYT = F_NEWdouble2(3*CCDNUM+2*(CoefNUM-1),3*CCDNUM+2*(CoefNUM-1));
+       MCXYT = F_NEWdouble1(3*CCDNUM+2*(CoefNUM-1));
+          XY = F_NEWdouble3(ALLREFNUM,SIP_P_ORDER+1,SIP_P_ORDER+1);
+      XLsYLc = F_NEWdouble1(ALLREFNUM);
+      YLsXLc = F_NEWdouble1(ALLREFNUM);
+
+    int XYLOOP,ENDFLAG;
+    double **XYINIT,chi2;
+    XYINIT=F_NEWdouble2(CCDNUM,3);
+
+    for(CID =0;CID <CCDNUM;CID ++){
+        XYINIT[CID][0]=GPOS[CID][0];
+        XYINIT[CID][1]=GPOS[CID][1];
+        XYINIT[CID][2]=GPOS[CID][2];
+    }
+    
+    for(XYLOOP=0;XYLOOP<10;XYLOOP++){
+        F_WCSA_APAIR_SETXG();    
+        F_WCSA_APAIR_CENTERofOBJECTS();
+        F_WCSA_APAIR_CENTERPROJECTION();
+//--------------------------------------------------
+        F_WCSA_APAIR_GFITTING(SIP_P_ORDER,7,10,Coef);
+        for(NUM=0;NUM<ALLREFNUM;NUM++){
+            PAIR[NUM].XYGx=F_CALCVALUE(SIP_P_ORDER,Coef[0],PAIR[NUM].X_CENTER_IM_WORLD);
+            PAIR[NUM].XYGy=F_CALCVALUE(SIP_P_ORDER,Coef[1],PAIR[NUM].X_CENTER_IM_WORLD);
+//cout <<scientific<<GPOS[PAIR[NUM].CHIPID][0]<<"	"<<GPOS[PAIR[NUM].CHIPID][1]<<"	"<<GPOS[PAIR[NUM].CHIPID][2]<<"	"<< PAIR[NUM].X_CENTER_GLOBAL[0] << "	" << PAIR[NUM].X_CENTER_GLOBAL[1] << "	" <<PAIR[NUM].XYGx << "	" << PAIR[NUM].XYGy << endl;
+        }
+//--------------------------------------------------
+//XY
+        for(NUM=0;NUM<ALLREFNUM;NUM++)
+        for(i=0;i<SIP_P_ORDER+1;i++)
+        for(j=0;j<SIP_P_ORDER+1;j++)
+        if(i+j<SIP_P_ORDER+1)
+        XY[NUM][i][j] = pow(PAIR[NUM].X_CENTER_IM_WORLD[0],i)*pow(PAIR[NUM].X_CENTER_IM_WORLD[1],j);
+
+        for(NUM=0;NUM<ALLREFNUM;NUM++){
+            XLsYLc[NUM]=PAIR[NUM].X_LOCAL[0]*sin(GPOS[PAIR[NUM].CHIPID][2])+PAIR[NUM].X_LOCAL[1]*cos(GPOS[PAIR[NUM].CHIPID][2]);
+            YLsXLc[NUM]=PAIR[NUM].X_LOCAL[1]*sin(GPOS[PAIR[NUM].CHIPID][2])-PAIR[NUM].X_LOCAL[0]*cos(GPOS[PAIR[NUM].CHIPID][2]);
+        }
+//--------------------------------------------------
+        for(CID =0;CID <3*CCDNUM+2*(CoefNUM-1);CID ++){
+        MAXYT[CID]=MCXYT[CID]=0;
+        for(CID2=0;CID2<3*CCDNUM+2*(CoefNUM-1);CID2++){
+        MBXYT[CID][CID2]=InvMBXYT[CID][CID2]=0;
+        }}
+//--------------------------------------------------
+//dAXYT
+        for(NUM=0;NUM<ALLREFNUM;NUM++)
+        if(PAIR[NUM].FLAG==1){
+            MAXYT[0*CCDNUM+PAIR[NUM].CHIPID]-=(PAIR[NUM].X_CENTER_GLOBAL[0]-PAIR[NUM].XYGx);
+            MAXYT[1*CCDNUM+PAIR[NUM].CHIPID]-=(PAIR[NUM].X_CENTER_GLOBAL[1]-PAIR[NUM].XYGy);
+            MAXYT[2*CCDNUM+PAIR[NUM].CHIPID]-=-XLsYLc[NUM]*(PAIR[NUM].X_CENTER_GLOBAL[0]-PAIR[NUM].XYGx)-YLsXLc[NUM]*(PAIR[NUM].X_CENTER_GLOBAL[1]-PAIR[NUM].XYGy);
+        }
+//--------------------------------------------------
+//dAA
+        ij=0;
+        for(i=0;i<SIP_P_ORDER+1;i++)
+        for(j=0;j<SIP_P_ORDER+1;j++)
+        if(i+j<SIP_P_ORDER+1&&i+j!=0){
+            for(NUM=0;NUM<ALLREFNUM;NUM++)
+            if(PAIR[NUM].FLAG==1){
+            MAXYT[3*CCDNUM+0*(CoefNUM-1)+ij]-=-(PAIR[NUM].X_CENTER_GLOBAL[0]-PAIR[NUM].XYGx)*XY[NUM][i][j];
+            MAXYT[3*CCDNUM+1*(CoefNUM-1)+ij]-=-(PAIR[NUM].X_CENTER_GLOBAL[1]-PAIR[NUM].XYGy)*XY[NUM][i][j];
+            }
+        ij++;
+        }
+//--------------------------------------------------
+//dBXYTXYT
+        for(NUM=0;NUM<ALLREFNUM;NUM++)
+        if(PAIR[NUM].FLAG==1&&i+j!=0){
+            MBXYT[0*CCDNUM+PAIR[NUM].CHIPID][0*CCDNUM+PAIR[NUM].CHIPID]+=1;
+//          MBXYT[0*CCDNUM+PAIR[NUM].CHIPID][1*CCDNUM+PAIR[NUM].CHIPID]+=0;
+            MBXYT[0*CCDNUM+PAIR[NUM].CHIPID][2*CCDNUM+PAIR[NUM].CHIPID]+=-XLsYLc[NUM];
+//          MBXYT[1*CCDNUM+PAIR[NUM].CHIPID][0*CCDNUM+PAIR[NUM].CHIPID]+=0;
+            MBXYT[1*CCDNUM+PAIR[NUM].CHIPID][1*CCDNUM+PAIR[NUM].CHIPID]+=1;
+            MBXYT[1*CCDNUM+PAIR[NUM].CHIPID][2*CCDNUM+PAIR[NUM].CHIPID]+=-YLsXLc[NUM];
+            MBXYT[2*CCDNUM+PAIR[NUM].CHIPID][0*CCDNUM+PAIR[NUM].CHIPID]+=-XLsYLc[NUM];
+            MBXYT[2*CCDNUM+PAIR[NUM].CHIPID][1*CCDNUM+PAIR[NUM].CHIPID]+=-YLsXLc[NUM];
+            MBXYT[2*CCDNUM+PAIR[NUM].CHIPID][2*CCDNUM+PAIR[NUM].CHIPID]+=XLsYLc[NUM]*XLsYLc[NUM]+YLsXLc[NUM]*YLsXLc[NUM];
+        }
+    
+//--------------------------------------------------
+//dBXYTA
+        ij=0;
+        for(i=0;i<SIP_P_ORDER+1;i++)
+        for(j=0;j<SIP_P_ORDER+1;j++)
+        if(i+j<SIP_P_ORDER+1&&i+j!=0){
+            for(NUM=0;NUM<ALLREFNUM;NUM++)
+            if(PAIR[NUM].FLAG==1){
+                MBXYT[0*CCDNUM+PAIR[NUM].CHIPID][3*CCDNUM+0*(CoefNUM-1)+ij]+=-XY[NUM][i][j];
+                MBXYT[1*CCDNUM+PAIR[NUM].CHIPID][3*CCDNUM+1*(CoefNUM-1)+ij]+=-XY[NUM][i][j];
+                MBXYT[2*CCDNUM+PAIR[NUM].CHIPID][3*CCDNUM+0*(CoefNUM-1)+ij]+=-XY[NUM][i][j]*(-XLsYLc[NUM]);
+                MBXYT[2*CCDNUM+PAIR[NUM].CHIPID][3*CCDNUM+1*(CoefNUM-1)+ij]+=-XY[NUM][i][j]*(-YLsXLc[NUM]);
+            }
+        ij++;
+        }
+//--------------------------------------------------
+//dBAXYT
+        ij=0;
+        for(i=0;i<SIP_P_ORDER+1;i++)
+        for(j=0;j<SIP_P_ORDER+1;j++)
+        if(i+j<SIP_P_ORDER+1&&i+j!=0){
+            for(NUM=0;NUM<ALLREFNUM;NUM++)
+            if(PAIR[NUM].FLAG==1){
+                MBXYT[3*CCDNUM+0*(CoefNUM-1)+ij][0*CCDNUM+PAIR[NUM].CHIPID]+=-XY[NUM][i][j];
+                MBXYT[3*CCDNUM+1*(CoefNUM-1)+ij][1*CCDNUM+PAIR[NUM].CHIPID]+=-XY[NUM][i][j];
+                MBXYT[3*CCDNUM+0*(CoefNUM-1)+ij][2*CCDNUM+PAIR[NUM].CHIPID]+=-XY[NUM][i][j]*(-XLsYLc[NUM]);
+                MBXYT[3*CCDNUM+1*(CoefNUM-1)+ij][2*CCDNUM+PAIR[NUM].CHIPID]+=-XY[NUM][i][j]*(-YLsXLc[NUM]);
+            }
+        ij++;
+        }
+
+//--------------------------------------------------
+//dBAA
+        ij=0;
+        for(i=0;i<SIP_P_ORDER+1;i++)
+        for(j=0;j<SIP_P_ORDER+1;j++)
+        if(i+j<SIP_P_ORDER+1&&i+j!=0){
+        kl=0;
+        for(k=0;k<SIP_P_ORDER+1;k++)
+        for(l=0;l<SIP_P_ORDER+1;l++)
+        if(k+l<SIP_P_ORDER+1&&k+l!=0){
+            for(NUM=0;NUM<ALLREFNUM;NUM++)
+            if(PAIR[NUM].FLAG==1){
+                MBXYT[3*CCDNUM+0*(CoefNUM-1)+ij][3*CCDNUM+0*(CoefNUM-1)+kl]+=pow(PAIR[NUM].X_CENTER_IM_WORLD[0],i+k)*pow(PAIR[NUM].X_CENTER_IM_WORLD[1],j+l);
+//              MBXYT[3*CCDNUM+0*(CoefNUM-1)+ij][3*CCDNUM+1*(CoefNUM-1)+kl]+=0;
+//              MBXYT[3*CCDNUM+1*(CoefNUM-1)+ij][3*CCDNUM+0*(CoefNUM-1)+kl]+=0;
+                MBXYT[3*CCDNUM+1*(CoefNUM-1)+ij][3*CCDNUM+1*(CoefNUM-1)+kl]+=pow(PAIR[NUM].X_CENTER_IM_WORLD[0],i+k)*pow(PAIR[NUM].X_CENTER_IM_WORLD[1],j+l);
+            }
+        kl++;
+        }
+        ij++;
+        }
+
+//--------------------------------------------------
+        F_InvM(3*CCDNUM+2*(CoefNUM-1),MBXYT,InvMBXYT);
+
+        for(CID =0;CID <3*CCDNUM+2*(CoefNUM-1);CID ++)
+        for(CID2=0;CID2<3*CCDNUM+2*(CoefNUM-1);CID2++)
+            MCXYT[CID]+=InvMBXYT[CID][CID2]*MAXYT[CID2];
+
+        for(CID=0;CID<CCDNUM;CID++){
+            GPOS[CID][0]+=MCXYT[0*CCDNUM+CID];
+            GPOS[CID][1]+=MCXYT[1*CCDNUM+CID];
+            GPOS[CID][2]+=MCXYT[2*CCDNUM+CID];
+        }
+
+//--------------------------------------------------
+        GPOS_AVE[0]=GPOS_AVE[1]=GPOS_AVE[2]=0;
+        int AVENUM=0;
+        for(CID=0;CID<CCDNUM;CID++)
+        if(CID<100){
+            GPOS_AVE[2]+=GPOS[CID][2];
+            AVENUM++;
+        }
+        GPOS_AVE[2]/=AVENUM;
+        F_WCSA_APAIR_CCDPOSITIONS_T_SETAVERAGE_XY();
+
+        AVENUM=0;
+        for(CID=0;CID<CCDNUM;CID++)
+        if(CID<100){
+            GPOS_AVE[0]+=GPOS[CID][0];
+            GPOS_AVE[1]+=GPOS[CID][1];
+            AVENUM++;
+        }
+        GPOS_AVE[0]/=AVENUM;
+        GPOS_AVE[1]/=AVENUM;
+        F_WCSA_APAIR_CCDPOSITIONS_XY_SETAVERAGE();
+//--------------------------------------------------
+        ENDFLAG=1;
+        for(CID =0;CID <CCDNUM;CID ++)
+        if(hypot(XYINIT[CID][0]-GPOS[CID][0],XYINIT[CID][1]-GPOS[CID][1])>pow(10.0,-2.0)||fabs(XYINIT[CID][2]-GPOS[CID][2])>pow(10.0,-5.0))
+        ENDFLAG=0;
+
+        if(ENDFLAG==1){
+            break;
+        }else{
+            if(STDOUT==1||STDOUT==2)
+            cout << "XYLOOP = " << XYLOOP+1 << endl;
+            for(CID =0;CID <CCDNUM;CID ++){
+                XYINIT[CID][0]=GPOS[CID][0];
+                XYINIT[CID][1]=GPOS[CID][1];
+                XYINIT[CID][2]=GPOS[CID][2];
+            }
+        }
+
+    }
+    F_DELdouble2(2,Coef);
+    F_DELdouble1(MAXYT);
+    F_DELdouble2(3*CCDNUM+2*(CoefNUM-1),MBXYT);
+    F_DELdouble2(3*CCDNUM+2*(CoefNUM-1),InvMBXYT);
+    F_DELdouble1(MCXYT);
+    F_DELdouble3(ALLREFNUM,SIP_P_ORDER+1,XY);
+    F_DELdouble2(CCDNUM,XYINIT);
+    F_DELdouble1(XLsYLc);
+    F_DELdouble1(YLsXLc);
+}
 void CL_APAIR::F_WCSA_APAIR_CCDPOSITIONS_XY_SETAVERAGE(){
     int CID;
     for(CID=0;CID<CCDNUM;CID++){
-//    GPOS[CID][0]-=GPOS_AVE[0]-BASISPOS[0];
-  //  GPOS[CID][1]-=GPOS_AVE[1]-BASISPOS[1];
     GPOS[CID][0]-=GPOS_AVE[0]-(BASISPOS[0]*cos(BASISPOS[2])-BASISPOS[1]*sin(BASISPOS[2]));
     GPOS[CID][1]-=GPOS_AVE[1]-(BASISPOS[1]*cos(BASISPOS[2])+BASISPOS[0]*sin(BASISPOS[2]));
-  //  GPOS[CID][0]-=GPOS_AVE[0]+1024;
-//    GPOS[CID][1]-=GPOS_AVE[1]+2048;
     }
-//            if(STDOUT==1||STDOUT==2)
-//for(CID=0;CID<CCDNUM;CID++)cout << "X : " << setfill ('0') << setw (3) <<CID << fixed<< " : " << GPOS[CID][0] <<endl<< "Y : " << setfill ('0') << setw (3) <<CID << fixed<< " : " << GPOS[CID][1] << endl;
 }
 //ETC
 void CL_APAIR::F_WCSA_APAIR_SHOWAPAIR(){
