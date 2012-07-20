@@ -37,8 +37,11 @@ class SolveTansipTask(Task):
             print "Sky range, ra and dec:", ra.min(), ra.max(), dec.min(), dec.max()
 
         policyPath = os.path.join(os.environ["SOLVETANSIP_DIR"], "policy", camera + ".paf")
-        self.log.info("Solvetansip policy: %s" % policyPath)
+        self.log.info("Solvetansip policy override: %s" % policyPath)
         policy = pexPolicy.Policy.createPolicy(policyPath)
+        defaults = pexPolicy.Policy.createPolicy(os.path.join(os.environ["SOLVETANSIP_DIR"],
+                                                              "policy", "WCS_MAKEAPROP.paf"))
+        policy.mergeDefaults(defaults)
         policy.set('NCCD', len(matchLists))
 
         self.log.info("Generating inputs")
