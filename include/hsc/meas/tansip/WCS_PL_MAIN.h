@@ -61,88 +61,29 @@ void F_WCSA_PLMAIN_OUTPUTCCDRMS(CL_WCSA_ASP* WCSA_ASP, std::string CCDRMSFILENAM
 //-----------------------------------------------------------------
 void F_WCSA_PLMAIN_SIMULATION(int HARD,std::string CCDPOSfile,std::string DISTfile,double NSCALE,int RANNUM,int REFNUM);
 void F_WCSA_PLMAIN_SIMULATIONDIFF(int HARD,std::string CCDPOSfile,std::string DISTfile,std::string CCDoutfile,std::string RESoutfile,CL_WCSA_ASP* WCSA_ASP);
+void F_WCSA_PLMAIN_SIMULATION2(lsst::pex::policy::Policy::Ptr &APROPPolicy,lsst::afw::cameraGeom::Camera::Ptr &camera,double NSCALE,int RANNUM,int REFNUM);
+void F_WCSA_PLMAIN_SIMULATIONDIFF2(std::string CCDoutfile,std::string RESoutfile,CL_WCSA_ASP* WCSA_ASP);
 //-----------------------------------------------------------------
 //Getting Functions : WCSA_ASP : APROP
 //-----------------------------------------------------------------
-int F_WCSA_PLMAIN_GET_CCDNUM(CL_WCSA_ASP* WCSA_ASP);
-int F_WCSA_PLMAIN_GET_ALLREFNUM(CL_WCSA_ASP* WCSA_ASP);
-int F_WCSA_PLMAIN_GET_ALLFITNUM(CL_WCSA_ASP* WCSA_ASP);
-std::vector< double > F_WCSA_PLMAIN_GET_CRPIX(CL_WCSA_ASP* WCSA_ASP);
-std::vector< double > F_WCSA_PLMAIN_GET_CRVAL(CL_WCSA_ASP* WCSA_ASP);
-std::vector< double > F_WCSA_PLMAIN_GET_REFNUM(CL_WCSA_ASP* WCSA_ASP);
-std::vector< double > F_WCSA_PLMAIN_GET_FITNUM(CL_WCSA_ASP* WCSA_ASP);
-std::vector< double > F_WCSA_PLMAIN_GET_SIPRMSX(CL_WCSA_ASP* WCSA_ASP);
-std::vector< double > F_WCSA_PLMAIN_GET_SIPRMSY(CL_WCSA_ASP* WCSA_ASP);
-std::vector< double > F_WCSA_PLMAIN_GET_PSIPRMSX(CL_WCSA_ASP* WCSA_ASP);
-std::vector< double > F_WCSA_PLMAIN_GET_PSIPRMSY(CL_WCSA_ASP* WCSA_ASP);
 //-----------------------------------------------------------------
 //Getting Functions : WCSA_ASP : POSITION
 //-----------------------------------------------------------------
-std::vector< double > F_WCSA_PLMAIN_GETPOSITION_RADECfromLOCAL(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > XY);
-std::vector< double > F_WCSA_PLMAIN_GETPOSITION_RADECfromCRPIX(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > XY);
-std::vector< double > F_WCSA_PLMAIN_GETPOSITION_LOCALfromRADEC(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > XY);
-std::vector< double > F_WCSA_PLMAIN_GETPOSITION_CRPIXfromRADEC(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > XY);
-std::vector< double > F_WCSA_PLMAIN_GETPOSITION_CCDIDLOCALfromGLOBAL(CL_WCSA_ASP* WCSA_ASP,std::vector< double > XY);
-std::vector< double > F_WCSA_PLMAIN_GETPOSITION_GLOBALfromCCDIDLOCAL(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > XY);
-std::vector< double > F_WCSA_PLMAIN_GETPOSITION_IMPIXELfromLOCAL(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > XY);
-std::vector< double > F_WCSA_PLMAIN_GETPOSITION_LOCALfromIMPIXEL(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > XY);
 //-----------------------------------------------------------------
 //Getting Functions : WCSA_ASP : POSITION GRID
 //-----------------------------------------------------------------
-std::vector< std::vector< double > > F_WCSA_PLMAIN_GETPOSITION_RADECfromLOCALGRID(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > GRID);
-std::vector< std::vector< double > > F_WCSA_PLMAIN_GETPOSITION_RADECfromCRPIXGRID(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > GRID);
-std::vector< std::vector< double > > F_WCSA_PLMAIN_GETPOSITION_LOCALfromRADECGRID(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > GRID);
-std::vector< std::vector< double > > F_WCSA_PLMAIN_GETPOSITION_CRPIXfromRADECGRID(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > GRID);
 //-----------------------------------------------------------------
 //Getting Functions : WCSA_ASP : JACOBIAN GRID
 //-----------------------------------------------------------------
-std::vector< std::vector< double > > F_WCSA_PLMAIN_GETCRSMA_atLOCALGRID(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > GRID);
-std::vector< std::vector< double > > F_WCSA_PLMAIN_GETCRSMA_atCRPIXGRID(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > GRID);
-std::vector< std::vector< double > > F_WCSA_PLMAIN_GETCRSMA_atRADECGRID(CL_WCSA_ASP* WCSA_ASP,int CID,std::vector< double > GRID);
-std::vector< std::vector< double > > F_WCSA_PLMAIN_GETCRSM_atLOCALGRID(CL_WCSA_ASP* WCSA_ASP,int CID,int CRSMID,std::vector< double > X,std::vector< double > Y);
 //-----------------------------------------------------------------
 //Getting Functions : WCSA_ASP : DSITORTION GRID
 //-----------------------------------------------------------------
-std::vector< std::vector< double > > F_WCSA_PLMAIN_GETDISTORTION_atCRPIXGRID(CL_WCSA_ASP* WCSA_ASP,std::vector< double > GRID);
-std::vector< std::vector< double > > F_WCSA_PLMAIN_GETDISTORTION_atRADECGRID(CL_WCSA_ASP* WCSA_ASP,std::vector< double > GRID);
 //-----------------------------------------------------------------
 //Getting Functions : WCSA_ASP : REFERENCE
 //-----------------------------------------------------------------
-std::vector< double > F_WCSA_PLMAIN_GETREF_ID(CL_WCSA_ASP* WCSA_ASP, int CID);
-std::vector< double > F_WCSA_PLMAIN_GETREF_CHIPID(CL_WCSA_ASP* WCSA_ASP, int CID);
-std::vector< double > F_WCSA_PLMAIN_GETREF_FLAG(CL_WCSA_ASP* WCSA_ASP, int CID);
-std::vector< std::vector< double > > F_WCSA_PLMAIN_GETREF_XYLOCAL(CL_WCSA_ASP* WCSA_ASP, int CID);
-std::vector< std::vector< double > > F_WCSA_PLMAIN_GETREF_XYRADEC(CL_WCSA_ASP* WCSA_ASP, int CID);
-std::vector< std::vector< double > > F_WCSA_PLMAIN_GETREF_XYGLOBAL(CL_WCSA_ASP* WCSA_ASP, int CID);
-std::vector< std::vector< double > > F_WCSA_PLMAIN_GETREF_XYGLOBALCRPIX(CL_WCSA_ASP* WCSA_ASP, int CID);
-std::vector< std::vector< double > > F_WCSA_PLMAIN_GETREF_XYLOCALCRPIX(CL_WCSA_ASP* WCSA_ASP, int CID);
-std::vector< std::vector< double > > F_WCSA_PLMAIN_GETREF_XYIMPIXEL(CL_WCSA_ASP* WCSA_ASP, int CID);
-std::vector< std::vector< double > > F_WCSA_PLMAIN_GETREF_XYIMWORLD(CL_WCSA_ASP* WCSA_ASP, int CID);
-std::vector< double > F_WCSA_PLMAIN_GETREF_CAMERACONV(CL_WCSA_ASP* WCSA_ASP, int CID);
-std::vector< double > F_WCSA_PLMAIN_GETREF_CAMERAROT(CL_WCSA_ASP* WCSA_ASP, int CID);
-std::vector< double > F_WCSA_PLMAIN_GETREF_CAMERASHEAR1(CL_WCSA_ASP* WCSA_ASP, int CID);
-std::vector< double > F_WCSA_PLMAIN_GETREF_CAMERASHEAR2(CL_WCSA_ASP* WCSA_ASP, int CID);
-std::vector< double > F_WCSA_PLMAIN_GETREF_CAMERAMAGNIFICATION(CL_WCSA_ASP* WCSA_ASP, int CID);
-std::vector< double > F_WCSA_PLMAIN_GETREF_CAMERAPCONV(CL_WCSA_ASP* WCSA_ASP, int CID);
-std::vector< double > F_WCSA_PLMAIN_GETREF_CAMERAPROT(CL_WCSA_ASP* WCSA_ASP, int CID);
-std::vector< double > F_WCSA_PLMAIN_GETREF_CAMERAPSHEAR1(CL_WCSA_ASP* WCSA_ASP, int CID);
-std::vector< double > F_WCSA_PLMAIN_GETREF_CAMERAPSHEAR2(CL_WCSA_ASP* WCSA_ASP, int CID);
-std::vector< double > F_WCSA_PLMAIN_GETREF_CAMERAPMAGNIFICATION(CL_WCSA_ASP* WCSA_ASP, int CID);
-
-std::vector< double > F_WCSA_PLMAIN_GETREF(CL_WCSA_ASP* WCSA_ASP, boost::int64_t REFID);
 //-----------------------------------------------------------------
 //Getting Functions : WCSA_ASP : CCD
 //-----------------------------------------------------------------
-std::vector< std::vector< double > > F_WCSA_PLMAIN_GETCCDPOSITIONS(CL_WCSA_ASP* WCSA_ASP, int CID);
-//-----------------------------------------------------------------
-//Plotting Regions : WCSA_ASP : CCD
-//-----------------------------------------------------------------
-std::vector< double > F_WCSA_PLMAIN_GET_CORNAR(CL_WCSA_ASP* WCSA_ASP,int CID);
-std::vector< double > F_WCSA_PLMAIN_GET_DISTCORRCORNAR(CL_WCSA_ASP* WCSA_ASP,int CID);
-std::vector< double > F_WCSA_PLMAIN_GET_DISTCORRCORNAR_N(CL_WCSA_ASP* WCSA_ASP,int CID,int N);
-std::vector< double > F_WCSA_PLMAIN_GET_RADECCORNAR(CL_WCSA_ASP* WCSA_ASP,int CID);
-std::vector< int > F_WCSA_PLMAIN_GET_INDEX(CL_WCSA_ASP *WCSA_ASP);
-//std::vector< double > F_WCSA_PLMAIN_GETCCDPOSITION(CL_WCSA_ASP* WCSA_ASP, int CID);
 //-----------------------------------------------------------------
 //Getting Functions : OLD
 //-----------------------------------------------------------------

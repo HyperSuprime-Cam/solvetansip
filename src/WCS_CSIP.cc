@@ -501,6 +501,14 @@ void CL_GSIP::F_WCSA_GSIP_SHOWGPOS(){
                          << "	" << CSIP[CID].GPOS[0]
                          << "	" << CSIP[CID].GPOS[1]
                          << "	" << CSIP[CID].GPOS[2] << endl;
+double A[3]={0};
+    for(CID=0;CID<CCDNUM;CID++){
+    A[0]+=1;
+    A[1]+=(CSIP[CID].GPOS_INIT[0]-CSIP[CID].GPOS[0]);
+    A[2]+=(CSIP[CID].GPOS_INIT[0]-CSIP[CID].GPOS[0])*(CSIP[CID].GPOS_INIT[0]-CSIP[CID].GPOS[0]);
+    }
+    cout << "AVE : " << A[1]/A[0] << endl;
+    cout << "RMS : " << sqrt((A[2]-A[1]*A[1]/A[0])/(A[0]-1)) << endl;
 }
 void CL_GSIP::F_WCSA_GSIP_SHOWGSIP(){
     cout << "-- GSIP CHECK --" << endl;

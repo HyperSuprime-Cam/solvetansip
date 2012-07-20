@@ -22,9 +22,11 @@ void    CL_APROP::F_WCSA_APROP_SHOWAPROP(){
     int CID;
     cout << "-- APROP CHECK --" << endl;
 //    cout << "INSTRUMENT  : " << INSTRUMENT   << endl;
-    cout << "CRPIXMODE   : " << CRPIXMODE   << endl;
+    cout << "CRPIXMODE   : " << CRPIXMODE   << endl;;
+    cout << "REJECTMODE  : " << REJMODE   << endl;
     cout << "OAMODE      : " << OAMODE   << endl;
     cout << "CCDPOSMODE  : " << CCDPOSMODE  << endl;
+    cout << "CCDPOSHMODE : " << CCDPOSHMODE  << endl;
     cout << "ALLREFNUM   : " << ALLREFNUM   << endl;
 //    for(CID=0;CID<CCDNUM;CID++)
 //    cout << "REFNUM      : " << CID << " : " <<  REFNUM[CID] << endl;
@@ -45,6 +47,7 @@ void    CL_APROP::F_WCSA_APROP_SHOWAPROP(){
     cout << "BASISPOSY   : " << BASISPOS[1] << endl;
     cout << "BASISPOST   : " << BASISPOS[2] << endl;
     cout << "CCDNUM      : " << CCDNUM      << endl;
+    cout << "STDOUT      : " << STDOUT      << endl;
     cout <<endl;
 }
 /*DEL*/
@@ -73,36 +76,36 @@ void	CL_APROP::F_WCSA_APROP_CHECKCCDPOSMODE(){
     }
 }
 void	CL_APROP::F_WCSA_APROP_CHECKSIPORDER(){
-    if(SIP_ORDER>0.5&&SIP_ORDER<9.5){
+    if(SIP_ORDER>0.5&&SIP_ORDER<15.5){
         if(STDOUT==1||STDOUT==2)cout << "OK : SIP_ORDER" << endl;
     }else{
         cout << "SIPORDER is " << SIP_ORDER << endl;
         cout << "---------------------------------------------" << endl;
-        cout << "Warning :  SIPORDER isn't a number between 1 and 9" << endl;
+        cout << "Warning :  SIPORDER isn't a number between 1 and 15" << endl;
         SIP_ORDER=9;
         cout << "Warning : SET SIPORDER : " << SIP_ORDER << endl;
         cout << "---------------------------------------------" << endl;
     }
 }
 void	CL_APROP::F_WCSA_APROP_CHECKPSIPORDER(){
-    if(SIP_P_ORDER>0.5&&SIP_P_ORDER<9.5){
+    if(SIP_P_ORDER>0.5&&SIP_P_ORDER<15.5){
         if(STDOUT==1||STDOUT==2)cout << "OK : SIP_P_ORDER" << endl;
     }else{
         cout << "PSIP_ORDER is " << SIP_P_ORDER << endl;
         cout << "---------------------------------------------" << endl;
-        cout << "Warning : PSIPORDER isn't a number between 1 and 9" << endl;
+        cout << "Warning : PSIPORDER isn't a number between 1 and 15" << endl;
         SIP_P_ORDER=9;
         cout << "Warning : SET PSIPORDER : " << SIP_P_ORDER << endl;
         cout << "---------------------------------------------" << endl;
     }
 }
 void	CL_APROP::F_WCSA_APROP_CHECKLSIPORDER(){
-    if(SIP_L_ORDER>1.5&&SIP_L_ORDER<9.5){
+    if(SIP_L_ORDER>1.5&&SIP_L_ORDER<15.5){
         if(STDOUT==1||STDOUT==2)cout << "OK : SIP_L_ORDER" << endl;
     }else{
         cout << "LSIP_ORDER is " << SIP_L_ORDER << endl;
         cout << "---------------------------------------------" << endl;
-        cout << "Warning : LSIPORDER isn't a number between 2 and 9" << endl;
+        cout << "Warning : LSIPORDER isn't a number between 2 and 15" << endl;
         SIP_L_ORDER=3;
         cout << "Warning : SET LSIPORDER : " << SIP_L_ORDER << endl;
         cout << "---------------------------------------------" << endl;

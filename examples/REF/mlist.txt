@@ -1,8 +1,0 @@
-objId           #1 
-chipId		#2
-x               #3
-y               #4
-catRa           #5 (deg)
-catDec          #6 (deg)
-catMag		#7 -2.5*log10(catFlux)
-objFlags        #8

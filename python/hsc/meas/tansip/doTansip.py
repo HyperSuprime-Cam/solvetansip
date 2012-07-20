@@ -5,6 +5,9 @@ import datetime
 import time
 import numpy
 import matplotlib.pyplot as plt
+from matplotlib.patches import Ellipse
+from math import atan2
+from math import hypot
 
 import lsst.afw.cameraGeom.utils         as cameraGeomUtils
 import hsc.meas.tansip.WCS_PL_MAINLib    as hscTansip
@@ -126,6 +129,10 @@ def WCS_MAKE_SIMULATIONREFERENCE(HARD,CCDPOSfile,DISTfile,NSCALE,RANNUM,REFNUM):
     hscTansip.F_WCSA_PLMAIN_SIMULATION(HARD,CCDPOSfile,DISTfile,NSCALE,RANNUM,REFNUM)
 def WCS_CALC_SIMULATIONDIFF(HARD,CCDPOSfile,DISTfile,CCDoutfile,RESoutfile,WCSA_ASP):
     hscTansip.F_WCSA_PLMAIN_SIMULATIONDIFF(HARD,CCDPOSfile,DISTfile,CCDoutfile,RESoutfile,WCSA_ASP)
+def WCS_MAKE_SIMULATIONREFERENCE2(policy,camera,NSCALE,RANNUM,REFNUM):
+    hscTansip.F_WCSA_PLMAIN_SIMULATION2(policy,camera,NSCALE,RANNUM,REFNUM)
+def WCS_CALC_SIMULATIONDIFF2(CCDoutfile,RESoutfile,WCSA_ASP):
+    hscTansip.F_WCSA_PLMAIN_SIMULATIONDIFF2(CCDoutfile,RESoutfile,WCSA_ASP)
 #-----------------------------------------------------------------
 #Getting Functions : WCSA_ASP : APROP
 #-----------------------------------------------------------------
@@ -141,29 +148,29 @@ def WCS_CALC_SIMULATIONDIFF(HARD,CCDPOSfile,DISTfile,CCDoutfile,RESoutfile,WCSA_
 #Getting Functions : WCSA_ASP : POSITION (Values at arbitrary position)
 #-----------------------------------------------------------------
 def WCS_GET_POSITION_RADECfromLOCAL(WCSA_ASP,CID,XY):
-    return hscTansip.F_WCSA_PLMAIN_GETPOSITION_RADECfromLOCAL(WCSA_ASP,CID,XY)
+    return hscTansip.F_WCSA_PLGET_POSITION_RADECfromLOCAL(WCSA_ASP,CID,XY)
 def WCS_GET_POSITION_RADECfromCRPIX(WCSA_ASP,CID,XY):
-    return hscTansip.F_WCSA_PLMAIN_GETPOSITION_RADECfromCRPIX(WCSA_ASP,CID,XY)
+    return hscTansip.F_WCSA_PLGET_POSITION_RADECfromCRPIX(WCSA_ASP,CID,XY)
 def WCS_GET_POSITION_LOCALfromRADEC(WCSA_ASP,CID,XY):
-    return hscTansip.F_WCSA_PLMAIN_GETPOSITION_LOCALfromRADEC(WCSA_ASP,CID,XY)
+    return hscTansip.F_WCSA_PLGET_POSITION_LOCALfromRADEC(WCSA_ASP,CID,XY)
 def WCS_GET_POSITION_CRPIXfromRADEC(WCSA_ASP,CID,XY):
-    return hscTansip.F_WCSA_PLMAIN_GETPOSITION_CRPIXfromRADEC(WCSA_ASP,CID,XY)
+    return hscTansip.F_WCSA_PLGET_POSITION_CRPIXfromRADEC(WCSA_ASP,CID,XY)
 
 def WCS_GET_POSITION_CCDIDLOCALfromGLOBAL(WCSA_ASP,XY):
-    return hscTansip.F_WCSA_PLMAIN_GETPOSITION_CCDIDLOCALfromGLOBAL(WCSA_ASP,XY)
+    return hscTansip.F_WCSA_PLGET_POSITION_CCDIDLOCALfromGLOBAL(WCSA_ASP,XY)
 def WCS_GET_POSITION_GLOBALfromCCDIDLOCAL(WCSA_ASP,CCDID,XY):
-    return hscTansip.F_WCSA_PLMAIN_GETPOSITION_GLOBALfromCCDIDLOCAL(WCSA_ASP,CCDID,XY)
+    return hscTansip.F_WCSA_PLGET_POSITION_GLOBALfromCCDIDLOCAL(WCSA_ASP,CCDID,XY)
 #-----------------------------------------------------------------
 #Getting Functions : WCSA_ASP : POSITION (Grid)
 #-----------------------------------------------------------------
 def WCS_GET_POSITION_RADECfromLOCALGRID(WCSA_ASP,CID,GRID):
-    return hscTansip.F_WCSA_PLMAIN_GETPOSITION_RADECfromLOCALGRID(WCSA_ASP,CID,GRID)
+    return hscTansip.F_WCSA_PLGET_POSITION_RADECfromLOCALGRID(WCSA_ASP,CID,GRID)
 def WCS_GET_POSITION_RADECfromCRPIXGRID(WCSA_ASP,CID,GRID):
-    return hscTansip.F_WCSA_PLMAIN_GETPOSITION_RADECfromCRPIXGRID(WCSA_ASP,CID,GRID)
+    return hscTansip.F_WCSA_PLGET_POSITION_RADECfromCRPIXGRID(WCSA_ASP,CID,GRID)
 def WCS_GET_POSITION_LOCALfromRADECGRID(WCSA_ASP,CID,GRID):
-    return hscTansip.F_WCSA_PLMAIN_GETPOSITION_LOCALfromRADECGRID(WCSA_ASP,CID,GRID)
+    return hscTansip.F_WCSA_PLGET_POSITION_LOCALfromRADECGRID(WCSA_ASP,CID,GRID)
 def WCS_GET_POSITION_CRPIXfromRADECGRID(WCSA_ASP,CID,GRID):
-    return hscTansip.F_WCSA_PLMAIN_GETPOSITION_CRPIXfromRADECGRID(WCSA_ASP,CID,GRID)
+    return hscTansip.F_WCSA_PLGET_POSITION_CRPIXfromRADECGRID(WCSA_ASP,CID,GRID)
 
 #-----------------------------------------------------------------
 #Getting Functions : WCSA_ASP : JACOBIAN (Values at arbitrary position)
@@ -172,62 +179,64 @@ def WCS_GET_POSITION_CRPIXfromRADECGRID(WCSA_ASP,CID,GRID):
 #Getting Functions : WCSA_ASP : JACOBIAN (Grid)
 #-----------------------------------------------------------------
 def WCS_GET_CRSMA_atLOCALGRID(WCSA_ASP,CID,GRID):
-    return hscTansip.F_WCSA_PLMAIN_GETCRSMA_atLOCALGRID(WCSA_ASP,CID,GRID)
+    return hscTansip.F_WCSA_PLGET_CRSMA_atLOCALGRID(WCSA_ASP,CID,GRID)
 def WCS_GET_CRSM_atLOCALGRID(WCSA_ASP,CID,CRSMID,X,Y):
-    return hscTansip.F_WCSA_PLMAIN_GETCRSM_atLOCALGRID(WCSA_ASP,CID,CRSMID,X,Y)
+    return hscTansip.F_WCSA_PLGET_CRSM_atLOCALGRID(WCSA_ASP,CID,CRSMID,X,Y)
+def WCS_GET_CONVSHEAR_atLOCALGRID(WCSA_ASP,CID,X,Y):
+    return hscTansip.F_WCSA_PLGET_CONVSHEAR_atLOCALGRID(WCSA_ASP,CID,X,Y)
 #-----------------------------------------------------------------
 #Getting Functions : WCSA_ASP : DISTORTION (Grid)
 #-----------------------------------------------------------------
 def WCS_GET_DISTORTION_atCRPIXGRID(WCSA_ASP,GRID):
-    return hscTansip.F_WCSA_PLMAIN_GETDISTORTION_atCRPIXGRID(WCSA_ASP,GRID)
+    return hscTansip.F_WCSA_PLGET_DISTORTION_atCRPIXGRID(WCSA_ASP,GRID)
 def WCS_GET_DISTORTION_atRADECGRID(WCSA_ASP,GRID):
-    return hscTansip.F_WCSA_PLMAIN_GETDISTORTION_atRADECGRID(WCSA_ASP,GRID)
+    return hscTansip.F_WCSA_PLGET_DISTORTION_atRADECGRID(WCSA_ASP,GRID)
 #-----------------------------------------------------------------
 #Getting Functions : WCSA_ASP : REFERENCES (Values of References having)
 #-----------------------------------------------------------------
 def WCS_GET_REFERENCE_ID(WCSA_ASP,CID):
-    return hscTansip.F_WCSA_PLMAIN_GETREF_ID(WCSA_ASP,CID)
+    return hscTansip.F_WCSA_PLGET_REF_ID(WCSA_ASP,CID)
 def WCS_GET_REFERENCE_CHIPID(WCSA_ASP,CID):
-    return hscTansip.F_WCSA_PLMAIN_GETREF_CHIPID(WCSA_ASP,CID)
+    return hscTansip.F_WCSA_PLGET_REF_CHIPID(WCSA_ASP,CID)
 def WCS_GET_REFERENCE_FLAG(WCSA_ASP,CID):
-    return hscTansip.F_WCSA_PLMAIN_GETREF_FLAG(WCSA_ASP,CID)
+    return hscTansip.F_WCSA_PLGET_REF_FLAG(WCSA_ASP,CID)
 def WCS_GET_REFERENCE_XY_LOCAL(WCSA_ASP,CID):
-    return hscTansip.F_WCSA_PLMAIN_GETREF_XYLOCAL(WCSA_ASP,CID)
+    return hscTansip.F_WCSA_PLGET_REF_XYLOCAL(WCSA_ASP,CID)
 def WCS_GET_REFERENCE_XY_RADEC(WCSA_ASP,CID):
-    return hscTansip.F_WCSA_PLMAIN_GETREF_XYRADEC(WCSA_ASP,CID)
+    return hscTansip.F_WCSA_PLGET_REF_XYRADEC(WCSA_ASP,CID)
 def WCS_GET_REFERENCE_XY_GLOBAL(WCSA_ASP,CID):
-    return hscTansip.F_WCSA_PLMAIN_GETREF_XYGLOBAL(WCSA_ASP,CID)
+    return hscTansip.F_WCSA_PLGET_REF_XYGLOBAL(WCSA_ASP,CID)
 def WCS_GET_REFERENCE_XY_GLOBALCRPIX(WCSA_ASP,CID):
-    return hscTansip.F_WCSA_PLMAIN_GETREF_XYGLOBALCRPIX(WCSA_ASP,CID)
+    return hscTansip.F_WCSA_PLGET_REF_XYGLOBALCRPIX(WCSA_ASP,CID)
 def WCS_GET_REFERENCE_XY_LOCALCRPIX(WCSA_ASP,CID):
-    return hscTansip.F_WCSA_PLMAIN_GETREF_XYLOCALCRPIX(WCSA_ASP,CID)
+    return hscTansip.F_WCSA_PLGET_REF_XYLOCALCRPIX(WCSA_ASP,CID)
 def WCS_GET_REFERENCE_XY_IMPIXEL(WCSA_ASP,CID):
-    return hscTansip.F_WCSA_PLMAIN_GETREF_XYIMPIXEL(WCSA_ASP,CID)
+    return hscTansip.F_WCSA_PLGET_REF_XYIMPIXEL(WCSA_ASP,CID)
 def WCS_GET_REFERENCE_XY_IMWORLD(WCSA_ASP,CID):
-    return hscTansip.F_WCSA_PLMAIN_GETREF_XYIMWORLD(WCSA_ASP,CID)
+    return hscTansip.F_WCSA_PLGET_REF_XYIMWORLD(WCSA_ASP,CID)
 def WCS_GET_REFERENCE_CAMERA_CONVERGENCE(WCSA_ASP,CID):
-    return hscTansip.F_WCSA_PLMAIN_GETREF_CAMERACONV(WCSA_ASP,CID)
+    return hscTansip.F_WCSA_PLGET_REF_CAMERACONV(WCSA_ASP,CID)
 def WCS_GET_REFERENCE_CAMERA_ROTATION(WCSA_ASP,CID):
-    return hscTansip.F_WCSA_PLMAIN_GETREF_CAMERAROT(WCSA_ASP,CID)
+    return hscTansip.F_WCSA_PLGET_REF_CAMERAROT(WCSA_ASP,CID)
 def WCS_GET_REFERENCE_CAMERA_SHEAR1(WCSA_ASP,CID):
-    return hscTansip.F_WCSA_PLMAIN_GETREF_CAMERASHEAR1(WCSA_ASP,CID)
+    return hscTansip.F_WCSA_PLGET_REF_CAMERASHEAR1(WCSA_ASP,CID)
 def WCS_GET_REFERENCE_CAMERA_SHEAR2(WCSA_ASP,CID):
-    return hscTansip.F_WCSA_PLMAIN_GETREF_CAMERASHEAR2(WCSA_ASP,CID)
+    return hscTansip.F_WCSA_PLGET_REF_CAMERASHEAR2(WCSA_ASP,CID)
 def WCS_GET_REFERENCE_CAMERA_MAGNIFICATION(WCSA_ASP,CID):
-    return hscTansip.F_WCSA_PLMAIN_GETREF_CAMERAMAGNIFICATION(WCSA_ASP,CID)
+    return hscTansip.F_WCSA_PLGET_REF_CAMERAMAGNIFICATION(WCSA_ASP,CID)
 def WCS_GET_REFERENCE_CAMERA_PCONVERGENCE(WCSA_ASP,CID):
-    return hscTansip.F_WCSA_PLMAIN_GETREF_CAMERAPCONV(WCSA_ASP,CID)
+    return hscTansip.F_WCSA_PLGET_REF_CAMERAPCONV(WCSA_ASP,CID)
 def WCS_GET_REFERENCE_CAMERA_PROTATION(WCSA_ASP,CID):
-    return hscTansip.F_WCSA_PLMAIN_GETREF_CAMERAPROT(WCSA_ASP,CID)
+    return hscTansip.F_WCSA_PLGET_REF_CAMERAPROT(WCSA_ASP,CID)
 def WCS_GET_REFERENCE_CAMERA_PSHEAR1(WCSA_ASP,CID):
-    return hscTansip.F_WCSA_PLMAIN_GETREF_CAMERAPSHEAR1(WCSA_ASP,CID)
+    return hscTansip.F_WCSA_PLGET_REF_CAMERAPSHEAR1(WCSA_ASP,CID)
 def WCS_GET_REFERENCE_CAMERA_PSHEAR2(WCSA_ASP,CID):
-    return hscTansip.F_WCSA_PLMAIN_GETREF_CAMERAPSHEAR2(WCSA_ASP,CID)
+    return hscTansip.F_WCSA_PLGET_REF_CAMERAPSHEAR2(WCSA_ASP,CID)
 def WCS_GET_REFERENCE_CAMERA_PMAGNIFICATION(WCSA_ASP,CID):
-    return hscTansip.F_WCSA_PLMAIN_GETREF_CAMERAPMAGNIFICATION(WCSA_ASP,CID)
+    return hscTansip.F_WCSA_PLGET_REF_CAMERAPMAGNIFICATION(WCSA_ASP,CID)
 
 def WCS_GET_REFERENCE_INDIVIDUAL(WCSA_ASP,REFID):
-    return hscTansip.F_WCSA_PLMAIN_GETREF(WCSA_ASP,REFID)
+    return hscTansip.F_WCSA_PLGET_REF(WCSA_ASP,REFID)
 
 #-----------------------------------------------------------------
 #Getting Functions : WCSA_ASP : CCD (Values of CCD having)
@@ -237,16 +246,16 @@ def WCS_GET_REFERENCE_INDIVIDUAL(WCSA_ASP,REFID):
 #def WCS_GET_CCD_CCD_CCDPOS(WCSA_ASP,CID):#(CCDID, X(pixel), Y(pixel), T(radian))
 #    return hscTansip.F_WCSA_PLMAIN_GETCCDPOSITION(WCSA_ASP,CID)
 def WCS_GET_CCD_CCDPOS(WCSA_ASP,CID):#(CCDID, X(pixel), Y(pixel), T(radian))
-    return hscTansip.F_WCSA_PLMAIN_GETCCDPOSITIONS(WCSA_ASP,CID)
+    return hscTansip.F_WCSA_PLGET_CCDPOSITIONS(WCSA_ASP,CID)
 
 
 #-----------------------------------------------------------------
 #plotting figures : WCSA_ASP : field
 #-----------------------------------------------------------------
-def WCS_PLOT_CCDREGIONS(WCSA_ASP,CID):
-    CCDNUM = hscTansip.F_WCSA_PLMAIN_GET_CCDNUM(WCSA_ASP)
-    CRPIX  = hscTansip.F_WCSA_PLMAIN_GET_CRPIX(WCSA_ASP)
-    CORNAR = hscTansip.F_WCSA_PLMAIN_GET_CORNAR(WCSA_ASP,CID)
+def WCS_PLOTMPL_CCDREGIONS(WCSA_ASP,CID):
+    CCDNUM = hscTansip.F_WCSA_PLGET_CCDNUM(WCSA_ASP)
+    CRPIX  = hscTansip.F_WCSA_PLGET_CRPIX(WCSA_ASP)
+    CORNAR = hscTansip.F_WCSA_PLGET_CORNAR(WCSA_ASP,CID)
     if CID > -0.5 and CID < CCDNUM-0.5:
         plt.plot([CORNAR[0],CORNAR[2]],[CORNAR[1],CORNAR[3]],color="#777777")
         plt.plot([CORNAR[2],CORNAR[4]],[CORNAR[3],CORNAR[5]],color="#777777")
@@ -268,10 +277,10 @@ def WCS_PLOT_CCDREGIONS(WCSA_ASP,CID):
     plt.title(title,fontsize=20)
     plt.show()
 
-def WCS_PLOT_DISTCORRCCDREGIONS(WCSA_ASP,CID):
-    CCDNUM = hscTansip.F_WCSA_PLMAIN_GET_CCDNUM(WCSA_ASP)
-    CRPIX  = hscTansip.F_WCSA_PLMAIN_GET_CRPIX(WCSA_ASP)
-    DISTCORRCORNAR = hscTansip.F_WCSA_PLMAIN_GET_DISTCORRCORNAR(WCSA_ASP,CID)
+def WCS_PLOTMPL_DISTCORRCCDREGIONS(WCSA_ASP,CID):
+    CCDNUM = hscTansip.F_WCSA_PLGET_CCDNUM(WCSA_ASP)
+    CRPIX  = hscTansip.F_WCSA_PLGET_CRPIX(WCSA_ASP)
+    DISTCORRCORNAR = hscTansip.F_WCSA_PLGET_DISTCORRCORNAR(WCSA_ASP,CID)
     if CID > -0.5 and CID < CCDNUM-0.5:
         plt.plot([DISTCORRCORNAR[0],DISTCORRCORNAR[2]],[DISTCORRCORNAR[1],DISTCORRCORNAR[3]],color="#777777")
         plt.plot([DISTCORRCORNAR[2],DISTCORRCORNAR[4]],[DISTCORRCORNAR[3],DISTCORRCORNAR[5]],color="#777777")
@@ -293,10 +302,10 @@ def WCS_PLOT_DISTCORRCCDREGIONS(WCSA_ASP,CID):
     plt.title(title,fontsize=20)
     plt.show()
 
-def WCS_PLOT_DISTCORRCCDREGIONS_N(WCSA_ASP,CID,N):
-    CCDNUM = hscTansip.F_WCSA_PLMAIN_GET_CCDNUM(WCSA_ASP)
-    CRPIX  = hscTansip.F_WCSA_PLMAIN_GET_CRPIX(WCSA_ASP)
-    DISTCORRCORNAR = hscTansip.F_WCSA_PLMAIN_GET_DISTCORRCORNAR_N(WCSA_ASP,CID,N)
+def WCS_PLOTMPL_DISTCORRCCDREGIONS_N(WCSA_ASP,CID,N):
+    CCDNUM = hscTansip.F_WCSA_PLGET_CCDNUM(WCSA_ASP)
+    CRPIX  = hscTansip.F_WCSA_PLGET_CRPIX(WCSA_ASP)
+    DISTCORRCORNAR = hscTansip.F_WCSA_PLGET_DISTCORRCORNAR_N(WCSA_ASP,CID,N)
     if CID > -0.5 and CID < CCDNUM-0.5:
         plt.plot([DISTCORRCORNAR[0],DISTCORRCORNAR[2]],[DISTCORRCORNAR[1],DISTCORRCORNAR[3]],color="#777777")
         plt.plot([DISTCORRCORNAR[2],DISTCORRCORNAR[4]],[DISTCORRCORNAR[3],DISTCORRCORNAR[5]],color="#777777")
@@ -318,10 +327,10 @@ def WCS_PLOT_DISTCORRCCDREGIONS_N(WCSA_ASP,CID,N):
     plt.title(title,fontsize=20)
     plt.show()
 
-def WCS_PLOT_RADECCCDREGIONS(WCSA_ASP,CID):
-    CCDNUM = hscTansip.F_WCSA_PLMAIN_GET_CCDNUM(WCSA_ASP)
-    CRVAL  = hscTansip.F_WCSA_PLMAIN_GET_CRVAL(WCSA_ASP)
-    RADECCORNAR = hscTansip.F_WCSA_PLMAIN_GET_RADECCORNAR(WCSA_ASP,CID)
+def WCS_PLOTMPL_RADECCCDREGIONS(WCSA_ASP,CID):
+    CCDNUM = hscTansip.F_WCSA_PLGET_CCDNUM(WCSA_ASP)
+    CRVAL  = hscTansip.F_WCSA_PLGET_CRVAL(WCSA_ASP)
+    RADECCORNAR = hscTansip.F_WCSA_PLGET_RADECCORNAR(WCSA_ASP,CID)
     if CID > -0.5 and CID < CCDNUM-0.5:
         plt.plot([RADECCORNAR[0],RADECCORNAR[2]],[RADECCORNAR[1],RADECCORNAR[3]],color="#777777")
         plt.plot([RADECCORNAR[2],RADECCORNAR[4]],[RADECCORNAR[3],RADECCORNAR[5]],color="#777777")
@@ -343,25 +352,25 @@ def WCS_PLOT_RADECCCDREGIONS(WCSA_ASP,CID):
     plt.title(title,fontsize=20)
     plt.show()
 
-def WCS_PLOT_CONVERGENCE(WCSA_ASP,CID,dx,dy):
-    WCS_PLOT_CRSM(WCSA_ASP,CID,0,dx,dy)
+def WCS_PLOTMPL_CONVERGENCE(WCSA_ASP,CID,dx,dy):
+    WCS_PLOTMPL_CRSM(WCSA_ASP,CID,0,dx,dy)
 
-def WCS_PLOT_ROTATION(WCSA_ASP,CID,dx,dy):
-    WCS_PLOT_CRSM(WCSA_ASP,CID,1,dx,dy)
+def WCS_PLOTMPL_ROTATION(WCSA_ASP,CID,dx,dy):
+    WCS_PLOTMPL_CRSM(WCSA_ASP,CID,1,dx,dy)
 
-def WCS_PLOT_SHEAR1(WCSA_ASP,CID,dx,dy):
-    WCS_PLOT_CRSM(WCSA_ASP,CID,2,dx,dy)
+def WCS_PLOTMPL_SHEAR1(WCSA_ASP,CID,dx,dy):
+    WCS_PLOTMPL_CRSM(WCSA_ASP,CID,2,dx,dy)
 
-def WCS_PLOT_SHEAR2(WCSA_ASP,CID,dx,dy):
-    WCS_PLOT_CRSM(WCSA_ASP,CID,3,dx,dy)
+def WCS_PLOTMPL_SHEAR2(WCSA_ASP,CID,dx,dy):
+    WCS_PLOTMPL_CRSM(WCSA_ASP,CID,3,dx,dy)
 
-def WCS_PLOT_MAGNIFICATION(WCSA_ASP,CID,dx,dy):
-    WCS_PLOT_CRSM(WCSA_ASP,CID,4,dx,dy)
+def WCS_PLOTMPL_MAGNIFICATION(WCSA_ASP,CID,dx,dy):
+    WCS_PLOTMPL_CRSM(WCSA_ASP,CID,4,dx,dy)
 
-def WCS_PLOT_CRSM(WCSA_ASP,CID,CRSMID,dx,dy):
-    CCDNUM = hscTansip.F_WCSA_PLMAIN_GET_CCDNUM(WCSA_ASP)
-    CRPIX  = hscTansip.F_WCSA_PLMAIN_GET_CRPIX(WCSA_ASP)
-    CORNAR = hscTansip.F_WCSA_PLMAIN_GET_CORNAR(WCSA_ASP,CID)
+def WCS_PLOTMPL_CRSM(WCSA_ASP,CID,CRSMID,dx,dy):
+    CCDNUM = hscTansip.F_WCSA_PLGET_CCDNUM(WCSA_ASP)
+    CRPIX  = hscTansip.F_WCSA_PLGET_CRPIX(WCSA_ASP)
+    CORNAR = hscTansip.F_WCSA_PLGET_CORNAR(WCSA_ASP,CID)
     if CID > -0.5 and CID < CCDNUM-0.5:
         x=numpy.arange(0,2048+0.5,dx)
         y=numpy.arange(0,4096+0.5,dy)
@@ -425,7 +434,7 @@ def WCS_PLOT_CRSM(WCSA_ASP,CID,CRSMID,dx,dy):
     plt.show()
     
 
-def WCS_PLOT_DISTORTION_V(dx,dy):
+def WCS_PLOTMPL_DISTORTION_V(dx,dy):
     x=numpy.arange(-1000,1000+0.5,dx)
     y=numpy.arange(-1000,1000+0.5,dy)
     print x
@@ -436,14 +445,65 @@ def WCS_PLOT_DISTORTION_V(dx,dy):
         ulistYFIX=[]
         vlistYFIX=[]
         for i, k in enumerate(x):
-            ulistYFIX.append(500*i)
+            ulistYFIX.append(500)
             vlistYFIX.append(500)
         ulist.append(ulistYFIX)
         vlist.append(vlistYFIX)
     print ulist
     print vlist
-    plt.quiver(x,y,ulist,vlist,color="r")
+    plt.quiver(x,y,ulist,vlist,units="x")
     title = "DISTORTION : IM_PIXEL to GLOBAL"
+    plt.axis('scaled')
+    plt.title(title,fontsize=20)
+    plt.show()
+    
+def WCS_PLOTMPL_CONVSHEAR_2D(WCSA_ASP,CID,dx,dy):
+    CCDNUM = hscTansip.F_WCSA_PLGET_CCDNUM(WCSA_ASP)
+    CRPIX  = hscTansip.F_WCSA_PLGET_CRPIX(WCSA_ASP)
+    CORNAR = hscTansip.F_WCSA_PLGET_CORNAR(WCSA_ASP,CID)
+    a=plt.subplot(111,aspect='equal')
+
+    if CID > -0.5 and CID < CCDNUM-0.5:
+        x=numpy.arange(0,2048+0.5,dx)
+        y=numpy.arange(0,4096+0.5,dy)
+        Zco = WCS_GET_CRSM_atLOCALGRID(WCSA_ASP,CID,0,x,y)
+        Zs1 = WCS_GET_CRSM_atLOCALGRID(WCSA_ASP,CID,2,x,y)
+        Zs2 = WCS_GET_CRSM_atLOCALGRID(WCSA_ASP,CID,3,x,y)
+        for j, w in enumerate(y):
+            for i, v in enumerate(x):
+                co = Zco[j][i]
+                sh = hypot(Zs2[j][i],Zs1[j][i])
+                PA = 180/3.14152965*0.5*atan2(Zs2[j][i],Zs1[j][i])
+                E = Ellipse((v,w),100*(co+10*sh),100*(co-10*sh),PA,ec="#000000",fc="none")
+                a.add_artist(E)
+        plt.plot([0000,2048],[0000,0000],color="#777777")
+        plt.plot([2048,2048],[0000,4096],color="#777777")
+        plt.plot([2048,0000],[4096,4096],color="#777777")
+        plt.plot([0000,0000],[4096,0000],color="#777777")
+        title = "CONVERGENCE AND SHEAR : CCD : {0} /n 100*size 10*ellipticity".format(str(CID).zfill(3))
+    else:
+        x=numpy.arange(-18000,18000+0.5,dx)
+        y=numpy.arange(-18000,18000+0.5,dy)
+        Zco = WCS_GET_CRSM_atLOCALGRID(WCSA_ASP,CID,0,x,y)
+        Zs1 = WCS_GET_CRSM_atLOCALGRID(WCSA_ASP,CID,2,x,y)
+        Zs2 = WCS_GET_CRSM_atLOCALGRID(WCSA_ASP,CID,3,x,y)
+        for j, w in enumerate(y):
+            for i, v in enumerate(x):
+                co = Zco[j][i]
+                sh = hypot(Zs2[j][i],Zs1[j][i])
+                PA = 180/3.14152965*0.5*atan2(Zs2[j][i],Zs1[j][i])
+                E = Ellipse((v,w),1000*(co+10*sh),1000*(co-10*sh),PA,ec="#000000",fc="none")
+                a.add_artist(E)
+        for i in range(0,CCDNUM):
+            plt.plot([CORNAR[10*i+0],CORNAR[10*i+2]],[CORNAR[10*i+1],CORNAR[10*i+3]],color="#777777")
+            plt.plot([CORNAR[10*i+2],CORNAR[10*i+4]],[CORNAR[10*i+3],CORNAR[10*i+5]],color="#777777")
+            plt.plot([CORNAR[10*i+4],CORNAR[10*i+6]],[CORNAR[10*i+5],CORNAR[10*i+7]],color="#777777")
+            plt.plot([CORNAR[10*i+6],CORNAR[10*i+0]],[CORNAR[10*i+7],CORNAR[10*i+1]],color="#777777")
+            plt.text(CORNAR[10*i+0]+200,CORNAR[10*i+1]+200,"{0}".format(str(i).zfill(3)),size=9,color="#777777")
+        plt.plot([CRPIX[0]-500,CRPIX[0]+500],[CRPIX[1]-500,CRPIX[1]+500],color="#FFFFFF")
+        plt.plot([CRPIX[0]-500,CRPIX[0]+500],[CRPIX[0]+500,CRPIX[1]-500],color="#FFFFFF")
+        plt.text(CRPIX[0]+500,CRPIX[1]-500,"CRPIX",size=9,color="#FFFFFF")
+        title = "CONVERGENCE AND SHEAR : GLOBAL /n 1000*size 10*ellipticity"
     plt.axis('scaled')
     plt.title(title,fontsize=20)
     plt.show()
@@ -451,11 +511,11 @@ def WCS_PLOT_DISTORTION_V(dx,dy):
 #plotting figures : WCSA_ASP : CCD
 #-----------------------------------------------------------------
 
-def WCS_PLOT_REFNUM(WCSA_ASP):
-    CCDNUM = hscTansip.F_WCSA_PLMAIN_GET_CCDNUM(WCSA_ASP)
-    INDEX  = hscTansip.F_WCSA_PLMAIN_GET_INDEX(WCSA_ASP)
-    REFNUM = hscTansip.F_WCSA_PLMAIN_GET_REFNUM(WCSA_ASP)
-    X, Y, Z = WCS_PLOT_SETXYZ_INDEX(WCSA_ASP,CCDNUM,REFNUM)
+def WCS_PLOTMPL_REFNUM(WCSA_ASP):
+    CCDNUM = hscTansip.F_WCSA_PLGET_CCDNUM(WCSA_ASP)
+    INDEX  = hscTansip.F_WCSA_PLGET_INDEX(WCSA_ASP)
+    REFNUM = hscTansip.F_WCSA_PLGET_REFNUM(WCSA_ASP)
+    X, Y, Z = WCS_PLOTMPL_SETXYZ_INDEX(WCSA_ASP,CCDNUM,REFNUM)
     plt.pcolor(X,Y,Z)
     for i in range(0,CCDNUM):
         if i < 100:
@@ -476,11 +536,11 @@ def WCS_PLOT_REFNUM(WCSA_ASP):
     plt.title(title,fontsize=20)
     plt.show()
     
-def WCS_PLOT_FITNUM(WCSA_ASP):
-    CCDNUM = hscTansip.F_WCSA_PLMAIN_GET_CCDNUM(WCSA_ASP)
-    INDEX  = hscTansip.F_WCSA_PLMAIN_GET_INDEX(WCSA_ASP)
-    FITNUM = hscTansip.F_WCSA_PLMAIN_GET_FITNUM(WCSA_ASP)
-    X, Y, Z = WCS_PLOT_SETXYZ_INDEX(WCSA_ASP,CCDNUM,FITNUM)
+def WCS_PLOTMPL_FITNUM(WCSA_ASP):
+    CCDNUM = hscTansip.F_WCSA_PLGET_CCDNUM(WCSA_ASP)
+    INDEX  = hscTansip.F_WCSA_PLGET_INDEX(WCSA_ASP)
+    FITNUM = hscTansip.F_WCSA_PLGET_FITNUM(WCSA_ASP)
+    X, Y, Z = WCS_PLOTMPL_SETXYZ_INDEX(WCSA_ASP,CCDNUM,FITNUM)
     plt.pcolor(X,Y,Z)
     for i in range(0,CCDNUM):
         if i < 100:
@@ -501,15 +561,15 @@ def WCS_PLOT_FITNUM(WCSA_ASP):
     plt.title(title,fontsize=20)
     plt.show()
     
-def WCS_PLOT_REJNUM(WCSA_ASP):
-    CCDNUM = hscTansip.F_WCSA_PLMAIN_GET_CCDNUM(WCSA_ASP)
-    INDEX  = hscTansip.F_WCSA_PLMAIN_GET_INDEX(WCSA_ASP)
-    REFNUM = hscTansip.F_WCSA_PLMAIN_GET_REFNUM(WCSA_ASP)
-    FITNUM = hscTansip.F_WCSA_PLMAIN_GET_FITNUM(WCSA_ASP)
+def WCS_PLOTMPL_REJNUM(WCSA_ASP):
+    CCDNUM = hscTansip.F_WCSA_PLGET_CCDNUM(WCSA_ASP)
+    INDEX  = hscTansip.F_WCSA_PLGET_INDEX(WCSA_ASP)
+    REFNUM = hscTansip.F_WCSA_PLGET_REFNUM(WCSA_ASP)
+    FITNUM = hscTansip.F_WCSA_PLGET_FITNUM(WCSA_ASP)
     REJNUM=[0 for i in range(CCDNUM)]
     for i in range(0,CCDNUM):
         REJNUM[i]=REFNUM[i]-FITNUM[i]
-    X, Y, Z = WCS_PLOT_SETXYZ_INDEX(WCSA_ASP,CCDNUM,REJNUM)
+    X, Y, Z = WCS_PLOTMPL_SETXYZ_INDEX(WCSA_ASP,CCDNUM,REJNUM)
     plt.pcolor(X,Y,Z)
     for i in range(0,CCDNUM):
         if i < 100:
@@ -530,8 +590,8 @@ def WCS_PLOT_REJNUM(WCSA_ASP):
     plt.title(title,fontsize=20)
     plt.show()
     
-def WCS_PLOT_SETXYZ_INDEX(WCSA_ASP,CCDNUM, VALUE):
-    INDEX  = hscTansip.F_WCSA_PLMAIN_GET_INDEX(WCSA_ASP)
+def WCS_PLOTMPL_SETXYZ_INDEX(WCSA_ASP,CCDNUM, VALUE):
+    INDEX  = hscTansip.F_WCSA_PLGET_INDEX(WCSA_ASP)
     AVE=0
     for i in range(0,CCDNUM):
         AVE+=VALUE[i]/CCDNUM
@@ -562,11 +622,11 @@ def WCS_PLOT_SETXYZ_INDEX(WCSA_ASP,CCDNUM, VALUE):
             Z[INDEX[2*i+1]+2+1][INDEX[2*i+0]+2]=VALUE[i]
     return X, Y, Z
 
-def WCS_PLOT_RMSSIPX(WCSA_ASP):
-    CCDNUM = hscTansip.F_WCSA_PLMAIN_GET_CCDNUM(WCSA_ASP)
-    INDEX  = hscTansip.F_WCSA_PLMAIN_GET_INDEX(WCSA_ASP)
-    SIPRMS = hscTansip.F_WCSA_PLMAIN_GET_SIPRMSX(WCSA_ASP)
-    X, Y, Z = WCS_PLOT_SETXYZ_INDEX(WCSA_ASP,CCDNUM,SIPRMS)
+def WCS_PLOTMPL_RMSSIPX(WCSA_ASP):
+    CCDNUM = hscTansip.F_WCSA_PLGET_CCDNUM(WCSA_ASP)
+    INDEX  = hscTansip.F_WCSA_PLGET_INDEX(WCSA_ASP)
+    SIPRMS = hscTansip.F_WCSA_PLGET_SIPRMSX(WCSA_ASP)
+    X, Y, Z = WCS_PLOTMPL_SETXYZ_INDEX(WCSA_ASP,CCDNUM,SIPRMS)
     plt.pcolor(X,Y,Z)
     for i in range(0,CCDNUM):
         if i < 100:
@@ -587,11 +647,11 @@ def WCS_PLOT_RMSSIPX(WCSA_ASP):
     plt.title(title,fontsize=20)
     plt.show()
     
-def WCS_PLOT_RMSSIPY(WCSA_ASP):
-    CCDNUM = hscTansip.F_WCSA_PLMAIN_GET_CCDNUM(WCSA_ASP)
-    INDEX  = hscTansip.F_WCSA_PLMAIN_GET_INDEX(WCSA_ASP)
-    SIPRMS = hscTansip.F_WCSA_PLMAIN_GET_SIPRMSY(WCSA_ASP)
-    X, Y, Z = WCS_PLOT_SETXYZ_INDEX(WCSA_ASP,CCDNUM,SIPRMS)
+def WCS_PLOTMPL_RMSSIPY(WCSA_ASP):
+    CCDNUM = hscTansip.F_WCSA_PLGET_CCDNUM(WCSA_ASP)
+    INDEX  = hscTansip.F_WCSA_PLGET_INDEX(WCSA_ASP)
+    SIPRMS = hscTansip.F_WCSA_PLGET_SIPRMSY(WCSA_ASP)
+    X, Y, Z = WCS_PLOTMPL_SETXYZ_INDEX(WCSA_ASP,CCDNUM,SIPRMS)
     plt.pcolor(X,Y,Z)
     for i in range(0,CCDNUM):
         if i < 100:
@@ -612,11 +672,11 @@ def WCS_PLOT_RMSSIPY(WCSA_ASP):
     plt.title(title,fontsize=20)
     plt.show()
     
-def WCS_PLOT_RMSPSIPX(WCSA_ASP):
-    CCDNUM = hscTansip.F_WCSA_PLMAIN_GET_CCDNUM(WCSA_ASP)
-    INDEX  = hscTansip.F_WCSA_PLMAIN_GET_INDEX(WCSA_ASP)
-    SIPRMS = hscTansip.F_WCSA_PLMAIN_GET_PSIPRMSX(WCSA_ASP)
-    X, Y, Z = WCS_PLOT_SETXYZ_INDEX(WCSA_ASP,CCDNUM,SIPRMS)
+def WCS_PLOTMPL_RMSPSIPX(WCSA_ASP):
+    CCDNUM = hscTansip.F_WCSA_PLGET_CCDNUM(WCSA_ASP)
+    INDEX  = hscTansip.F_WCSA_PLGET_INDEX(WCSA_ASP)
+    SIPRMS = hscTansip.F_WCSA_PLGET_PSIPRMSX(WCSA_ASP)
+    X, Y, Z = WCS_PLOTMPL_SETXYZ_INDEX(WCSA_ASP,CCDNUM,SIPRMS)
     plt.pcolor(X,Y,Z)
     for i in range(0,CCDNUM):
         if i < 100:
@@ -637,11 +697,11 @@ def WCS_PLOT_RMSPSIPX(WCSA_ASP):
     plt.title(title,fontsize=20)
     plt.show()
     
-def WCS_PLOT_RMSPSIPY(WCSA_ASP):
-    CCDNUM = hscTansip.F_WCSA_PLMAIN_GET_CCDNUM(WCSA_ASP)
-    INDEX  = hscTansip.F_WCSA_PLMAIN_GET_INDEX(WCSA_ASP)
-    SIPRMS = hscTansip.F_WCSA_PLMAIN_GET_PSIPRMSY(WCSA_ASP)
-    X, Y, Z = WCS_PLOT_SETXYZ_INDEX(WCSA_ASP,CCDNUM,SIPRMS)
+def WCS_PLOTMPL_RMSPSIPY(WCSA_ASP):
+    CCDNUM = hscTansip.F_WCSA_PLGET_CCDNUM(WCSA_ASP)
+    INDEX  = hscTansip.F_WCSA_PLGET_INDEX(WCSA_ASP)
+    SIPRMS = hscTansip.F_WCSA_PLGET_PSIPRMSY(WCSA_ASP)
+    X, Y, Z = WCS_PLOTMPL_SETXYZ_INDEX(WCSA_ASP,CCDNUM,SIPRMS)
     plt.pcolor(X,Y,Z)
     for i in range(0,CCDNUM):
         if i < 100:
@@ -661,7 +721,6 @@ def WCS_PLOT_RMSPSIPY(WCSA_ASP):
     plt.colorbar()
     plt.title(title,fontsize=20)
     plt.show()
-    
     
 #-----
 #OLD

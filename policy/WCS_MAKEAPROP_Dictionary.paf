@@ -67,6 +67,21 @@ definitions: {
             description: True
         }
     }
+    CCDPHMODE: {
+        type: int
+        default: 1
+        description: Whether the CCD position should be determined with high order
+        minOccurs: 0
+        maxOccurs: 1
+        allowed: {
+            value: 0
+            description: False
+        }
+        allowed: {
+            value: 1
+            description: True
+        }
+    }
     REJMODE: {
         type: int
         default: 0
