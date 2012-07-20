@@ -16,13 +16,37 @@ from lsst.pipe.base import Task
 
 
 class SolveTansipTask(Task):
+    # XXX Implement proper configuration with pex_config
     ConfigClass = Config
 
-    def run(self, camera, butler, dataRefList):
-        self.log.info("Reading match lists")
-        
-        matchLists = [measAst.readMatches(butler, dataRef.dataId) for dataRef in dataRefList]
+    def solve(self, camera, cameraGeom, matchLists):
+        policyPath = os.path.join(os.environ["SOLVETANSIP_DIR"], "policy", camera + ".paf")
+        self.log.info("Solvetansip policy override: %s" % policyPath)
+        policy = pexPolicy.Policy.createPolicy(policyPath)
+        defaults = pexPolicy.Policy.createPolicy(os.path.join(os.environ["SOLVETANSIP_DIR"],
+                                                              "policy", "WCS_MAKEAPROP.paf"))
+        policy.mergeDefaults(defaults)
+        policy.set('NCCD', len(matchLists))
 
+        self.log.info("Processing with solvetansip")
+        wcs = doTansip.doTansip(matchLists, policy=policy, camera=cameraGeom)
+        wcsList = doTansip.getwcsList(wcs)
+        return wcsList
+
+    def convert(self, matchList):
+        xErrKey = matchList[0].second.getTable().getCentroidErrKey()[0,0]
+        yErrKey = matchList[0].second.getTable().getCentroidErrKey()[1,1]
+        return [tansip.SourceMatch(m.second.getId(),
+                                   afwCoord.IcrsCoord(m.first.getRa(), m.first.getDec()),
+                                   afwGeom.Point2D(m.second.getX(), m.second.getY()),
+                                   afwGeom.Point2D(m.second.get(xErrKey), m.second.get(yErrKey)),
+                                   m.second.getPsfFlux())
+                for m in matchList]
+
+
+    def read(self, butler, dataRefList):
+        self.log.info("Reading match lists")
+        matchLists = [measAst.readMatches(butler, dataRef.dataId) for dataRef in dataRefList]
         if False:
             ra = []
             dec = []
@@ -35,29 +59,9 @@ class SolveTansipTask(Task):
             dec = numpy.array(dec)
             print "Magnitude range, sources:", mag2.min(), mag2.max()
             print "Sky range, ra and dec:", ra.min(), ra.max(), dec.min(), dec.max()
+        return matchLists
 
-        policyPath = os.path.join(os.environ["SOLVETANSIP_DIR"], "policy", camera + ".paf")
-        self.log.info("Solvetansip policy override: %s" % policyPath)
-        policy = pexPolicy.Policy.createPolicy(policyPath)
-        defaults = pexPolicy.Policy.createPolicy(os.path.join(os.environ["SOLVETANSIP_DIR"],
-                                                              "policy", "WCS_MAKEAPROP.paf"))
-        policy.mergeDefaults(defaults)
-        policy.set('NCCD', len(matchLists))
-
-        self.log.info("Generating inputs")
-        inputList = []
-        for ml in matchLists:
-            xErrKey = ml[0].second.getTable().getCentroidErrKey()[0,0]
-            yErrKey = ml[0].second.getTable().getCentroidErrKey()[1,1]
-            inputList.append([tansip.SourceMatch(m.second.getId(),
-                                                 afwCoord.IcrsCoord(m.first.getRa(), m.first.getDec()),
-                                                 afwGeom.Point2D(m.second.getX(), m.second.getY()),
-                                                 afwGeom.Point2D(m.second.get(xErrKey), m.second.get(yErrKey)),
-                                                 m.second.getPsfFlux())
-                              for m in ml])
-
-        self.log.info("Processing with solvetansip")
-        wcs = doTansip.doTansip(inputList, policy=policy, camera=butler.mapper.camera)
-        self.log.info("Solvetansip results:")
-        wcsList = doTansip.getwcsList(wcs)
-        print wcsList
+    def run(self, camera, butler, dataRefList):
+        matchLists = self.read(butler, dataRefList)
+        matchLists = [self.convert(ml) for ml in matchLists]
+        return self.solve(camera, butler.mapper.camera, matchLists)
