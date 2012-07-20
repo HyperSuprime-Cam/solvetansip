@@ -38,7 +38,10 @@ if __name__ == "__main__":
         sys.exit(1)
 
     task = SolveTansipTask(config=namespace.config)
-    try:
+    if namespace.doRaise:
         task.run(namespace.camera, namespace.butler, namespace.dataRefList)
-    except Exception, e:
-        task.log.log(task.log.FATAL, "Failed: %s" % e)
+    else:
+        try:
+            task.run(namespace.camera, namespace.butler, namespace.dataRefList)
+        except Exception, e:
+            task.log.log(task.log.FATAL, "Failed: %s" % e)
