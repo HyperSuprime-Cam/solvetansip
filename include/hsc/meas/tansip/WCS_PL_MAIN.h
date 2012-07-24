@@ -28,6 +28,7 @@ public:
     CL_GSIP*  GSIP;
     CL_APAIR* APAIR;
 
+    CL_WCSA_ASP(): APROP(), GSIP(), APAIR() {}
     lsst::afw::image::TanWcs::Ptr F_WCSA_PLMAIN_SETWCSPtr(int);
     void F_WCS_PLMAIN_NEWWCSA_ASP();
     void F_WCS_PLMAIN_DELWCSA_ASP();
