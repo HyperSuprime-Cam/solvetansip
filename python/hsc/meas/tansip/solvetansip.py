@@ -18,6 +18,7 @@ from lsst.pipe.base import Task
 class SolveTansipTask(Task):
     # XXX Implement proper configuration with pex_config
     ConfigClass = Config
+    _DefaultName = "solvetansip"
 
     def solve(self, camera, cameraGeom, matchLists):
         policyPath = os.path.join(os.environ["SOLVETANSIP_DIR"], "policy", camera + ".paf")
