@@ -23,11 +23,11 @@
 # see <http://www.lsstcorp.org/LegalNotices/>.
 #
 import sys
-from hsc.pipe.base import HscArgumentParser
+from hsc.pipe.base import SubaruArgumentParser
 from hsc.meas.tansip.solvetansip import SolveTansipTask
 
 if __name__ == "__main__":
-    parser = HscArgumentParser(conflict_handler='resolve') # old style
+    parser = SubaruArgumentParser("solvetansip")
 
     try:
         namespace = parser.parse_args(config=SolveTansipTask.ConfigClass())
@@ -38,7 +38,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     task = SolveTansipTask(config=namespace.config)
-    if namespace.doRaise:
+    if namespace.doraise:
         task.run(namespace.camera, namespace.butler, namespace.dataRefList)
     else:
         try:
