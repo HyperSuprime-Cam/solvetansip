@@ -35,15 +35,16 @@ class SolveTansipTask(Task):
         return wcsList
 
     def convert(self, matchList):
+        if matchList is None: # match for this CCD is None
+            return [ None ]
         xErrKey = matchList[0].second.getTable().getCentroidErrKey()[0,0]
         yErrKey = matchList[0].second.getTable().getCentroidErrKey()[1,1]
-        return [tansip.SourceMatch(m.second.getId(),
+        return [tansip.SourceMatch(m.second.getId(), # id for second is ok?
                                    afwCoord.IcrsCoord(m.first.getRa(), m.first.getDec()),
                                    afwGeom.Point2D(m.second.getX(), m.second.getY()),
                                    afwGeom.Point2D(m.second.get(xErrKey), m.second.get(yErrKey)),
                                    m.second.getPsfFlux())
-                for m in matchList]
-
+                for m in matchList if (m.first and m.second)] # both ref and src to have valid values
 
     def read(self, butler, dataRefList):
         self.log.info("Reading match lists")
@@ -78,7 +79,7 @@ class SolveTansipTask(Task):
         return self.solve(camera, butler.mapper.camera, matchLists)
 
 
-class SolveTansipTaskQa(SolveTansipTask):
+class SolveTansipQaTask(SolveTansipTask):
     # XXX Implement proper configuration with pex_config
     ConfigClass = Config
     _DefaultName = "solvetansip"
