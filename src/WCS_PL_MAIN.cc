@@ -78,6 +78,9 @@ PTR(CL_WCSA_ASP) F_WCSA_TANSIP_V(vector<vector<PTR(hsc::meas::tansip::SourceMatc
     setMetadata(WCSA_ASP,metaTANSIP);
     WCSA_ASP->F_WCS_PLMAIN_SETWCSA_ASP();
 
+    // ### FH added this for QA
+    setSummaryToMetadata(WCSA_ASP, metaTANSIP);
+
     cout << "--- solvetansip : END ---" << endl;
     return WCSA_ASP;
 /*
@@ -112,6 +115,8 @@ PTR(CL_WCSA_ASP) F_WCSA_TANSIP_V(vector<vector<PTR(hsc::meas::tansip::SourceMatc
     cout << "--- solvetansip : END ---" << endl;
     return *WCSA_ASP;*/
 }
+
+
 PTR(CL_WCSA_ASP) F_WCSA_TANSIP_V_local(string matchlist,dafbase::PropertySet::Ptr &metaTANSIP,lsst::pex::policy::Policy::Ptr &APROPPolicy,lsst::afw::cameraGeom::Camera::Ptr &camera/*,lsst::daf::base::PropertySet::Ptr &metadata,bool verbose*/){
     PTR(CL_WCSA_ASP) WCSA_ASP(new CL_WCSA_ASP());
 
@@ -780,8 +785,7 @@ std::vector <lsst::afw::image::TanWcs::Ptr> F_WCSA_PLMAIN_GETWCSLIST(PTR(CL_WCSA
 //-----------------------------------------------------------------
 //Output Functions : WCSA_ASP : METADATA
 //-----------------------------------------------------------------
-
-void setMetadata(PTR(CL_WCSA_ASP) WCSA_ASP, dafbase::PropertySet::Ptr &metaTANSIP){
+void setMetadata(PTR(CL_WCSA_ASP) WCSA_ASP, dafbase::PropertySet::Ptr &metaTANSIP) {
 //    metaTANSIP->add("ST_A_CRPIXMODE" ,WCSA_ASP->APROP->CRPIXMODE);
     metaTANSIP->add("ST_A_CCDPOSMODE",WCSA_ASP->APROP->CCDPOSMODE);
     metaTANSIP->add("ST_A_REJMODE"   ,WCSA_ASP->APROP->REJMODE);
@@ -789,19 +793,19 @@ void setMetadata(PTR(CL_WCSA_ASP) WCSA_ASP, dafbase::PropertySet::Ptr &metaTANSI
     metaTANSIP->add("ST_A_ALLREFNUM" ,WCSA_ASP->APROP->ALLREFNUM);
     metaTANSIP->add("ST_A_ALLFITNUM" ,WCSA_ASP->APROP->ALLFITNUM);
     if(strcmp(WCSA_ASP->APROP->CRPIXMODE,"PIX")==0){
-    metaTANSIP->add("ST_A_CRPIX_1"   ,WCSA_ASP->APROP->CRPIX[0]);
-    metaTANSIP->add("ST_A_CRPIX_2"   ,WCSA_ASP->APROP->CRPIX[1]);
+        metaTANSIP->add("ST_A_CRPIX_1"   ,WCSA_ASP->APROP->CRPIX[0]);
+        metaTANSIP->add("ST_A_CRPIX_2"   ,WCSA_ASP->APROP->CRPIX[1]);
     }
     if(strcmp(WCSA_ASP->APROP->CRPIXMODE,"VAL")==0){
-    metaTANSIP->add("ST_A_CRVAL_1"   ,WCSA_ASP->APROP->CRVAL[0]);
-    metaTANSIP->add("ST_A_CRVAL_2"   ,WCSA_ASP->APROP->CRVAL[1]);
+        metaTANSIP->add("ST_A_CRVAL_1"   ,WCSA_ASP->APROP->CRVAL[0]);
+        metaTANSIP->add("ST_A_CRVAL_2"   ,WCSA_ASP->APROP->CRVAL[1]);
     }
     if(WCSA_ASP->APROP->REJMODE==1)
-    metaTANSIP->add("ST_A_CLIPSIGMA" ,WCSA_ASP->APROP->CLIP_SIGMA);
+        metaTANSIP->add("ST_A_CLIPSIGMA" ,WCSA_ASP->APROP->CLIP_SIGMA);
     if(WCSA_ASP->APROP->CCDPOSMODE==1){
-    metaTANSIP->add("ST_A_BASISPOS_X",WCSA_ASP->APROP->BASISPOS[0]);
-    metaTANSIP->add("ST_A_BASISPOS_Y",WCSA_ASP->APROP->BASISPOS[1]);
-    metaTANSIP->add("ST_A_BASISPOS_T",WCSA_ASP->APROP->BASISPOS[2]);
+        metaTANSIP->add("ST_A_BASISPOS_X",WCSA_ASP->APROP->BASISPOS[0]);
+        metaTANSIP->add("ST_A_BASISPOS_Y",WCSA_ASP->APROP->BASISPOS[1]);
+        metaTANSIP->add("ST_A_BASISPOS_T",WCSA_ASP->APROP->BASISPOS[2]);
     }
 
     int CID;
