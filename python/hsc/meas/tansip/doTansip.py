@@ -91,6 +91,14 @@ def doTansip(matchListAllCcd, policy=None, camera=None, rerun=None):
     WCSA_ASP = getresultWcs(matchListAllCcd, metaTANSIP, policy, camera)
 
     return WCSA_ASP
+
+def doTansipQa(matchListAllCcd, policy=None, camera=None, rerun=None):
+    print '--- doTansip ---'
+    metaTANSIP = hscTansip.F_WCS_EMPTYMETADATA()
+    WCSA_ASP = getresultWcs(matchListAllCcd, metaTANSIP, policy, camera)
+
+    return WCSA_ASP, metaTANSIP
+
 def F_WCS_EMPTYMETADATA():
     metadata = hscTansip.F_WCS_EMPTYMETADATA()
     return metadata
