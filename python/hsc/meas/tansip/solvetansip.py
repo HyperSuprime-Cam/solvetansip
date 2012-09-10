@@ -36,7 +36,8 @@ class SolveTansipTask(Task):
 
     def convert(self, matchList):
         if matchList is None: # match for this CCD is None
-            return [ None ]
+            #return [ None ]
+            return None
         xErrKey = matchList[0].second.getTable().getCentroidErrKey()[0,0]
         yErrKey = matchList[0].second.getTable().getCentroidErrKey()[1,1]
         return [tansip.SourceMatch(m.second.getId(), # id for second is ok?
@@ -55,9 +56,13 @@ class SolveTansipTask(Task):
             astrom = measAst.Astrometry(measAst.MeasAstromConfig())
             matchLists = []
             for dataRef in dataRefList:
-                icSrces = butler.get('icSrc', dataRef.dataId)
-                packedMatches = butler.get('icMatch', dataRef.dataId)
-                matches = astrom.joinMatchListWithCatalog(packedMatches, icSrces)
+                try:
+                    icSrces = butler.get('icSrc', dataRef.dataId)
+                    packedMatches = butler.get('icMatch', dataRef.dataId)
+                    matches = astrom.joinMatchListWithCatalog(packedMatches, icSrces)
+                except Exception, e:
+                    butler.log.log(butler.log.WARN, "*** failed to read matches for %s. None is inserted: %s" % (dataRef.dataId, str(e)))
+                    matches = None
                 matchLists.append(matches)
         if False:
             ra = []
@@ -96,7 +101,7 @@ class SolveTansipQaTask(SolveTansipTask):
         policy.mergeDefaults(defaults)
         policy.set('NCCD', len(matchLists)) # num of detectors should work since None is padded for CCDs in failure
 
-        self.log.info("Processing with solvetansip")
+        self.log.info("Processing with solvetansip")o
         resSolveTansip, metaTansip = doTansip.doTansipQa(matchLists, policy=policy, camera=cameraGeom)
         return Struct(
             resSolveTansip = resSolveTansip,
