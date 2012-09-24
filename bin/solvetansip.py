@@ -39,9 +39,9 @@ if __name__ == "__main__":
 
     task = SolveTansipTask(config=namespace.config)
     if namespace.doraise:
-        task.run(namespace.camera, namespace.butler, namespace.dataRefList)
+        print task.run(namespace.camera, namespace.butler, namespace.dataRefList)
     else:
         try:
-            task.run(namespace.camera, namespace.butler, namespace.dataRefList)
+            print task.run(namespace.camera, namespace.butler, namespace.dataRefList)
         except Exception, e:
             task.log.log(task.log.FATAL, "Failed: %s" % e)
