@@ -35,6 +35,7 @@ eups*
 *.a
 ups/*.cfgc
 python/hsc/meas/tansip/version.py
+examples/solvetansip_main
 
 syntax: regexp
 ^\#.*\#$
