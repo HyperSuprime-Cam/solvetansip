@@ -101,7 +101,7 @@ class SolveTansipQaTask(SolveTansipTask):
         policy.mergeDefaults(defaults)
         policy.set('NCCD', len(matchLists)) # num of detectors should work since None is padded for CCDs in failure
 
-        self.log.info("Processing with solvetansip")o
+        self.log.info("Processing with solvetansip")
         resSolveTansip, metaTansip = doTansip.doTansipQa(matchLists, policy=policy, camera=cameraGeom)
         return Struct(
             resSolveTansip = resSolveTansip,
