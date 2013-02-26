@@ -1,0 +1,7 @@
+cd HSC/130115/solvetansip/
+source /data/ana/products.hscPipe1.3.0/loadLSST.sh 
+setup hscPipe 1.3.0
+export SUPRIME_DATA_DIR=/data/Subaru
+setup hg
+setup -v -r . -j
+

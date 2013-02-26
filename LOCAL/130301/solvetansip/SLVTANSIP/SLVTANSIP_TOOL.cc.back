@@ -1,0 +1,57 @@
+//--------------------------------------------------
+//SLVTANSIP_TOOL.cc
+//
+//
+//Last Update 2013/03/01
+//--------------------------------------------------
+#include<iostream>
+#include<cstring>
+#include<cmath>
+#include<fitsio.h>
+#include"SLVTANSIP_ANA.h"
+
+using namespace std;
+void CL_ANA::MAKE_ANAfromfits(std::string CCDDIR,std::string OBJDIR){
+	int status;
+	char FGCCD[100];
+	fitsfile *fptr;
+
+	status=0;
+	sprintf(FGCCD,"%s/SLVTANSIP_GLOBAL.fits",CCDDIR.c_str());
+	fits_open_file(&fptr,FGCCD,READONLY,&status);
+	fits_report_error(stderr,status);
+	fits_read_key(fptr,TINT,"DET-ID" ,&NUM_CCD,NULL,&status);
+	fits_report_error(stderr,status);
+//cout <<NUM_CCD<<endl;
+	fits_read_key(fptr,TINT,"NUM_OBJ",&NUM_OBJ,NULL,&status);
+	fits_report_error(stderr,status);
+//cout <<NUM_OBJ<<endl;
+	fits_read_key(fptr,TINT,"A_ORDER",&ORDER_ASIP,NULL,&status);
+	fits_report_error(stderr,status);
+//cout <<ORDER_ASIP<<endl;
+	fits_read_key(fptr,TINT,"AP_ORDER",&ORDER_PSIP,NULL,&status);
+	fits_report_error(stderr,status);
+//cout <<ORDER_PSIP<<endl;
+
+	int i;
+	CCD = new CL_CCD[NUM_CCD+1];
+	for(CID=0;CID<NUM_CCD+1;CID++)
+	for(i=0;i<2;i++){
+		CCD[CID].ASIP[i]       = F_NEWdouble1((ORDER_ASIP+1)*(ORDER_ASIP+2));
+		CCD[CID].PSIP[i]       = F_NEWdouble1((ORDER_PSIP+1)*(ORDER_PSIP+2));
+	}
+	OBJ = new CL_OBJ[NUM_OBJ  ];
+
+
+	fits_close_file(fptr,&status);
+}
+void CL_ANA::DEL_ANAfromfits(){
+	int i;
+	for(CID=0;CID<NUM_CCD+1;CID++)
+	for(i=0;i<2;i++){
+		delete [] CCD[CID].ASIP[i];
+		delete [] CCD[CID].PSIP[i];
+	}
+	delete [] CCD;
+	delete [] OBJ;
+}

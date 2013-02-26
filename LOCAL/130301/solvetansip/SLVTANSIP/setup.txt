@@ -1,0 +1,2 @@
+python setup_SWIG.py build_ext --inplace
+
