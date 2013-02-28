@@ -22,26 +22,5 @@
 # the GNU General Public License along with this program.  If not,
 # see <http://www.lsstcorp.org/LegalNotices/>.
 #
-import sys
-from hsc.pipe.base import SubaruArgumentParser
 from hsc.meas.tansip.solvetansip import SolveTansipTask
-
-if __name__ == "__main__":
-    parser = SubaruArgumentParser("solvetansip")
-
-    try:
-        namespace = parser.parse_args(config=SolveTansipTask.ConfigClass())
-    except Exception, e:
-        if "--doraise" in sys.argv:
-            raise
-        print >> sys.stderr, e
-        sys.exit(1)
-
-    task = SolveTansipTask(config=namespace.config)
-    if namespace.doraise:
-        print task.run(namespace.camera, namespace.butler, namespace.dataRefList)
-    else:
-        try:
-            print task.run(namespace.camera, namespace.butler, namespace.dataRefList)
-        except Exception, e:
-            task.log.log(task.log.FATAL, "Failed: %s" % e)
+SolveTansipTask.parseAndRun()

@@ -12,13 +12,31 @@ import hsc.meas.tansip as tansip
 import hsc.meas.tansip.doTansip as doTansip
 
 from lsst.pex.config import Config
-from lsst.pipe.base import Task, Struct
+from lsst.pipe.base import ArgumentParser, TaskRunner, CmdLineTask, Struct
+
+class SolveTansipTaskRunner(TaskRunner):
+    @staticmethod
+    def getTargetList(parsedCmd, **kwargs):
+        return [dict(dataRefList=parsedCmd.id.refList, butler=parsedCmd.butler,
+                     camera=parsedCmd.butler.mapper.getCameraName(), **kwargs)]
+
+    def __call__(self, args):
+        task = self.TaskClass(config=self.config, log=self.log)
+        task.run(**args)
 
 
-class SolveTansipTask(Task):
+class SolveTansipTask(CmdLineTask):
     # XXX Implement proper configuration with pex_config
     ConfigClass = Config
     _DefaultName = "solvetansip"
+    RunnerClass = SolveTansipTaskRunner
+
+    @classmethod
+    def _makeArgumentParser(cls):
+        parser = ArgumentParser(name=cls._DefaultName)
+        parser.add_id_argument(name="--id", datasetType="raw", level="Ccd",
+                               help="data ID, e.g. --id visit=12345")
+        return parser
 
     def solve(self, camera, cameraGeom, matchLists):
         policyPath = os.path.join(os.environ["SOLVETANSIP_DIR"], "policy", camera + ".paf")
@@ -57,11 +75,12 @@ class SolveTansipTask(Task):
             matchLists = []
             for dataRef in dataRefList:
                 try:
-                    icSrces = butler.get('icSrc', dataRef.dataId)
-                    packedMatches = butler.get('icMatch', dataRef.dataId)
+                    icSrces = dataRef.get('icSrc')
+                    packedMatches = dataRef.get('icMatch')
                     matches = astrom.joinMatchListWithCatalog(packedMatches, icSrces)
                 except Exception, e:
-                    butler.log.log(butler.log.WARN, "*** failed to read matches for %s. None is inserted: %s" % (dataRef.dataId, str(e)))
+                    self.log.warn("*** failed to read matches for %s. None is inserted: %s" %
+                                  (dataRef.dataId, str(e)))
                     matches = None
                 matchLists.append(matches)
         if False:
