@@ -284,12 +284,13 @@ void    F_WCSA_MAKEGSIP(lsst::pex::policy::Policy::Ptr &APROPPolicy, lsst::afw::
   //          int ccdTiltNQuarter = (det->getOrientation()).getNQuarter();
 
             GSIP->CSIP[CID].ID=detId.getSerial();
-            GSIP->CSIP[CID].GPOS[0]=offsetXY[0];
-            GSIP->CSIP[CID].GPOS[1]=offsetXY[1];
-            GSIP->CSIP[CID].GPOS[2]=Ori.getYaw();//ccdTiltNQuarter * 90.0;//?
+            GSIP->CSIP[CID].GPOS[0]=GSIP->CSIP[CID].GPOS_INIT[0]=offsetXY[0];
+            GSIP->CSIP[CID].GPOS[1]=GSIP->CSIP[CID].GPOS_INIT[1]=offsetXY[1];
+            GSIP->CSIP[CID].GPOS[2]=GSIP->CSIP[CID].GPOS_INIT[2]=Ori.getYaw();//ccdTiltNQuarter * 90.0;//?
             GSIP->CSIP[CID].POSID[0]=detId.getIndex().first;
             GSIP->CSIP[CID].POSID[1]=detId.getIndex().second;
-        }
+//cout<<CID<<"	"<<GSIP->CSIP[CID].GPOS[0]<<"	"<<GSIP->CSIP[CID].GPOS[1]<<"      "<<GSIP->CSIP[CID].GPOS[2]<<endl; 
+       }
     }
 //INITIAL POSITION
     lsst::pex::policy::DefaultPolicyFile const defaultsFile("solvetansip", "WCS_MAKEAPROP_Dictionary.paf","policy");
