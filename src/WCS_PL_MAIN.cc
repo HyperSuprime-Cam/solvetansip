@@ -279,13 +279,14 @@ void    F_WCSA_MAKEGSIP(lsst::pex::policy::Policy::Ptr &APROPPolicy, lsst::afw::
             camGeom::Id detId = camGeom::Id(CID);//serial
             camGeom::Detector::Ptr det = detMosaic->findDetector(detId);
             afwGeom::Point2D offsetXY = det->getCenter().getPixels(det->getPixelSize());
+	    camGeom::Orientation Ori = camGeom::Orientation(CID);
 //            double ccdTiltYaw = (det->getOrientation()).getYaw();
   //          int ccdTiltNQuarter = (det->getOrientation()).getNQuarter();
 
             GSIP->CSIP[CID].ID=detId.getSerial();
             GSIP->CSIP[CID].GPOS[0]=offsetXY[0];
             GSIP->CSIP[CID].GPOS[1]=offsetXY[1];
-            GSIP->CSIP[CID].GPOS[2]=0;//ccdTiltNQuarter * 90.0;//?
+            GSIP->CSIP[CID].GPOS[2]=Ori.getYaw();//ccdTiltNQuarter * 90.0;//?
             GSIP->CSIP[CID].POSID[0]=detId.getIndex().first;
             GSIP->CSIP[CID].POSID[1]=detId.getIndex().second;
         }
@@ -295,7 +296,7 @@ void    F_WCSA_MAKEGSIP(lsst::pex::policy::Policy::Ptr &APROPPolicy, lsst::afw::
     lsst::pex::policy::Policy const defaults(defaultsFile);
     APROPPolicy->mergeDefaults(defaults);
 
-    char GPOSX[100],GPOSY[100],GPOST[100];
+/*    char GPOSX[100],GPOSY[100],GPOST[100];
     
     if(APROP->CCDNUM<11){
         for(CID=0;CID<APROP->CCDNUM;CID++){
@@ -316,6 +317,7 @@ void    F_WCSA_MAKEGSIP(lsst::pex::policy::Policy::Ptr &APROPPolicy, lsst::afw::
             GSIP->CSIP[CID].GPOS[2]=GSIP->CSIP[CID].GPOS_INIT[2]=APROPPolicy->getDouble(GPOST);
         }
     }
+*/
 
 //INITIAL DISTORTION
     if(APROP->CCDNUM<11){
