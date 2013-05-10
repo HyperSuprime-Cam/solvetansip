@@ -18,6 +18,7 @@ namespace afwCoord = lsst::afw::coord;
 namespace camGeom = lsst::afw::cameraGeom;
 namespace dafbase = lsst::daf::base;
 
+void    F_WCSA_GETCCDNUM(vector<vector<PTR(hsc::meas::tansip::SourceMatch)> > const &, CL_APROP *APROP);
 void    F_WCSA_MAKEAPROP(lsst::pex::policy::Policy::Ptr &,CL_APROP*);
 void    F_WCSA_SHOWAPROP(CL_APROP*);
 void    F_WCSA_MAKEGSIP(lsst::pex::policy::Policy::Ptr &,lsst::afw::cameraGeom::Camera::Ptr &,CL_APROP*,CL_GSIP*);
@@ -37,6 +38,9 @@ PTR(CL_WCSA_ASP) F_WCSA_TANSIP_V(vector<vector<PTR(hsc::meas::tansip::SourceMatc
     WCSA_ASP->F_WCS_PLMAIN_NEWWCSA_ASP();
 
 //CCDNUM
+    F_WCSA_GETCCDNUM(matchlist,WCSA_ASP->APROP);
+
+//APROP
     F_WCSA_MAKEAPROP(APROPPolicy, WCSA_ASP->APROP);
     if(WCSA_ASP->APROP->STDOUT==1||WCSA_ASP->APROP->STDOUT==2)cout << "--- WCS_PL_MAIN : F_WCS_MAKE_APROP ---" << endl;
     WCSA_ASP->APAIR->CCDNUM=WCSA_ASP->GSIP->CCDNUM=WCSA_ASP->APROP->CCDNUM;
@@ -123,6 +127,9 @@ PTR(CL_WCSA_ASP) F_WCSA_TANSIP_V_local(string matchlist,dafbase::PropertySet::Pt
     cout << "--- solvetansip : START(local) ---" << endl;
     WCSA_ASP->F_WCS_PLMAIN_NEWWCSA_ASP();
 //CCDNUM
+//    F_WCSA_GETCCDNUM(matchlist,WCSA_ASP->APROP);
+    WCSA_ASP->APROP->CCDNUM=104;
+//APROP
     F_WCSA_MAKEAPROP(APROPPolicy, WCSA_ASP->APROP);
     if(WCSA_ASP->APROP->STDOUT==1||WCSA_ASP->APROP->STDOUT==2)cout << "--- WCS_PL_MAIN : F_WCS_MAKE_APROP ---" << endl;
     WCSA_ASP->APAIR->CCDNUM=WCSA_ASP->GSIP->CCDNUM=WCSA_ASP->APROP->CCDNUM;
@@ -243,7 +250,7 @@ void    F_WCSA_MAKEAPROP(lsst::pex::policy::Policy::Ptr &APROPPolicy, CL_APROP *
     strncpy(APROP->CRPIXMODE,CMODE.c_str(), CL_APROP::STRING_LENGTH);
     OAMODE             =APROPPolicy->getString("OAMODE");
     strncpy(APROP->OAMODE,OAMODE.c_str(), CL_APROP::STRING_LENGTH);
-    APROP->CCDNUM      =APROPPolicy->getInt("NCCD");
+ //   APROP->CCDNUM      =APROPPolicy->getInt("NCCD");
     APROP->CCDPOSMODE  =APROPPolicy->getInt("CCDPMODE");
     APROP->CCDPOSHMODE =APROPPolicy->getInt("CCDPHMODE");
     APROP->REJMODE     =APROPPolicy->getInt("REJMODE");
@@ -265,13 +272,17 @@ void    F_WCSA_MAKEAPROP(lsst::pex::policy::Policy::Ptr &APROPPolicy, CL_APROP *
     APROP->ALLREFNUM   = 0;
     APROP->ALLFITNUM   = 0;
 }
+void    F_WCSA_GETCCDNUM(vector<vector<PTR(hsc::meas::tansip::SourceMatch)> > const &matchlist, CL_APROP *APROP){
+    APROP->CCDNUM=matchlist.size();
+
+    if(APROP->CCDNUM>104.5)
+    APROP->CCDNUM=104;
+}
 void    F_WCSA_MAKEGSIP(lsst::pex::policy::Policy::Ptr &APROPPolicy, lsst::afw::cameraGeom::Camera::Ptr &camera, CL_APROP *APROP, CL_GSIP *GSIP){
     int CID;
 
     GSIP->F_WCSA_GSIP_SET0();
 
-//double GPOSAVE[2];
-//GPOSAVE[0]=GPOSAVE[1]=0;
     for(camGeom::Camera::const_iterator iter(camera->begin()); iter != camera->end(); ++iter) { 
         camGeom::DetectorMosaic::Ptr detMosaic = boost::shared_dynamic_cast<camGeom::DetectorMosaic>(*iter);
 

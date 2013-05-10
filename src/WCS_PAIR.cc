@@ -157,6 +157,7 @@ void CL_APAIR::F_WCSA_APAIR_GPOS(){
     F_WCSA_APAIR_CENTERPROJECTION();
     F_WCSA_APAIR_LDIFFVALUES();
 
+    if(CCDPOSMODE==1){
     if(STDOUT==1||STDOUT==2)cout << "--- WCS_TANSIP : DETERMINING CCD POSITION : CALCULATING THETA of CCD ---" << endl;
     F_WCSA_APAIR_CCDPOSITIONS_T();
     if(STDOUT==2)cout << "T  iteration times : " << IterNUM_T  << " (MAX=10)" << endl;
@@ -175,6 +176,8 @@ void CL_APAIR::F_WCSA_APAIR_GPOS(){
     if(STDOUT==2)for(CID=0;CID<CCDNUM;CID++)cout << "X : " << setfill ('0') << setw (3) <<CID << fixed<< " : " << GPOS[CID][0] <<endl<< "Y : " << setfill ('0') << setw (3) <<CID << fixed<< " : " << GPOS[CID][1] << endl;
     if(STDOUT==1||STDOUT==2)cout << "--- WCS_TANSIP : DETERMINING CCD POSITION : HIGH ORDER CORRECTION ---" << endl;
 //    F_WCSA_APAIR_CCDPOSITIONS_XY_CORRECTION();
+    }
+
     if(CCDPOSHMODE==1)
     F_WCSA_APAIR_CCDPOSITIONS_XYT_CORRECTION();
 //    if(STDOUT==2)for(CID=0;CID<CCDNUM;CID++)cout << "X : " << setfill ('0') << setw (3) <<CID << fixed<< " : " << GPOS[CID][0] <<endl<< "Y : " << setfill ('0') << setw (3) <<CID << fixed<< " : " << GPOS[CID][1] << endl;
