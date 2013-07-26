@@ -519,7 +519,6 @@ void CL_GSIP::F_WCSA_GSIP_SHOWGSIP(){
     cout << "CRPIXMODE   : " << CRPIXMODE   << endl;
     cout << "OAMODE      : " << OAMODE      << endl;
     cout << "CCDPOSMODE  : " << CCDPOSMODE  << endl;
-    cout << "CCDPOSHMODE : " << CCDPOSHMODE << endl;
     cout << "ANGLE       : " << ANGLE       << endl;
     cout << "SIP_L_ORDER : " << SIP_L_ORDER << endl;
     cout << "SIP_ORDER   : " << SIP_ORDER   << endl;
