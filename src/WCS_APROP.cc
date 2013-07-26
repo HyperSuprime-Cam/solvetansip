@@ -156,6 +156,7 @@ void	CL_APROP::F_WCSA_APROP_CHECKCCDFITNUM(){
     cout << "---------------------------------------------" << endl;
     cout << "Warning : NUMBER OF REFERENCE in CCD " << CID << " is " << FITNUM[CID] << endl;
     CCDPOSMODE=0;
+    CCDPOSHMODE=0;
     cout << "          USING INITIAL VALUES FOR CCD POSITIONS " << endl;
     cout << "---------------------------------------------" << endl;
     }else{
