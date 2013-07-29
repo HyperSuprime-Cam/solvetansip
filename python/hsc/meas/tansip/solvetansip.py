@@ -67,22 +67,14 @@ class SolveTansipTask(CmdLineTask):
 
     def read(self, butler, dataRefList):
         self.log.info("Reading match lists")
-        ### FH testing
-        if False:
-            matchLists = [measAst.readMatches(butler, dataRef.dataId) for dataRef in dataRefList]
-        else:
-            astrom = measAst.Astrometry(measAst.MeasAstromConfig())
-            matchLists = []
-            for dataRef in dataRefList:
-                try:
-                    icSrces = dataRef.get('icSrc')
-                    packedMatches = dataRef.get('icMatch')
-                    matches = astrom.joinMatchListWithCatalog(packedMatches, icSrces)
-                except Exception, e:
-                    self.log.warn("*** failed to read matches for %s. None is inserted: %s" %
-                                  (dataRef.dataId, str(e)))
-                    matches = None
-                matchLists.append(matches)
+        matchLists = []
+        for dataRef in dataRefList:
+            try:
+                ml = measAst.readMatches(butler, dataRef.dataId)
+            except Exception as e:
+                self.log.warn("Unable to read matches for %s: %s" % (dataRef.dataId, e))
+                ml = None
+            matchLists.append(ml)
         if False:
             ra = []
             dec = []
