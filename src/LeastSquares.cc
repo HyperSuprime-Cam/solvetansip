@@ -9,14 +9,11 @@
 #include<cmath>
 #include <vector>
 
-#ifdef USE_EIGEN
 #include <Eigen/Core>
 #include <Eigen/LU>
-#endif
 
 void    F_InvM(int MNUM,double **Min,double **Mout){
 
-#ifdef USE_EIGEN
     Eigen::MatrixXd input(MNUM, MNUM);
     for (int i = 0; i < MNUM; ++i) {
         for (int j = 0; j < MNUM; ++j) {
@@ -30,74 +27,6 @@ void    F_InvM(int MNUM,double **Min,double **Mout){
         }
     }
     return;
-#else
-
-    int i,j,k;
-    double Mdi,**Mtemp,**Mtemp2,**I,**Itemp;
-
-    Mtemp  = new double*[MNUM];
-    Mtemp2 = new double*[MNUM];
-    I      = new double*[MNUM];
-    Itemp  = new double*[MNUM];
-    for(i=0;i<MNUM;i++){
-    Mtemp[i]  = new double[MNUM];
-    Mtemp2[i] = new double[MNUM];
-    I[i]      = new double[MNUM];
-    Itemp[i]  = new double[MNUM];
-    }
-
-    for(i=0;i<MNUM;i++)
-    for(j=0;j<MNUM;j++){
-    Mtemp[i][j]=0;
-    Mtemp2[i][j]=0;
-    I[i][j]=0;
-    Itemp[i][j]=0;
-    }
-
-    for(i=0;i<MNUM;i++)
-    for(j=0;j<MNUM;j++){
-        Itemp[i][j]=0;
-        if(i==j){
-            I[i][j]=1;
-        }else{
-            I[i][j]=0;
-        }
-    }         
-
-    for(k=0;k<MNUM;k++){                
-        Mdi=Min[k][k];  
-        for(i=0;i<MNUM;i++){      
-            Min[i][k]=Min[i][k]/Mdi;
-              I[i][k]=  I[i][k]/Mdi;
-        }                        
-
-    for(i=0;i<MNUM;i++) 
-    for(j=0;j<MNUM;j++) 
-    Mtemp[i][j]=Min[i][j];
-    for(j=0;j<MNUM;j++)  
-    if(j==k){
-    }else{   
-            for(i=0;i<MNUM;i++){
-            Min[i][j]-=Mtemp[k][j]*Min[i][k];
-              I[i][j]-=Mtemp[k][j]*  I[i][k];
-            }	
-        }
-    }      
-    for(i=0;i<MNUM;i++) 
-    for(j=0;j<MNUM;j++) 
-    Mout[i][j]=I[i][j];
-
-    for(i=0;i<MNUM;i++){
-    delete [] Mtemp[i];
-    delete [] Mtemp2[i];
-    delete [] I[i];
-    delete [] Itemp[i];
-    }
-    delete [] Mtemp;
-    delete [] Mtemp2;
-    delete [] I;
-    delete [] Itemp;
-#endif	
 }
 void    F_LS1(int dataNUM,int Order,double **data,double *Coef){
     int i,j,NUM;
