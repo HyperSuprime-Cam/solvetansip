@@ -199,17 +199,18 @@ double	F_INTEGRAL_R(int ORDER, double MAX_R, double **FUNCTION){
 	return Z;
 }
 double  F_CALCVALUE(int ORDER,double *Coef,double *X){
-    int i,j,ij;
-    double Z;
-
-    Z=ij=0;
-    for(i=0;i<ORDER+1;i++)
-    for(j=0;j<ORDER+1;j++)
-    if(i+j<ORDER+1){
-        Z+=Coef[ij]*pow(X[0],i)*pow(X[1],j);
-        ij++;
+    double value = Coef[0]; // x^0 y^0
+    double x = X[0], y = X[1];
+    double xValue = 1.0;
+    for (int i = 0, ij = 0; i <= ORDER; ++i) {
+        double yValue = 1.0;
+        for (int j = 0; j <= ORDER - i; ++j, ++ij) {
+            value += Coef[ij]*xValue*yValue;
+            yValue *= y;
+        }
+        xValue *= x;
     }
-    return Z;
+    return value;
 }
 void    F_PROJECTION(double *Cdeg,double *Pdeg,double *PPOINT){
     double NRAD[2];//native psi,theta (RAD)
