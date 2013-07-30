@@ -7,6 +7,7 @@
 //--------------------------------------------------
 
 #include<cmath>
+#include <vector>
 
 #ifdef USE_EIGEN
 #include <Eigen/Core>
@@ -159,20 +160,28 @@ void    F_LS2(int dataNUM,int Order,double **data,double *Coef){
     ij++;
     }
 
-    for(NUM=0;NUM<dataNUM;NUM++){
-    ij=0;
-        for(i=0;i<Order+1;i++)
-        for(j=0;j<Order+1;j++)
-        if(i+j<Order+1){
-            kl=0;
-            for(k=0;k<Order+1;k++)
-            for(l=0;l<Order+1;l++)
-            if(k+l<Order+1){
-                XA[ij][kl]+=pow(data[NUM][0],(double)(i+k))*pow(data[NUM][1],(double)(j+l));
-                kl+=1;
+    for (NUM=0; NUM < dataNUM; NUM++) {
+        int numEval = 2*(Order+1);
+        std::vector<double> xPowers(numEval);
+        std::vector<double> yPowers(numEval);
+        double xVal = data[NUM][0], yVal = data[NUM][1];
+        xPowers[0] = 1.0;
+        yPowers[0] = 1.0;
+        for (int ii = 1; ii <= numEval; ++ii) {
+            xPowers[ii] = xPowers[ii-1]*xVal;
+            yPowers[ii] = yPowers[ii-1]*yVal;
+        }
+
+        for (int ii = 0, ij = 0; ii <= Order; ++ii) {
+            for (int jj = 0; jj <= Order - ii; ++jj, ++ij) {
+                for (int kk = 0, kl = 0; kk <= Order; ++kk) {
+                    double xValue = xPowers[ii+kk];
+                    for (int ll = 0; ll <= Order - kk; ++ll, ++kl) {
+                        XA[ij][kl] += xValue*yPowers[jj+ll];
+                    }
+                }
+                Z[ij] += data[NUM][2]*xPowers[ii]*yPowers[jj];
             }
-            Z[ij]+=data[NUM][2]*pow(data[NUM][0],(double)(i))*pow(data[NUM][1],(double)(j));   
-            ij+=1;
         }
     }
 
