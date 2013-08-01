@@ -84,7 +84,7 @@ definitions: {
     }
     REJMODE: {
         type: int
-        default: 0
+        default: 1
         description: reject bad references
         minOccurs: 0
         maxOccurs: 1
