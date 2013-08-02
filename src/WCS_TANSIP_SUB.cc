@@ -198,8 +198,9 @@ double	F_INTEGRAL_R(int ORDER, double MAX_R, double **FUNCTION){
 
 	return Z;
 }
-double  F_CALCVALUE(int ORDER,double *Coef,double *X){
-    double value = Coef[0]; // x^0 y^0
+double  F_CALCVALUE(int ORDER,double *Coef,double *POS){
+
+/*    double value = Coef[0]; // x^0 y^0
     double x = X[0], y = X[1];
     double xValue = 1.0;
     for (int i = 0, ij = 0; i <= ORDER; ++i) {
@@ -211,6 +212,30 @@ double  F_CALCVALUE(int ORDER,double *Coef,double *X){
         xValue *= x;
     }
     return value;
+*/
+    int i,j,ij;
+    double Z;
+    double *X,*Y;
+
+    X  = new double[(ORDER+1)];
+    Y  = new double[(ORDER+1)];
+    for(i=0;i<(ORDER+1);i++)
+    X[i]=Y[i]=0;
+
+    X[0]=Y[0]=1.0;
+    for(i=1;i<(ORDER+1);i++){
+	X[i]=X[i-1]*POS[0];
+	Y[i]=Y[i-1]*POS[1];
+    }
+
+    Z=ij=0;
+    for(i=0;i<ORDER+1;i++)
+    for(j=0;j<ORDER+1;j++)
+    if(i+j<ORDER+1){
+        Z+=Coef[ij]*X[i]*Y[j];
+        ij++;
+    }
+    return Z;
 }
 void    F_PROJECTION(double *Cdeg,double *Pdeg,double *PPOINT){
     double NRAD[2];//native psi,theta (RAD)
