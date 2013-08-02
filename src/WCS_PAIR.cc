@@ -174,15 +174,18 @@ void CL_APAIR::F_WCSA_APAIR_GPOS(){
     F_WCSA_APAIR_CCDPOSITIONS_XY_SETAVERAGE();//CENTER = (1024, 2048)
 //HIGH ORDER CORRECTION 
     if(STDOUT==2)for(CID=0;CID<CCDNUM;CID++)cout << "X : " << setfill ('0') << setw (3) <<CID << fixed<< " : " << GPOS[CID][0] <<endl<< "Y : " << setfill ('0') << setw (3) <<CID << fixed<< " : " << GPOS[CID][1] << endl;
-    if(STDOUT==1||STDOUT==2)cout << "--- WCS_TANSIP : DETERMINING CCD POSITION : HIGH ORDER CORRECTION ---" << endl;
 //    F_WCSA_APAIR_CCDPOSITIONS_XY_CORRECTION();
     }
 
-    if(CCDPOSHMODE==1)
+    if(CCDPOSHMODE==1){
+    if(STDOUT==1||STDOUT==2)cout << "--- WCS_TANSIP : DETERMINING CCD POSITION : HIGH PRESICION CORRECTION ---" << endl;
     F_WCSA_APAIR_CCDPOSITIONS_XYT_CORRECTION();
 //    if(STDOUT==2)for(CID=0;CID<CCDNUM;CID++)cout << "X : " << setfill ('0') << setw (3) <<CID << fixed<< " : " << GPOS[CID][0] <<endl<< "Y : " << setfill ('0') << setw (3) <<CID << fixed<< " : " << GPOS[CID][1] << endl;
  //   if(STDOUT==2)cout << "X : AVE : " << GPOS_AVE[0] << endl << "Y : AVE : " << GPOS_AVE[1] << endl;
     if(STDOUT==2)for(CID=0;CID<CCDNUM;CID++)cout << "CID : " << setfill ('0') << setw (3) <<CID << fixed<< " : X : " << GPOS[CID][0] << " : Y : " << GPOS[CID][1] << " : T : " <<scientific<< GPOS[CID][2] << endl;
+//for(CID=0;CID<CCDNUM;CID++)cout << "CID : " << setfill ('0') << setw (3) <<CID << fixed<< " : X : " << GPOS[CID][0]+1024 << " : Y : " << GPOS[CID][1]+2088 << " : T : " <<scientific<< GPOS[CID][2] << endl;
+
+	}
 }
 
 void CL_APAIR::F_WCSA_APAIR_WCS(){

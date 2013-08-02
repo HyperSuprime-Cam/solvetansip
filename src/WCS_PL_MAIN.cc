@@ -295,8 +295,13 @@ void    F_WCSA_MAKEGSIP(lsst::pex::policy::Policy::Ptr &APROPPolicy, lsst::afw::
   //          int ccdTiltNQuarter = (det->getOrientation()).getNQuarter();
 
             GSIP->CSIP[CID].ID=detId.getSerial();
-            GSIP->CSIP[CID].GPOS[0]=GSIP->CSIP[CID].GPOS_INIT[0]=offsetXY[0];
-            GSIP->CSIP[CID].GPOS[1]=GSIP->CSIP[CID].GPOS_INIT[1]=offsetXY[1];
+	    if(CID<99.5){
+            GSIP->CSIP[CID].GPOS[0]=GSIP->CSIP[CID].GPOS_INIT[0]=offsetXY[0]-1024;
+            GSIP->CSIP[CID].GPOS[1]=GSIP->CSIP[CID].GPOS_INIT[1]=offsetXY[1]-2088;
+	    }else{
+            GSIP->CSIP[CID].GPOS[0]=GSIP->CSIP[CID].GPOS_INIT[0]=offsetXY[0]-2088;
+            GSIP->CSIP[CID].GPOS[1]=GSIP->CSIP[CID].GPOS_INIT[1]=offsetXY[1]-1024;
+	    }
             GSIP->CSIP[CID].GPOS[2]=GSIP->CSIP[CID].GPOS_INIT[2]=Ori.getYaw();//ccdTiltNQuarter * 90.0;//?
             GSIP->CSIP[CID].POSID[0]=detId.getIndex().first;
             GSIP->CSIP[CID].POSID[1]=detId.getIndex().second;
