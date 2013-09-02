@@ -478,11 +478,11 @@ void CL_APAIR::F_WCSA_APAIR_GFITTING(int ORDER,int VARIABLE,int FUNCTION, double
     {
         #pragma omp section
         {
-            F_LS2(FNUM,ORDER,dx[0],Coef[0]);
+            F_LS2_FAST(FNUM,ORDER,dx[0],Coef[0]);
         }
         #pragma omp section
         {
-            F_LS2(FNUM,ORDER,dx[1],Coef[1]);
+            F_LS2_FAST(FNUM,ORDER,dx[1],Coef[1]);
         }
     }
 //--------------------------------------------------
@@ -542,7 +542,7 @@ void CL_APAIR::F_WCSA_APAIR_LFITTING(int VARIABLE,int FUNCTION){
     }
     for(CID=0;CID<CCDNUM;CID++)
     for(i=0;i<2;i++)
-    F_LS2(CNUM[CID],SIP_L_ORDER,dx[i][CID],TLCoef[i][CID]);
+    F_LS2_FAST(CNUM[CID],SIP_L_ORDER,dx[i][CID],TLCoef[i][CID]);
 
 //--------------------------------------------------*/
     F_DELint1(CNUM);
@@ -907,19 +907,19 @@ void CL_APAIR::F_WCSA_APAIR_GDIFFVALUES(){
     {
         #pragma omp section
         {
-            F_LS2(FNUM,SIP_P_ORDER-1,dGdI[0][0],TdPCoef[0][0]);
+            F_LS2_FAST(FNUM,SIP_P_ORDER-1,dGdI[0][0],TdPCoef[0][0]);
         }
         #pragma omp section
         {
-            F_LS2(FNUM,SIP_P_ORDER-1,dGdI[0][1],TdPCoef[0][1]);
+            F_LS2_FAST(FNUM,SIP_P_ORDER-1,dGdI[0][1],TdPCoef[0][1]);
         }
         #pragma omp section
         {
-            F_LS2(FNUM,SIP_P_ORDER-1,dGdI[1][0],TdPCoef[1][0]);
+            F_LS2_FAST(FNUM,SIP_P_ORDER-1,dGdI[1][0],TdPCoef[1][0]);
         }
         #pragma omp section
         {
-            F_LS2(FNUM,SIP_P_ORDER-1,dGdI[1][1],TdPCoef[1][1]);
+            F_LS2_FAST(FNUM,SIP_P_ORDER-1,dGdI[1][1],TdPCoef[1][1]);
         }
     }
 
@@ -1225,19 +1225,19 @@ void CL_APAIR::F_WCSA_APAIR_CCDPOSITIONS_XY(){
     {
     #pragma omp section
         {
-            F_LS2(FNUM,SIP_P_ORDER-1,dGdI[0][0],TdPCoef[0][0]);
+            F_LS2_FAST(FNUM,SIP_P_ORDER-1,dGdI[0][0],TdPCoef[0][0]);
         }
         #pragma omp section
         {
-            F_LS2(FNUM,SIP_P_ORDER-1,dGdI[0][1],TdPCoef[0][1]);
+            F_LS2_FAST(FNUM,SIP_P_ORDER-1,dGdI[0][1],TdPCoef[0][1]);
         }
         #pragma omp section
         {
-            F_LS2(FNUM,SIP_P_ORDER-1,dGdI[1][0],TdPCoef[1][0]);
+            F_LS2_FAST(FNUM,SIP_P_ORDER-1,dGdI[1][0],TdPCoef[1][0]);
         }
         #pragma omp section
         {
-            F_LS2(FNUM,SIP_P_ORDER-1,dGdI[1][1],TdPCoef[1][1]);
+            F_LS2_FAST(FNUM,SIP_P_ORDER-1,dGdI[1][1],TdPCoef[1][1]);
         }
     }
 
