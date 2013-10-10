@@ -280,6 +280,7 @@ void    F_WCSA_GETCCDNUM(vector<vector<PTR(hsc::meas::tansip::SourceMatch)> > co
 }
 void    F_WCSA_MAKEGSIP(lsst::pex::policy::Policy::Ptr &APROPPolicy, lsst::afw::cameraGeom::Camera::Ptr &camera, CL_APROP *APROP, CL_GSIP *GSIP){
     int CID;
+    double BASISPOS[4]={0};
 
     GSIP->F_WCSA_GSIP_SET0();
 
@@ -298,11 +299,16 @@ void    F_WCSA_MAKEGSIP(lsst::pex::policy::Policy::Ptr &APROPPolicy, lsst::afw::
 	    if(CID<99.5){
             GSIP->CSIP[CID].GPOS[0]=GSIP->CSIP[CID].GPOS_INIT[0]=offsetXY[0]-1024;
             GSIP->CSIP[CID].GPOS[1]=GSIP->CSIP[CID].GPOS_INIT[1]=offsetXY[1]-2088;
+            GSIP->CSIP[CID].GPOS[2]=GSIP->CSIP[CID].GPOS_INIT[2]=Ori.getYaw();//ccdTiltNQuarter * 90.0;//?
+	    BASISPOS[3]+=1;
+	    BASISPOS[0]+=GSIP->CSIP[CID].GPOS[0];
+	    BASISPOS[1]+=GSIP->CSIP[CID].GPOS[1];
+	    BASISPOS[2]+=GSIP->CSIP[CID].GPOS[2];
 	    }else{
             GSIP->CSIP[CID].GPOS[0]=GSIP->CSIP[CID].GPOS_INIT[0]=offsetXY[0]-2088;
             GSIP->CSIP[CID].GPOS[1]=GSIP->CSIP[CID].GPOS_INIT[1]=offsetXY[1]-1024;
-	    }
             GSIP->CSIP[CID].GPOS[2]=GSIP->CSIP[CID].GPOS_INIT[2]=Ori.getYaw();//ccdTiltNQuarter * 90.0;//?
+	    }
             GSIP->CSIP[CID].POSID[0]=detId.getIndex().first;
             GSIP->CSIP[CID].POSID[1]=detId.getIndex().second;
 //cout<<CID<<"	"<<GSIP->CSIP[CID].GPOS[0]<<"	"<<GSIP->CSIP[CID].GPOS[1]<<"      "<<GSIP->CSIP[CID].GPOS[2]<<endl; 
@@ -312,6 +318,15 @@ void    F_WCSA_MAKEGSIP(lsst::pex::policy::Policy::Ptr &APROPPolicy, lsst::afw::
     lsst::pex::policy::DefaultPolicyFile const defaultsFile("solvetansip", "WCS_MAKEAPROP_Dictionary.paf","policy");
     lsst::pex::policy::Policy const defaults(defaultsFile);
     APROPPolicy->mergeDefaults(defaults);
+
+//BASIS POSITION
+    APROP->BASISPOS[0] =BASISPOS[0]/BASISPOS[3];
+    APROP->BASISPOS[1] =BASISPOS[1]/BASISPOS[3];
+    APROP->BASISPOS[2] =BASISPOS[2]/BASISPOS[3];
+
+    if(APROP->STDOUT==2)cout << "CCD BASIS X :" << APROP->BASISPOS[0] << endl;
+    if(APROP->STDOUT==2)cout << "CCD BASIS Y :" << APROP->BASISPOS[1] << endl;
+    if(APROP->STDOUT==2)cout << "CCD BASIS T :" << APROP->BASISPOS[2] << endl;
 
 /*    char GPOSX[100],GPOSY[100],GPOST[100];
     
