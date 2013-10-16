@@ -48,6 +48,8 @@ void    CL_APROP::F_WCSA_APROP_SHOWAPROP(){
     cout << "BASISPOST   : " << BASISPOS[2] << endl;
     cout << "CCDNUM      : " << CCDNUM      << endl;
     cout << "STDOUT      : " << STDOUT      << endl;
+    cout << "OUTFLAG     : " << OUTFLAG     << endl;
+    cout << "OUTDIR      : " << OUTDIR      << endl;
     cout <<endl;
 }
 /*DEL*/

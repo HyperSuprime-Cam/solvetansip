@@ -244,6 +244,28 @@ definitions: {
         minOccurs: 0
         maxOccurs: 2
     }
+    OUTFLAG: {
+        type: int
+        default: 0
+        description: output FLAG
+        allowed: {
+            value: 0
+            description: non output
+        }
+        allowed: {
+            value: 1
+            description: output FITS
+        }
+        minOccurs: 0
+        maxOccurs: 1
+    }
+    OUTDIR: {
+        type: string
+        default: ./
+        description: output DIR
+        minOccurs: 0
+        maxOccurs: 1
+    }
     CCDPOS: {
         type: int
         default: 0

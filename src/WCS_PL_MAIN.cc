@@ -236,7 +236,7 @@ void F_WCSA_PLMAIN_MEMORYDELETE(CL_WCSA_ASP* WCSA_ASP){
 
 }
 void    F_WCSA_MAKEAPROP(lsst::pex::policy::Policy::Ptr &APROPPolicy, CL_APROP *APROP){
-    string INSTR,CMODE,OAMODE,SNAME,CNAME,PNAME,DNAME;
+    string INSTR,CMODE,OAMODE,SNAME,CNAME,PNAME,DNAME,OUTDIR;
 
     // Validate policy with dictionary
     lsst::pex::policy::DefaultPolicyFile const defaultsFile("solvetansip", "WCS_MAKEAPROP_Dictionary.paf",
@@ -268,6 +268,9 @@ void    F_WCSA_MAKEAPROP(lsst::pex::policy::Policy::Ptr &APROPPolicy, CL_APROP *
     APROP->BASISPOS[1] =APROPPolicy->getDouble("BASISPOSY");
     APROP->BASISPOS[2] =APROPPolicy->getDouble("BASISPOST");
     APROP->STDOUT      =APROPPolicy->getInt("STDOUT");
+    APROP->OUTFLAG     =APROPPolicy->getInt("OUTFLAG");
+    APROP->OUTDIR      =APROPPolicy->getString("OUTDIR");
+//    strncpy(APROP->OUTDIR,OUTDIR.c_str(), CL_APROP::STRING_LENGTH);
     APROP->CHECKPARAM  = 0;
     APROP->ALLREFNUM   = 0;
     APROP->ALLFITNUM   = 0;

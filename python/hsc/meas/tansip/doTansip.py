@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Ellipse
 from math import atan2
 from math import hypot
+import pyfits
+from pyfits import Column
 
 import lsst.afw.cameraGeom.utils         as cameraGeomUtils
 import hsc.meas.tansip.WCS_PL_MAINLib    as hscTansip
@@ -53,7 +55,15 @@ def getresultWcs(matchListAllCcd, metadata, policy=None, camera=None, rerun=None
             print "empty list for ccd %i: %s" % (i, m)
             matchListAllCcd[i] = []
             
+
+    OUTFLAG=policy.get('OUTFLAG')
+    OUTDIR =policy.get('OUTDIR')
     WCSA_ASP = hscTansip.F_WCSA_TANSIP_V(matchListAllCcd, metadata, policy, camera)
+
+    if OUTFLAG==1:
+        print "OUTPUT FITS BINARY TABLE in "+OUTDIR
+        F_OUTPUT_BTBL(WCSA_ASP,OUTDIR)
+
     print '... TAN-SIP fitting done.'
     return WCSA_ASP
 
@@ -111,6 +121,150 @@ def getwcsList(WCSA_ASP):
 def memorydelete(WCSA_ASP):
     hscTansip.F_WCSA_PLMAIN_MEMORYDELETE(WCSA_ASP)
 
+#-----------------------------------------------------------------
+#Output bianry table : WCSA_ASP
+#-----------------------------------------------------------------
+def F_OUTPUT_BTBL(WCSA_ASP,OUTDIR):
+    if os.path.exists(OUTDIR) == False:
+	os.makedirs(OUTDIR)    
+
+#CCD-----
+    CCDNAME=OUTDIR+"/solvetansip_CCDresult.fits"
+    CCDID  =hscTansip.F_WCSA_PLGET_CCD_ID(WCSA_ASP)
+    CCDRNUM=hscTansip.F_WCSA_PLGET_CCD_NUMREF(WCSA_ASP)
+    CCDFNUM=hscTansip.F_WCSA_PLGET_CCD_NUMFIT(WCSA_ASP)
+    CCDPOS =hscTansip.F_WCSA_PLGET_CCD_GPOS(WCSA_ASP)
+    CCDCR  =hscTansip.F_WCSA_PLGET_CCD_CR(WCSA_ASP)
+    CCDCD  =hscTansip.F_WCSA_PLGET_CCD_CD(WCSA_ASP)
+    CCDSORD=hscTansip.F_WCSA_PLGET_CCD_ORDERSIP(WCSA_ASP)
+    CCDPORD=hscTansip.F_WCSA_PLGET_CCD_ORDERPSIP(WCSA_ASP)
+    CCDSERR=hscTansip.F_WCSA_PLGET_CCD_ERRSIP(WCSA_ASP)
+    CCDPERR=hscTansip.F_WCSA_PLGET_CCD_ERRPSIP(WCSA_ASP)
+    CCDSCOA=hscTansip.F_WCSA_PLGET_CCD_COEFSIPA(WCSA_ASP)
+    CCDSCOB=hscTansip.F_WCSA_PLGET_CCD_COEFSIPB(WCSA_ASP)
+    CCDPCOA=hscTansip.F_WCSA_PLGET_CCD_COEFPSIPA(WCSA_ASP)
+    CCDPCOB=hscTansip.F_WCSA_PLGET_CCD_COEFPSIPB(WCSA_ASP)
+
+    print CCDPOS[0][0],CCDPOS[1][0],CCDPOS[2][0]
+    print CCDPOS[0][49],CCDPOS[1][49],CCDPOS[2][49]
+    print CCDPOS[0][104],CCDPOS[1][104],CCDPOS[2][104]
+    print CCDCD[0][49],CCDCD[1][49],CCDCD[2][49],CCDCD[3][49]
+    print CCDCD[0][104],CCDCD[1][104],CCDCD[2][104],CCDCD[3][104]
+    print CCDSCOA[0][0],CCDSCOA[0][49],CCDSCOA[0][104];
+    print CCDSCOA[1][0],CCDSCOA[1][49],CCDSCOA[1][104];
+    print CCDSCOA[2][0],CCDSCOA[2][49],CCDSCOA[2][104];
+    print CCDSCOB[0][0],CCDSCOB[0][49],CCDSCOB[0][104];
+    print CCDSCOB[1][0],CCDSCOB[1][49],CCDSCOB[1][104];
+    print CCDSCOB[2][0],CCDSCOB[2][49],CCDSCOB[2][104];
+    print CCDPCOA[0][0],CCDPCOA[0][49],CCDPCOA[0][104];
+    print CCDPCOA[1][0],CCDPCOA[1][49],CCDPCOA[1][104];
+    print CCDPCOA[2][0],CCDPCOA[2][49],CCDPCOA[2][104];
+    print CCDPCOB[0][0],CCDPCOB[0][49],CCDPCOB[0][104];
+    print CCDPCOB[1][0],CCDPCOB[1][49],CCDPCOB[1][104];
+    print CCDPCOB[2][0],CCDPCOB[2][49],CCDPCOB[2][104];
+    print CCDNAME
+
+    CCDCOL=[]
+    CCDCOL.append(Column(name="CCDID"         ,format="J",array=CCDID))
+    CCDCOL.append(Column(name="NUM_REF"       ,format="J",array=CCDRNUM))
+    CCDCOL.append(Column(name="NUM_FIT"       ,format="J",array=CCDFNUM))
+    CCDCOL.append(Column(name="GPOS_X"        ,format="D",unit="pixel",array=CCDPOS[0]))
+    CCDCOL.append(Column(name="GPOS_Y"        ,format="D",unit="pixel",array=CCDPOS[1]))
+    CCDCOL.append(Column(name="GPOS_T"        ,format="D",unit="radian",array=CCDPOS[2]))
+    CCDCOL.append(Column(name="CRPIX_X"       ,format="D",unit="pixel",array=CCDCR[0]))
+    CCDCOL.append(Column(name="CRPIX_Y"       ,format="D",unit="pixel",array=CCDCR[1]))
+    CCDCOL.append(Column(name="CRVAL_RA"      ,format="D",unit="degree",array=CCDCR[2]))
+    CCDCOL.append(Column(name="CRVAL_DEC"     ,format="D",unit="degree",array=CCDCR[3]))
+    CCDCOL.append(Column(name="CD1_1"         ,format="D",unit="pixel/degree",array=CCDCD[0]))
+    CCDCOL.append(Column(name="CD1_2"         ,format="D",unit="pixel/degree",array=CCDCD[1]))
+    CCDCOL.append(Column(name="CD2_1"         ,format="D",unit="pixel/degree",array=CCDCD[2]))
+    CCDCOL.append(Column(name="CD2_2"         ,format="D",unit="pixel/degree",array=CCDCD[3]))
+    CCDCOL.append(Column(name="ERR_SIP_X_AVE" ,format="D",unit="pixel",array=CCDSERR[0]))
+    CCDCOL.append(Column(name="ERR_SIP_X_RMS" ,format="D",unit="pixel",array=CCDSERR[1]))
+    CCDCOL.append(Column(name="ERR_SIP_X_MAX" ,format="D",unit="pixel",array=CCDSERR[2]))
+    CCDCOL.append(Column(name="ERR_SIP_Y_AVE" ,format="D",unit="pixel",array=CCDSERR[3]))
+    CCDCOL.append(Column(name="ERR_SIP_Y_RMS" ,format="D",unit="pixel",array=CCDSERR[4]))
+    CCDCOL.append(Column(name="ERR_SIP_Y_MAX" ,format="D",unit="pixel",array=CCDSERR[5]))
+    CCDCOL.append(Column(name="ERR_PSIP_X_AVE",format="D",unit="pixel",array=CCDPERR[0]))
+    CCDCOL.append(Column(name="ERR_PSIP_X_RMS",format="D",unit="pixel",array=CCDPERR[1]))
+    CCDCOL.append(Column(name="ERR_PSIP_X_MAX",format="D",unit="pixel",array=CCDPERR[2]))
+    CCDCOL.append(Column(name="ERR_PSIP_Y_AVE",format="D",unit="pixel",array=CCDPERR[3]))
+    CCDCOL.append(Column(name="ERR_PSIP_Y_RMS",format="D",unit="pixel",array=CCDPERR[4]))
+    CCDCOL.append(Column(name="ERR_PSIP_Y_MAX",format="D",unit="pixel",array=CCDPERR[5]))
+    SORDER=int(CCDSORD[-1])
+    PORDER=int(CCDPORD[-1])
+    SIPNUM=int(0.5*(SORDER+1)*(SORDER+2)+0.5)
+    PSIPNUM=int(0.5*(PORDER+1)*(PORDER+2)+0.5)
+    CCDCOL.append(Column(name="ORDER_SIP_A",format="J",array=CCDSORD))
+    for ORDER in range(SIPNUM):
+        CNAME="SIP_A_"+str(ORDER)
+        CCDCOL.append(Column(name=CNAME,format="D",array=CCDSCOA[ORDER]))
+    CCDCOL.append(Column(name="ORDER_SIP_B",format="J",array=CCDSORD))
+    for ORDER in range(SIPNUM):
+        CNAME="SIP_B_"+str(ORDER)
+        CCDCOL.append(Column(name=CNAME,format="D",array=CCDSCOB[ORDER]))
+    CCDCOL.append(Column(name="ORDER_PSIP_A",format="J",array=CCDPORD))
+    for ORDER in range(PSIPNUM):
+        CNAME="PSIP_A_"+str(ORDER)
+        CCDCOL.append(Column(name=CNAME,format="D",array=CCDPCOA[ORDER]))
+    CCDCOL.append(Column(name="ORDER_PSIP_B",format="J",array=CCDSORD))
+    for ORDER in range(PSIPNUM):
+        CNAME="PSIP_B_"+str(ORDER)
+        CCDCOL.append(Column(name=CNAME,format="D",array=CCDPCOB[ORDER]))
+
+
+    CCDhdu = pyfits.new_table(CCDCOL)
+    CCDhdu.writeto(CCDNAME,clobber=True)
+#REF-----
+
+    REFNAME =OUTDIR+"/solvetansip_REFresult.fits"
+    REFID   =hscTansip.F_WCSA_PLGET_REF_ID(WCSA_ASP)
+    REFCID  =hscTansip.F_WCSA_PLGET_REF_CID(WCSA_ASP)
+    REFFLAG =hscTansip.F_WCSA_PLGET_REF_FLAG(WCSA_ASP);
+    REFPOSL =hscTansip.F_WCSA_PLGET_REF_POSLOCAL(WCSA_ASP);
+    REFPOSG =hscTansip.F_WCSA_PLGET_REF_POSGLOBAL(WCSA_ASP);
+    REFPOSR =hscTansip.F_WCSA_PLGET_REF_POSRADEC(WCSA_ASP);
+    REFPOSLC=hscTansip.F_WCSA_PLGET_REF_POSLCRPIX(WCSA_ASP);
+    REFPOSGC=hscTansip.F_WCSA_PLGET_REF_POSGCRPIX(WCSA_ASP);
+    REFDIFFS=hscTansip.F_WCSA_PLGET_REF_DIFFSIP(WCSA_ASP);
+    REFDIFFP=hscTansip.F_WCSA_PLGET_REF_DIFFPSIP(WCSA_ASP);
+    REFDISTS=hscTansip.F_WCSA_PLGET_REF_CAMERADISTSIP(WCSA_ASP);
+    REFDISTP=hscTansip.F_WCSA_PLGET_REF_CAMERADISTPSIP(WCSA_ASP);
+
+    REFCOL=[]
+    REFCOL.append(Column(name="ID"                    ,format="K",array=REFID))
+    REFCOL.append(Column(name="CHIPID"                ,format="J",array=REFCID))
+    REFCOL.append(Column(name="FLAG"                  ,format="J",array=REFFLAG))
+    REFCOL.append(Column(name="POSITION_LOCAL_X"      ,format="D",unit="pixel" ,array=REFPOSL[0]))
+    REFCOL.append(Column(name="POSITION_LOCAL_Y"      ,format="D",unit="pixel" ,array=REFPOSL[1]))
+    REFCOL.append(Column(name="POSITION_LOCALCRPIX_X" ,format="D",unit="pixel" ,array=REFPOSLC[0]))
+    REFCOL.append(Column(name="POSITION_LOCALCRPIX_Y" ,format="D",unit="pixel" ,array=REFPOSLC[1]))
+    REFCOL.append(Column(name="POSITION_GLOABL_X"     ,format="D",unit="pixel" ,array=REFPOSG[0]))
+    REFCOL.append(Column(name="POSITION_GLOABL_Y"     ,format="D",unit="pixel" ,array=REFPOSG[1]))
+    REFCOL.append(Column(name="POSITION_GLOABLCRPIX_X",format="D",unit="pixel" ,array=REFPOSGC[0]))
+    REFCOL.append(Column(name="POSITION_GLOABLCRPIX_Y",format="D",unit="pixel" ,array=REFPOSGC[1]))
+    REFCOL.append(Column(name="POSITION_RA"           ,format="D",unit="degree",array=REFPOSR[0]))
+    REFCOL.append(Column(name="POSITION_DEC"          ,format="D",unit="degree",array=REFPOSR[1]))
+    REFCOL.append(Column(name="POSITION_DIFFSIP_X"    ,format="D",unit="pixel" ,array=REFDIFFS[0]))
+    REFCOL.append(Column(name="POSITION_DIFFSIP_Y"    ,format="D",unit="pixel" ,array=REFDIFFS[1]))
+    REFCOL.append(Column(name="POSITION_DIFFPSIP_X"   ,format="D",unit="pixel" ,array=REFDIFFP[0]))
+    REFCOL.append(Column(name="POSITION_DIFFPSIP_Y"   ,format="D",unit="pixel" ,array=REFDIFFP[1]))
+    REFCOL.append(Column(name="DIST_SIPCONVERGENCE"   ,format="D",array=REFDISTS[0]))
+    REFCOL.append(Column(name="DIST_SIPROTATION"      ,format="D",array=REFDISTS[1]))
+    REFCOL.append(Column(name="DIST_SIPSHEAR1"        ,format="D",array=REFDISTS[2]))
+    REFCOL.append(Column(name="DIST_SIPSHEAR2"        ,format="D",array=REFDISTS[3]))
+    REFCOL.append(Column(name="DIST_SIPMAGNIFICATION" ,format="D",array=REFDISTS[4]))
+    REFCOL.append(Column(name="DIST_SIPJACOBIAN"      ,format="D",array=REFDISTS[5]))
+    REFCOL.append(Column(name="DIST_PSIPCONVERGENCE"  ,format="D",array=REFDISTP[0]))
+    REFCOL.append(Column(name="DIST_PSIPROTATION"     ,format="D",array=REFDISTP[1]))
+    REFCOL.append(Column(name="DIST_PSIPSHEAR1"       ,format="D",array=REFDISTP[2]))
+    REFCOL.append(Column(name="DIST_PSIPSHEAR2"       ,format="D",array=REFDISTP[3]))
+    REFCOL.append(Column(name="DIST_PSIPMAGNIFICATION",format="D",array=REFDISTP[4]))
+    REFCOL.append(Column(name="DIST_PSIPJACOBIAN"     ,format="D",array=REFDISTP[5]))
+    REFhdu = pyfits.new_table(REFCOL)
+    REFhdu.writeto(REFNAME,clobber=True)
+
+    print REFNAME
 #-----------------------------------------------------------------
 #Output Functions : WCSA_ASP
 #-----------------------------------------------------------------

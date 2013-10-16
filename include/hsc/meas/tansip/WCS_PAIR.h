@@ -36,6 +36,8 @@ public:
     double X_CENTER_IM_PIXEL[2];
     double X_CENTER_IM_WORLD[2];
     double X_CENTER_RADEC[2];
+    double DIFF_SIP[2];
+    double DIFF_PSIP[2];
     double CAMERA_CONVROT[2];    //OUTPUT INFO//Convergence by camera
     double CAMERA_SHEAR[2];      //OUTPUT INFO//Shear by camera
     double CAMERA_MAGNIFICATION; //OUTPUT INFO//Magnification by camera

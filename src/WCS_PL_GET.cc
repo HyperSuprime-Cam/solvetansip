@@ -86,6 +86,361 @@ std::vector< double > F_WCSA_PLGET_PSIPRMSY(CL_WCSA_ASP* WCSA_ASP){
     return SIPRMS;
 }
 //-----------------------------------------------------------------
+//Getting Functions : CCD Info
+//-----------------------------------------------------------------
+std::vector< int > F_WCSA_PLGET_CCD_ID(CL_WCSA_ASP* WCSA_ASP){
+    int ID;
+    std::vector< int > CID;
+    for(ID=0;ID<WCSA_ASP->APROP->CCDNUM+1;ID++)
+    CID.push_back(WCSA_ASP->GSIP->CSIP[ID].ID);
+
+    return CID;
+}
+std::vector< int > F_WCSA_PLGET_CCD_NUMREF(CL_WCSA_ASP* WCSA_ASP){
+    int ID;
+    std::vector< int > RNUM;
+    for(ID=0;ID<WCSA_ASP->APROP->CCDNUM+1;ID++)
+    RNUM.push_back(WCSA_ASP->GSIP->CSIP[ID].REFNUM);
+
+    return RNUM;
+}
+std::vector< int > F_WCSA_PLGET_CCD_NUMFIT(CL_WCSA_ASP* WCSA_ASP){
+    int ID;
+    std::vector< int > FNUM;
+    for(ID=0;ID<WCSA_ASP->APROP->CCDNUM+1;ID++)
+    FNUM.push_back(WCSA_ASP->GSIP->CSIP[ID].FITNUM);
+
+    return FNUM;
+}
+std::vector< std::vector< double > > F_WCSA_PLGET_CCD_GPOS(CL_WCSA_ASP* WCSA_ASP){
+    int ID;
+    std::vector< double > POSX,POSY,POST;
+    std::vector< std::vector< double > > CCDPOS;
+    for(ID=0;ID<WCSA_ASP->APROP->CCDNUM+1;ID++){
+	POSX.push_back(WCSA_ASP->GSIP->CSIP[ID].GPOS[0]);
+	POSY.push_back(WCSA_ASP->GSIP->CSIP[ID].GPOS[1]);
+	POST.push_back(WCSA_ASP->GSIP->CSIP[ID].GPOS[2]);
+    }
+    CCDPOS.push_back(POSX);
+    CCDPOS.push_back(POSY);
+    CCDPOS.push_back(POST);
+
+    return CCDPOS;
+}
+std::vector< std::vector< double > > F_WCSA_PLGET_CCD_CR(CL_WCSA_ASP* WCSA_ASP){
+    int ID;
+    std::vector< double > CRP1,CRP2,CRV1,CRV2;
+    std::vector< std::vector< double > > CCDCR;
+    for(ID=0;ID<WCSA_ASP->APROP->CCDNUM+1;ID++){
+	CRP1.push_back(WCSA_ASP->GSIP->CSIP[ID].CRPIX[0]);
+	CRP2.push_back(WCSA_ASP->GSIP->CSIP[ID].CRPIX[1]);
+	CRV1.push_back(WCSA_ASP->GSIP->CSIP[ID].CRVAL[0]);
+	CRV2.push_back(WCSA_ASP->GSIP->CSIP[ID].CRVAL[1]);
+    }
+	CCDCR.push_back(CRP1);
+	CCDCR.push_back(CRP2);
+	CCDCR.push_back(CRV1);
+	CCDCR.push_back(CRV2);
+
+    return CCDCR;
+}
+std::vector< std::vector< double > > F_WCSA_PLGET_CCD_CD(CL_WCSA_ASP* WCSA_ASP){
+    int ID;
+    std::vector< double > CD11,CD12,CD21,CD22;
+    std::vector< std::vector< double > > CCDCD;
+    for(ID=0;ID<WCSA_ASP->APROP->CCDNUM+1;ID++){
+	CD11.push_back(WCSA_ASP->GSIP->CSIP[ID].CD[0][0]);
+	CD12.push_back(WCSA_ASP->GSIP->CSIP[ID].CD[0][1]);
+	CD21.push_back(WCSA_ASP->GSIP->CSIP[ID].CD[1][0]);
+	CD22.push_back(WCSA_ASP->GSIP->CSIP[ID].CD[1][1]);
+    }
+	CCDCD.push_back(CD11);
+	CCDCD.push_back(CD12);
+	CCDCD.push_back(CD21);
+	CCDCD.push_back(CD22);
+
+    return CCDCD;
+}
+std::vector< std::vector< double > > F_WCSA_PLGET_CCD_ERRSIP(CL_WCSA_ASP* WCSA_ASP){
+    int ID;
+    std::vector< double > ERRXA,ERRXB,ERRXC,ERRYA,ERRYB,ERRYC;
+    std::vector< std::vector< double > >  CCDERR;
+    for(ID=0;ID<WCSA_ASP->APROP->CCDNUM+1;ID++){
+	ERRXA.push_back(WCSA_ASP->GSIP->CSIP[ID].SIP_AB_ERR[0][0]);
+	ERRXB.push_back(WCSA_ASP->GSIP->CSIP[ID].SIP_AB_ERR[0][1]);
+	ERRXC.push_back(WCSA_ASP->GSIP->CSIP[ID].SIP_AB_ERR[0][2]);
+	ERRYA.push_back(WCSA_ASP->GSIP->CSIP[ID].SIP_AB_ERR[1][0]);
+	ERRYB.push_back(WCSA_ASP->GSIP->CSIP[ID].SIP_AB_ERR[1][1]);
+	ERRYC.push_back(WCSA_ASP->GSIP->CSIP[ID].SIP_AB_ERR[1][2]);
+    }
+	CCDERR.push_back(ERRXA);
+	CCDERR.push_back(ERRXB);
+	CCDERR.push_back(ERRXC);
+	CCDERR.push_back(ERRYA);
+	CCDERR.push_back(ERRYB);
+	CCDERR.push_back(ERRYC);
+
+    return CCDERR;
+}
+std::vector< std::vector< double > > F_WCSA_PLGET_CCD_ERRPSIP(CL_WCSA_ASP* WCSA_ASP){
+    int ID;
+    std::vector< double > ERRXA,ERRXB,ERRXC,ERRYA,ERRYB,ERRYC;
+    std::vector< std::vector< double > >  CCDERR;
+    for(ID=0;ID<WCSA_ASP->APROP->CCDNUM+1;ID++){
+	ERRXA.push_back(WCSA_ASP->GSIP->CSIP[ID].SIP_ABP_ERR[0][0]);
+	ERRXB.push_back(WCSA_ASP->GSIP->CSIP[ID].SIP_ABP_ERR[0][1]);
+	ERRXC.push_back(WCSA_ASP->GSIP->CSIP[ID].SIP_ABP_ERR[0][2]);
+	ERRYA.push_back(WCSA_ASP->GSIP->CSIP[ID].SIP_ABP_ERR[1][0]);
+	ERRYB.push_back(WCSA_ASP->GSIP->CSIP[ID].SIP_ABP_ERR[1][1]);
+	ERRYC.push_back(WCSA_ASP->GSIP->CSIP[ID].SIP_ABP_ERR[1][2]);
+    }
+	CCDERR.push_back(ERRXA);
+	CCDERR.push_back(ERRXB);
+	CCDERR.push_back(ERRXC);
+	CCDERR.push_back(ERRYA);
+	CCDERR.push_back(ERRYB);
+	CCDERR.push_back(ERRYC);
+
+    return CCDERR;
+}
+std::vector< int > F_WCSA_PLGET_CCD_ORDERSIP(CL_WCSA_ASP* WCSA_ASP){
+    int ID;
+    std::vector< int > SORD;
+    for(ID=0;ID<WCSA_ASP->APROP->CCDNUM+1;ID++)
+    SORD.push_back(WCSA_ASP->GSIP->CSIP[ID].SIP_ORDER);
+
+    return SORD;
+}
+std::vector< int > F_WCSA_PLGET_CCD_ORDERPSIP(CL_WCSA_ASP* WCSA_ASP){
+    int ID;
+    std::vector< int > PORD;
+    for(ID=0;ID<WCSA_ASP->APROP->CCDNUM+1;ID++)
+    PORD.push_back(WCSA_ASP->GSIP->CSIP[ID].SIP_P_ORDER);
+
+    return PORD;
+}
+std::vector< std::vector< double > > F_WCSA_PLGET_CCD_COEFSIPA(CL_WCSA_ASP* WCSA_ASP){
+    int ID,ORDER,S_ORDER;
+    std::vector< double > COEF;
+    std::vector< std::vector< double > >  CCDCOEF;
+
+    S_ORDER=WCSA_ASP->GSIP->CSIP[WCSA_ASP->APROP->CCDNUM].SIP_ORDER;
+    for(ORDER=0;ORDER<(0.5*(S_ORDER+1)*(S_ORDER+2)+0.5);ORDER++){
+        for(ID=0;ID<WCSA_ASP->APROP->CCDNUM+1;ID++){
+	    COEF.push_back(WCSA_ASP->GSIP->CSIP[ID].SIP_AB[0][ORDER]);
+        }
+        CCDCOEF.push_back(COEF);
+        COEF.clear();
+    }
+    return CCDCOEF;
+}
+std::vector< std::vector< double > > F_WCSA_PLGET_CCD_COEFSIPB(CL_WCSA_ASP* WCSA_ASP){
+    int ID,ORDER,S_ORDER;
+    std::vector< double > COEF;
+    std::vector< std::vector< double > >  CCDCOEF;
+
+    S_ORDER=WCSA_ASP->GSIP->CSIP[WCSA_ASP->APROP->CCDNUM].SIP_ORDER;
+    for(ORDER=0;ORDER<(0.5*(S_ORDER+1)*(S_ORDER+2)+0.5);ORDER++){
+        for(ID=0;ID<WCSA_ASP->APROP->CCDNUM+1;ID++){
+	    COEF.push_back(WCSA_ASP->GSIP->CSIP[ID].SIP_AB[1][ORDER]);
+        }
+        CCDCOEF.push_back(COEF);
+        COEF.clear();
+    }
+    return CCDCOEF;
+}
+std::vector< std::vector< double > > F_WCSA_PLGET_CCD_COEFPSIPA(CL_WCSA_ASP* WCSA_ASP){
+    int ID,ORDER,S_ORDER;
+    std::vector< double > COEF;
+    std::vector< std::vector< double > >  CCDCOEF;
+
+    S_ORDER=WCSA_ASP->GSIP->CSIP[WCSA_ASP->APROP->CCDNUM].SIP_ORDER;
+    for(ORDER=0;ORDER<(0.5*(S_ORDER+1)*(S_ORDER+2)+0.5);ORDER++){
+        for(ID=0;ID<WCSA_ASP->APROP->CCDNUM+1;ID++){
+	    COEF.push_back(WCSA_ASP->GSIP->CSIP[ID].SIP_ABP[0][ORDER]);
+        }
+        CCDCOEF.push_back(COEF);
+        COEF.clear();
+    }
+    return CCDCOEF;
+}
+std::vector< std::vector< double > > F_WCSA_PLGET_CCD_COEFPSIPB(CL_WCSA_ASP* WCSA_ASP){
+    int ID,ORDER,S_ORDER;
+    std::vector< double > COEF;
+    std::vector< std::vector< double > >  CCDCOEF;
+
+    S_ORDER=WCSA_ASP->GSIP->CSIP[WCSA_ASP->APROP->CCDNUM].SIP_ORDER;
+    for(ORDER=0;ORDER<(0.5*(S_ORDER+1)*(S_ORDER+2)+0.5);ORDER++){
+        for(ID=0;ID<WCSA_ASP->APROP->CCDNUM+1;ID++){
+	    COEF.push_back(WCSA_ASP->GSIP->CSIP[ID].SIP_ABP[1][ORDER]);
+        }
+        CCDCOEF.push_back(COEF);
+        COEF.clear();
+    }
+    return CCDCOEF;
+}
+//-----------------------------------------------------------------
+//Getting Functions : REF Info
+//-----------------------------------------------------------------
+std::vector< long long int > F_WCSA_PLGET_REF_ID(CL_WCSA_ASP* WCSA_ASP){
+    long long int ID;
+    std::vector< long long int > RID;
+    for(ID=0;ID<WCSA_ASP->APROP->ALLREFNUM;ID++)
+    RID.push_back(WCSA_ASP->APAIR->PAIR[ID].ID);
+
+    return RID;
+}
+std::vector< int > F_WCSA_PLGET_REF_CID(CL_WCSA_ASP* WCSA_ASP){
+    int ID;
+    std::vector< int > CID;
+    for(ID=0;ID<WCSA_ASP->APROP->ALLREFNUM;ID++)
+    CID.push_back(WCSA_ASP->APAIR->PAIR[ID].CHIPID);
+
+    return CID;
+}
+std::vector< int > F_WCSA_PLGET_REF_FLAG(CL_WCSA_ASP* WCSA_ASP){
+    int ID;
+    std::vector< int > FLAG;
+    for(ID=0;ID<WCSA_ASP->APROP->ALLREFNUM;ID++)
+    FLAG.push_back(WCSA_ASP->APAIR->PAIR[ID].FLAG);
+
+    return FLAG;
+}
+std::vector< std::vector< double > > F_WCSA_PLGET_REF_POSLOCAL(CL_WCSA_ASP* WCSA_ASP){
+    int ID;
+    std::vector< double > X,Y;
+    std::vector< std::vector< double > > XY;
+    for(ID=0;ID<WCSA_ASP->APROP->ALLREFNUM;ID++){
+        X.push_back(WCSA_ASP->APAIR->PAIR[ID].X_LOCAL[0]);
+        Y.push_back(WCSA_ASP->APAIR->PAIR[ID].X_LOCAL[1]);
+    }
+    XY.push_back(X);
+    XY.push_back(Y);
+
+    return XY;
+}
+std::vector< std::vector< double > > F_WCSA_PLGET_REF_POSGLOBAL(CL_WCSA_ASP* WCSA_ASP){
+    int ID;
+    std::vector< double > X,Y;
+    std::vector< std::vector< double > > XY;
+    for(ID=0;ID<WCSA_ASP->APROP->ALLREFNUM;ID++){
+        X.push_back(WCSA_ASP->APAIR->PAIR[ID].X_GLOBAL[0]);
+        Y.push_back(WCSA_ASP->APAIR->PAIR[ID].X_GLOBAL[1]);
+    }
+    XY.push_back(X);
+    XY.push_back(Y);
+
+    return XY;
+}
+std::vector< std::vector< double > > F_WCSA_PLGET_REF_POSRADEC(CL_WCSA_ASP* WCSA_ASP){
+    int ID;
+    std::vector< double > X,Y;
+    std::vector< std::vector< double > > XY;
+    for(ID=0;ID<WCSA_ASP->APROP->ALLREFNUM;ID++){
+        X.push_back(WCSA_ASP->APAIR->PAIR[ID].X_RADEC[0]);
+        Y.push_back(WCSA_ASP->APAIR->PAIR[ID].X_RADEC[1]);
+    }
+    XY.push_back(X);
+    XY.push_back(Y);
+
+    return XY;
+}
+std::vector< std::vector< double > > F_WCSA_PLGET_REF_POSLCRPIX(CL_WCSA_ASP* WCSA_ASP){
+    int ID;
+    std::vector< double > X,Y;
+    std::vector< std::vector< double > > XY;
+    for(ID=0;ID<WCSA_ASP->APROP->ALLREFNUM;ID++){
+        X.push_back(WCSA_ASP->APAIR->PAIR[ID].X_LOCALCRPIX[0]);
+        Y.push_back(WCSA_ASP->APAIR->PAIR[ID].X_LOCALCRPIX[1]);
+    }
+    XY.push_back(X);
+    XY.push_back(Y);
+
+    return XY;
+}
+std::vector< std::vector< double > > F_WCSA_PLGET_REF_POSGCRPIX(CL_WCSA_ASP* WCSA_ASP){
+    int ID;
+    std::vector< double > X,Y;
+    std::vector< std::vector< double > > XY;
+    for(ID=0;ID<WCSA_ASP->APROP->ALLREFNUM;ID++){
+        X.push_back(WCSA_ASP->APAIR->PAIR[ID].X_GLOBALCRPIX[0]);
+        Y.push_back(WCSA_ASP->APAIR->PAIR[ID].X_GLOBALCRPIX[1]);
+    }
+    XY.push_back(X);
+    XY.push_back(Y);
+
+    return XY;
+}
+std::vector< std::vector< double > > F_WCSA_PLGET_REF_DIFFSIP(CL_WCSA_ASP* WCSA_ASP){
+    int ID;
+    std::vector< double > X,Y;
+    std::vector< std::vector< double > > XY;
+    for(ID=0;ID<WCSA_ASP->APROP->ALLREFNUM;ID++){
+        X.push_back(WCSA_ASP->APAIR->PAIR[ID].DIFF_SIP[0]);
+        Y.push_back(WCSA_ASP->APAIR->PAIR[ID].DIFF_SIP[1]);
+    }
+    XY.push_back(X);
+    XY.push_back(Y);
+
+    return XY;
+}
+std::vector< std::vector< double > > F_WCSA_PLGET_REF_DIFFPSIP(CL_WCSA_ASP* WCSA_ASP){
+    int ID;
+    std::vector< double > X,Y;
+    std::vector< std::vector< double > > XY;
+    for(ID=0;ID<WCSA_ASP->APROP->ALLREFNUM;ID++){
+        X.push_back(WCSA_ASP->APAIR->PAIR[ID].DIFF_PSIP[0]);
+        Y.push_back(WCSA_ASP->APAIR->PAIR[ID].DIFF_PSIP[1]);
+    }
+    XY.push_back(X);
+    XY.push_back(Y);
+
+    return XY;
+}
+std::vector< std::vector< double > > F_WCSA_PLGET_REF_CAMERADISTSIP(CL_WCSA_ASP* WCSA_ASP){
+    int ID;
+    std::vector< double > CONV,ROT,SHR1,SHR2,MAG,JAC;
+    std::vector< std::vector< double > > DIST;
+    for(ID=0;ID<WCSA_ASP->APROP->ALLREFNUM;ID++){
+        CONV.push_back(WCSA_ASP->APAIR->PAIR[ID].CAMERA_CONVROT[0]);
+         ROT.push_back(WCSA_ASP->APAIR->PAIR[ID].CAMERA_CONVROT[1]);
+        SHR1.push_back(WCSA_ASP->APAIR->PAIR[ID].CAMERA_SHEAR[0]);
+        SHR2.push_back(WCSA_ASP->APAIR->PAIR[ID].CAMERA_SHEAR[1]);
+         MAG.push_back(WCSA_ASP->APAIR->PAIR[ID].CAMERA_MAGNIFICATION);
+         JAC.push_back(WCSA_ASP->APAIR->PAIR[ID].CAMERA_JACOBIAN);
+    }
+    DIST.push_back(CONV);
+    DIST.push_back(ROT);
+    DIST.push_back(SHR1);
+    DIST.push_back(SHR2);
+    DIST.push_back(MAG);
+    DIST.push_back(JAC);
+
+    return DIST;
+}
+std::vector< std::vector< double > > F_WCSA_PLGET_REF_CAMERADISTPSIP(CL_WCSA_ASP* WCSA_ASP){
+    int ID;
+    std::vector< double > CONV,ROT,SHR1,SHR2,MAG,JAC;
+    std::vector< std::vector< double > > DIST;
+    for(ID=0;ID<WCSA_ASP->APROP->ALLREFNUM;ID++){
+        CONV.push_back(WCSA_ASP->APAIR->PAIR[ID].CAMERA_PCONVROT[0]);
+         ROT.push_back(WCSA_ASP->APAIR->PAIR[ID].CAMERA_PCONVROT[1]);
+        SHR1.push_back(WCSA_ASP->APAIR->PAIR[ID].CAMERA_PSHEAR[0]);
+        SHR2.push_back(WCSA_ASP->APAIR->PAIR[ID].CAMERA_PSHEAR[1]);
+         MAG.push_back(WCSA_ASP->APAIR->PAIR[ID].CAMERA_PMAGNIFICATION);
+         JAC.push_back(WCSA_ASP->APAIR->PAIR[ID].CAMERA_PJACOBIAN);
+    }
+    DIST.push_back(CONV);
+    DIST.push_back(ROT);
+    DIST.push_back(SHR1);
+    DIST.push_back(SHR2);
+    DIST.push_back(MAG);
+    DIST.push_back(JAC);
+
+    return DIST;
+}
+ 
+//-----------------------------------------------------------------
 //Getting Functions : CCD Regions
 //-----------------------------------------------------------------
 std::vector< double > F_WCSA_PLGET_CORNAR(CL_WCSA_ASP* WCSA_ASP,int CID){

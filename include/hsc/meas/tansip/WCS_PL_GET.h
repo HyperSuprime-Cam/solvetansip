@@ -24,6 +24,38 @@ std::vector< double > F_WCSA_PLGET_SIPRMSY(CL_WCSA_ASP* WCSA_ASP);
 std::vector< double > F_WCSA_PLGET_PSIPRMSX(CL_WCSA_ASP* WCSA_ASP);
 std::vector< double > F_WCSA_PLGET_PSIPRMSY(CL_WCSA_ASP* WCSA_ASP);
 //-----------------------------------------------------------------
+//Getting Functions : CCD Info
+//-----------------------------------------------------------------
+std::vector< int > F_WCSA_PLGET_CCD_ID(CL_WCSA_ASP* WCSA_ASP);
+std::vector< int > F_WCSA_PLGET_CCD_NUMREF(CL_WCSA_ASP* WCSA_ASP);
+std::vector< int > F_WCSA_PLGET_CCD_NUMFIT(CL_WCSA_ASP* WCSA_ASP);
+std::vector< int > F_WCSA_PLGET_CCD_ORDERSIP(CL_WCSA_ASP* WCSA_ASP);
+std::vector< int > F_WCSA_PLGET_CCD_ORDERPSIP(CL_WCSA_ASP* WCSA_ASP);
+std::vector< std::vector< double > > F_WCSA_PLGET_CCD_GPOS(CL_WCSA_ASP* WCSA_ASP);
+std::vector< std::vector< double > > F_WCSA_PLGET_CCD_CR(CL_WCSA_ASP* WCSA_ASP);
+std::vector< std::vector< double > > F_WCSA_PLGET_CCD_CD(CL_WCSA_ASP* WCSA_ASP);
+std::vector< std::vector< double > > F_WCSA_PLGET_CCD_ERRSIP(CL_WCSA_ASP* WCSA_ASP);
+std::vector< std::vector< double > > F_WCSA_PLGET_CCD_ERRPSIP(CL_WCSA_ASP* WCSA_ASP);
+std::vector< std::vector< double > > F_WCSA_PLGET_CCD_COEFSIPA(CL_WCSA_ASP* WCSA_ASP);
+std::vector< std::vector< double > > F_WCSA_PLGET_CCD_COEFSIPB(CL_WCSA_ASP* WCSA_ASP);
+std::vector< std::vector< double > > F_WCSA_PLGET_CCD_COEFPSIPA(CL_WCSA_ASP* WCSA_ASP);
+std::vector< std::vector< double > > F_WCSA_PLGET_CCD_COEFPSIPB(CL_WCSA_ASP* WCSA_ASP);
+//-----------------------------------------------------------------
+//Getting Functions : REF Info
+//-----------------------------------------------------------------
+std::vector< long long int > F_WCSA_PLGET_REF_ID(CL_WCSA_ASP* WCSA_ASP);
+std::vector< int > F_WCSA_PLGET_REF_CID(CL_WCSA_ASP* WCSA_ASP);
+std::vector< int > F_WCSA_PLGET_REF_FLAG(CL_WCSA_ASP* WCSA_ASP);
+std::vector< std::vector< double > > F_WCSA_PLGET_REF_POSLOCAL(CL_WCSA_ASP* WCSA_ASP);
+std::vector< std::vector< double > > F_WCSA_PLGET_REF_POSGLOBAL(CL_WCSA_ASP* WCSA_ASP);
+std::vector< std::vector< double > > F_WCSA_PLGET_REF_POSRADEC(CL_WCSA_ASP* WCSA_ASP);
+std::vector< std::vector< double > > F_WCSA_PLGET_REF_POSLCRPIX(CL_WCSA_ASP* WCSA_ASP);
+std::vector< std::vector< double > > F_WCSA_PLGET_REF_POSGCRPIX(CL_WCSA_ASP* WCSA_ASP);
+std::vector< std::vector< double > > F_WCSA_PLGET_REF_DIFFSIP(CL_WCSA_ASP* WCSA_ASP);
+std::vector< std::vector< double > > F_WCSA_PLGET_REF_DIFFPSIP(CL_WCSA_ASP* WCSA_ASP);
+std::vector< std::vector< double > > F_WCSA_PLGET_REF_CAMERADISTSIP(CL_WCSA_ASP* WCSA_ASP);
+std::vector< std::vector< double > > F_WCSA_PLGET_REF_CAMERADISTPSIP(CL_WCSA_ASP* WCSA_ASP);
+//-----------------------------------------------------------------
 //Getting Functions : CCD Regions
 //-----------------------------------------------------------------
 std::vector< double > F_WCSA_PLGET_CORNAR(CL_WCSA_ASP* WCSA_ASP,int CID);

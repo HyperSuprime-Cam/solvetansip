@@ -33,6 +33,8 @@ public:
     double CRVAL[2];//for Manual MODE
     double BASISPOS[3];
     int STDOUT;
+    int OUTFLAG;
+    std::string OUTDIR;
     int CHECKPARAM;
 
     void F_WCSA_APROP_NEWAPROP();
