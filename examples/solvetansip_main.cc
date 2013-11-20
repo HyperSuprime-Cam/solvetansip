@@ -124,7 +124,7 @@ void    F_WCSA_MAKEGSIP(CL_APROP *APROP, CL_GSIP *GSIP){
     GSIP->F_WCSA_GSIP_SET0();
 /*
     for(camGeom::Camera::const_iterator iter(camera->begin()); iter != camera->end(); ++iter) { 
-        camGeom::DetectorMosaic::Ptr detMosaic = boost::shared_dynamic_cast<camGeom::DetectorMosaic>(*iter);
+        camGeom::DetectorMosaic::Ptr detMosaic = boost::dynamic_pointer_cast<camGeom::DetectorMosaic>(*iter);
 
         for(CID=0;CID<APROP->CCDNUM;CID++){
             camGeom::Id detId = camGeom::Id(CID);//serial
