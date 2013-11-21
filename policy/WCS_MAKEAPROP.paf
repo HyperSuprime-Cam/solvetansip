@@ -27,7 +27,7 @@ BASISPOSY:   -1888.0#Y BASIS OF GLOBAL POSITION
 BASISPOST: 0.0000000#T BASIS OF GLOBAL POSITION(rad)
 #BASISPOST: 1.5707963#T BASIS OF GLOBAL POSITION(rad)
 STDOUT   :         2#0:non output, 1:STEP output, 2:detail output
-OUTFLAG  :         0#OUTPUT FLAG for engineering test (1=OUTPUT fits file)
+OUTFLAG  :         1#OUTPUT FLAG for engineering test (1=OUTPUT fits file)
 OUTDIR   :./TEMP    #OUTPUT DIRECTORY for engineering test
 #CCDPOS   :         1#1:INPUT CCD POSITION from CCDPOS.paf(for testing program)
 #CCDPOSITIONS INITIAL

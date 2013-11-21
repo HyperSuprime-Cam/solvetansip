@@ -288,13 +288,14 @@ void    F_WCSA_MAKEGSIP(lsst::pex::policy::Policy::Ptr &APROPPolicy, lsst::afw::
     GSIP->F_WCSA_GSIP_SET0();
 
     for(camGeom::Camera::const_iterator iter(camera->begin()); iter != camera->end(); ++iter) { 
-        camGeom::DetectorMosaic::Ptr detMosaic = boost::dynamic_pointer_cast<camGeom::DetectorMosaic>(*iter);
+        camGeom::DetectorMosaic::Ptr detMosaic = boost::shared_dynamic_cast<camGeom::DetectorMosaic>(*iter);
 
         for(CID=0;CID<APROP->CCDNUM;CID++){
             camGeom::Id detId = camGeom::Id(CID);//serial
             camGeom::Detector::Ptr det = detMosaic->findDetector(detId);
             afwGeom::Point2D offsetXY = det->getCenter().getPixels(det->getPixelSize());
-	    camGeom::Orientation Ori = camGeom::Orientation(CID);
+//	    afwGeom::Angle Yaw = ccd.getOrientation().getYaw();
+//	    afwGeom::Angle yaw Ori = camGeom::Orientation(CID);
 //            double ccdTiltYaw = (det->getOrientation()).getYaw();
   //          int ccdTiltNQuarter = (det->getOrientation()).getNQuarter();
 
@@ -302,7 +303,7 @@ void    F_WCSA_MAKEGSIP(lsst::pex::policy::Policy::Ptr &APROPPolicy, lsst::afw::
 	    if(CID<99.5){
             GSIP->CSIP[CID].GPOS[0]=GSIP->CSIP[CID].GPOS_INIT[0]=offsetXY[0]-1024;
             GSIP->CSIP[CID].GPOS[1]=GSIP->CSIP[CID].GPOS_INIT[1]=offsetXY[1]-2088;
-            GSIP->CSIP[CID].GPOS[2]=GSIP->CSIP[CID].GPOS_INIT[2]=Ori.getYaw();//ccdTiltNQuarter * 90.0;//?
+//            GSIP->CSIP[CID].GPOS[2]=GSIP->CSIP[CID].GPOS_INIT[2]=Yaw*3.14159265/180.0;//ccdTiltNQuarter * 90.0;//?
 	    BASISPOS[3]+=1;
 	    BASISPOS[0]+=GSIP->CSIP[CID].GPOS[0];
 	    BASISPOS[1]+=GSIP->CSIP[CID].GPOS[1];
@@ -310,7 +311,7 @@ void    F_WCSA_MAKEGSIP(lsst::pex::policy::Policy::Ptr &APROPPolicy, lsst::afw::
 	    }else{
             GSIP->CSIP[CID].GPOS[0]=GSIP->CSIP[CID].GPOS_INIT[0]=offsetXY[0]-2088;
             GSIP->CSIP[CID].GPOS[1]=GSIP->CSIP[CID].GPOS_INIT[1]=offsetXY[1]-1024;
-            GSIP->CSIP[CID].GPOS[2]=GSIP->CSIP[CID].GPOS_INIT[2]=Ori.getYaw();//ccdTiltNQuarter * 90.0;//?
+//            GSIP->CSIP[CID].GPOS[2]=GSIP->CSIP[CID].GPOS_INIT[2]=Yaw*3.14159265/180.0;//ccdTiltNQuarter * 90.0;//?
 	    }
             GSIP->CSIP[CID].POSID[0]=detId.getIndex().first;
             GSIP->CSIP[CID].POSID[1]=detId.getIndex().second;
@@ -323,9 +324,9 @@ void    F_WCSA_MAKEGSIP(lsst::pex::policy::Policy::Ptr &APROPPolicy, lsst::afw::
     APROPPolicy->mergeDefaults(defaults);
 
 //BASIS POSITION
-    APROP->BASISPOS[0] =BASISPOS[0]/BASISPOS[3];
-    APROP->BASISPOS[1] =BASISPOS[1]/BASISPOS[3];
-    APROP->BASISPOS[2] =BASISPOS[2]/BASISPOS[3];
+//    APROP->BASISPOS[0] =BASISPOS[0]/BASISPOS[3];
+//    APROP->BASISPOS[1] =BASISPOS[1]/BASISPOS[3];
+//    APROP->BASISPOS[2] =BASISPOS[2]/BASISPOS[3];
 
     if(APROP->STDOUT==2)cout << "CCD BASIS X :" << APROP->BASISPOS[0] << endl;
     if(APROP->STDOUT==2)cout << "CCD BASIS Y :" << APROP->BASISPOS[1] << endl;
