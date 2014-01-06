@@ -10,6 +10,7 @@ import lsst.meas.astrom.astrom as measAst
 
 import hsc.meas.tansip as tansip
 import hsc.meas.tansip.doTansip as doTansip
+import hsc.pipe.base.camera as hscCamera
 
 from lsst.pex.config import Config
 from lsst.pipe.base import ArgumentParser, TaskRunner, CmdLineTask, Struct
@@ -65,30 +66,42 @@ class SolveTansipTask(CmdLineTask):
                                    m.second.getPsfFlux())
                 for m in matchList if (m.first and m.second)] # both ref and src to have valid values
 
-    def read(self, butler, dataRefList):
+    def read(self, butler, dataRefList, nCcd = None):
+        """
+        reading matchlists from files.
+        resultant matchlists are sorted order by ccd = 0,1,2,..., nCcd-1, where nCcd is given by user or by camera name.
+        None is inserted for ccds without matchlist available.
+        """
         self.log.info("Reading match lists")
+        self.log.info("match lists are sorted to be incremental and ascending by ccd")
 
-        matchLists = []
+        if nCcd:
+            self.log.info("number of matches to read is given by user: %d" % nCcd)
+        else:
+            nCcd = hscCamera.getNumCcds(butler.mapper.getCameraName())
+            self.log.info("number of matches to read is set by camera name to: %d" % nCcd)
+
+        matchLists = [ None for i in range(nCcd) ]
         if True: # FH: this routine is much faster than the below
             astrom = measAst.Astrometry(measAst.MeasAstromConfig())
             for dataRef in dataRefList:
+                ccd = dataRef.dataId['ccd']
                 try:
                     icSrces = dataRef.get('icSrc')
                     packedMatches = dataRef.get('icMatch')
                     ml = astrom.joinMatchListWithCatalog(packedMatches, icSrces)
+                    matchLists[ccd] = ml
                 except Exception, e:
                     self.log.warn("Unable to read matches for %s. None is inserted: %s" %
                                   (dataRef.dataId, str(e)))
-                    ml = None
-                matchLists.append(ml)
         else: # FH: this routine is very slow
             for dataRef in dataRefList:
+                ccd = dataRef.dataId['ccd']
                 try:
                     ml = measAst.readMatches(butler, dataRef.dataId)
+                    matchLists[ccd] = ml
                 except Exception as e:
                     self.log.warn("Unable to read matches for %s: %s" % (dataRef.dataId, e))
-                    ml = None
-                matchLists.append(ml)
 
         if False:
             ra = []
