@@ -12,7 +12,7 @@ import hsc.meas.tansip as tansip
 import hsc.meas.tansip.doTansip as doTansip
 import hsc.pipe.base.camera as hscCamera
 
-from lsst.pex.config import Config
+import lsst.pex.config as pexConfig
 from lsst.pipe.base import ArgumentParser, TaskRunner, CmdLineTask, Struct
 
 class SolveTansipTaskRunner(TaskRunner):
@@ -26,9 +26,15 @@ class SolveTansipTaskRunner(TaskRunner):
         task.run(**args)
 
 
+class SolveTansipConfig(pexConfig.Config):
+    doWriteNewFits = pexConfig.Field(
+        dtype=bool, default=False,
+        doc="Write new Fits file (revexp) with re-determined Wcs?"
+        )
+
 class SolveTansipTask(CmdLineTask):
     # XXX Implement proper configuration with pex_config
-    ConfigClass = Config
+    ConfigClass = SolveTansipConfig
     _DefaultName = "solvetansip"
     RunnerClass = SolveTansipTaskRunner
 
@@ -125,8 +131,21 @@ class SolveTansipTask(CmdLineTask):
 
 class SolveTansipQaTask(SolveTansipTask):
     # XXX Implement proper configuration with pex_config
-    ConfigClass = Config
+    ConfigClass = SolveTansipConfig
     _DefaultName = "solvetansip"
+
+    def writeResultantFitsFiles(self, butler, visit, wcsList):
+        """ writing fits with new wcs. assumes wcsList is aligned like ccd=0,1,2,..nCcd-1 """
+        dataId = {'visit': visit}
+        for ccdId, wcs in enumerate(wcsList):
+            dataId['ccd'] = ccdId
+            try:
+                exposure = butler.get('calexp', dataId)
+                exposure.setWcs(wcs)
+                self.log.info("writing a new fits file with new wcs for %s" % dataId)
+                butler.put(exposure, 'revexp', dataId)
+            except Exception, e:
+                self.log.warn("failed to create new fits: %s" % (e))
 
     def solve(self, camera, cameraGeom, matchLists, policy=None):
         if policy is not None:
@@ -156,5 +175,9 @@ class SolveTansipQaTask(SolveTansipTask):
         dataTansip.wcsList = list(doTansip.getwcsList(dataTansip.resSolveTansip))
         dataTansip.matchLists = matchLists
         dataTansip.matchListsForSolveTansip = matchListsForSolveTansip
+
+        if self.config.doWriteNewFits:
+            visit = dataRefList[0].dataId['visit']
+            self.writeResultantFitsFiles(butler, visit, dataTansip.wcsList)
 
         return dataTansip
