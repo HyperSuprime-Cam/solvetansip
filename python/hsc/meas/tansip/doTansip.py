@@ -16,8 +16,8 @@ def doTansip(matchListAllCcd, policy=None, camera=None, rerun=None):
     print '--- doTansip : get REF ---'
     REF=SLVTS_REF(matchListAllCcd)
     KV=SLVTS.VS([])
-    KV.append('NUMALLREF')
-    KV.append(str(len(REF[1])))
+    KV.append('NUM_REF')
+    KV.append(str(len(REF)))
     APRM.append(KV)
 
     print '--- doTansip : SOLVE TANSIP ---'
@@ -48,7 +48,7 @@ def SLVTS_APRM(policy):
         KVs.append(KV)
 
     KV=SLVTS.VS([])
-    KV.append('NUMCCD')
+    KV.append('NUM_CCD')
     if KVs[0][1] == 'SC':
         KV.append('10')
     elif KVs[0][1] == 'HSC':
