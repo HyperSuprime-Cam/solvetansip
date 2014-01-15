@@ -27,7 +27,6 @@ void CL_APRM::SET_INIT(){
 	FLAG_OUT      = 2;
 	DIR_OUT       = "./";
 
-
 }
 void CL_APRM::SET_INPUT(std::vector< std::vector< std::string > > APRM_Argvs){
 	int i;

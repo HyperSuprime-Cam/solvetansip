@@ -41,7 +41,7 @@ def getwcsList(WCS):
 def SLVTS_APRM(policy):
     KVs=SLVTS.VVS([])
 
-    for K in ['INSTR','MODE_CR','MODE_CCDPOS','PRECISION_POS','ORDER_ASIP','ORDER_PSIP','MODE_REJ','CRPIX1','CRPIX2','CRVAL1','CRVAL2','BASISPOSX','BASISPOSY','BASISPOST','FLAG_STD','FLAG_OUT','DIR_OUT']:
+    for K in ['INSTR','MODE_CR','MODE_CCDPOS','PRECISION_POS','ORDER_ASIP','ORDER_PSIP','MODE_REJ','CRPIX1','CRPIX2','CRVAL1','CRVAL2','FLAG_STD','FLAG_OUT','DIR_OUT']:
         KV=SLVTS.VS([])
         KV.append(K)
         KV.append(str(policy.get(K)))
@@ -65,15 +65,14 @@ def SLVTS_REF(matchListAllCcd):
     for matchList in matchListAllCcd:
         if (matchList):
             for m in matchList:
-                if (m.first and m.second):
-                    REF=SLVTS.VS([])
-                    REF.append((str)(m.second.getId()))
-                    REF.append((str)(CID))
-                    REF.append((str)(m.second.getX()))
-                    REF.append((str)(m.second.getY()))
-                    REF.append((str)(m.first.getRa().asDegrees()))
-                    REF.append((str)(m.first.getDec().asDegrees()))
-                    REFs.append(REF)
+                REF=SLVTS.VS([])
+                REF.append(str(m.getId()))
+                REF.append(str(CID))
+                REF.append(str(m.getX()))
+                REF.append(str(m.getY()))
+                REF.append(str(m.getRa()))
+                REF.append(str(m.getDec()))
+                REFs.append(REF)
         CID+=1
 
     OUTNAME="./REF.dat"
@@ -91,12 +90,12 @@ def SLVTS_CCD(NUMCCD,camera):
         CGeom=cameraGeomUtils.findCcd(camera,DID)
 	PS = CGeom.getPixelSize()
         CCD=SLVTS.VS([])
-        CCD.append((str)(DID.getSerial()))
-        CCD.append((str)(CGeom.getCenter().getPixels(PS)[0]))
-        CCD.append((str)(CGeom.getCenter().getPixels(PS)[1]))
-        CCD.append((str)(CGeom.getOrientation().getYaw().asRadians()))
-        CCD.append((str)(CGeom.getSize().getPixels(PS)[0]))
-        CCD.append((str)(CGeom.getSize().getPixels(PS)[1]))
+        CCD.append(str(DID.getSerial()))
+        CCD.append(str(CGeom.getCenter().getPixels(PS)[0]))
+        CCD.append(str(CGeom.getCenter().getPixels(PS)[1]))
+        CCD.append(str(CGeom.getOrientation().getYaw().asRadians()))
+        CCD.append(str(CGeom.getSize().getPixels(PS)[0]))
+        CCD.append(str(CGeom.getSize().getPixels(PS)[1]))
         CCDs.append(CCD)
 
     OUTNAME="./CCD.dat"

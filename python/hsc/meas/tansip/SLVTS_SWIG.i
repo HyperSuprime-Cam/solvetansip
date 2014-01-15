@@ -6,6 +6,10 @@
 #include<iomanip>
 #include "lsst/afw/cameraGeom.h" 
 #include "lsst/pex/logging.h"    
+#include "lsst/pex/policy/Policy.h"
+#include "lsst/afw/cameraGeom/Camera.h"
+#include "lsst/afw/image/TanWcs.h"
+#include"hsc/meas/tansip/SourceMatch.h"
 #include"hsc/meas/tansip/SLVTS.h"
 %}
 
