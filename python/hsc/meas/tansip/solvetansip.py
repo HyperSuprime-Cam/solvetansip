@@ -52,7 +52,7 @@ class SolveTansipTask(CmdLineTask):
         defaults = pexPolicy.Policy.createPolicy(os.path.join(os.environ["SOLVETANSIP_DIR"],
                                                               "policy", "WCS_MAKEAPROP.paf"))
         policy.mergeDefaults(defaults)
-        policy.set('NCCD', len(matchLists))
+        policy.set('NUM_CCD', len(matchLists))
 
         self.log.info("Processing with solvetansip")
         wcs = doTansip.doTansip(matchLists, policy=policy, camera=cameraGeom)
@@ -157,7 +157,7 @@ class SolveTansipQaTask(SolveTansipTask):
         defaults = pexPolicy.Policy.createPolicy(os.path.join(os.environ["SOLVETANSIP_DIR"],
                                                               "policy", "WCS_MAKEAPROP.paf"))
         policy.mergeDefaults(defaults)
-        policy.set('NCCD', len(matchLists)) # num of detectors should work since None is padded for CCDs in failure
+        policy.set('NUM_CCD', len(matchLists)) # num of detectors should work since None is padded for CCDs in failure
 
         self.log.info("Processing with solvetansip")
         resSolveTansip, metaTansip = doTansip.doTansipQa(matchLists, policy=policy, camera=cameraGeom)

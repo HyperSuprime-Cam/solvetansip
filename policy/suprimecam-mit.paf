@@ -1,8 +1,7 @@
-CRPIXMODE: AUTO #AUTO for AUTO MODE, MANUAL for MANUAL MODE
-CCDPMODE: 1       #1=DETERMINING CCD POSITION
-NCCD: 10         #NUMBER of CCD for analysis
-LSIPORDER: 3
-SIPORDER: 5
-PSIPORDER: 7
+MODE_CR: AUTO   #AUTO for AUTO MODE, MANUAL for MANUAL MODE
+MODE_CCDPOS: 1       #1=DETERMINING CCD POSITION
+NCCD: 10        #NUMBER of CCD for analysis
+ORDER_ASIP: 7
+ORDER_PSIP: 7
 CLIPSIGMA: 3.0
-CHECKFILE: 1               #1=out put fitting check file
+FLAG_OUT: 1               #1=out put fitting check file
