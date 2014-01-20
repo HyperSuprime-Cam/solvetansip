@@ -10,7 +10,9 @@
 
 #include"hsc/meas/tansip/SLVTS_LSST.h"
 using namespace std;
-namespace dafbase = lsst::daf::base;
+namespace dafbase  = lsst::daf::base;
+namespace afwGeom  = lsst::afw::geom;
+namespace afwImage = lsst::afw::image;
 
 dafbase::PropertySet::Ptr SET_EMPTYMETADATA(){
 	dafbase::PropertySet::Ptr meta(new dafbase::PropertySet);
@@ -36,12 +38,11 @@ void SET_METADATA(std::vector< CL_SLVTS* > VSLVTS, dafbase::PropertySet::Ptr &me
 
 	int CID,i,j,ij;
 	char KEY[100];
-
+/*
 double VALUE;
-string SKEY = "ST_G_MAX_CRPIX_G_R";
 VALUE=meta->getAsDouble("ST_G_MAX_CRPIX_G_R");
 cout<<scientific<<setprecision(6)<<"R : "<<SLVTS->CCDs->MAX_CRPIX_G_R<<"	"<<VALUE<<endl;
-
+*/
 	for(CID=0;CID<SLVTS->APRM->NUM_CCD+1;CID++){
 		sprintf(KEY,"ST_C%03d_ID"      ,CID);
 	        meta->add(KEY,SLVTS->CCDs->CCD[CID].ID);
@@ -164,3 +165,54 @@ cout<<scientific<<setprecision(6)<<"R : "<<SLVTS->CCDs->MAX_CRPIX_G_R<<"	"<<VALU
 	meta->add("nref_fitting"        , SLVTS->APRM->NUM_FIT);
 
 }
+std::vector <lsst::afw::image::TanWcs::Ptr> SET_TANWCS(std::vector< CL_SLVTS* > VSLVTS){
+	std::vector <lsst::afw::image::TanWcs::Ptr> V_TanWcs;
+	int CID;
+	CL_SLVTS* SLVTS;
+	SLVTS=VSLVTS[0];
+	
+	int OAS,OPS;
+	int i,j,ij;
+	for(CID=0;CID<SLVTS->APRM->NUM_CCD+1;CID++){
+		afwGeom::PointD crpix = afwGeom::PointD(*SLVTS->CCDs->CCD[CID].CRPIX[0],*SLVTS->CCDs->CCD[CID].CRPIX[1]);
+		afwGeom::PointD crval = afwGeom::PointD(*SLVTS->CCDs->CCD[CID].CRVAL[0],*SLVTS->CCDs->CCD[CID].CRVAL[1]);
+	
+		Eigen::Matrix2d cdMatrix;
+		cdMatrix << SLVTS->CCDs->CCD[CID].CD[0][0],SLVTS->CCDs->CCD[CID].CD[0][1],SLVTS->CCDs->CCD[CID].CD[1][0],SLVTS->CCDs->CCD[CID].CD[1][1];
+
+		OAS=*SLVTS->CCDs->CCD[CID].ORDER_ASIP;
+		OPS=*SLVTS->CCDs->CCD[CID].ORDER_PSIP;
+		Eigen::MatrixXd sipA  = Eigen::MatrixXd::Zero(OAS+1,OAS+1);
+		Eigen::MatrixXd sipB  = Eigen::MatrixXd::Zero(OAS+1,OAS+1);
+		Eigen::MatrixXd sipAp = Eigen::MatrixXd::Zero(OPS+1,OPS+1);
+		Eigen::MatrixXd sipBp = Eigen::MatrixXd::Zero(OPS+1,OPS+1);
+
+		ij=0;
+		for(i=0;i<OAS+1;i++)
+		for(j=0;j<OAS+1;j++)
+		if(i+j<OAS+1){
+			sipA(i,j)=SLVTS->CCDs->CCD[CID].ASIP[0][ij];
+			sipB(i,j)=SLVTS->CCDs->CCD[CID].ASIP[1][ij];
+			ij++;
+		}else{
+			sipA(i,j)=0.0;
+			sipB(i,j)=0.0;
+		}
+		ij=0;
+		for(i=0;i<OAS+1;i++)
+		for(j=0;j<OAS+1;j++)
+		if(i+j<OAS+1){
+			sipAp(i,j)=SLVTS->CCDs->CCD[CID].PSIP[0][ij];
+			sipBp(i,j)=SLVTS->CCDs->CCD[CID].PSIP[1][ij];
+			ij++;
+		}else{
+			sipAp(i,j)=0.0;
+			sipBp(i,j)=0.0;
+		}
+
+		afwImage::TanWcs::Ptr resultTanWsc(new afwImage::TanWcs(crval,crpix,cdMatrix,sipA,sipB,sipAp,sipBp));
+		V_TanWcs.push_back(resultTanWsc);
+	}
+	return V_TanWcs;
+}
+

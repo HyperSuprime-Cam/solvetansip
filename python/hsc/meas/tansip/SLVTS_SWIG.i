@@ -23,6 +23,7 @@
 %template(VVVS) std::vector< std::vector< std::vector<std::string> > >;
 %template(VSLVTS)  std::vector<CL_SLVTS*>;
 std::vector< CL_SLVTS* > SOLVETANSIP(std::vector< std::vector< std::vector< std::string > > > SLVTS_Argvs);
+%template(resultWcs_V) std::vector<lsst::afw::image::TanWcs::Ptr>;
 
 %template(SourceMatchVector) std::vector<PTR(hsc::meas::tansip::SourceMatch)>;
 %template(SourceMatchVectorVector) std::vector<std::vector<PTR(hsc::meas::tansip::SourceMatch)> >;

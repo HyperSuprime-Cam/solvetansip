@@ -1309,6 +1309,194 @@ VSLVTS_swigregister(VSLVTS)
 def SOLVETANSIP(*args):
   """SOLVETANSIP(VVVS SLVTS_Argvs) -> VSLVTS"""
   return _SLVTS_SWIGLib.SOLVETANSIP(*args)
+class resultWcs_V(_object):
+    """Proxy of C++ std::vector<(lsst::afw::image::TanWcs::Ptr)> class"""
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr_nondynamic(self, resultWcs_V, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, resultWcs_V, name)
+    __repr__ = _swig_repr
+    def iterator(self):
+        """iterator(self) -> SwigPyIterator"""
+        return _SLVTS_SWIGLib.resultWcs_V_iterator(self)
+
+    def __iter__(self): return self.iterator()
+    def __nonzero__(self):
+        """__nonzero__(self) -> bool"""
+        return _SLVTS_SWIGLib.resultWcs_V___nonzero__(self)
+
+    def __bool__(self):
+        """__bool__(self) -> bool"""
+        return _SLVTS_SWIGLib.resultWcs_V___bool__(self)
+
+    def __len__(self):
+        """__len__(self) -> std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::size_type"""
+        return _SLVTS_SWIGLib.resultWcs_V___len__(self)
+
+    def pop(self):
+        """pop(self) -> std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::value_type"""
+        return _SLVTS_SWIGLib.resultWcs_V_pop(self)
+
+    def __getslice__(self, *args):
+        """
+        __getslice__(self, std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::difference_type i, 
+            std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::difference_type j) -> resultWcs_V
+        """
+        return _SLVTS_SWIGLib.resultWcs_V___getslice__(self, *args)
+
+    def __setslice__(self, *args):
+        """
+        __setslice__(self, std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::difference_type i, 
+            std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::difference_type j, 
+            resultWcs_V v = std::vector< boost::shared_ptr< lsst::afw::image::TanWcs >,std::allocator< boost::shared_ptr< lsst::afw::image::TanWcs > > >())
+        __setslice__(self, std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::difference_type i, 
+            std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::difference_type j)
+        """
+        return _SLVTS_SWIGLib.resultWcs_V___setslice__(self, *args)
+
+    def __delslice__(self, *args):
+        """
+        __delslice__(self, std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::difference_type i, 
+            std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::difference_type j)
+        """
+        return _SLVTS_SWIGLib.resultWcs_V___delslice__(self, *args)
+
+    def __delitem__(self, *args):
+        """
+        __delitem__(self, std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::difference_type i)
+        __delitem__(self, PySliceObject slice)
+        """
+        return _SLVTS_SWIGLib.resultWcs_V___delitem__(self, *args)
+
+    def __getitem__(self, *args):
+        """
+        __getitem__(self, PySliceObject slice) -> resultWcs_V
+        __getitem__(self, std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::difference_type i) -> std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::value_type
+        """
+        return _SLVTS_SWIGLib.resultWcs_V___getitem__(self, *args)
+
+    def __setitem__(self, *args):
+        """
+        __setitem__(self, PySliceObject slice, resultWcs_V v)
+        __setitem__(self, PySliceObject slice)
+        __setitem__(self, std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::difference_type i, 
+            std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::value_type x)
+        """
+        return _SLVTS_SWIGLib.resultWcs_V___setitem__(self, *args)
+
+    def append(self, *args):
+        """append(self, std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::value_type x)"""
+        return _SLVTS_SWIGLib.resultWcs_V_append(self, *args)
+
+    def empty(self):
+        """empty(self) -> bool"""
+        return _SLVTS_SWIGLib.resultWcs_V_empty(self)
+
+    def size(self):
+        """size(self) -> std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::size_type"""
+        return _SLVTS_SWIGLib.resultWcs_V_size(self)
+
+    def clear(self):
+        """clear(self)"""
+        return _SLVTS_SWIGLib.resultWcs_V_clear(self)
+
+    def swap(self, *args):
+        """swap(self, resultWcs_V v)"""
+        return _SLVTS_SWIGLib.resultWcs_V_swap(self, *args)
+
+    def get_allocator(self):
+        """get_allocator(self) -> std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::allocator_type"""
+        return _SLVTS_SWIGLib.resultWcs_V_get_allocator(self)
+
+    def begin(self):
+        """begin(self) -> std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::iterator"""
+        return _SLVTS_SWIGLib.resultWcs_V_begin(self)
+
+    def end(self):
+        """end(self) -> std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::iterator"""
+        return _SLVTS_SWIGLib.resultWcs_V_end(self)
+
+    def rbegin(self):
+        """rbegin(self) -> std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::reverse_iterator"""
+        return _SLVTS_SWIGLib.resultWcs_V_rbegin(self)
+
+    def rend(self):
+        """rend(self) -> std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::reverse_iterator"""
+        return _SLVTS_SWIGLib.resultWcs_V_rend(self)
+
+    def pop_back(self):
+        """pop_back(self)"""
+        return _SLVTS_SWIGLib.resultWcs_V_pop_back(self)
+
+    def erase(self, *args):
+        """
+        erase(self, std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::iterator pos) -> std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::iterator
+        erase(self, std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::iterator first, 
+            std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::iterator last) -> std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::iterator
+        """
+        return _SLVTS_SWIGLib.resultWcs_V_erase(self, *args)
+
+    def __init__(self, *args): 
+        """
+        __init__(self) -> resultWcs_V
+        __init__(self, resultWcs_V arg0) -> resultWcs_V
+        __init__(self, std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::size_type size) -> resultWcs_V
+        __init__(self, std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::size_type size, 
+            std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::value_type value) -> resultWcs_V
+        """
+        this = _SLVTS_SWIGLib.new_resultWcs_V(*args)
+        try: self.this.append(this)
+        except: self.this = this
+    def push_back(self, *args):
+        """push_back(self, std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::value_type x)"""
+        return _SLVTS_SWIGLib.resultWcs_V_push_back(self, *args)
+
+    def front(self):
+        """front(self) -> std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::value_type"""
+        return _SLVTS_SWIGLib.resultWcs_V_front(self)
+
+    def back(self):
+        """back(self) -> std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::value_type"""
+        return _SLVTS_SWIGLib.resultWcs_V_back(self)
+
+    def assign(self, *args):
+        """
+        assign(self, std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::size_type n, 
+            std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::value_type x)
+        """
+        return _SLVTS_SWIGLib.resultWcs_V_assign(self, *args)
+
+    def resize(self, *args):
+        """
+        resize(self, std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::size_type new_size)
+        resize(self, std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::size_type new_size, 
+            std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::value_type x)
+        """
+        return _SLVTS_SWIGLib.resultWcs_V_resize(self, *args)
+
+    def insert(self, *args):
+        """
+        insert(self, std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::iterator pos, 
+            std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::value_type x) -> std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::iterator
+        insert(self, std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::iterator pos, 
+            std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::size_type n, 
+            std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::value_type x)
+        """
+        return _SLVTS_SWIGLib.resultWcs_V_insert(self, *args)
+
+    def reserve(self, *args):
+        """reserve(self, std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::size_type n)"""
+        return _SLVTS_SWIGLib.resultWcs_V_reserve(self, *args)
+
+    def capacity(self):
+        """capacity(self) -> std::vector<(boost::shared_ptr<(lsst::afw::image::TanWcs)>)>::size_type"""
+        return _SLVTS_SWIGLib.resultWcs_V_capacity(self)
+
+    __swig_destroy__ = _SLVTS_SWIGLib.delete_resultWcs_V
+    __del__ = lambda self : None;
+resultWcs_V_swigregister = _SLVTS_SWIGLib.resultWcs_V_swigregister
+resultWcs_V_swigregister(resultWcs_V)
+
 class SourceMatchVector(_object):
     """Proxy of C++ std::vector<(boost::shared_ptr<(hsc::meas::tansip::SourceMatch)>)> class"""
     __swig_setmethods__ = {}
@@ -1708,6 +1896,10 @@ def SET_EMPTYMETADATA():
 def SET_METADATA(*args):
   """SET_METADATA(VSLVTS SLVTS, dafbase::PropertySet::Ptr meta)"""
   return _SLVTS_SWIGLib.SET_METADATA(*args)
+
+def SET_TANWCS(*args):
+  """SET_TANWCS(VSLVTS VSLVTS) -> resultWcs_V"""
+  return _SLVTS_SWIGLib.SET_TANWCS(*args)
 # This file is compatible with both classic and new-style classes.
 
 

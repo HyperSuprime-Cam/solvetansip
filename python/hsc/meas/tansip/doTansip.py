@@ -35,18 +35,18 @@ def SOLVETANSIP(matchListAllCcd, metaTANSIP, policy=None, camera=None, rerun=Non
     SLVTS_Argvs.append(APRM)
     SLVTS_Argvs.append(CCD)
     SLVTS_Argvs.append(REF)
-    WCS=SLVTS.SOLVETANSIP(SLVTS_Argvs)
-    SLVTS.SET_METADATA(WCS, metaTANSIP)
+    SLVTSRESULT=SLVTS.SOLVETANSIP(SLVTS_Argvs)
+    SLVTS.SET_METADATA(SLVTSRESULT, metaTANSIP)
+    TANWCS=SLVTS.SET_TANWCS(SLVTSRESULT)
 
     print '--- doTansip : end   ---'
-    return WCS
+    print TANWCS
+    print metaTANSIP
+    return TANWCS
 
-
-def getwcsList(WCS):
+def getwcsList(TANWCS):
     print '--- getWCSlist ---'
-#    return hscTansip.F_WCSA_PLMAIN_GETWCSLIST(WCSA_ASP)
-    return WCS
-
+    return TANWCS
 def SLVTS_APRM(policy):
     KVs=SLVTS.VVS([])
 
