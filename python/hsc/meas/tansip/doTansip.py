@@ -2,9 +2,19 @@ import sys, re, os, math
 import hsc.meas.tansip.SLVTS_SWIGLib     as SLVTS
 import lsst.afw.cameraGeom.utils      as cameraGeomUtils
 import lsst.afw.cameraGeom            as cameraGeom
-
+#import lsst.daf.base                     as dafBase
 
 def doTansip(matchListAllCcd, policy=None, camera=None, rerun=None):
+    metaTANSIP = SLVTS.SET_EMPTYMETADATA()
+    SLVTSresult=SOLVETANSIP(matchListAllCcd, metaTANSIP, policy=policy, camera=camera, rerun=rerun)
+    return SLVTSresult
+	
+def doTansipQa(matchListAllCcd, policy=None, camera=None, rerun=None):
+    metaTANSIP = SLVTS.SET_EMPTYMETADATA()
+    SLVTSresult=SOLVETANSIP(matchListAllCcd, metaTANSIP, policy=policy, camera=camera, rerun=rerun)
+    return SLVTSresult,metaTANSIP
+	
+def SOLVETANSIP(matchListAllCcd, metaTANSIP, policy=None, camera=None, rerun=None):
     print '--- doTansip : start ---'
 
     print '--- doTansip : get APRM ---'
@@ -26,12 +36,11 @@ def doTansip(matchListAllCcd, policy=None, camera=None, rerun=None):
     SLVTS_Argvs.append(CCD)
     SLVTS_Argvs.append(REF)
     WCS=SLVTS.SOLVETANSIP(SLVTS_Argvs)
+    SLVTS.SET_METADATA(WCS, metaTANSIP)
 
     print '--- doTansip : end   ---'
     return WCS
 
-def doTansipQa(matchListAllCcd, policy=None, camera=None, rerun=None):
-    return doTansip(matchListAllCcd, policy=policy, camera=camera, rerun=rerun)
 
 def getwcsList(WCS):
     print '--- getWCSlist ---'

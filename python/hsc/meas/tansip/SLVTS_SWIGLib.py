@@ -1700,48 +1700,14 @@ class SourceMatch(_object):
 SourceMatch_swigregister = _SLVTS_SWIGLib.SourceMatch_swigregister
 SourceMatch_swigregister(SourceMatch)
 
-class CL_SLVTS(_object):
-    """Proxy of C++ CL_SLVTS class"""
-    __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr_nondynamic(self, CL_SLVTS, name, value)
-    __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, CL_SLVTS, name)
-    __repr__ = _swig_repr
-    __swig_setmethods__["APRM"] = _SLVTS_SWIGLib.CL_SLVTS_APRM_set
-    __swig_getmethods__["APRM"] = _SLVTS_SWIGLib.CL_SLVTS_APRM_get
-    if _newclass:APRM = _swig_property(_SLVTS_SWIGLib.CL_SLVTS_APRM_get, _SLVTS_SWIGLib.CL_SLVTS_APRM_set)
-    __swig_setmethods__["CCDs"] = _SLVTS_SWIGLib.CL_SLVTS_CCDs_set
-    __swig_getmethods__["CCDs"] = _SLVTS_SWIGLib.CL_SLVTS_CCDs_get
-    if _newclass:CCDs = _swig_property(_SLVTS_SWIGLib.CL_SLVTS_CCDs_get, _SLVTS_SWIGLib.CL_SLVTS_CCDs_set)
-    __swig_setmethods__["REFs"] = _SLVTS_SWIGLib.CL_SLVTS_REFs_set
-    __swig_getmethods__["REFs"] = _SLVTS_SWIGLib.CL_SLVTS_REFs_get
-    if _newclass:REFs = _swig_property(_SLVTS_SWIGLib.CL_SLVTS_REFs_get, _SLVTS_SWIGLib.CL_SLVTS_REFs_set)
-    def SET_INIT(self):
-        """SET_INIT(self)"""
-        return _SLVTS_SWIGLib.CL_SLVTS_SET_INIT(self)
 
-    def SET_INPUT(self, *args):
-        """SET_INPUT(self, VVVS SLVTS_Argvs)"""
-        return _SLVTS_SWIGLib.CL_SLVTS_SET_INPUT(self, *args)
+def SET_EMPTYMETADATA():
+  """SET_EMPTYMETADATA() -> dafbase::PropertySet::Ptr"""
+  return _SLVTS_SWIGLib.SET_EMPTYMETADATA()
 
-    def CHECK_INPUT(self):
-        """CHECK_INPUT(self) -> int"""
-        return _SLVTS_SWIGLib.CL_SLVTS_CHECK_INPUT(self)
-
-    def CALC_WCS(self):
-        """CALC_WCS(self)"""
-        return _SLVTS_SWIGLib.CL_SLVTS_CALC_WCS(self)
-
-    def __init__(self): 
-        """__init__(self) -> CL_SLVTS"""
-        this = _SLVTS_SWIGLib.new_CL_SLVTS()
-        try: self.this.append(this)
-        except: self.this = this
-    __swig_destroy__ = _SLVTS_SWIGLib.delete_CL_SLVTS
-    __del__ = lambda self : None;
-CL_SLVTS_swigregister = _SLVTS_SWIGLib.CL_SLVTS_swigregister
-CL_SLVTS_swigregister(CL_SLVTS)
-
+def SET_METADATA(*args):
+  """SET_METADATA(VSLVTS SLVTS, dafbase::PropertySet::Ptr meta)"""
+  return _SLVTS_SWIGLib.SET_METADATA(*args)
 # This file is compatible with both classic and new-style classes.
 
 

@@ -9,8 +9,9 @@
 #include "lsst/pex/policy/Policy.h"
 #include "lsst/afw/cameraGeom/Camera.h"
 #include "lsst/afw/image/TanWcs.h"
+#include "lsst/daf/base/PropertySet.h"
 #include"hsc/meas/tansip/SourceMatch.h"
-#include"hsc/meas/tansip/SLVTS.h"
+#include"hsc/meas/tansip/SLVTS_LSST.h"
 %}
 
 %include "std_vector.i"
@@ -27,6 +28,7 @@ std::vector< CL_SLVTS* > SOLVETANSIP(std::vector< std::vector< std::vector< std:
 %template(SourceMatchVectorVector) std::vector<std::vector<PTR(hsc::meas::tansip::SourceMatch)> >;
 %shared_ptr(hsc::meas::tansip::SourceMatch);
 
+%include "lsst/daf/base/PropertySet.h"
 %include "hsc/meas/tansip/SourceMatch.h"
-%include "hsc/meas/tansip/SLVTS.h"
+%include "hsc/meas/tansip/SLVTS_LSST.h"
 
