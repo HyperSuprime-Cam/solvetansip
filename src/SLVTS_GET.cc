@@ -52,6 +52,21 @@ std::vector< double > GET_SUM_CD(CL_SLVTS* SLVTS){
 double GET_SUM_ANGLE(CL_SLVTS* SLVTS){
 	return SLVTS->CCDs->CCD[SLVTS->APRM->NUM_CCD].ANGLE;
 }
+std::vector< double > GET_SUM_CD_CORANGLE(CL_SLVTS* SLVTS){
+	double GCD[4],GANG;
+	std::vector< double > CD_COR;
+	GCD[0]=SLVTS->CCDs->CCD[SLVTS->APRM->NUM_CCD].CD[0][0];
+	GCD[1]=SLVTS->CCDs->CCD[SLVTS->APRM->NUM_CCD].CD[0][1];
+	GCD[2]=SLVTS->CCDs->CCD[SLVTS->APRM->NUM_CCD].CD[1][0];
+	GCD[3]=SLVTS->CCDs->CCD[SLVTS->APRM->NUM_CCD].CD[1][1];
+	GANG  =SLVTS->CCDs->CCD[SLVTS->APRM->NUM_CCD].ANGLE;
+
+	CD_COR.push_back(cos(-GANG)*GCD[0]-sin(-GANG)*GCD[2]);
+	CD_COR.push_back(cos(-GANG)*GCD[1]-sin(-GANG)*GCD[3]);
+	CD_COR.push_back(sin(-GANG)*GCD[0]+cos(-GANG)*GCD[2]);
+	CD_COR.push_back(sin(-GANG)*GCD[1]+cos(-GANG)*GCD[3]);
+	return CD_COR;
+}
 std::vector< double > GET_SUM_RMSASIP(CL_SLVTS* SLVTS){
 	std::vector< double > RMSASIP;
 	RMSASIP.push_back(SLVTS->CCDs->CCD[SLVTS->APRM->NUM_CCD].DIF_RMS_ASIP[0]);
