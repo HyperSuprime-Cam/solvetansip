@@ -1889,6 +1889,254 @@ SourceMatch_swigregister = _SLVTS_SWIGLib.SourceMatch_swigregister
 SourceMatch_swigregister(SourceMatch)
 
 
+def GET_SUM_NUMCCD(*args):
+  """GET_SUM_NUMCCD(CL_SLVTS SLVTS) -> int"""
+  return _SLVTS_SWIGLib.GET_SUM_NUMCCD(*args)
+
+def GET_SUM_NUMREF(*args):
+  """GET_SUM_NUMREF(CL_SLVTS SLVTS) -> int"""
+  return _SLVTS_SWIGLib.GET_SUM_NUMREF(*args)
+
+def GET_SUM_NUMFIT(*args):
+  """GET_SUM_NUMFIT(CL_SLVTS SLVTS) -> int"""
+  return _SLVTS_SWIGLib.GET_SUM_NUMFIT(*args)
+
+def GET_SUM_CRPIX(*args):
+  """GET_SUM_CRPIX(CL_SLVTS SLVTS) -> VectorDouble"""
+  return _SLVTS_SWIGLib.GET_SUM_CRPIX(*args)
+
+def GET_SUM_CRVAL(*args):
+  """GET_SUM_CRVAL(CL_SLVTS SLVTS) -> VectorDouble"""
+  return _SLVTS_SWIGLib.GET_SUM_CRVAL(*args)
+
+def GET_SUM_OAPIX(*args):
+  """GET_SUM_OAPIX(CL_SLVTS SLVTS) -> VectorDouble"""
+  return _SLVTS_SWIGLib.GET_SUM_OAPIX(*args)
+
+def GET_SUM_CD(*args):
+  """GET_SUM_CD(CL_SLVTS SLVTS) -> VectorDouble"""
+  return _SLVTS_SWIGLib.GET_SUM_CD(*args)
+
+def GET_SUM_RMSASIP(*args):
+  """GET_SUM_RMSASIP(CL_SLVTS SLVTS) -> VectorDouble"""
+  return _SLVTS_SWIGLib.GET_SUM_RMSASIP(*args)
+
+def GET_SUM_RMSPSIP(*args):
+  """GET_SUM_RMSPSIP(CL_SLVTS SLVTS) -> VectorDouble"""
+  return _SLVTS_SWIGLib.GET_SUM_RMSPSIP(*args)
+
+def GET_CCD_ID(*args):
+  """GET_CCD_ID(CL_SLVTS SLVTS) -> VectorInt"""
+  return _SLVTS_SWIGLib.GET_CCD_ID(*args)
+
+def GET_CCD_NUMREF(*args):
+  """GET_CCD_NUMREF(CL_SLVTS SLVTS) -> VectorInt"""
+  return _SLVTS_SWIGLib.GET_CCD_NUMREF(*args)
+
+def GET_CCD_NUMFIT(*args):
+  """GET_CCD_NUMFIT(CL_SLVTS SLVTS) -> VectorInt"""
+  return _SLVTS_SWIGLib.GET_CCD_NUMFIT(*args)
+
+def GET_CCD_ORDERSIP(*args):
+  """GET_CCD_ORDERSIP(CL_SLVTS SLVTS) -> VectorInt"""
+  return _SLVTS_SWIGLib.GET_CCD_ORDERSIP(*args)
+
+def GET_CCD_ORDERPSIP(*args):
+  """GET_CCD_ORDERPSIP(CL_SLVTS SLVTS) -> VectorInt"""
+  return _SLVTS_SWIGLib.GET_CCD_ORDERPSIP(*args)
+
+def GET_CCD_GPOS_L(*args):
+  """GET_CCD_GPOS_L(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_CCD_GPOS_L(*args)
+
+def GET_CCD_GPOS_C(*args):
+  """GET_CCD_GPOS_C(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_CCD_GPOS_C(*args)
+
+def GET_CCD_CR(*args):
+  """GET_CCD_CR(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_CCD_CR(*args)
+
+def GET_CCD_OA(*args):
+  """GET_CCD_OA(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_CCD_OA(*args)
+
+def GET_CCD_CD(*args):
+  """GET_CCD_CD(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_CCD_CD(*args)
+
+def GET_CCD_ERRSIP(*args):
+  """GET_CCD_ERRSIP(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_CCD_ERRSIP(*args)
+
+def GET_CCD_ERRPSIP(*args):
+  """GET_CCD_ERRPSIP(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_CCD_ERRPSIP(*args)
+
+def GET_CCD_COEFSIPA(*args):
+  """GET_CCD_COEFSIPA(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_CCD_COEFSIPA(*args)
+
+def GET_CCD_COEFSIPB(*args):
+  """GET_CCD_COEFSIPB(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_CCD_COEFSIPB(*args)
+
+def GET_CCD_COEFPSIPA(*args):
+  """GET_CCD_COEFPSIPA(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_CCD_COEFPSIPA(*args)
+
+def GET_CCD_COEFPSIPB(*args):
+  """GET_CCD_COEFPSIPB(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_CCD_COEFPSIPB(*args)
+
+def GET_REF_ID(*args):
+  """GET_REF_ID(CL_SLVTS SLVTS) -> VectorLongLong"""
+  return _SLVTS_SWIGLib.GET_REF_ID(*args)
+
+def GET_REF_CID(*args):
+  """GET_REF_CID(CL_SLVTS SLVTS) -> VectorInt"""
+  return _SLVTS_SWIGLib.GET_REF_CID(*args)
+
+def GET_REF_FLAG(*args):
+  """GET_REF_FLAG(CL_SLVTS SLVTS) -> VectorInt"""
+  return _SLVTS_SWIGLib.GET_REF_FLAG(*args)
+
+def GET_REF_POS_CELESTIAL_RADEC(*args):
+  """GET_REF_POS_CELESTIAL_RADEC(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_REF_POS_CELESTIAL_RADEC(*args)
+
+def GET_REF_POS_CELESTIAL_IMWLD(*args):
+  """GET_REF_POS_CELESTIAL_IMWLD(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_REF_POS_CELESTIAL_IMWLD(*args)
+
+def GET_REF_POS_CELESTIAL_IMPIX_L(*args):
+  """GET_REF_POS_CELESTIAL_IMPIX_L(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_REF_POS_CELESTIAL_IMPIX_L(*args)
+
+def GET_REF_POS_CELESTIAL_IMPIX_G(*args):
+  """GET_REF_POS_CELESTIAL_IMPIX_G(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_REF_POS_CELESTIAL_IMPIX_G(*args)
+
+def GET_REF_POS_CELESTIAL_CRPIX_L(*args):
+  """GET_REF_POS_CELESTIAL_CRPIX_L(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_REF_POS_CELESTIAL_CRPIX_L(*args)
+
+def GET_REF_POS_CELESTIAL_CRPIX_G(*args):
+  """GET_REF_POS_CELESTIAL_CRPIX_G(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_REF_POS_CELESTIAL_CRPIX_G(*args)
+
+def GET_REF_POS_CELESTIAL_LOCAL_L(*args):
+  """GET_REF_POS_CELESTIAL_LOCAL_L(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_REF_POS_CELESTIAL_LOCAL_L(*args)
+
+def GET_REF_POS_CELESTIAL_LOCAL_G(*args):
+  """GET_REF_POS_CELESTIAL_LOCAL_G(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_REF_POS_CELESTIAL_LOCAL_G(*args)
+
+def GET_REF_POS_CELESTIAL_LOCAL_C(*args):
+  """GET_REF_POS_CELESTIAL_LOCAL_C(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_REF_POS_CELESTIAL_LOCAL_C(*args)
+
+def GET_REF_POS_CELESTIAL_PSIP_CRPIX_L(*args):
+  """GET_REF_POS_CELESTIAL_PSIP_CRPIX_L(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_REF_POS_CELESTIAL_PSIP_CRPIX_L(*args)
+
+def GET_REF_POS_CELESTIAL_PSIP_CRPIX_G(*args):
+  """GET_REF_POS_CELESTIAL_PSIP_CRPIX_G(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_REF_POS_CELESTIAL_PSIP_CRPIX_G(*args)
+
+def GET_REF_POS_CELESTIAL_PSIP_LOCAL_L(*args):
+  """GET_REF_POS_CELESTIAL_PSIP_LOCAL_L(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_REF_POS_CELESTIAL_PSIP_LOCAL_L(*args)
+
+def GET_REF_POS_CELESTIAL_PSIP_LOCAL_G(*args):
+  """GET_REF_POS_CELESTIAL_PSIP_LOCAL_G(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_REF_POS_CELESTIAL_PSIP_LOCAL_G(*args)
+
+def GET_REF_POS_CELESTIAL_PSIP_LOCAL_C(*args):
+  """GET_REF_POS_CELESTIAL_PSIP_LOCAL_C(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_REF_POS_CELESTIAL_PSIP_LOCAL_C(*args)
+
+def GET_REF_POS_DETECTED_LOCAL_L(*args):
+  """GET_REF_POS_DETECTED_LOCAL_L(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_REF_POS_DETECTED_LOCAL_L(*args)
+
+def GET_REF_POS_DETECTED_LOCAL_G(*args):
+  """GET_REF_POS_DETECTED_LOCAL_G(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_REF_POS_DETECTED_LOCAL_G(*args)
+
+def GET_REF_POS_DETECTED_LOCAL_C(*args):
+  """GET_REF_POS_DETECTED_LOCAL_C(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_REF_POS_DETECTED_LOCAL_C(*args)
+
+def GET_REF_POS_DETECTED_CRPIX_L(*args):
+  """GET_REF_POS_DETECTED_CRPIX_L(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_REF_POS_DETECTED_CRPIX_L(*args)
+
+def GET_REF_POS_DETECTED_CRPIX_G(*args):
+  """GET_REF_POS_DETECTED_CRPIX_G(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_REF_POS_DETECTED_CRPIX_G(*args)
+
+def GET_REF_POS_DETECTED_IMPIX_L(*args):
+  """GET_REF_POS_DETECTED_IMPIX_L(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_REF_POS_DETECTED_IMPIX_L(*args)
+
+def GET_REF_POS_DETECTED_IMPIX_G(*args):
+  """GET_REF_POS_DETECTED_IMPIX_G(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_REF_POS_DETECTED_IMPIX_G(*args)
+
+def GET_REF_POS_DETECTED_IMWLD_L(*args):
+  """GET_REF_POS_DETECTED_IMWLD_L(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_REF_POS_DETECTED_IMWLD_L(*args)
+
+def GET_REF_POS_DETECTED_IMWLD_G(*args):
+  """GET_REF_POS_DETECTED_IMWLD_G(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_REF_POS_DETECTED_IMWLD_G(*args)
+
+def GET_REF_POS_DETECTED_RADEC_L(*args):
+  """GET_REF_POS_DETECTED_RADEC_L(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_REF_POS_DETECTED_RADEC_L(*args)
+
+def GET_REF_POS_DETECTED_RADEC_G(*args):
+  """GET_REF_POS_DETECTED_RADEC_G(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_REF_POS_DETECTED_RADEC_G(*args)
+
+def GET_REF_POS_DETECTED_ASIP_CRPIX_L(*args):
+  """GET_REF_POS_DETECTED_ASIP_CRPIX_L(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_REF_POS_DETECTED_ASIP_CRPIX_L(*args)
+
+def GET_REF_POS_DETECTED_ASIP_CRPIX_G(*args):
+  """GET_REF_POS_DETECTED_ASIP_CRPIX_G(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_REF_POS_DETECTED_ASIP_CRPIX_G(*args)
+
+def GET_REF_POS_DETECTED_ASIP_IMPIX_L(*args):
+  """GET_REF_POS_DETECTED_ASIP_IMPIX_L(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_REF_POS_DETECTED_ASIP_IMPIX_L(*args)
+
+def GET_REF_POS_DETECTED_ASIP_IMPIX_G(*args):
+  """GET_REF_POS_DETECTED_ASIP_IMPIX_G(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_REF_POS_DETECTED_ASIP_IMPIX_G(*args)
+
+def GET_REF_POS_DETECTED_ASIP_IMWLD_L(*args):
+  """GET_REF_POS_DETECTED_ASIP_IMWLD_L(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_REF_POS_DETECTED_ASIP_IMWLD_L(*args)
+
+def GET_REF_POS_DETECTED_ASIP_IMWLD_G(*args):
+  """GET_REF_POS_DETECTED_ASIP_IMWLD_G(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_REF_POS_DETECTED_ASIP_IMWLD_G(*args)
+
+def GET_REF_POS_DETECTED_ASIP_RADEC_L(*args):
+  """GET_REF_POS_DETECTED_ASIP_RADEC_L(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_REF_POS_DETECTED_ASIP_RADEC_L(*args)
+
+def GET_REF_POS_DETECTED_ASIP_RADEC_G(*args):
+  """GET_REF_POS_DETECTED_ASIP_RADEC_G(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_REF_POS_DETECTED_ASIP_RADEC_G(*args)
+
+def GET_REF_CAMERADISTPSIP(*args):
+  """GET_REF_CAMERADISTPSIP(CL_SLVTS SLVTS) -> std::vector<(std::vector<(double,std::allocator<(double)>)>,std::allocator<(std::vector<(double,std::allocator<(double)>)>)>)>"""
+  return _SLVTS_SWIGLib.GET_REF_CAMERADISTPSIP(*args)
+
 def SET_EMPTYMETADATA():
   """SET_EMPTYMETADATA() -> dafbase::PropertySet::Ptr"""
   return _SLVTS_SWIGLib.SET_EMPTYMETADATA()

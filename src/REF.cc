@@ -686,7 +686,7 @@ void CL_REFs::CALC_STAT_SIP_LOCAL(){
 	DIFF=CPP_MEMORY_NEWdouble3(*NUM_CCD,4,*NUM_REF);
 	STAT=CPP_MEMORY_NEWdouble3(*NUM_CCD,4,4);
 
-
+	*NUM_FIT=0;
 	for(i=0;i<*NUM_REF;i++)
 	if(REF[i].FLAG_OBJ==1){
 		DIFF[REF[i].ID_CCD][0][NUM[REF[i].ID_CCD]]=REF[i].POS_DETECTED_ASIP_IMPIX_L[0]-REF[i].POS_CELESTIAL_IMPIX_L[0];
@@ -1343,9 +1343,9 @@ void CL_REFs::CALC_OPTICAL_AXIS(){
 		}else{
 			break;
 		}
-	}
-	*OAPIX[0]=PX;
-	*OAPIX[1]=PY;
+	}//PX,PY is OA Point at CRPIX coordinate
+	*OAPIX[0]=PX+*CRPIX[0];
+	*OAPIX[1]=PY+*CRPIX[1];
 
 	delete [] PXN;
 	delete [] PYN;

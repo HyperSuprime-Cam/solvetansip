@@ -9,6 +9,7 @@
 #include "lsst/daf/base/PropertySet.h"
 #include "lsst/afw/image/TanWcs.h"
 #include"hsc/meas/tansip/SLVTS.h"
+#include"hsc/meas/tansip/SLVTS_GET.h"
 namespace dafbase = lsst::daf::base;
 
 dafbase::PropertySet::Ptr SET_EMPTYMETADATA();

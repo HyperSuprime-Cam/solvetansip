@@ -11,6 +11,7 @@
 #include "lsst/afw/image/TanWcs.h"
 #include "lsst/daf/base/PropertySet.h"
 #include"hsc/meas/tansip/SourceMatch.h"
+#include"hsc/meas/tansip/SLVTS_GET.h"
 #include"hsc/meas/tansip/SLVTS_LSST.h"
 %}
 
@@ -31,5 +32,6 @@ std::vector< CL_SLVTS* > SOLVETANSIP(std::vector< std::vector< std::vector< std:
 
 %include "lsst/daf/base/PropertySet.h"
 %include "hsc/meas/tansip/SourceMatch.h"
+%include"hsc/meas/tansip/SLVTS_GET.h"
 %include "hsc/meas/tansip/SLVTS_LSST.h"
 
