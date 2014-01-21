@@ -140,9 +140,6 @@ def OUTPUT_SUMMARY(V_S_RESULT,DIR_OUT):
     CD        =SLVTS.GET_SUM_CD(S_RESULT)
     RMS_SIP   =SLVTS.GET_SUM_RMSASIP(S_RESULT)
     RMS_PSIP  =SLVTS.GET_SUM_RMSPSIP(S_RESULT)
-    print NUM_CCD
-    print CRPIX
-    print OAPIX
     
     SUMhdu = pyfits.PrimaryHDU()
     SUMhdr = SUMhdu.header
@@ -368,4 +365,4 @@ def OUTPUT_BTBL(V_S_RESULT,DIR_OUT):
     REFhdu = pyfits.new_table(REFCOL)
     REFhdu.writeto(REFNAME,clobber=True)
 
-    print REFNAME
+#    print REFNAME

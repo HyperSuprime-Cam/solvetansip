@@ -17,6 +17,7 @@ std::vector< double > GET_SUM_CRPIX(CL_SLVTS* SLVTS);
 std::vector< double > GET_SUM_CRVAL(CL_SLVTS* SLVTS);
 std::vector< double > GET_SUM_OAPIX(CL_SLVTS* SLVTS);
 std::vector< double > GET_SUM_CD(CL_SLVTS* SLVTS);
+double GET_SUM_ANGLE(CL_SLVTS* SLVTS);
 std::vector< double > GET_SUM_RMSASIP(CL_SLVTS* SLVTS);
 std::vector< double > GET_SUM_RMSPSIP(CL_SLVTS* SLVTS);
 //-----------------------------------------------------------------

@@ -49,6 +49,9 @@ std::vector< double > GET_SUM_CD(CL_SLVTS* SLVTS){
 	CD.push_back(SLVTS->CCDs->CCD[SLVTS->APRM->NUM_CCD].CD[1][1]);
 	return CD;
 }
+double GET_SUM_ANGLE(CL_SLVTS* SLVTS){
+	return SLVTS->CCDs->CCD[SLVTS->APRM->NUM_CCD].ANGLE;
+}
 std::vector< double > GET_SUM_RMSASIP(CL_SLVTS* SLVTS){
 	std::vector< double > RMSASIP;
 	RMSASIP.push_back(SLVTS->CCDs->CCD[SLVTS->APRM->NUM_CCD].DIF_RMS_ASIP[0]);
