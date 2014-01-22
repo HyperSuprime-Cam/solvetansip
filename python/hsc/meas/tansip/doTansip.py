@@ -92,10 +92,10 @@ def SLVTS_REF(matchListAllCcd):
                 REFs.append(REF)
         CID+=1
 
-    OUTNAME="./REF.dat"
-    FOUT=open(OUTNAME,"w")
-    for i in range(len(REFs)):
-        print>>FOUT ,REFs[i][0] ,REFs[i][1] ,REFs[i][2] ,REFs[i][3] ,REFs[i][4] ,REFs[i][5]
+#    OUTNAME="./REF.dat"
+#    FOUT=open(OUTNAME,"w")
+#    for i in range(len(REFs)):
+ #       print>>FOUT ,REFs[i][0] ,REFs[i][1] ,REFs[i][2] ,REFs[i][3] ,REFs[i][4] ,REFs[i][5]
 
     return REFs
 
@@ -115,10 +115,10 @@ def SLVTS_CCD(NUMCCD,camera):
         CCD.append(str(CGeom.getSize().getPixels(PS)[1]))
         CCDs.append(CCD)
 
-    OUTNAME="./CCD.dat"
-    FOUT=open(OUTNAME,"w")
-    for CID in range(NUMCCD):
-        print>>FOUT ,CCDs[CID][0] ,CCDs[CID][1] ,CCDs[CID][2] ,CCDs[CID][3] ,CCDs[CID][4] ,CCDs[CID][5]
+#    OUTNAME="./CCD.dat"
+#    FOUT=open(OUTNAME,"w")
+#    for CID in range(NUMCCD):
+#        print>>FOUT ,CCDs[CID][0] ,CCDs[CID][1] ,CCDs[CID][2] ,CCDs[CID][3] ,CCDs[CID][4] ,CCDs[CID][5]
 
     return CCDs
 #-----------------------------------------------------------------
