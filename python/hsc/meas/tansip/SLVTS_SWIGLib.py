@@ -1921,6 +1921,10 @@ def GET_SUM_ANGLE(*args):
   """GET_SUM_ANGLE(CL_SLVTS SLVTS) -> double"""
   return _SLVTS_SWIGLib.GET_SUM_ANGLE(*args)
 
+def GET_SUM_MAX_CRPIX_G(*args):
+  """GET_SUM_MAX_CRPIX_G(CL_SLVTS SLVTS) -> VectorDouble"""
+  return _SLVTS_SWIGLib.GET_SUM_MAX_CRPIX_G(*args)
+
 def GET_SUM_CD_CORANGLE(*args):
   """GET_SUM_CD_CORANGLE(CL_SLVTS SLVTS) -> VectorDouble"""
   return _SLVTS_SWIGLib.GET_SUM_CD_CORANGLE(*args)

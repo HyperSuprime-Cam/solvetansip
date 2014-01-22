@@ -52,6 +52,17 @@ std::vector< double > GET_SUM_CD(CL_SLVTS* SLVTS){
 double GET_SUM_ANGLE(CL_SLVTS* SLVTS){
 	return SLVTS->CCDs->CCD[SLVTS->APRM->NUM_CCD].ANGLE;
 }
+std::vector< double > GET_SUM_MAX_CRPIX_G(CL_SLVTS* SLVTS){
+	std::vector< double > MAX_CRPIX_G;
+	MAX_CRPIX_G.push_back(SLVTS->CCDs->MAX_CRPIX_G_R);
+	MAX_CRPIX_G.push_back(SLVTS->CCDs->MAX_CRPIX_G[0]);
+	MAX_CRPIX_G.push_back(SLVTS->CCDs->MAX_CRPIX_G[1]);
+	MAX_CRPIX_G.push_back(SLVTS->CCDs->MIN_CRPIX_G[0]);
+	MAX_CRPIX_G.push_back(SLVTS->CCDs->MIN_CRPIX_G[1]);
+	MAX_CRPIX_G.push_back(SLVTS->CCDs->AVE_CRPIX_G[0]);
+	MAX_CRPIX_G.push_back(SLVTS->CCDs->AVE_CRPIX_G[1]);
+	return MAX_CRPIX_G;
+}
 std::vector< double > GET_SUM_CD_CORANGLE(CL_SLVTS* SLVTS){
 	double GCD[4],GANG;
 	std::vector< double > CD_COR;
