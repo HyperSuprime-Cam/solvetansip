@@ -131,6 +131,9 @@ def OUTPUT_SUMMARY(V_S_RESULT,DIR_OUT):
 
     SUMNAME=DIR_OUT+"/solvetansipresult_SUMMARY.fits"
 
+    MODE_CR   =SLVTS.GET_SUM_MODECR(S_RESULT)
+    MODE_REJ  =SLVTS.GET_SUM_MODEREJ(S_RESULT)
+    MODE_CCD  =SLVTS.GET_SUM_MODECCD(S_RESULT)
     NUM_CCD   =SLVTS.GET_SUM_NUMCCD(S_RESULT)
     NUM_REF   =SLVTS.GET_SUM_NUMREF(S_RESULT)
     NUM_FIT   =SLVTS.GET_SUM_NUMFIT(S_RESULT)
@@ -146,8 +149,9 @@ def OUTPUT_SUMMARY(V_S_RESULT,DIR_OUT):
     
     SUMhdu = pyfits.PrimaryHDU()
     SUMhdr = SUMhdu.header
-    SUMhdr.update("NUM_CCD",NUM_CCD ,"Number of CCDs")
-    SUMhdr.update("NUM_REF",NUM_REF ,"Number of References of input")
+    SUMhdr.update("MODE_CR" ,MODE_CR ,"CR MODE")
+    SUMhdr.update("MODE_REJ",MODE_CCD,"REJECTION MODE(1=REJECTION)")
+    SUMhdr.update("MODE_CCD",MODE_REJ,"CCD POSITION MODE(i=DETERMINING CCD POSITIONs)")
     SUMhdr.update("NUM_FIT",NUM_FIT ,"Number of References fot fitting")
     SUMhdr.update("CRVAL_1",CRVAL[0],"CRVAL 1")
     SUMhdr.update("CRVAL_2",CRVAL[1],"CRVAL 2")

@@ -10,6 +10,9 @@
 //-----------------------------------------------------------------
 //Getting Functions : SUMMARY Info
 //-----------------------------------------------------------------
+std::string GET_SUM_MODECR(CL_SLVTS* SLVTS);
+int GET_SUM_MODEREJ(CL_SLVTS* SLVTS);
+int GET_SUM_MODECCD(CL_SLVTS* SLVTS);
 int GET_SUM_NUMCCD(CL_SLVTS* SLVTS);
 int GET_SUM_NUMREF(CL_SLVTS* SLVTS);
 int GET_SUM_NUMFIT(CL_SLVTS* SLVTS);

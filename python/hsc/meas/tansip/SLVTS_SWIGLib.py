@@ -1889,6 +1889,18 @@ SourceMatch_swigregister = _SLVTS_SWIGLib.SourceMatch_swigregister
 SourceMatch_swigregister(SourceMatch)
 
 
+def GET_SUM_MODECR(*args):
+  """GET_SUM_MODECR(CL_SLVTS SLVTS) -> string"""
+  return _SLVTS_SWIGLib.GET_SUM_MODECR(*args)
+
+def GET_SUM_MODEREJ(*args):
+  """GET_SUM_MODEREJ(CL_SLVTS SLVTS) -> int"""
+  return _SLVTS_SWIGLib.GET_SUM_MODEREJ(*args)
+
+def GET_SUM_MODECCD(*args):
+  """GET_SUM_MODECCD(CL_SLVTS SLVTS) -> int"""
+  return _SLVTS_SWIGLib.GET_SUM_MODECCD(*args)
+
 def GET_SUM_NUMCCD(*args):
   """GET_SUM_NUMCCD(CL_SLVTS SLVTS) -> int"""
   return _SLVTS_SWIGLib.GET_SUM_NUMCCD(*args)

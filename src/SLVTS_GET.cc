@@ -14,6 +14,15 @@ using namespace std;
 //-----------------------------------------------------------------
 //Getting Functions : SUMMARY Info
 //-----------------------------------------------------------------
+std::string GET_SUM_MODECR(CL_SLVTS* SLVTS){
+	return SLVTS->APRM->MODE_CR;
+}
+int GET_SUM_MODEREJ(CL_SLVTS* SLVTS){
+	return SLVTS->APRM->MODE_REJ;
+}
+int GET_SUM_MODECCD(CL_SLVTS* SLVTS){
+	return SLVTS->APRM->MODE_CCDPOS;
+}
 int GET_SUM_NUMCCD(CL_SLVTS* SLVTS){
 	return SLVTS->APRM->NUM_CCD;
 }
