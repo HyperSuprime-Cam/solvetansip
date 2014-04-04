@@ -11,9 +11,13 @@
 
 using namespace std;
 std::vector< CL_SLVTS* > SOLVETANSIP(std::vector< std::vector< std::vector<std::string> > > SLVTS_Argvs){
+	clock_t TS,TE;
+	clock_t T1,T2;
+	TS=clock();
 	CL_SLVTS* SLVTS;
 	SLVTS = new CL_SLVTS[1];
 
+	T1=clock();
 	SLVTS->SET_INIT();
 	SLVTS->SET_INPUT(SLVTS_Argvs);
 	if(SLVTS->CHECK_INPUT()==1){
@@ -22,6 +26,8 @@ std::vector< CL_SLVTS* > SOLVETANSIP(std::vector< std::vector< std::vector<std::
 		V_SLVTS.push_back(SLVTS);
 		return V_SLVTS;
 	}
+	T2=clock();
+	if(SLVTS->APRM->FLAG_STD>0.5)cout<<"TIME SET INPUT         : "<<(T2-T1)/CLOCKS_PER_SEC << " (sec)"<<endl;
 	
 	SLVTS->CALC_WCS();
 	
@@ -29,6 +35,10 @@ std::vector< CL_SLVTS* > SOLVETANSIP(std::vector< std::vector< std::vector<std::
 
 	std::vector< CL_SLVTS* > V_SLVTS;
 	V_SLVTS.push_back(SLVTS);
+
+	TE=clock();
+	if(SLVTS->APRM->FLAG_STD>0.5)cout<<"TIME SOLVETANSIP TOTAL : "<<(TE-TS)/CLOCKS_PER_SEC << " (sec)"<<endl;
+
 	return V_SLVTS;
 }
 void CL_SLVTS::SET_INIT(){
@@ -54,13 +64,24 @@ int CL_SLVTS::CHECK_INPUT(){
 	return 0;
 }
 void CL_SLVTS::CALC_WCS(){
+	clock_t T1,T2;
+
+	T1=clock();
 	if(APRM->MODE_REJ==1)
 	REFs->REJECT_BADREF();
+	T2=clock();
+	if(APRM->FLAG_STD>0.5)cout<<"TIME REJECTION         : "<<(T2-T1)/CLOCKS_PER_SEC << " (sec)"<<endl;
 
+	T1=clock();
 	if(APRM->MODE_CCDPOS==1)
 	REFs->DETERMINE_CCDPOSITION();
+	T2=clock();
+	if(APRM->FLAG_STD>0.5)cout<<"TIME CCDPOSITION       : "<<(T2-T1)/CLOCKS_PER_SEC << " (sec)"<<endl;
 
+	T1=clock();
 	REFs->DETERMINE_TANSIP();
+	T2=clock();
+	if(APRM->FLAG_STD>0.5)cout<<"TIME TANSIP            : "<<(T2-T1)/CLOCKS_PER_SEC << " (sec)"<<endl;
 	
 }
 

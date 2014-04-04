@@ -9,13 +9,6 @@
 #include<vector>
 #include<string>
 
-// FH added - start
-#include "lsst/pex/policy/Policy.h"
-#include "lsst/afw/cameraGeom/Camera.h"
-#include "lsst/afw/image/TanWcs.h"
-#include"hsc/meas/tansip/SourceMatch.h"
-// FH added - end
-
 #include"hsc/meas/tansip/APRM.h"
 #include"hsc/meas/tansip/CCD.h"
 #include"hsc/meas/tansip/REF.h"
