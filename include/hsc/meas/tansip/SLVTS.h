@@ -9,9 +9,6 @@
 #include<vector>
 #include<string>
 
-// FH added - start
-// FH added - end
-
 #include"hsc/meas/tansip/APRM.h"
 #include"hsc/meas/tansip/CCD.h"
 #include"hsc/meas/tansip/REF.h"

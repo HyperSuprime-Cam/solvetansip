@@ -292,6 +292,8 @@ void CL_CCDs::SET_CCDs(){
 void CL_CCDs::SHOW(){
 	int i;
 
+	cout << setprecision(3);
+	cout<<scientific;
 	cout << "-- SHOW CCDs --" << endl;
 	cout << "NUM_CCD             : " << *NUM_CCD        << endl;
 	cout << "BASISPOSX   (Center): " ;cout.width(10);cout<< GPOS_C_BASIS[0]<< endl;
