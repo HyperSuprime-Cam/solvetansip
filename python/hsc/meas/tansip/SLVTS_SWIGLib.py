@@ -2162,12 +2162,16 @@ def GET_REF_CAMERADISTPSIP(*args):
   return _SLVTS_SWIGLib.GET_REF_CAMERADISTPSIP(*args)
 
 def SET_EMPTYMETADATA():
-  """SET_EMPTYMETADATA() -> dafbase::PropertySet::Ptr"""
+  """SET_EMPTYMETADATA() -> Ptr"""
   return _SLVTS_SWIGLib.SET_EMPTYMETADATA()
 
 def SET_METADATA(*args):
-  """SET_METADATA(VSLVTS SLVTS, dafbase::PropertySet::Ptr meta)"""
+  """SET_METADATA(VSLVTS SLVTS, Ptr meta)"""
   return _SLVTS_SWIGLib.SET_METADATA(*args)
+
+def CHECK_METADATA(*args):
+  """CHECK_METADATA(VSLVTS SLVTS, Ptr meta)"""
+  return _SLVTS_SWIGLib.CHECK_METADATA(*args)
 
 def SET_TANWCS(*args):
   """SET_TANWCS(VSLVTS VSLVTS) -> resultWcs_V"""

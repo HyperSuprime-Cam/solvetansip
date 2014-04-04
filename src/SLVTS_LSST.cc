@@ -165,6 +165,61 @@ cout<<scientific<<setprecision(6)<<"R : "<<SLVTS->CCDs->MAX_CRPIX_G_R<<"	"<<VALU
 	meta->add("nref_fitting"        , SLVTS->APRM->NUM_FIT);
 
 }
+void CHECK_METADATA(std::vector< CL_SLVTS* > VSLVTS,dafbase::PropertySet::Ptr &meta){
+	std::string VAL_S;
+	int         VAL_I,GL;
+	double	    VAL_D;
+	char KEY[100];
+	CL_SLVTS* SLVTS;
+	SLVTS=VSLVTS[0];
+	GL=SLVTS->APRM->NUM_CCD;
+
+	if(SLVTS->APRM->FLAG_STD>0.5){
+		cout<<"--- CHECK metadata ---"<<endl;
+		VAL_S=meta->getAsString("ST_A_MODE_CR");
+		cout<<"ST_A_MODE_CR : "<<VAL_S<<endl;
+		VAL_I=meta->getAsInt("ST_A_NUM_CCD");
+		cout<<"ST_A_NUM_CCD : "<<VAL_I<<endl;
+		VAL_I=meta->getAsInt("nref_all");
+		cout<<"nref_all     : "<<VAL_I<<endl;
+		VAL_I=meta->getAsInt("nref_fitting");
+		cout<<"nref_fitting : "<<VAL_I<<endl;
+                sprintf(KEY,"ST_C%03d_PSIP_DIF_AVE_X",GL);
+		VAL_D=meta->getAsDouble(KEY);
+		cout<<KEY<<" : "<<VAL_D<<endl;
+                sprintf(KEY,"ST_C%03d_PSIP_DIF_AVE_Y",GL);
+	        VAL_D=meta->getAsDouble(KEY);
+		cout<<KEY<<" : "<<VAL_D<<endl;
+                sprintf(KEY,"ST_C%03d_PSIP_DIF_RMS_X",GL);
+	        VAL_D=meta->getAsDouble(KEY);
+		cout<<KEY<<" : "<<VAL_D<<endl;
+                sprintf(KEY,"ST_C%03d_PSIP_DIF_RMS_Y",GL);
+	        VAL_D=meta->getAsDouble(KEY);
+		cout<<KEY<<" : "<<VAL_D<<endl;
+                sprintf(KEY,"ST_C%03d_PSIP_DIF_MAX_X",GL);
+	        VAL_D=meta->getAsDouble(KEY);
+		cout<<KEY<<" : "<<VAL_D<<endl;
+                sprintf(KEY,"ST_C%03d_PSIP_DIF_MAX_Y",GL);
+	        VAL_D=meta->getAsDouble(KEY);
+		cout<<KEY<<" : "<<VAL_D<<endl;
+	        VAL_D=meta->getAsDouble("sip_residuals_ave_x" );
+		cout<<" sip_residuals_ave_x : "<<VAL_D<<endl;
+	        VAL_D=meta->getAsDouble("sip_residuals_ave_y" );
+		cout<<" sip_residuals_ave_y : "<<VAL_D<<endl;
+	 	VAL_D=meta->getAsDouble("sip_residuals_rms_x" );
+		cout<<" sip_residuals_rms_x : "<<VAL_D<<endl;
+		VAL_D=meta->getAsDouble("sip_residuals_rms_y" );
+		cout<<" sip_residuals_rms_y : "<<VAL_D<<endl;
+	        VAL_D=meta->getAsDouble("psip_residuals_ave_x");
+		cout<<"psip_residuals_ave_x : "<<VAL_D<<endl;
+	        VAL_D=meta->getAsDouble("psip_residuals_ave_y");
+		cout<<"psip_residuals_ave_y : "<<VAL_D<<endl;
+	        VAL_D=meta->getAsDouble("psip_residuals_rms_x");
+		cout<<"psip_residuals_rms_x : "<<VAL_D<<endl;
+	        VAL_D=meta->getAsDouble("psip_residuals_rms_y");
+		cout<<"psip_residuals_rms_y : "<<VAL_D<<endl;
+	}	
+}
 std::vector <lsst::afw::image::TanWcs::Ptr> SET_TANWCS(std::vector< CL_SLVTS* > VSLVTS){
 	std::vector <lsst::afw::image::TanWcs::Ptr> V_TanWcs;
 	int CID;

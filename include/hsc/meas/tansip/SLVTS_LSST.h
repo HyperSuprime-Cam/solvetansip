@@ -12,8 +12,9 @@
 #include"hsc/meas/tansip/SLVTS_GET.h"
 namespace dafbase = lsst::daf::base;
 
-dafbase::PropertySet::Ptr SET_EMPTYMETADATA();
-void SET_METADATA(std::vector< CL_SLVTS* > SLVTS, dafbase::PropertySet::Ptr &meta);
+lsst::daf::base::PropertySet::Ptr SET_EMPTYMETADATA();
+void SET_METADATA(std::vector< CL_SLVTS* > SLVTS, lsst::daf::base::PropertySet::Ptr &meta);
+void CHECK_METADATA(std::vector< CL_SLVTS* > SLVTS, lsst::daf::base::PropertySet::Ptr &meta);
 std::vector <lsst::afw::image::TanWcs::Ptr> SET_TANWCS(std::vector< CL_SLVTS* > VSLVTS);
 
 #endif

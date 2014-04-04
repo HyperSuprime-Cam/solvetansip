@@ -8,11 +8,13 @@ import lsst.afw.cameraGeom            as cameraGeom
 
 def doTansip(matchListAllCcd, policy=None, camera=None, rerun=None):
     metaTANSIP = SLVTS.SET_EMPTYMETADATA()
+    print "meta:",metaTANSIP
     SLVTSresult=SOLVETANSIP(matchListAllCcd, metaTANSIP, policy=policy, camera=camera, rerun=rerun)
     return SLVTSresult
 	
 def doTansipQa(matchListAllCcd, policy=None, camera=None, rerun=None):
     metaTANSIP = SLVTS.SET_EMPTYMETADATA()
+    print "metaQa:",metaTANSIP
     SLVTSresult=SOLVETANSIP(matchListAllCcd, metaTANSIP, policy=policy, camera=camera, rerun=rerun)
     return SLVTSresult,metaTANSIP
 	
@@ -39,6 +41,7 @@ def SOLVETANSIP(matchListAllCcd, metaTANSIP, policy=None, camera=None, rerun=Non
     SLVTS_Argvs.append(REF)
     SLVTSRESULT=SLVTS.SOLVETANSIP(SLVTS_Argvs)
     SLVTS.SET_METADATA(SLVTSRESULT, metaTANSIP)
+    SLVTS.CHECK_METADATA(SLVTSRESULT,metaTANSIP)
     TANWCS=SLVTS.SET_TANWCS(SLVTSRESULT)
 
     FLAG_OUT=policy.get('FLAG_OUT')
@@ -58,7 +61,7 @@ def getwcsList(TANWCS):
 def SLVTS_APRM(policy):
     KVs=SLVTS.VVS([])
 
-    for K in ['INSTR','MODE_CR','MODE_CCDPOS','PRECISION_POS','ORDER_ASIP','ORDER_PSIP','MODE_REJ','CRPIX1','CRPIX2','CRVAL1','CRVAL2','FLAG_STD','FLAG_OUT','DIR_OUT']:
+    for K in ['INSTR','MODE_CR','MODE_CCDPOS','PRECISION_POS','ORDER_ASIP','ORDER_PSIP','MODE_REJ','CLIPSIGMA','CRPIX1','CRPIX2','CRVAL1','CRVAL2','FLAG_STD','FLAG_OUT','DIR_OUT']:
         KV=SLVTS.VS([])
         KV.append(K)
         KV.append(str(policy.get(K)))

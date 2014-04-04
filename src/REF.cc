@@ -112,6 +112,7 @@ void CL_REFs::SET_INPUT(std::vector< std::vector< std::string > > REF_Argvs,CL_A
 		POS_L[1]=atof (REF_Argvs[i][3].c_str());
 		RADEC[0]=atof (REF_Argvs[i][4].c_str());
 		RADEC[1]=atof (REF_Argvs[i][5].c_str());
+//cout << i << "	" << IDOBJ << "  " << IDCCD << "  " << POS_L[0] << "  " << POS_L[1] << "  " << RADEC[0] << "  " << RADEC[1]<<endl;
 		if(isfinite(IDOBJ)   &&isfinite(IDCCD)   &&
 		   isfinite(POS_L[0])&&isfinite(POS_L[1])&&
 		   isfinite(RADEC[0])&&isfinite(RADEC[1])){
@@ -507,11 +508,15 @@ void CL_REFs::FIT_CbyD(int ID_C,int ID_D){
 			C[0]=REF[i].POS_CELESTIAL_LOCAL_G[0];
 			C[1]=REF[i].POS_CELESTIAL_LOCAL_G[1];
 		}
-		dx[*NUM_FIT][0]=dy[*NUM_FIT][0]=D[0];
-		dx[*NUM_FIT][1]=dy[*NUM_FIT][1]=D[1];
-		dx[*NUM_FIT][2]=C[0];
-		dy[*NUM_FIT][2]=C[1];
-		*NUM_FIT+=1;
+
+		if(isfinite(D[0])&&isfinite(D[1])&&
+		   isfinite(C[0])&&isfinite(C[1])){
+			dx[*NUM_FIT][0]=dy[*NUM_FIT][0]=D[0];
+			dx[*NUM_FIT][1]=dy[*NUM_FIT][1]=D[1];
+			dx[*NUM_FIT][2]=C[0];
+			dy[*NUM_FIT][2]=C[1];
+			*NUM_FIT+=1;
+		}
 	}
 
 	CALC_FIT_LS2(*NUM_FIT,*ORDER_ASIP,dx,ASIP[0]);
@@ -563,11 +568,14 @@ void CL_REFs::FIT_DbyC(int ID_D,int ID_C){
 			C[0]=REF[i].POS_CELESTIAL_LOCAL_G[0];
 			C[1]=REF[i].POS_CELESTIAL_LOCAL_G[1];
 		}
-		dx[*NUM_FIT][0]=dy[*NUM_FIT][0]=C[0];
-		dx[*NUM_FIT][1]=dy[*NUM_FIT][1]=C[1];
-		dx[*NUM_FIT][2]=D[0];
-		dy[*NUM_FIT][2]=D[1];
-		*NUM_FIT+=1;
+                if(isfinite(D[0])&&isfinite(D[1])&&
+                   isfinite(C[0])&&isfinite(C[1])){
+			dx[*NUM_FIT][0]=dy[*NUM_FIT][0]=C[0];
+			dx[*NUM_FIT][1]=dy[*NUM_FIT][1]=C[1];
+			dx[*NUM_FIT][2]=D[0];
+			dy[*NUM_FIT][2]=D[1];
+			*NUM_FIT+=1;
+		}
 	}
 
 	CALC_FIT_LS2(*NUM_FIT,*ORDER_PSIP,dx,PSIP[0]);
@@ -776,8 +784,8 @@ void CL_REFs::CALC_CRVALatCRPIX(){
 		if(hypot(ASIP[0][0],ASIP[1][0])/SCALE<0.001){
 		break;
 		}else{
-			*CRVAL[0]+=ASIP[0][0];
-			*CRVAL[1]+=ASIP[1][0]/cos(*CRVAL[1]/180*PI);
+			*CRVAL[0]+=ASIP[0][0]/cos(*CRVAL[1]/180*PI);
+			*CRVAL[1]+=ASIP[1][0];
 		}
 	}
 	CCDs->CCD[*NUM_CCD].SET_CDASIP();
@@ -1561,10 +1569,15 @@ void CL_REF::SET_POS_CELESTIAL_IMWLDfromRADEC(){
 	CRVALrad[0]=*CRVAL[0]*PI/180;
 	CRVALrad[1]=*CRVAL[1]*PI/180;
 
-	NRAD[1]=asin(sin(RADECrad[1])*sin(CRVALrad[1])+cos(RADECrad[1])*cos(CRVALrad[1])*cos(RADECrad[0]-CRVALrad[0]));
-	NRAD[0]=atan2( -cos(RADECrad[1])*sin(RADECrad[0]-CRVALrad[0]),
+	if(hypot(RADECrad[0]-CRVALrad[0],RADECrad[1]-CRVALrad[1])<0.00000001){
+		NRAD[0]=PI;
+		NRAD[1]=PI*0.5;
+	}else{
+		NRAD[1]=asin(sin(RADECrad[1])*sin(CRVALrad[1])+cos(RADECrad[1])*cos(CRVALrad[1])*cos(RADECrad[0]-CRVALrad[0]));
+		NRAD[0]=atan2( -cos(RADECrad[1])*sin(RADECrad[0]-CRVALrad[0]),
 			sin(RADECrad[1])*cos(CRVALrad[1])
 		-cos(RADECrad[1])*sin(CRVALrad[1])*cos(RADECrad[0]-CRVALrad[0]))+PI;
+	}
 
 	IMWLDrad[0]= 1.0/tan(NRAD[1])*sin(NRAD[0]);
 	IMWLDrad[1]=-1.0/tan(NRAD[1])*cos(NRAD[0]);
