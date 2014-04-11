@@ -360,6 +360,11 @@ void CL_REFs::SET_POS_CELESTIAL_ALL(){
 		REF[i].SET_POS_CELESTIAL_PSIP_LOCAL_LfromPSIP_CRPIX_L();
 	}
 }
+void CL_REFs::SET_DIFF(){
+	int i;
+	for(i=0;i<*NUM_REF;i++)
+	REF[i].SET_DIFF();
+}
 void CL_REFs::SET_OPTICAL_DISTORTIONbyPSIP(){
 	int i;
 	for(i=0;i<*NUM_REF;i++)
@@ -1208,6 +1213,7 @@ void CL_REFs::CALC_TANSIP(){
 	SET_POS_CELESTIAL_PSIP_CRPIX_GfromIMPIX_G();
 	CALC_STAT_PSIP();
 	
+	SET_DIFF();
 	SET_MAXMIN_CRPIX_G();
 }
 //DISTORTION
@@ -1696,6 +1702,12 @@ void CL_REF::SET_POS_CELESTIAL_PSIP_LOCAL_LfromPSIP_CRPIX_L(){
 	POS_CELESTIAL_PSIP_LOCAL_L[0]=POS_CELESTIAL_PSIP_CRPIX_L[0]+*CRPIX_L[0];
 	POS_CELESTIAL_PSIP_LOCAL_L[1]=POS_CELESTIAL_PSIP_CRPIX_L[1]+*CRPIX_L[1];
 }
+void CL_REF::SET_DIFF(){
+	DIFF_ASIP[0]=POS_DETECTED_ASIP_IMPIX_G[0]-POS_CELESTIAL_IMPIX_G[0];
+	DIFF_ASIP[1]=POS_DETECTED_ASIP_IMPIX_G[1]-POS_CELESTIAL_IMPIX_G[1];
+	DIFF_PSIP[0]=POS_CELESTIAL_PSIP_CRPIX_G[0]-POS_DETECTED_CRPIX_G[0];
+	DIFF_PSIP[1]=POS_CELESTIAL_PSIP_CRPIX_G[0]-POS_DETECTED_CRPIX_G[0];
+}
 void CL_REF::SET_OPTICAL_DISTORTIONbyPSIP(){
 	int i,j,ij;
 	double *XN,*YN,dCdI[2][2],InvdCdI[2][2];
@@ -1719,17 +1731,18 @@ void CL_REF::SET_OPTICAL_DISTORTIONbyPSIP(){
 		dCdI[1][1]+=PSIP_DY[1][ij]*XN[i]*YN[j];
 		ij++;
 	}
+
         InvdCdI[0][0]=(1+dCdI[1][1])/((1+dCdI[0][0])*(1+dCdI[1][1])-dCdI[0][1]*dCdI[1][0])-1;
         InvdCdI[0][1]=( -dCdI[0][1])/((1+dCdI[0][0])*(1+dCdI[1][1])-dCdI[0][1]*dCdI[1][0]);
         InvdCdI[1][0]=( -dCdI[1][0])/((1+dCdI[0][0])*(1+dCdI[1][1])-dCdI[0][1]*dCdI[1][0]);
         InvdCdI[1][1]=(1+dCdI[0][0])/((1+dCdI[0][0])*(1+dCdI[1][1])-dCdI[0][1]*dCdI[1][0])-1;
 
-	CAMERA_CONV     =0.5*(1+InvdCdI[0][0]+1+InvdCdI[1][1]);
-        CAMERA_ROT      =0.5*(  InvdCdI[0][1]-  InvdCdI[1][0]);
-        CAMERA_SHEAR[0] =0.5*(  InvdCdI[0][0]-  InvdCdI[1][1]);
-        CAMERA_SHEAR[1] =0.5*(  InvdCdI[0][1]+  InvdCdI[1][0]);
+	CAMERA_CONV     =0.5*(1+dCdI[0][0]+1+dCdI[1][1]);
+        CAMERA_ROT      =0.5*(  dCdI[0][1]-  dCdI[1][0]);
+        CAMERA_SHEAR[0] =0.5*(  dCdI[0][0]-  dCdI[1][1]);
+        CAMERA_SHEAR[1] =0.5*(  dCdI[0][1]+  dCdI[1][0]);
         CAMERA_MAG      =CAMERA_CONV*CAMERA_CONV-(CAMERA_SHEAR[0]*CAMERA_SHEAR[0]+CAMERA_SHEAR[1]*CAMERA_SHEAR[1]);
-        CAMERA_JACO     =(1+InvdCdI[0][0])*(1+InvdCdI[1][1])-InvdCdI[0][1]*InvdCdI[1][0];
+        CAMERA_JACO     =(1+dCdI[0][0])*(1+dCdI[1][1])-dCdI[0][1]*dCdI[1][0];
 
 //cout<< POS_CELESTIAL_IMPIX_G[0]<<"	"<<POS_CELESTIAL_IMPIX_G[1]<<"	"<<CAMERA_CONV<<"	"<<CAMERA_ROT<<"	"<<CAMERA_SHEAR[0]<<"	"<<CAMERA_SHEAR[1]<<"	"<<CAMERA_MAG<<"	"<<CAMERA_JACO<<endl;
 	delete [] XN;

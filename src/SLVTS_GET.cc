@@ -784,6 +784,23 @@ std::vector< std::vector< double > > GET_REF_POS_DETECTED_ASIP_RADEC_G(CL_SLVTS*
 
     return XY;
 }
+std::vector< std::vector< double > > GET_REF_DIFF(CL_SLVTS* SLVTS){
+    int ID;
+    std::vector< double > DIFFAX,DIFFAY,DIFFPX,DIFFPY;
+    std::vector< std::vector< double > > DIFF;
+    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++){
+        DIFFAX.push_back(SLVTS->REFs->REF[ID].DIFF_ASIP[0]);
+        DIFFAY.push_back(SLVTS->REFs->REF[ID].DIFF_ASIP[1]);
+        DIFFPX.push_back(SLVTS->REFs->REF[ID].DIFF_PSIP[0]);
+        DIFFPY.push_back(SLVTS->REFs->REF[ID].DIFF_PSIP[1]);
+    }
+    DIFF.push_back(DIFFAX);
+    DIFF.push_back(DIFFAY);
+    DIFF.push_back(DIFFPX);
+    DIFF.push_back(DIFFPY);
+
+    return DIFF;
+}
 std::vector< std::vector< double > > GET_REF_CAMERADISTPSIP(CL_SLVTS* SLVTS){
     int ID;
     std::vector< double > CONV,ROT,SHR1,SHR2,MAG,JAC;

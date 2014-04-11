@@ -4,6 +4,7 @@ setup(
     ext_modules = [
         Extension('_SLVTS_SWIG', ['SLVTS_SWIG.i',
 	'../../src/SLVTS.cc',
+	'../../src/SLVTS_GET.cc',
 	'../../src/APRM.cc',
 	'../../src/CCD.cc',
 	'../../src/REF.cc',

@@ -306,6 +306,7 @@ def OUTPUT_BTBL(V_S_RESULT,DIR_OUT):
     REFPOS_DASIP_IMWLDG=SLVTS.GET_REF_POS_DETECTED_ASIP_IMWLD_G(S_RESULT);
     REFPOS_DASIP_RADECL=SLVTS.GET_REF_POS_DETECTED_ASIP_RADEC_L(S_RESULT);
     REFPOS_DASIP_RADECG=SLVTS.GET_REF_POS_DETECTED_ASIP_RADEC_G(S_RESULT);
+    REFDIFF=SLVTS.GET_REF_DIFF(S_RESULT);
     REFDISTP=SLVTS.GET_REF_CAMERADISTPSIP(S_RESULT);
 
     REFCOL=[]
@@ -378,6 +379,10 @@ def OUTPUT_BTBL(V_S_RESULT,DIR_OUT):
     REFCOL.append(Column(name="POSITION_DETECTED_ASIP_DEC_L"     ,format="D",unit="degree",array=REFPOS_DASIP_RADECL[1]))
     REFCOL.append(Column(name="POSITION_DETECTED_ASIP_RA_G"      ,format="D",unit="degree",array=REFPOS_DASIP_RADECG[0]))
     REFCOL.append(Column(name="POSITION_DETECTED_ASIP_DEC_G"     ,format="D",unit="degree",array=REFPOS_DASIP_RADECG[1]))
+    REFCOL.append(Column(name="DIFF_ASIP_X"		         ,format="D",array=REFDIFF[0]))
+    REFCOL.append(Column(name="DIFF_ASIP_Y"		         ,format="D",array=REFDIFF[1]))
+    REFCOL.append(Column(name="DIFF_PSIP_X"		         ,format="D",array=REFDIFF[2]))
+    REFCOL.append(Column(name="DIFF_PSIP_Y"		         ,format="D",array=REFDIFF[3]))
     REFCOL.append(Column(name="CAMERA_DIST_CONVERGENCE"          ,format="D",array=REFDISTP[0]))
     REFCOL.append(Column(name="CAMERA_DIST_ROTATION"             ,format="D",array=REFDISTP[1]))
     REFCOL.append(Column(name="CAMERA_DIST_SHEAR1"               ,format="D",array=REFDISTP[2]))

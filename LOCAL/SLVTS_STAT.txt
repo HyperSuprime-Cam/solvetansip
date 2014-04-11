@@ -1,0 +1,27 @@
+cd LOCAL
+python 
+import SLVTS_STAT
+reload(SLVTS_STAT)
+BASE="testdata/0902034/solvetansipresult_CCDs.fits"
+BASE="testdata/AVE/CCD_STAT.fits"
+visit="testdata/0902030"
+visitlist=["testdata/0902030","testdata/0902034","testdata/0902036","testdata/0902038","testdata/0902048","testdata/0902050"]
+OUT="testdata/AVE"
+
+
+SLVTS_STAT.STAT_CCDPOS(visit,BASE,flag_show=1,flag_return=1)
+
+SLVTS_STAT.STAT_CCDPOS_ALL(visitlist,BASE,OUT,flag_show=1)
+
+SLVTS_STAT.STAT_SIPRMS(visit,flag_sreturn=0)
+SLVTS_STAT.STAT_SIPRMS_ALL(visitlist,OUT,flag_show=1)
+
+SLVTS_STAT.STAT_REF(visit,flag_show=1,flag_return=0)
+SLVTS_STAT.STAT_REF_ALL(visitlist,flag_show=1)
+
+BASE_DIST="testdata/AVE/DIST.dat"
+SLVTS_STAT.MAKE_DIST(visit,BASE_DIST)
+SLVTS_STAT.MAKE_DIST_ALL(visitlist,BASE_DIST)
+SLVTS_STAT.STAT_DIST(visit,BASE_DIST,flag_show=1,flag_return=0)
+SLVTS_STAT.STAT_DIST_ALL(visitlist,BASE_DIST,OUT,flag_show=1)
+
