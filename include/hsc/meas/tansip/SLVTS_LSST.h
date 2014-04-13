@@ -1,5 +1,6 @@
 //-----------------------------------------------------------
 //SLVTS_LSST.h
+//Calling solvetansip codes in lsst pipeline
 //
 //Last modification : 2014/01/01
 //------------------------------------------------------------
@@ -12,9 +13,9 @@
 #include"hsc/meas/tansip/SLVTS_GET.h"
 namespace dafbase = lsst::daf::base;
 
-lsst::daf::base::PropertySet::Ptr SET_EMPTYMETADATA();
-void SET_METADATA(std::vector< CL_SLVTS* > SLVTS, lsst::daf::base::PropertySet::Ptr &meta);
-void CHECK_METADATA(std::vector< CL_SLVTS* > SLVTS, lsst::daf::base::PropertySet::Ptr &meta);
-std::vector <lsst::afw::image::TanWcs::Ptr> SET_TANWCS(std::vector< CL_SLVTS* > VSLVTS);
+lsst::daf::base::PropertySet::Ptr SET_EMPTYMETADATA();//making empty metadata
+void SET_METADATA(std::vector< CL_SLVTS* > SLVTS, lsst::daf::base::PropertySet::Ptr &meta);//setting solvetansip result to metadata 
+void CHECK_METADATA(std::vector< CL_SLVTS* > SLVTS, lsst::daf::base::PropertySet::Ptr &meta);//checking values in metadata
+std::vector <lsst::afw::image::TanWcs::Ptr> SET_TANWCS(std::vector< CL_SLVTS* > VSLVTS);//setting solvetansip result to lsst WCS type
 
 #endif

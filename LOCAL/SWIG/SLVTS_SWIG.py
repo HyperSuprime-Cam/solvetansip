@@ -287,6 +287,10 @@ VSLVTS_swigregister(VSLVTS)
 def SOLVETANSIP(*args):
   return _SLVTS_SWIG.SOLVETANSIP(*args)
 SOLVETANSIP = _SLVTS_SWIG.SOLVETANSIP
+
+def SET_END(*args):
+  return _SLVTS_SWIG.SET_END(*args)
+SET_END = _SLVTS_SWIG.SET_END
 class VD(_object):
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, VD, name, value)

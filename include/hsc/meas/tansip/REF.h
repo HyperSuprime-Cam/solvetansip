@@ -23,18 +23,18 @@
 class CL_REF{
 private:
 public:
-	CL_APRM *APRM;
-	CL_CCD  *CCD;
-	CL_CCD  *GCD;
-	double  *GPOS_L[4];
-	int     *LENGTH_CCD[2];
-	int	*ORDER_ASIP;
-	int	*ORDER_PSIP;
-	double	*CRVAL[2];
-	double	*CRPIX_G[2];
-	double	*CRPIX_L[2];
-	double  *CD[2][2];
-	double  *InvCD[2][2];
+	CL_APRM *APRM;//=SLVTS->APRM
+	CL_CCD  *CCD;//=SLVTS->CCDs->CCD[ID_CCD]
+	CL_CCD  *GCD;//=SLVTS->CCDs->CCD[NUMCCD]
+	double  *GPOS_L[4];//=CCD->GPOS_L
+	int     *LENGTH_CCD[2];//=CCD->LENGTH
+	int	*ORDER_ASIP;//=GCD->ORDER_ASIP
+	int	*ORDER_PSIP;//=GCD->ORDER_PSIP
+	double	*CRVAL[2];//=GCD->CRVAL
+	double	*CRPIX_G[2];//=GCD->CRPIX
+	double	*CRPIX_L[2];//=CCD->CRPIX
+	double  *CD[2][2];//=GCD->CD
+	double  *InvCD[2][2];//=GCD->InvCD
 	double  *ASIP_DX[2];
 	double  *ASIP_DY[2];
 	double  *PSIP_DX[2];
@@ -90,71 +90,71 @@ public:
 	double	CAMERA_ROT;
 	
 //FUNCTIONS
-	void SET_INIT(CL_CCD*  CCD,CL_CCD*  GCD);
+	void SET_INIT(CL_CCD*  CCD,CL_CCD*  GCD);//setting initial values
 //FUNCTIONS::POS
-	void SET_POS_DETECTED_LOCAL_CfromLOCAL_L();
-	void SET_POS_DETECTED_LOCAL_GfromLOCAL_L();
-	void SET_POS_DETECTED_CRPIX_LfromLOCAL_L();
-	void SET_POS_DETECTED_CRPIX_GfromLOCAL_G();
-	void SET_POS_DETECTED_IMPIX_LfromCRPIX_L();
-	void SET_POS_DETECTED_IMPIX_GfromCRPIX_G();
-	void SET_POS_DETECTED_IMWLD_LfromIMPIX_L();
-	void SET_POS_DETECTED_IMWLD_GfromIMPIX_G();
-	void SET_POS_DETECTED_RADEC_LfromIMWLD_L();
-	void SET_POS_DETECTED_RADEC_GfromIMWLD_G();
-	void SET_POS_DETECTED_ASIP_IMPIX_LfromCRPIX_L();
-	void SET_POS_DETECTED_ASIP_IMPIX_GfromCRPIX_G();
-	void SET_POS_DETECTED_ASIP_IMWLD_LfromASIP_IMPIX_L();
-	void SET_POS_DETECTED_ASIP_IMWLD_GfromASIP_IMPIX_G();
-	void SET_POS_DETECTED_ASIP_RADEC_LfromASIP_IMWLD_L();
-	void SET_POS_DETECTED_ASIP_RADEC_GfromASIP_IMWLD_G();
-	void SET_POS_CELESTIAL_IMWLDfromRADEC();
-	void SET_POS_CELESTIAL_IMPIX_GfromIMWLD();
-	void SET_POS_CELESTIAL_IMPIX_LfromIMWLD();
-	void SET_POS_CELESTIAL_CRPIX_GfromIMPIX_G();
-	void SET_POS_CELESTIAL_CRPIX_LfromIMPIX_L();
-	void SET_POS_CELESTIAL_LOCAL_GfromCRPIX_G();
-	void SET_POS_CELESTIAL_LOCAL_LfromCRPIX_L();
-	void SET_POS_CELESTIAL_PSIP_LOCAL_GfromIMWLD();
-	void SET_POS_CELESTIAL_PSIP_CRPIX_GfromIMPIX_G();
-	void SET_POS_CELESTIAL_PSIP_CRPIX_LfromIMPIX_L();
-	void SET_POS_CELESTIAL_PSIP_LOCAL_GfromPSIP_CRPIX_G();
-	void SET_POS_CELESTIAL_PSIP_LOCAL_LfromPSIP_CRPIX_L();
-	void SET_DIFF();
-	void SET_OPTICAL_DISTORTIONbyPSIP();
+	void SET_POS_DETECTED_LOCAL_CfromLOCAL_L();//setting detected position of LOCAL_C from LOCAL_L
+	void SET_POS_DETECTED_LOCAL_GfromLOCAL_L();//setting detected position of LOCAL_G from LOCAL_L
+	void SET_POS_DETECTED_CRPIX_LfromLOCAL_L();//setting detected position of CRPIX_L from LOCAL_L
+	void SET_POS_DETECTED_CRPIX_GfromLOCAL_G();//setting detected position of CRPIX_G from LOCAL_G
+	void SET_POS_DETECTED_IMPIX_LfromCRPIX_L();//setting detected position of IMPIX_L from CRPIX_L
+	void SET_POS_DETECTED_IMPIX_GfromCRPIX_G();//setting detected position of IMPIX_G from CRPIX_G
+	void SET_POS_DETECTED_IMWLD_LfromIMPIX_L();//setting detected position of IMWLD_L from IMPIX_L
+	void SET_POS_DETECTED_IMWLD_GfromIMPIX_G();//setting detected position of IMWLD_G from IMPIX_G
+	void SET_POS_DETECTED_RADEC_LfromIMWLD_L();//setting detected position of RADEC_L from IMWLD_L
+	void SET_POS_DETECTED_RADEC_GfromIMWLD_G();//setting detected position of RADEC_G from IMWLD_G
+	void SET_POS_DETECTED_ASIP_IMPIX_LfromCRPIX_L();//setting detected position of IMPIX_L from CRPIX_L with SIP
+	void SET_POS_DETECTED_ASIP_IMPIX_GfromCRPIX_G();//setting detected position of IMPIX_G from CRPIX_G with SIP
+	void SET_POS_DETECTED_ASIP_IMWLD_LfromASIP_IMPIX_L();//setting detected position of IMWLD_L from IMPIX_L with SIP
+	void SET_POS_DETECTED_ASIP_IMWLD_GfromASIP_IMPIX_G();//setting detected position of IMWLD_G from IMPIX_G with SIP
+	void SET_POS_DETECTED_ASIP_RADEC_LfromASIP_IMWLD_L();//setting detected position of RADEC_L from IMWLD_L with SIP
+	void SET_POS_DETECTED_ASIP_RADEC_GfromASIP_IMWLD_G();//setting detected position of RADEC_G from IMWLD_G with SIP
+	void SET_POS_CELESTIAL_IMWLDfromRADEC();//setting celestial position of IMWLD from RADEC
+	void SET_POS_CELESTIAL_IMPIX_GfromIMWLD();//setting celestial position of IMPIX_G from IMWLD
+	void SET_POS_CELESTIAL_IMPIX_LfromIMWLD();//setting celestial position of IMPIX_L from IMWLD
+	void SET_POS_CELESTIAL_CRPIX_GfromIMPIX_G();//setting celestial position of CRPIX_G from IMPIX_G
+	void SET_POS_CELESTIAL_CRPIX_LfromIMPIX_L();//setting celestial position of CRPIX_L from IMPIX_L
+	void SET_POS_CELESTIAL_LOCAL_GfromCRPIX_G();//setting celestial position of LOCAL_G from CRPIX_G
+	void SET_POS_CELESTIAL_LOCAL_LfromCRPIX_L();//setting celestial position of LOCAL_L from CRPIX_L
+	void SET_POS_CELESTIAL_PSIP_LOCAL_GfromIMWLD();//setting celestial position of LOCAL_G from IMWLD with PSIP
+	void SET_POS_CELESTIAL_PSIP_CRPIX_GfromIMPIX_G();//setting celestial position of CRPIX_G from IMPIX_G with PSIP
+	void SET_POS_CELESTIAL_PSIP_CRPIX_LfromIMPIX_L();//setting celestial position of CRPIX_L from IMPIX_L with PSIP
+	void SET_POS_CELESTIAL_PSIP_LOCAL_GfromPSIP_CRPIX_G();//setting celestial position of LOCAL_G from CRPIX_G with PSIP
+	void SET_POS_CELESTIAL_PSIP_LOCAL_LfromPSIP_CRPIX_L();//setting celestial position of LOCAL_L from CRPIX_L with PSIP
+	void SET_DIFF();//calculating differences from SIP and PSIP fitting
+	void SET_OPTICAL_DISTORTIONbyPSIP();//calculating distortion from PSIP
 };
 class CL_REFs{
 private:
 public:
-	CL_APRM *APRM;
-	CL_CCDs *CCDs;
+	CL_APRM *APRM;//SLVTS->APRM
+	CL_CCDs *CCDs;//SLVTS->CCDs
 	CL_REF  *REF;
-	string  *MODE_CR;
-	int     *MODE_CCDPOS;
-	int     *MODE_REJ;
-	int	*ORDER_ASIP;
-	int	*ORDER_PSIP;
-	double	*CRVAL[2];
-	double	*CRPIX[2];
-	double  *OAPIX[2];
-	int	*FLAG_STD;
-	int     *NUM_CCD;
-	int     *NUM_REF;
-	int     *NUM_FIT;
-	int     *NUM_REJ;
-	double  *GPOS_C_BASIS[3];
-	double  *SIGMA_CLIP;
-	double  *PRECISION_CCD;
-	double	*ASIP[2];
-	double	*PSIP[2];
-	double  *CD[2][2];
-	double  *InvCD[2][2];
-	double	*DIF_AVE_ASIP[2];
-	double	*DIF_RMS_ASIP[2];
-	double	*DIF_MAX_ASIP[2];
-	double	*DIF_AVE_PSIP[2];
-	double	*DIF_RMS_PSIP[2];
-	double	*DIF_MAX_PSIP[2];
+	string  *MODE_CR;//APRM->MODE_CR
+	int     *MODE_CCDPOS;//APRM->MODE_CCDPOS
+	int     *MODE_REJ;//APRM->MODE_REJ
+	int	*ORDER_ASIP;//APRM->ORDER_ASIP
+	int	*ORDER_PSIP;//APRM->ORDER_PSIP
+	double	*CRVAL[2];//APRM->CRVAL
+	double	*CRPIX[2];//APRM->CRPIX
+	double  *OAPIX[2];//APRM->OAPIX
+	int	*FLAG_STD;//APRM->FLAG_STD
+	int     *NUM_CCD;//APRM->NUM_CCD
+	int     *NUM_REF;//APRM->NUM_REF
+	int     *NUM_FIT;//APRM->NUM_FIT
+	int     *NUM_REJ;//APRM->NUM_REJ
+	double  *GPOS_C_BASIS[3];//CCDs->GPOS_C_BASIS
+	double  *SIGMA_CLIP;//APRM->SIGMA_SLIP
+	double  *PRECISION_CCD;//APRM->PRECISION_CCD
+	double	*ASIP[2];//CCDs->ASIP
+	double	*PSIP[2];//CCDs->PSIP
+	double  *CD[2][2];//CCDs->CD
+	double  *InvCD[2][2];//CCDs->InvCD
+	double	*DIF_AVE_ASIP[2];//CCDs->DIF_AVE_ASIP
+	double	*DIF_RMS_ASIP[2];//CCDs->DIF_RMS_ASIP
+	double	*DIF_MAX_ASIP[2];//CCDs->DIF_MAX_ASIP
+	double	*DIF_AVE_PSIP[2];//CCDs->DIF_AVE_PSIP
+	double	*DIF_RMS_PSIP[2];//CCDs->DIF_RMS_PSIP
+	double	*DIF_MAX_PSIP[2];//CCDs->DIF_MAX_PSIP
 	double  *ASIP_DX[2];
 	double  *ASIP_DY[2];
 	double  *PSIP_DX[2];
@@ -168,82 +168,83 @@ public:
 	double   MAX_LOCAL_G[2];
 	double   MIN_LOCAL_G[2];
 	double   AVE_LOCAL_G[2];
-	double  *MAX_CRPIX_G_R;
-	double  *MAX_CRPIX_G[2];
-	double  *MIN_CRPIX_G[2];
-	double  *AVE_CRPIX_G[2];
+	double  *MAX_CRPIX_G_R;//CCDs->MAX_CRPIX_G_R
+	double  *MAX_CRPIX_G[2];//CCDs->MAX_CRPIX_G
+	double  *MIN_CRPIX_G[2];//CCDs->MIN_CRPIX_G
+	double  *AVE_CRPIX_G[2];//CCDs->AVE_CRPIX_G
 	
 //FUNCTIONS
-	void SET_INIT(CL_APRM *APRM,CL_CCDs* CCDs);
-	void SET_INPUT(std::vector< std::vector< std::string > > REF_Argvs,CL_APRM* APRM,CL_CCDs* CCDs);
-	void SET_NUM();
-	void SET_END();
-	int  CHECK();
-	void SET_CCD(CL_CCDs*  CCDs);
+	void SET_INIT(CL_APRM *APRM,CL_CCDs* CCDs);//setting inital values
+	void SET_INPUT(std::vector< std::vector< std::string > > REF_Argvs,CL_APRM* APRM,CL_CCDs* CCDs);//setting input values
+	void SET_NUM();//setting NUM_REF, NUM_FIT, NUM_REJ
+	void SET_END();//destructor
+	int  CHECK();//checking current values
+	void SET_CCD(CL_CCDs*  CCDs);//setting initial values of all CCDs
 //FUNCTIONS::POS
-	void SET_POS_DETECTED_LOCAL_CfromLOCAL_L();
-	void SET_POS_DETECTED_LOCAL_GfromLOCAL_L();
-	void SET_POS_DETECTED_CRPIX_LfromLOCAL_L();
-	void SET_POS_DETECTED_CRPIX_GfromLOCAL_G();
-	void SET_POS_DETECTED_IMPIX_LfromCRPIX_L();
-	void SET_POS_DETECTED_IMPIX_GfromCRPIX_G();
-	void SET_POS_DETECTED_IMWLD_LfromIMPIX_L();
-	void SET_POS_DETECTED_IMWLD_GfromIMPIX_G();
-	void SET_POS_DETECTED_RADEC_LfromIMWLD_L();
-	void SET_POS_DETECTED_RADEC_GfromIMWLD_G();
-	void SET_POS_DETECTED_ASIP_IMPIX_LfromCRPIX_L();
-	void SET_POS_DETECTED_ASIP_IMPIX_GfromCRPIX_G();
-	void SET_POS_DETECTED_ASIP_IMWLD_LfromASIP_IMPIX_L();
-	void SET_POS_DETECTED_ASIP_IMWLD_GfromASIP_IMPIX_G();
-	void SET_POS_DETECTED_ASIP_RADEC_LfromASIP_IMWLD_L();
-	void SET_POS_DETECTED_ASIP_RADEC_GfromASIP_IMWLD_G();
-	void SET_POS_DETECTED_ALL();
-	void SET_POS_CELESTIAL_IMWLDfromRADEC();
-	void SET_POS_CELESTIAL_IMPIX_GfromIMWLD();
-	void SET_POS_CELESTIAL_IMPIX_LfromIMWLD();
-	void SET_POS_CELESTIAL_CRPIX_GfromIMPIX_G();
-	void SET_POS_CELESTIAL_CRPIX_LfromIMPIX_L();
-	void SET_POS_CELESTIAL_LOCAL_GfromCRPIX_G();
-	void SET_POS_CELESTIAL_LOCAL_LfromCRPIX_L();
-	void SET_POS_CELESTIAL_PSIP_LOCAL_GfromIMWLD();
-	void SET_POS_CELESTIAL_PSIP_CRPIX_GfromIMPIX_G();
-	void SET_POS_CELESTIAL_PSIP_CRPIX_LfromIMPIX_L();
-	void SET_POS_CELESTIAL_PSIP_LOCAL_GfromPSIP_CRPIX_G();
-	void SET_POS_CELESTIAL_PSIP_LOCAL_LfromPSIP_CRPIX_L();
-	void SET_POS_CELESTIAL_ALL();
-	void SET_DIFF();
-	void SET_OPTICAL_DISTORTIONbyPSIP();
-	void SET_MAXMIN_LOCAL_G();
-	void SET_MAXMIN_CRPIX_G();
-	int  GET_ID_NEAR_CRVAL();
-	int  GET_ID_NEAR_CRPIX();
+
+	void SET_POS_DETECTED_LOCAL_CfromLOCAL_L();//setting detected position of LOCAL_C from LOCAL_L for all references
+	void SET_POS_DETECTED_LOCAL_GfromLOCAL_L();//setting detected position of LOCAL_G from LOCAL_L for all references
+	void SET_POS_DETECTED_CRPIX_LfromLOCAL_L();//setting detected position of CRPIX_L from LOCAL_L for all references
+	void SET_POS_DETECTED_CRPIX_GfromLOCAL_G();//setting detected position of CRPIX_G from LOCAL_G for all references
+	void SET_POS_DETECTED_IMPIX_LfromCRPIX_L();//setting detected position of IMPIX_L from CRPIX_L for all references
+	void SET_POS_DETECTED_IMPIX_GfromCRPIX_G();//setting detected position of IMPIX_G from CRPIX_G for all references
+	void SET_POS_DETECTED_IMWLD_LfromIMPIX_L();//setting detected position of IMWLD_L from IMPIX_L for all references
+	void SET_POS_DETECTED_IMWLD_GfromIMPIX_G();//setting detected position of IMWLD_G from IMPIX_G for all references
+	void SET_POS_DETECTED_RADEC_LfromIMWLD_L();//setting detected position of RADEC_L from IMWLD_L for all references
+	void SET_POS_DETECTED_RADEC_GfromIMWLD_G();//setting detected position of RADEC_G from IMWLD_G for all references
+	void SET_POS_DETECTED_ASIP_IMPIX_LfromCRPIX_L();//setting detected position of IMPIX_L from CRPIX_L with SIP for all references
+	void SET_POS_DETECTED_ASIP_IMPIX_GfromCRPIX_G();//setting detected position of IMPIX_G from CRPIX_G with SIP for all references
+	void SET_POS_DETECTED_ASIP_IMWLD_LfromASIP_IMPIX_L();//setting detected position of IMWLD_L from IMPIX_L with SIP for all references
+	void SET_POS_DETECTED_ASIP_IMWLD_GfromASIP_IMPIX_G();//setting detected position of IMWLD_G from IMPIX_G with SIP for all references
+	void SET_POS_DETECTED_ASIP_RADEC_LfromASIP_IMWLD_L();//setting detected position of RADEC_L from IMWLD_L with SIP for all references
+	void SET_POS_DETECTED_ASIP_RADEC_GfromASIP_IMWLD_G();//setting detected position of RADEC_G from IMWLD_G with SIP for all references
+	void SET_POS_DETECTED_ALL();//setting all detected positions for all references
+	void SET_POS_CELESTIAL_IMWLDfromRADEC();//setting celestial position of IMWLD from RADEC for all references
+	void SET_POS_CELESTIAL_IMPIX_GfromIMWLD();//setting celestial position of IMPIX_G from IMWLD for all references
+	void SET_POS_CELESTIAL_IMPIX_LfromIMWLD();//setting celestial position of IMPIX_L from IMWLD for all references
+	void SET_POS_CELESTIAL_CRPIX_GfromIMPIX_G();//setting celestial position of CRPIX_G from IMPIX_G for all references
+	void SET_POS_CELESTIAL_CRPIX_LfromIMPIX_L();//setting celestial position of CRPIX_L from IMPIX_L for all references
+	void SET_POS_CELESTIAL_LOCAL_GfromCRPIX_G();//setting celestial position of LOCAL_G from CRPIX_G for all references
+	void SET_POS_CELESTIAL_LOCAL_LfromCRPIX_L();//setting celestial position of LOCAL_L from CRPIX_L for all references
+	void SET_POS_CELESTIAL_PSIP_LOCAL_GfromIMWLD();//setting celestial position of LOCAL_G from IMWLD with PSIP for all references
+	void SET_POS_CELESTIAL_PSIP_CRPIX_GfromIMPIX_G();//setting celestial position of CRPIX_G from IMPIX_G with PSIP for all references
+	void SET_POS_CELESTIAL_PSIP_CRPIX_LfromIMPIX_L();//setting celestial position of CRPIX_L from IMPIX_L with PSIP for all references
+	void SET_POS_CELESTIAL_PSIP_LOCAL_GfromPSIP_CRPIX_G();//setting celestial position of LOCAL_G from CRPIX_G with PSIP for all references
+	void SET_POS_CELESTIAL_PSIP_LOCAL_LfromPSIP_CRPIX_L();//setting celestial position of LOCAL_L from CRPIX_L with PSIP for all references
+	void SET_POS_CELESTIAL_ALL();//setting all celestial positions for all references
+	void SET_DIFF();//calculating differences from SIP and PSIP fitting for all references
+	void SET_OPTICAL_DISTORTIONbyPSIP();//calculating distortion from PSIP all references
+	void SET_MAXMIN_LOCAL_G();//setting maximun position in global coordinate
+	void SET_MAXMIN_CRPIX_G();//setting maximun position in global CRPIX coordinate
+	int  GET_ID_NEAR_CRVAL();//getting ID of reference which is nearest to CRVAL
+	int  GET_ID_NEAR_CRPIX();//getting ID of reference which is nearest to CRPIX
 //FUNCTIONS::FIT
-	void FIT_CbyD(int ID_C,int ID_D);
-	void FIT_DbyC(int ID_D,int ID_C);
-	void CALC_STAT_ASIP();
-	void CALC_STAT_PSIP();
-	void CALC_STAT_SIP_LOCAL();
-	void CALC_CRPIXatCRVAL();
-	void CALC_CRVALatCRPIX();
-	void CALC_CENTERPIXEL();
-	void SET_CRPIXatCENTER();
+	void FIT_CbyD(int ID_C,int ID_D);//fitting Celestial position by Detected position and getting coefficients of polynomial fitting. coordinates are assined by ID_C and ID_D
+	void FIT_DbyC(int ID_D,int ID_C);//fitting Detected position by Celestial position and getting coefficients of polynomial fitting. coordinates are assined by ID_C and ID_D
+	void CALC_STAT_ASIP();//getting statistics of SIP fitting for global fitting
+	void CALC_STAT_PSIP();//getting statistics of PSIP fitting for global fitting
+	void CALC_STAT_SIP_LOCAL();//getting statistics of SIP and PSIP fitting for each CCD fitting
+	void CALC_CRPIXatCRVAL();//calculating CRPIX as CRVAL
+	void CALC_CRVALatCRPIX();//calculating CRVAL as CRPIX
+	void CALC_CENTERPIXEL();//calculating average position of references
+	void SET_CRPIXatCENTER();//setting average position as CRPIX
 //REJECTION
-	void REJECT_BADREF();
-	void REJECT_BADREF_ASIP();
-	void REJECT_BADREF_PSIP();
+	void REJECT_BADREF();//rejecting references which have position far from fitting position
+	void REJECT_BADREF_ASIP();//rejecting references which have position far from  SIP fitting position
+	void REJECT_BADREF_PSIP();//rejecting references which have position far from PSIP fitting position
 //CCD POSITION
-	void DETERMINE_CCDPOSITION();
-	void SET_CCDAVE();
+	void DETERMINE_CCDPOSITION();//determining CCD positions
+	void SET_CCDAVE();//shifting CCD positions to fit CCDBASIS
 //TANSIP
-	void DETERMINE_TANSIP();
-	void CALC_TANSIP();
+	void DETERMINE_TANSIP();//determining SIP, Distortion, statistics of fitting and references positions
+	void CALC_TANSIP();//calculating CD, SIP and PSIP coefficients
 //DISTORTION
-	void CALC_OPTICAL_DISTORTION();
-	void DEVIATION_SIP(int ORDER,double *Coef,double *dxCoef,double *dyCoef);
-	void FIT_DIST();
-	void CALC_OPTICAL_AXIS();
+	void CALC_OPTICAL_DISTORTION();//CALC Distortion from PSIP 
+	void DEVIATION_SIP(int ORDER,double *Coef,double *dxCoef,double *dyCoef);//calculating deviation of SIP and PSIP
+	void FIT_DIST();//fitting optical distortion
+	void CALC_OPTICAL_AXIS();//caluclationg optical axis
 	
-	void SHOW();
+	void SHOW();//show information of references
 
 };
 #endif

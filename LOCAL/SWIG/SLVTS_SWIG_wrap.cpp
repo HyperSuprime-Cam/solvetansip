@@ -12920,6 +12920,29 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_SET_END(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  std::vector< CL_SLVTS *,std::allocator< CL_SLVTS * > > arg1 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:SET_END",&obj0)) SWIG_fail;
+  {
+    std::vector<CL_SLVTS*,std::allocator< CL_SLVTS * > > *ptr = (std::vector<CL_SLVTS*,std::allocator< CL_SLVTS * > > *)0;
+    int res = swig::asptr(obj0, &ptr);
+    if (!SWIG_IsOK(res) || !ptr) {
+      SWIG_exception_fail(SWIG_ArgError((ptr ? res : SWIG_TypeError)), "in method '" "SET_END" "', argument " "1"" of type '" "std::vector< CL_SLVTS *,std::allocator< CL_SLVTS * > >""'"); 
+    }
+    arg1 = *ptr;
+    if (SWIG_IsNewObj(res)) delete ptr;
+  }
+  SET_END(arg1);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_VD_iterator(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   std::vector< double > *arg1 = (std::vector< double > *) 0 ;
@@ -21481,6 +21504,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"delete_VSLVTS", _wrap_delete_VSLVTS, METH_VARARGS, NULL},
 	 { (char *)"VSLVTS_swigregister", VSLVTS_swigregister, METH_VARARGS, NULL},
 	 { (char *)"SOLVETANSIP", _wrap_SOLVETANSIP, METH_VARARGS, NULL},
+	 { (char *)"SET_END", _wrap_SET_END, METH_VARARGS, NULL},
 	 { (char *)"VD_iterator", _wrap_VD_iterator, METH_VARARGS, NULL},
 	 { (char *)"VD___nonzero__", _wrap_VD___nonzero__, METH_VARARGS, NULL},
 	 { (char *)"VD___bool__", _wrap_VD___bool__, METH_VARARGS, NULL},

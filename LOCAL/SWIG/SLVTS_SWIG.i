@@ -15,6 +15,7 @@
 %template(VVVS) std::vector< std::vector< std::vector<std::string> > >;
 %template(VSLVTS)  std::vector<CL_SLVTS*>;
 std::vector< CL_SLVTS* > SOLVETANSIP(std::vector< std::vector< std::vector< std::string > > > SLVTS_Argvs);
+void SET_END(std::vector< CL_SLVTS* > SOLVETANSIP);
 %template(VD)  std::vector<double>;
 %template(VVD)  std::vector<std::vector<double> >;
 %template(VI)  std::vector<int>;

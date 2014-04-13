@@ -1,15 +1,35 @@
-hg clone ssh://hsc-gw2//ana/hgrepo/solvetansip
-hg clone ssh://133.40.7.143//ana/hgrepo/solvetansip
+ssh -i ~/.ssh/id_rsa_HSC 133.40.210.108
+
+cd /home/okura/HSC/solvetansip/6.0.3
+cd solvetansip
 
 git clone /data08b/michitaro/new-repositories/hgrepo/solvetansip.git
 
-source /data/ana/products/loadLSST.sh
-setup hscPipe 2.8.3d_hsc
-setup -r /data/ana/local/hg/1.8.2/
-setup -j -r /home/okura/HSC/solvetansip6/solvetansip
-
+hscana
+source /ana/products/loadLSST.sh 
+setup hscPipe 2.10.0b_hsc
 setup -j -r /ana/astrometry_net_data/sdss-dr8
-export LC_ALL=C
-setup -j -r /ana/local/intel/mkl
+setup -j -r /home/okura/HSC/20131103/hscAstrom
+setup -j -r /home/okura/HSC/solvetansip/6.0.2/solvetansip
+setup -r /home/okura/HSC/20131103/obs_subaru
+solvetansip.py /data08b/Subaru/HSC --rerun ok_test_20140324 --id visit=902478 > ./ok_test_20140324_902478.log
 
-solvetansip.py /data08b/okura/20131002/HSC --rerun 20131101_DEN_A-G --id visit=904178 > ./solvetansip.log
+
+Hawaii
+ssh -i ~/.ssh/id_rsa_HSC 133.40.148.131
+ssh 133.40.148.137
+cd /home/okura/HSC/solvetansip/6.0.2
+cd solvetansip
+bash
+export SHELL=/bin/bash
+source /data/data1/ana/products/loadLSST.sh 
+setup hscPipe 2.8.3d_hsc
+setup -j -r /data/data1/ana/astrometry_net_data/sdss-dr8
+setup -j -r /home/okura/HSC/solvetansip/6.0.2/solvetansip
+solvetansip.py /data/data2/Subaru/HSC --rerun ssp_20140324a_skippsf_with_calib --id visit=907976 > ./examples/ok_test_20140325_907976C.log
+
+
+
+
+
+

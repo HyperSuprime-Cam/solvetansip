@@ -41,6 +41,18 @@ std::vector< CL_SLVTS* > SOLVETANSIP(std::vector< std::vector< std::vector<std::
 
 	return V_SLVTS;
 }
+void SET_END(std::vector< CL_SLVTS* > SOLVETANSIP){
+	SOLVETANSIP[0]->SET_END();
+	delete [] SOLVETANSIP[0];
+}
+void CL_SLVTS::SET_END(){
+	APRM->SET_END();
+	CCDs->SET_END();
+	REFs->SET_END();
+	delete [] APRM;
+	delete [] CCDs;
+	delete [] REFs;
+}
 void CL_SLVTS::SET_INIT(){
 	APRM=new CL_APRM[1];
 	CCDs=new CL_CCDs[1];
