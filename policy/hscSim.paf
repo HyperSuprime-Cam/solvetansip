@@ -5,4 +5,4 @@ NCCD: 104        #NUMBER of CCD for analysis
 ORDER_ASIP: 9
 ORDER_PSIP: 9
 CLIPSIGMA: 3.0
-FLAG_OUT: 1               #1=out put fitting check file
+FLAG_OUT: 0               #1=out put fitting check file
