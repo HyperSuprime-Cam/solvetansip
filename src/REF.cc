@@ -1180,8 +1180,12 @@ void CL_REFs::DETERMINE_TANSIP(){
 
 	if(*FLAG_STD>1.5)CCDs->CCD[*NUM_CCD].SHOW();
 //	if(*FLAG_STD>1.5)CCDs->CCD[0].SHOW();
-//	if(*NUM_CCD>100)
-	if(*FLAG_STD>1.5)CCDs->CCD[49].SHOW();
+	if(*NUM_CCD>10) { // assumes HSC, and show DET-ID=50
+	  if(*FLAG_STD>1.5)CCDs->CCD[49].SHOW();
+	}
+	else { // assumes SC, and show DET-ID=5
+	  if(*FLAG_STD>1.5)CCDs->CCD[4].SHOW();
+	}
 //	if(*NUM_CCD>103)
 //	if(*FLAG_STD>1.5)CCDs->CCD[100].SHOW();
 
