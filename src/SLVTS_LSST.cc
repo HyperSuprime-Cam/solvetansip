@@ -73,9 +73,9 @@ cout<<scientific<<setprecision(6)<<"R : "<<SLVTS->CCDs->MAX_CRPIX_G_R<<"	"<<VALU
                 sprintf(KEY,"ST_C%03d_CRPIX2"  ,CID);
 	        meta->add(KEY,*SLVTS->CCDs->CCD[CID].CRPIX[1]);
                 sprintf(KEY,"ST_C%03d_CRVAL1"  ,CID);
-	        meta->add(KEY,*SLVTS->CCDs->CCD[CID].CRVAL[2]);
+	        meta->add(KEY,*SLVTS->CCDs->CCD[CID].CRVAL[0]);
                 sprintf(KEY,"ST_C%03d_CRVAL2"  ,CID);
-	        meta->add(KEY,*SLVTS->CCDs->CCD[CID].CRVAL[3]);
+	        meta->add(KEY,*SLVTS->CCDs->CCD[CID].CRVAL[1]);
                 sprintf(KEY,"ST_C%03d_CD1_1"  ,CID);
 	        meta->add(KEY,SLVTS->CCDs->CCD[CID].CD[0][0]);
                 sprintf(KEY,"ST_C%03d_CD1_2"  ,CID);
@@ -218,20 +218,20 @@ void CHECK_METADATA(std::vector< CL_SLVTS* > VSLVTS,dafbase::PropertySet::Ptr &m
 		cout<<"psip_residuals_rms_x : "<<VAL_D<<endl;
 	        VAL_D=meta->getAsDouble("psip_residuals_rms_y");
 		cout<<"psip_residuals_rms_y : "<<VAL_D<<endl;
-	}	
+	}
 }
 std::vector <lsst::afw::image::TanWcs::Ptr> SET_TANWCS(std::vector< CL_SLVTS* > VSLVTS){
 	std::vector <lsst::afw::image::TanWcs::Ptr> V_TanWcs;
 	int CID;
 	CL_SLVTS* SLVTS;
 	SLVTS=VSLVTS[0];
-	
+
 	int OAS,OPS;
 	int i,j,ij;
 	for(CID=0;CID<SLVTS->APRM->NUM_CCD+1;CID++){
 		afwGeom::PointD crpix = afwGeom::PointD(*SLVTS->CCDs->CCD[CID].CRPIX[0],*SLVTS->CCDs->CCD[CID].CRPIX[1]);
 		afwGeom::PointD crval = afwGeom::PointD(*SLVTS->CCDs->CCD[CID].CRVAL[0],*SLVTS->CCDs->CCD[CID].CRVAL[1]);
-	
+
 		Eigen::Matrix2d cdMatrix;
 		cdMatrix << SLVTS->CCDs->CCD[CID].CD[0][0],SLVTS->CCDs->CCD[CID].CD[0][1],SLVTS->CCDs->CCD[CID].CD[1][0],SLVTS->CCDs->CCD[CID].CD[1][1];
 
