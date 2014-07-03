@@ -70,14 +70,14 @@ void CL_REFs::SET_INIT(CL_APRM *APRM_IN,CL_CCDs* CCDs_IN){
 	AVE_CRPIX_G[1] =&CCDs->AVE_CRPIX_G[1];
 	REF = new CL_REF[*NUM_REF];
 
-	ASIP_DX[0]=CPP_MEMORY_NEWdouble1((*ORDER_ASIP+1)*(*ORDER_ASIP+2));
-	ASIP_DX[1]=CPP_MEMORY_NEWdouble1((*ORDER_ASIP+1)*(*ORDER_ASIP+2));
-	ASIP_DY[0]=CPP_MEMORY_NEWdouble1((*ORDER_ASIP+1)*(*ORDER_ASIP+2));
-	ASIP_DY[1]=CPP_MEMORY_NEWdouble1((*ORDER_ASIP+1)*(*ORDER_ASIP+2));
-	PSIP_DX[0]=CPP_MEMORY_NEWdouble1((*ORDER_PSIP+1)*(*ORDER_PSIP+2));
-	PSIP_DX[1]=CPP_MEMORY_NEWdouble1((*ORDER_PSIP+1)*(*ORDER_PSIP+2));
-	PSIP_DY[0]=CPP_MEMORY_NEWdouble1((*ORDER_PSIP+1)*(*ORDER_PSIP+2));
-	PSIP_DY[1]=CPP_MEMORY_NEWdouble1((*ORDER_PSIP+1)*(*ORDER_PSIP+2));
+	ASIP_DX[0].resize((*ORDER_ASIP+1)*(*ORDER_ASIP+2));
+	ASIP_DX[1].resize((*ORDER_ASIP+1)*(*ORDER_ASIP+2));
+	ASIP_DY[0].resize((*ORDER_ASIP+1)*(*ORDER_ASIP+2));
+	ASIP_DY[1].resize((*ORDER_ASIP+1)*(*ORDER_ASIP+2));
+	PSIP_DX[0].resize((*ORDER_PSIP+1)*(*ORDER_PSIP+2));
+	PSIP_DX[1].resize((*ORDER_PSIP+1)*(*ORDER_PSIP+2));
+	PSIP_DY[0].resize((*ORDER_PSIP+1)*(*ORDER_PSIP+2));
+	PSIP_DY[1].resize((*ORDER_PSIP+1)*(*ORDER_PSIP+2));
 
 	int i;
 	for(i=0;i<*NUM_REF;i++){
@@ -85,14 +85,14 @@ void CL_REFs::SET_INIT(CL_APRM *APRM_IN,CL_CCDs* CCDs_IN){
 		REF[i].CRPIX_G[1]=CRPIX[1];
 		REF[i].CRVAL[0]  =CRVAL[0];
 		REF[i].CRVAL[1]  =CRVAL[1];
-		REF[i].ASIP_DX[0]=ASIP_DX[0];
-		REF[i].ASIP_DX[1]=ASIP_DX[1];
-		REF[i].ASIP_DY[0]=ASIP_DY[0];
-		REF[i].ASIP_DY[1]=ASIP_DY[1];
-		REF[i].PSIP_DX[0]=PSIP_DX[0];
-		REF[i].PSIP_DX[1]=PSIP_DX[1];
-		REF[i].PSIP_DY[0]=PSIP_DY[0];
-		REF[i].PSIP_DY[1]=PSIP_DY[1];
+		REF[i].ASIP_DX[0]=ASIP_DX[0].data();
+		REF[i].ASIP_DX[1]=ASIP_DX[1].data();
+		REF[i].ASIP_DY[0]=ASIP_DY[0].data();
+		REF[i].ASIP_DY[1]=ASIP_DY[1].data();
+		REF[i].PSIP_DX[0]=PSIP_DX[0].data();
+		REF[i].PSIP_DX[1]=PSIP_DX[1].data();
+		REF[i].PSIP_DY[0]=PSIP_DY[0].data();
+		REF[i].PSIP_DY[1]=PSIP_DY[1].data();
 	}
 
 
@@ -155,14 +155,6 @@ void CL_REFs::SET_NUM(){
 	}
 }
 void CL_REFs::SET_END(){
-	delete [] ASIP_DX[0];
-	delete [] ASIP_DX[1];
-	delete [] ASIP_DY[0];
-	delete [] ASIP_DY[1];
-	delete [] PSIP_DX[0];
-	delete [] PSIP_DX[1];
-	delete [] PSIP_DY[0];
-	delete [] PSIP_DY[1];
 	delete [] REF;
 }
 void CL_REFs::SET_CCD(CL_CCDs*  CCDs){
@@ -899,22 +891,22 @@ void CL_REFs::REJECT_BADREF_PSIP(){
 void CL_REFs::DETERMINE_CCDPOSITION(){
 	if(*FLAG_STD>0.5)cout<<"-- DETERMINE CCD POSITIONS --"<<endl;
 	int NUM_COEF;
-	double *MAXYT,**MBXYT,**InvMBXYT,*MCXYT;
-	double **COEF,***XY,*XLsYLc,*YLsXLc;
-	double **XYINIT,*XN,*YN;
+	double **MBXYT,**InvMBXYT;
+	double **COEF,***XY;
+	double **XYINIT;
 
 	NUM_COEF = (int)(0.5*(*ORDER_PSIP+1)*(*ORDER_PSIP+2)+0.1);
 	COEF     = CPP_MEMORY_NEWdouble2(2,NUM_COEF);
-	MAXYT    = CPP_MEMORY_NEWdouble1(3*(*NUM_CCD)+2*(NUM_COEF-1));
+	std::vector<double> MAXYT       (3*(*NUM_CCD)+2*(NUM_COEF-1));
 	MBXYT    = CPP_MEMORY_NEWdouble2(3*(*NUM_CCD)+2*(NUM_COEF-1),3*(*NUM_CCD)+2*(NUM_COEF-1));
 	InvMBXYT = CPP_MEMORY_NEWdouble2(3*(*NUM_CCD)+2*(NUM_COEF-1),3*(*NUM_CCD)+2*(NUM_COEF-1));
-	MCXYT    = CPP_MEMORY_NEWdouble1(3*(*NUM_CCD)+2*(NUM_COEF-1));
+	std::vector<double> MCXYT       (3*(*NUM_CCD)+2*(NUM_COEF-1));
 	XY       = CPP_MEMORY_NEWdouble3( *NUM_REF ,(*ORDER_PSIP+1)*(*ORDER_PSIP+1),(*ORDER_PSIP+1)*(*ORDER_PSIP+1));
-	XLsYLc   = CPP_MEMORY_NEWdouble1( *NUM_REF );
-	YLsXLc   = CPP_MEMORY_NEWdouble1( *NUM_REF );
+	std::vector<double> XLsYLc      ( *NUM_REF );
+	std::vector<double> YLsXLc      ( *NUM_REF );
 	XYINIT   = CPP_MEMORY_NEWdouble2((*NUM_CCD),3);
-	XN       = new double [(*ORDER_PSIP+1)*(*ORDER_PSIP+1)];
-	YN       = new double [(*ORDER_PSIP+1)*(*ORDER_PSIP+1)];
+	std::vector<double> XN          ((*ORDER_PSIP+1)*(*ORDER_PSIP+1));
+	std::vector<double> YN          ((*ORDER_PSIP+1)*(*ORDER_PSIP+1));
 
 	int i,j,ij,k,l,kl,CID,CID2,NUM;
 	for(CID=0;CID<(*NUM_CCD);CID++){
@@ -1094,16 +1086,10 @@ void CL_REFs::DETERMINE_CCDPOSITION(){
 	}
 
 	CPP_MEMORY_DELdouble2(2,NUM_COEF,COEF);
-	CPP_MEMORY_DELdouble1(3*(*NUM_CCD)+2*(NUM_COEF-1),MAXYT);
 	CPP_MEMORY_DELdouble2(3*(*NUM_CCD)+2*(NUM_COEF-1),3*(*NUM_CCD)+2*(NUM_COEF-1),MBXYT);
 	CPP_MEMORY_DELdouble2(3*(*NUM_CCD)+2*(NUM_COEF-1),3*(*NUM_CCD)+2*(NUM_COEF-1),InvMBXYT);
-	CPP_MEMORY_DELdouble1(3*(*NUM_CCD)+2*(NUM_COEF-1),MCXYT);
 	CPP_MEMORY_DELdouble3( *NUM_REF ,(*ORDER_PSIP+1)*(*ORDER_PSIP+1),(*ORDER_PSIP+1)*(*ORDER_PSIP+1),XY);
 	CPP_MEMORY_DELdouble2((*NUM_CCD),3,XYINIT);
-	CPP_MEMORY_DELdouble1( *NUM_REF ,XLsYLc);
-	CPP_MEMORY_DELdouble1( *NUM_REF ,YLsXLc);
-	delete [] XN;
-	delete [] YN;
 
 	if(*FLAG_STD>1.5)CCDs->SHOW();
 }
@@ -1222,10 +1208,10 @@ void CL_REFs::CALC_TANSIP(){
 }
 //DISTORTION
 void CL_REFs::CALC_OPTICAL_DISTORTION(){
-	DEVIATION_SIP(*ORDER_ASIP,ASIP[0],ASIP_DX[0],ASIP_DY[0]);
-	DEVIATION_SIP(*ORDER_ASIP,ASIP[1],ASIP_DX[1],ASIP_DY[1]);
-	DEVIATION_SIP(*ORDER_PSIP,PSIP[0],PSIP_DX[0],PSIP_DY[0]);
-	DEVIATION_SIP(*ORDER_PSIP,PSIP[1],PSIP_DX[1],PSIP_DY[1]);
+	DEVIATION_SIP(*ORDER_ASIP,ASIP[0],ASIP_DX[0].data(),ASIP_DY[0].data());
+	DEVIATION_SIP(*ORDER_ASIP,ASIP[1],ASIP_DX[1].data(),ASIP_DY[1].data());
+	DEVIATION_SIP(*ORDER_PSIP,PSIP[0],PSIP_DX[0].data(),PSIP_DY[0].data());
+	DEVIATION_SIP(*ORDER_PSIP,PSIP[1],PSIP_DX[1].data(),PSIP_DY[1].data());
 
 	SET_OPTICAL_DISTORTIONbyPSIP();
 	FIT_DIST();
@@ -1312,25 +1298,22 @@ void CL_REFs::FIT_DIST(){
 	CPP_MEMORY_DELdouble2(*NUM_REF,3,dJ );
 }
 void CL_REFs::CALC_OPTICAL_AXIS(){
-	double *JDX,*JDY;
-	double *JDXDX,*JDXDY,*JDYDX,*JDYDY;
-	  JDX=CPP_MEMORY_NEWdouble1((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1));
-	  JDY=CPP_MEMORY_NEWdouble1((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1));
-	JDXDX=CPP_MEMORY_NEWdouble1((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1));
-	JDXDY=CPP_MEMORY_NEWdouble1((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1));
-	JDYDX=CPP_MEMORY_NEWdouble1((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1));
-	JDYDY=CPP_MEMORY_NEWdouble1((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1));
+	std::vector<double>   JDX ((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1));
+	std::vector<double>   JDY ((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1));
+	std::vector<double> JDXDX ((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1));
+	std::vector<double> JDXDY ((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1));
+	std::vector<double> JDYDX ((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1));
+	std::vector<double> JDYDY ((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1));
 
-	DEVIATION_SIP(*ORDER_PSIP-1,PSIP_JACO,JDX,JDY);
-	DEVIATION_SIP(*ORDER_PSIP-1,JDX,JDXDX,JDXDY);
-	DEVIATION_SIP(*ORDER_PSIP-1,JDY,JDYDX,JDYDY);
+	DEVIATION_SIP(*ORDER_PSIP-1,PSIP_JACO,JDX.data(),JDY.data());
+	DEVIATION_SIP(*ORDER_PSIP-1,JDX.data(),JDXDX.data(),JDXDY.data());
+	DEVIATION_SIP(*ORDER_PSIP-1,JDY.data(),JDYDX.data(),JDYDY.data());
 
 	int i,j,ij,LOOP;
 	double PX,PY;
-	double *PXN,*PYN;
 	double V_J,V_JDX,V_JDY,V_JDXDX,V_JDXDY,V_JDYDX,V_JDYDY;
-	PXN = new double[*ORDER_PSIP+1];
-	PYN = new double[*ORDER_PSIP+1];
+	std::vector<double> PXN (*ORDER_PSIP+1);
+	std::vector<double> PYN (*ORDER_PSIP+1);
 	PX=*CRPIX[0];
 	PY=*CRPIX[1];
 
@@ -1364,15 +1347,6 @@ void CL_REFs::CALC_OPTICAL_AXIS(){
 	}//PX,PY is OA Point at CRPIX coordinate
 	*OAPIX[0]=PX+*CRPIX[0];
 	*OAPIX[1]=PY+*CRPIX[1];
-
-	delete [] PXN;
-	delete [] PYN;
-	CPP_MEMORY_DELdouble1((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1),JDX);
-	CPP_MEMORY_DELdouble1((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1),JDY);
-	CPP_MEMORY_DELdouble1((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1),JDXDX);
-	CPP_MEMORY_DELdouble1((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1),JDXDY);
-	CPP_MEMORY_DELdouble1((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1),JDYDX);
-	CPP_MEMORY_DELdouble1((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1),JDYDY);
 }
 
 //REF

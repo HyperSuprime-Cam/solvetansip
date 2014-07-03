@@ -6,16 +6,16 @@
 #ifndef REF_H
 #define REF_H
 
-#include<vector>
-#include<string>
-#include<cmath>
-#include<iostream>
-#include<iomanip>
-#include<stdlib.h>
-#include"hsc/meas/tansip/APRM.h"
-#include"hsc/meas/tansip/CCD.h"
-#include"hsc/meas/tansip/CPP.h"
-#include"hsc/meas/tansip/CALC.h"
+#include <vector>
+#include <string>
+#include <cmath>
+#include <iostream>
+#include <iomanip>
+#include <stdlib.h>
+#include "hsc/meas/tansip/APRM.h"
+#include "hsc/meas/tansip/CCD.h"
+#include "hsc/meas/tansip/CPP.h"
+#include "hsc/meas/tansip/CALC.h"
 
 #define PI (4*atan(1.0))
 
@@ -88,7 +88,7 @@ public:
 	double	CAMERA_CONV;
 	double	CAMERA_SHEAR[2];
 	double	CAMERA_ROT;
-	
+
 //FUNCTIONS
 	void SET_INIT(CL_CCD*  CCD,CL_CCD*  GCD);//setting initial values
 //FUNCTIONS::POS
@@ -155,10 +155,10 @@ public:
 	double	*DIF_AVE_PSIP[2];//CCDs->DIF_AVE_PSIP
 	double	*DIF_RMS_PSIP[2];//CCDs->DIF_RMS_PSIP
 	double	*DIF_MAX_PSIP[2];//CCDs->DIF_MAX_PSIP
-	double  *ASIP_DX[2];
-	double  *ASIP_DY[2];
-	double  *PSIP_DX[2];
-	double  *PSIP_DY[2];
+	std::vector<double> ASIP_DX[2];
+	std::vector<double> ASIP_DY[2];
+	std::vector<double> PSIP_DX[2];
+	std::vector<double> PSIP_DY[2];
 	double	*PSIP_CONV;
 	double	*PSIP_ROT;
 	double	*PSIP_SHEAR[2];
@@ -172,7 +172,7 @@ public:
 	double  *MAX_CRPIX_G[2];//CCDs->MAX_CRPIX_G
 	double  *MIN_CRPIX_G[2];//CCDs->MIN_CRPIX_G
 	double  *AVE_CRPIX_G[2];//CCDs->AVE_CRPIX_G
-	
+
 //FUNCTIONS
 	void SET_INIT(CL_APRM *APRM,CL_CCDs* CCDs);//setting inital values
 	void SET_INPUT(std::vector< std::vector< std::string > > REF_Argvs,CL_APRM* APRM,CL_CCDs* CCDs);//setting input values
@@ -239,11 +239,11 @@ public:
 	void DETERMINE_TANSIP();//determining SIP, Distortion, statistics of fitting and references positions
 	void CALC_TANSIP();//calculating CD, SIP and PSIP coefficients
 //DISTORTION
-	void CALC_OPTICAL_DISTORTION();//CALC Distortion from PSIP 
+	void CALC_OPTICAL_DISTORTION();//CALC Distortion from PSIP
 	void DEVIATION_SIP(int ORDER,double *Coef,double *dxCoef,double *dyCoef);//calculating deviation of SIP and PSIP
 	void FIT_DIST();//fitting optical distortion
 	void CALC_OPTICAL_AXIS();//caluclationg optical axis
-	
+
 	void SHOW();//show information of references
 
 };

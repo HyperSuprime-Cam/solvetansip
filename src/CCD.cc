@@ -3,7 +3,7 @@
 //
 //Last modification : 2014/01/01
 //------------------------------------------------------------
-#include"hsc/meas/tansip/CCD.h"
+#include "hsc/meas/tansip/CCD.h"
 
 using namespace std;
 //CCDs
@@ -13,14 +13,14 @@ void CL_CCDs::SET_INIT(CL_APRM *APRM_IN){
 	NUM_CCD    =&APRM_IN->NUM_CCD;
 	FLAG_STD   =&APRM_IN->FLAG_STD;
 	CCD = new CL_CCD[*NUM_CCD+1];
-	
+
 	ORDER_ASIP     =&APRM->ORDER_ASIP;
 	ORDER_PSIP     =&APRM->ORDER_PSIP;
 	CRPIX[0]       =&APRM->CRPIX[0];
 	CRPIX[1]       =&APRM->CRPIX[1];
 	CRVAL[0]       =&APRM->CRVAL[0];
 	CRVAL[1]       =&APRM->CRVAL[1];
-	
+
 	int i;
 	for(i=0;i<*NUM_CCD;i++){
 		CCD[i].CRPIX[0]=new double[1];
@@ -52,7 +52,7 @@ void CL_CCDs::SET_INIT(CL_APRM *APRM_IN){
 }
 void CL_CCDs::SET_INPUT(std::vector< std::vector< std::string > > CCD_Argvs,CL_APRM *APRM){
 	int i;
-	
+
 	SET_INIT(APRM);
 	MAX_CRPIX_G_R =0;
 	MAX_CRPIX_G[0]=0;
@@ -88,7 +88,7 @@ void CL_CCDs::SET_INPUT(std::vector< std::vector< std::string > > CCD_Argvs,CL_A
 	CCD[*NUM_CCD].GPOS_C[3]=0;
 	CCD[*NUM_CCD].LENGTH[0]=0;
 	CCD[*NUM_CCD].LENGTH[1]=0;
-	
+
 	GET_GPOS_LfromGPOS_C();
 }
 void CL_CCDs::SET_END(){
@@ -227,12 +227,12 @@ void CL_CCDs::SET_CCDs(){
 	SET_OAPIX();
 
 //CD SIP DIST FUNCTIONS
-	double *G_ASIP[2],*G_PSIP[2];
-	G_ASIP[0]=CPP_MEMORY_NEWdouble1((*ORDER_ASIP+1)*(*ORDER_ASIP+2));
-	G_ASIP[1]=CPP_MEMORY_NEWdouble1((*ORDER_ASIP+1)*(*ORDER_ASIP+2));
-	G_PSIP[0]=CPP_MEMORY_NEWdouble1((*ORDER_PSIP+1)*(*ORDER_PSIP+2));
-	G_PSIP[1]=CPP_MEMORY_NEWdouble1((*ORDER_PSIP+1)*(*ORDER_PSIP+2));
-	
+	std::vector<double> G_ASIP[2], G_PSIP[2];
+	G_ASIP[0].resize((*ORDER_ASIP+1)*(*ORDER_ASIP+2));
+	G_ASIP[1].resize((*ORDER_ASIP+1)*(*ORDER_ASIP+2));
+	G_PSIP[0].resize((*ORDER_PSIP+1)*(*ORDER_PSIP+2));
+	G_PSIP[1].resize((*ORDER_PSIP+1)*(*ORDER_PSIP+2));
+
 	int i,j,ij,CID;
 	ij=0;
 	for(i=0;i<*ORDER_ASIP+1  ;i++)
@@ -257,13 +257,13 @@ void CL_CCDs::SET_CCDs(){
 	G_PSIP[0][0*(*ORDER_PSIP)+1]+=0.0;
 	G_PSIP[1][1*(*ORDER_PSIP)+1]+=0.0;
 	G_PSIP[1][0*(*ORDER_PSIP)+1]+=1.0;
-	
+
 	double IABP[2];
 	for(CID=0;CID<*NUM_CCD;CID++){
-		CCD[CID].SET_SIPROT(*ORDER_ASIP,G_ASIP[0],CCD[CID].ASIP[0]);
-		CCD[CID].SET_SIPROT(*ORDER_ASIP,G_ASIP[1],CCD[CID].ASIP[1]);
-		CCD[CID].SET_SIPROT(*ORDER_PSIP,G_PSIP[0],CCD[CID].PSIP[0]);
-		CCD[CID].SET_SIPROT(*ORDER_PSIP,G_PSIP[1],CCD[CID].PSIP[1]);
+		CCD[CID].SET_SIPROT(*ORDER_ASIP,G_ASIP[0].data(),CCD[CID].ASIP[0]);
+		CCD[CID].SET_SIPROT(*ORDER_ASIP,G_ASIP[1].data(),CCD[CID].ASIP[1]);
+		CCD[CID].SET_SIPROT(*ORDER_PSIP,G_PSIP[0].data(),CCD[CID].PSIP[0]);
+		CCD[CID].SET_SIPROT(*ORDER_PSIP,G_PSIP[1].data(),CCD[CID].PSIP[1]);
 		CCD[CID].SET_CDASIP();
 		ij=0;
 		for(i=0;i<*ORDER_PSIP+1  ;i++)
@@ -283,11 +283,6 @@ void CL_CCDs::SET_CCDs(){
 		CCD[CID].SET_SIPROT(*ORDER_PSIP-1,CCD[(*NUM_CCD)].PSIP_MAG     ,CCD[CID].PSIP_MAG     );
 		CCD[CID].SET_SIPROT(*ORDER_PSIP-1,CCD[(*NUM_CCD)].PSIP_JACO    ,CCD[CID].PSIP_JACO    );
 	}
-	
-	CPP_MEMORY_DELdouble1((*ORDER_ASIP+1)*(*ORDER_ASIP+2),G_ASIP[0]);
-	CPP_MEMORY_DELdouble1((*ORDER_ASIP+1)*(*ORDER_ASIP+2),G_ASIP[1]);
-	CPP_MEMORY_DELdouble1((*ORDER_PSIP+1)*(*ORDER_PSIP+2),G_PSIP[0]);
-	CPP_MEMORY_DELdouble1((*ORDER_PSIP+1)*(*ORDER_PSIP+2),G_PSIP[1]);
 }
 void CL_CCDs::SHOW(){
 	int i;
@@ -353,7 +348,7 @@ void CL_CCD::SET_CDASIP(){
 	double *TSIP[2];
 	TSIP[0] = new double[(*ORDER_ASIP+1)*(*ORDER_ASIP+2)];
 	TSIP[1] = new double[(*ORDER_ASIP+1)*(*ORDER_ASIP+2)];
-	
+
 	CD[0][0]=ASIP[0][1*(*ORDER_ASIP)+1];
 	CD[0][1]=ASIP[0][0*(*ORDER_ASIP)+1];
 	CD[1][0]=ASIP[1][1*(*ORDER_ASIP)+1];
@@ -643,7 +638,7 @@ void CL_CCD::SHOW(){
 	for(i=0;i<j;i++){
 		cout<< " SIP_A ";cout.width(3);cout<<i<<"    : ";cout.width(10);cout<< ASIP[0][i]<<endl;
 	}
-	
+
 	cout << "ORDER  SIP_B  : " << *ORDER_ASIP<< endl;
 	for(i=0;i<j;i++){
 		cout<< " SIP_B ";cout.width(3);cout<<i<<"    : ";cout.width(10);cout<< ASIP[1][i]<<endl;
