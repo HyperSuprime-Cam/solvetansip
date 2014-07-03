@@ -3,21 +3,24 @@
 //
 //Last modification : 2014/01/01
 //------------------------------------------------------------
-#include<vector>
-#include<iostream>
-#include<string>
-#include<fstream>
+#include <vector>
+#include <iostream>
+#include <string>
+#include <fstream>
 
-#include"hsc/meas/tansip/SLVTS_LSST.h"
+#include <boost/make_shared.hpp>
+
+#include "hsc/meas/tansip/SLVTS_LSST.h"
+
 using namespace std;
 namespace dafbase  = lsst::daf::base;
 namespace afwGeom  = lsst::afw::geom;
 namespace afwImage = lsst::afw::image;
 
 dafbase::PropertySet::Ptr SET_EMPTYMETADATA(){
-	dafbase::PropertySet::Ptr meta(new dafbase::PropertySet);
-	return meta;
+	return boost::make_shared<dafbase::PropertySet>();
 }
+
 void SET_METADATA(std::vector< CL_SLVTS* > VSLVTS, dafbase::PropertySet::Ptr &meta){
 	CL_SLVTS* SLVTS;
 	SLVTS=VSLVTS[0];
@@ -265,7 +268,7 @@ std::vector <lsst::afw::image::TanWcs::Ptr> SET_TANWCS(std::vector< CL_SLVTS* > 
 			sipBp(i,j)=0.0;
 		}
 
-		afwImage::TanWcs::Ptr resultTanWsc(new afwImage::TanWcs(crval,crpix,cdMatrix,sipA,sipB,sipAp,sipBp));
+		afwImage::TanWcs::Ptr resultTanWsc = boost::make_shared<afwImage::TanWcs>(crval,crpix,cdMatrix,sipA,sipB,sipAp,sipBp);
 		V_TanWcs.push_back(resultTanWsc);
 	}
 	return V_TanWcs;

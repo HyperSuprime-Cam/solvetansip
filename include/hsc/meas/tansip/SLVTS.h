@@ -7,19 +7,20 @@
 #ifndef SLVTS_H
 #define SLVTS_H
 
-#include<vector>
-#include<string>
+#include <vector>
+#include <string>
+#include <boost/shared_ptr.hpp>
 
-#include"hsc/meas/tansip/APRM.h"
-#include"hsc/meas/tansip/CCD.h"
-#include"hsc/meas/tansip/REF.h"
+#include "hsc/meas/tansip/APRM.h"
+#include "hsc/meas/tansip/CCD.h"
+#include "hsc/meas/tansip/REF.h"
 
 class CL_SLVTS{
 private:
 public:
-	CL_APRM* APRM;//class anaysis parameters
-	CL_CCDs* CCDs;//class CCDs 
-	CL_REFs* REFs;//class references
+	boost::shared_ptr<CL_APRM> APRM;//class anaysis parameters
+	boost::shared_ptr<CL_CCDs> CCDs;//class CCDs
+	boost::shared_ptr<CL_REFs> REFs;//class references
 
 //FUNCTIONs
 	void SET_INIT();//setting initial values

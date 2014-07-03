@@ -3,11 +3,11 @@
 //
 //Last modification : 2014/01/01
 //------------------------------------------------------------
-#include<iostream>
-#include<vector>
-#include<string>
-
-#include"hsc/meas/tansip/SLVTS.h"
+#include <iostream>
+#include <vector>
+#include <string>
+#include <boost/make_shared.hpp>
+#include "hsc/meas/tansip/SLVTS.h"
 
 using namespace std;
 std::vector< CL_SLVTS* > SOLVETANSIP(std::vector< std::vector< std::vector<std::string> > > SLVTS_Argvs){
@@ -28,9 +28,9 @@ std::vector< CL_SLVTS* > SOLVETANSIP(std::vector< std::vector< std::vector<std::
 	}
 	T2=clock();
 	if(SLVTS->APRM->FLAG_STD>0.5)cout<<"TIME SET INPUT         : "<<(T2-T1)/CLOCKS_PER_SEC << " (sec)"<<endl;
-	
+
 	SLVTS->CALC_WCS();
-	
+
 //	SLVTS->END()
 
 	std::vector< CL_SLVTS* > V_SLVTS;
@@ -49,20 +49,17 @@ void CL_SLVTS::SET_END(){
 	APRM->SET_END();
 	CCDs->SET_END();
 	REFs->SET_END();
-	delete [] APRM;
-	delete [] CCDs;
-	delete [] REFs;
 }
 void CL_SLVTS::SET_INIT(){
-	APRM=new CL_APRM[1];
-	CCDs=new CL_CCDs[1];
-	REFs=new CL_REFs[1];
+	APRM = boost::make_shared<CL_APRM>();
+	CCDs = boost::make_shared<CL_CCDs>();
+	REFs = boost::make_shared<CL_REFs>();
 }
 void CL_SLVTS::SET_INPUT(std::vector< std::vector< std::vector< std::string > > > SLVTS_Argvs){
 
 	APRM->SET_INPUT(SLVTS_Argvs[0]);
-	CCDs->SET_INPUT(SLVTS_Argvs[1],APRM);
-	REFs->SET_INPUT(SLVTS_Argvs[2],APRM,CCDs);
+	CCDs->SET_INPUT(SLVTS_Argvs[1], APRM.get());
+	REFs->SET_INPUT(SLVTS_Argvs[2], APRM.get(), CCDs.get());
 	if(APRM->FLAG_STD>1.5)APRM->SHOW();
 	if(APRM->FLAG_STD>1.5)CCDs->SHOW();
 	if(APRM->FLAG_STD>1.5)REFs->SHOW();
@@ -94,6 +91,6 @@ void CL_SLVTS::CALC_WCS(){
 	REFs->DETERMINE_TANSIP();
 	T2=clock();
 	if(APRM->FLAG_STD>0.5)cout<<"TIME TANSIP            : "<<(T2-T1)/CLOCKS_PER_SEC << " (sec)"<<endl;
-	
+
 }
 
