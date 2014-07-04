@@ -12,6 +12,9 @@
 #include <iostream>
 #include <iomanip>
 #include <stdlib.h>
+
+#include <ndarray.h>
+
 #include "hsc/meas/tansip/APRM.h"
 #include "hsc/meas/tansip/CCD.h"
 #include "hsc/meas/tansip/CPP.h"
@@ -155,10 +158,10 @@ public:
 	double	*DIF_AVE_PSIP[2];//CCDs->DIF_AVE_PSIP
 	double	*DIF_RMS_PSIP[2];//CCDs->DIF_RMS_PSIP
 	double	*DIF_MAX_PSIP[2];//CCDs->DIF_MAX_PSIP
-	std::vector<double> ASIP_DX[2];
-	std::vector<double> ASIP_DY[2];
-	std::vector<double> PSIP_DX[2];
-	std::vector<double> PSIP_DY[2];
+	ndarray::Array<double, 1, 1> ASIP_DX[2];
+	ndarray::Array<double, 1, 1> ASIP_DY[2];
+	ndarray::Array<double, 1, 1> PSIP_DX[2];
+	ndarray::Array<double, 1, 1> PSIP_DY[2];
 	double	*PSIP_CONV;
 	double	*PSIP_ROT;
 	double	*PSIP_SHEAR[2];

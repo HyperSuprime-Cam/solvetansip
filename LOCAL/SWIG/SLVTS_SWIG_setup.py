@@ -1,4 +1,5 @@
 from distutils.core import setup, Extension
+import os
 
 setup(
     ext_modules = [
@@ -12,9 +13,9 @@ setup(
 	'../../src/CALC_FIT.cc',
 	'../../src/CALC_STAT.cc',
 	],
-	['../../include'],
-        library_dirs=['.'],
-        libraries=[],
+	['../../include', os.environ['NDARRAY_DIR'] + '/include'],
+        library_dirs=['.', os.environ['OPENBLAS_DIR'] + '/lib'],
+        libraries=['openblas'],
         extra_compile_args=[],
         extra_link_args=[],
         swig_opts=['-c++'])

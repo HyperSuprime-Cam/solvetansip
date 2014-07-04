@@ -3,7 +3,10 @@
 //
 //Last modification : 2014/01/01
 //------------------------------------------------------------
-#include"hsc/meas/tansip/REF.h"
+#include "hsc/meas/tansip/REF.h"
+#include "LAPACK_FUNCS.h"
+
+#include <stdexcept>
 
 using namespace std;
 //REFs
@@ -70,14 +73,14 @@ void CL_REFs::SET_INIT(CL_APRM *APRM_IN,CL_CCDs* CCDs_IN){
 	AVE_CRPIX_G[1] =&CCDs->AVE_CRPIX_G[1];
 	REF = new CL_REF[*NUM_REF];
 
-	ASIP_DX[0].resize((*ORDER_ASIP+1)*(*ORDER_ASIP+2));
-	ASIP_DX[1].resize((*ORDER_ASIP+1)*(*ORDER_ASIP+2));
-	ASIP_DY[0].resize((*ORDER_ASIP+1)*(*ORDER_ASIP+2));
-	ASIP_DY[1].resize((*ORDER_ASIP+1)*(*ORDER_ASIP+2));
-	PSIP_DX[0].resize((*ORDER_PSIP+1)*(*ORDER_PSIP+2));
-	PSIP_DX[1].resize((*ORDER_PSIP+1)*(*ORDER_PSIP+2));
-	PSIP_DY[0].resize((*ORDER_PSIP+1)*(*ORDER_PSIP+2));
-	PSIP_DY[1].resize((*ORDER_PSIP+1)*(*ORDER_PSIP+2));
+	ASIP_DX[0] = ndarray::allocate((*ORDER_ASIP+1)*(*ORDER_ASIP+2));
+	ASIP_DX[1] = ndarray::allocate((*ORDER_ASIP+1)*(*ORDER_ASIP+2));
+	ASIP_DY[0] = ndarray::allocate((*ORDER_ASIP+1)*(*ORDER_ASIP+2));
+	ASIP_DY[1] = ndarray::allocate((*ORDER_ASIP+1)*(*ORDER_ASIP+2));
+	PSIP_DX[0] = ndarray::allocate((*ORDER_PSIP+1)*(*ORDER_PSIP+2));
+	PSIP_DX[1] = ndarray::allocate((*ORDER_PSIP+1)*(*ORDER_PSIP+2));
+	PSIP_DY[0] = ndarray::allocate((*ORDER_PSIP+1)*(*ORDER_PSIP+2));
+	PSIP_DY[1] = ndarray::allocate((*ORDER_PSIP+1)*(*ORDER_PSIP+2));
 
 	int i;
 	for(i=0;i<*NUM_REF;i++){
@@ -85,14 +88,14 @@ void CL_REFs::SET_INIT(CL_APRM *APRM_IN,CL_CCDs* CCDs_IN){
 		REF[i].CRPIX_G[1]=CRPIX[1];
 		REF[i].CRVAL[0]  =CRVAL[0];
 		REF[i].CRVAL[1]  =CRVAL[1];
-		REF[i].ASIP_DX[0]=ASIP_DX[0].data();
-		REF[i].ASIP_DX[1]=ASIP_DX[1].data();
-		REF[i].ASIP_DY[0]=ASIP_DY[0].data();
-		REF[i].ASIP_DY[1]=ASIP_DY[1].data();
-		REF[i].PSIP_DX[0]=PSIP_DX[0].data();
-		REF[i].PSIP_DX[1]=PSIP_DX[1].data();
-		REF[i].PSIP_DY[0]=PSIP_DY[0].data();
-		REF[i].PSIP_DY[1]=PSIP_DY[1].data();
+		REF[i].ASIP_DX[0]=ASIP_DX[0].getData();
+		REF[i].ASIP_DX[1]=ASIP_DX[1].getData();
+		REF[i].ASIP_DY[0]=ASIP_DY[0].getData();
+		REF[i].ASIP_DY[1]=ASIP_DY[1].getData();
+		REF[i].PSIP_DX[0]=PSIP_DX[0].getData();
+		REF[i].PSIP_DX[1]=PSIP_DX[1].getData();
+		REF[i].PSIP_DY[0]=PSIP_DY[0].getData();
+		REF[i].PSIP_DY[1]=PSIP_DY[1].getData();
 	}
 
 
@@ -890,23 +893,26 @@ void CL_REFs::REJECT_BADREF_PSIP(){
 //CCD POSITION
 void CL_REFs::DETERMINE_CCDPOSITION(){
 	if(*FLAG_STD>0.5)cout<<"-- DETERMINE CCD POSITIONS --"<<endl;
-	int NUM_COEF;
-	double **MBXYT,**InvMBXYT;
-	double **COEF,***XY;
-	double **XYINIT;
 
-	NUM_COEF = (int)(0.5*(*ORDER_PSIP+1)*(*ORDER_PSIP+2)+0.1);
-	COEF     = CPP_MEMORY_NEWdouble2(2,NUM_COEF);
-	std::vector<double> MAXYT       (3*(*NUM_CCD)+2*(NUM_COEF-1));
-	MBXYT    = CPP_MEMORY_NEWdouble2(3*(*NUM_CCD)+2*(NUM_COEF-1),3*(*NUM_CCD)+2*(NUM_COEF-1));
-	InvMBXYT = CPP_MEMORY_NEWdouble2(3*(*NUM_CCD)+2*(NUM_COEF-1),3*(*NUM_CCD)+2*(NUM_COEF-1));
-	std::vector<double> MCXYT       (3*(*NUM_CCD)+2*(NUM_COEF-1));
-	XY       = CPP_MEMORY_NEWdouble3( *NUM_REF ,(*ORDER_PSIP+1)*(*ORDER_PSIP+1),(*ORDER_PSIP+1)*(*ORDER_PSIP+1));
-	std::vector<double> XLsYLc      ( *NUM_REF );
-	std::vector<double> YLsXLc      ( *NUM_REF );
-	XYINIT   = CPP_MEMORY_NEWdouble2((*NUM_CCD),3);
-	std::vector<double> XN          ((*ORDER_PSIP+1)*(*ORDER_PSIP+1));
-	std::vector<double> YN          ((*ORDER_PSIP+1)*(*ORDER_PSIP+1));
+	int                          NUM_COEF = (int)(0.5*(*ORDER_PSIP+1)*(*ORDER_PSIP+2)+0.1);
+	ndarray::Array<double, 2, 2> COEF     = ndarray::allocate(2, NUM_COEF);
+	ndarray::Array<double, 1, 1> MAXYT    = ndarray::allocate(3*(*NUM_CCD)+2*(NUM_COEF-1));
+	ndarray::Array<double, 2, 2> MBXYT    = ndarray::allocate(3*(*NUM_CCD)+2*(NUM_COEF-1), 3*(*NUM_CCD)+2*(NUM_COEF-1));
+	ndarray::Array<double, 1, 1> MCXYT    = ndarray::allocate(3*(*NUM_CCD)+2*(NUM_COEF-1));
+	ndarray::Array<double, 3, 3> XY       = ndarray::allocate(*NUM_REF, (*ORDER_PSIP+1)*(*ORDER_PSIP+1), (*ORDER_PSIP+1)*(*ORDER_PSIP+1));
+	ndarray::Array<double, 1, 1> XLsYLc   = ndarray::allocate(*NUM_REF);
+	ndarray::Array<double, 1, 1> YLsXLc   = ndarray::allocate(*NUM_REF);
+	ndarray::Array<double, 2, 2> XYINIT   = ndarray::allocate(*NUM_CCD, 3);
+	ndarray::Array<double, 1, 1> XN       = ndarray::allocate((*ORDER_PSIP+1)*(*ORDER_PSIP+1));
+	ndarray::Array<double, 1, 1> YN       = ndarray::allocate((*ORDER_PSIP+1)*(*ORDER_PSIP+1));
+
+	// workspace for dgesvx
+	ndarray::Array<double, 2, 2> dgesvx_af    = ndarray::allocate(MBXYT.getShape());
+	ndarray::Array<int   , 1, 1> dgesvx_ipiv  = ndarray::allocate(MAXYT.getSize<0>());
+	ndarray::Array<double, 1, 1> dgesvx_r     = ndarray::allocate(MAXYT.getSize<0>());
+	ndarray::Array<double, 1, 1> dgesvx_c     = ndarray::allocate(MAXYT.getSize<0>());
+	ndarray::Array<double, 1, 1> dgesvx_work  = ndarray::allocate(4 * MAXYT.getSize<0>());
+	ndarray::Array<int   , 1, 1> dgesvx_iwork = ndarray::allocate(MAXYT.getShape());
 
 	int i,j,ij,k,l,kl,CID,CID2,NUM;
 	for(CID=0;CID<(*NUM_CCD);CID++){
@@ -953,12 +959,9 @@ void CL_REFs::DETERMINE_CCDPOSITION(){
 
 //--------------------------------------------------
 //INIT
-		for(CID =0;CID <3*(*NUM_CCD)+2*(NUM_COEF-1);CID ++){
-			MAXYT[CID]=MCXYT[CID]=0;
-			for(CID2=0;CID2<3*(*NUM_CCD)+2*(NUM_COEF-1);CID2++)
-			MBXYT[CID][CID2]=InvMBXYT[CID][CID2]=0;
+		MAXYT.deep() = 0;
+		MBXYT.deep() = 0;
 
-		}
 //--------------------------------------------------
 //dA
 //dAXYT
@@ -1049,11 +1052,51 @@ void CL_REFs::DETERMINE_CCDPOSITION(){
 			ij++;
 		}
 //--------------------------------------------------
-		CALC_MATRIX_INVERSE(3*(*NUM_CCD)+2*(NUM_COEF-1),MBXYT,InvMBXYT);
+		// C = B^{-1} A
+		int    dgesvx_n = MAXYT.getSize<0>();
+		int    dgesvx_nrhs = 1;
+		char   dgesvx_equed;
+		double dgesvx_rcond;
+		double dgesvx_ferr ;
+		double dgesvx_berr ;
+		int    dgesvx_info ;
+		dgesvx_(
+			"Equilibrate",
+			"Transpose", // because row majar
+			&dgesvx_n,
+			&dgesvx_nrhs,
+			MBXYT.getData(),
+			&dgesvx_n,
+			dgesvx_af.getData(),
+			&dgesvx_n,
+			dgesvx_ipiv.getData(),
+			&dgesvx_equed,
+			dgesvx_r.getData(),
+			dgesvx_c.getData(),
+			MAXYT.getData(),
+			&dgesvx_n,
+			MCXYT.getData(),
+			&dgesvx_n,
+			&dgesvx_rcond,
+			&dgesvx_ferr,
+			&dgesvx_berr,
+			dgesvx_work.getData(),
+			dgesvx_iwork.getData(),
+			&dgesvx_info
+		);
 
-		for(CID =0;CID <3*(*NUM_CCD)+2*(NUM_COEF-1);CID ++)
-		for(CID2=0;CID2<3*(*NUM_CCD)+2*(NUM_COEF-1);CID2++)
-		MCXYT[CID]+=InvMBXYT[CID][CID2]*MAXYT[CID2];
+		if(dgesvx_info == 0){
+			cout << "info: CL_REFs::DETERMINE_CCDPOSITION: OK; N=" << dgesvx_n << endl;
+
+			; // OK
+		}
+		else if(dgesvx_info > dgesvx_n){
+			// the matrix is extremely bad, but not exactly irregular
+			cout << "warning: CL_REFs::DETERMINE_CCDPOSITION: linear equation is extremely bad." << endl;
+		}
+		else{
+			throw std::runtime_error("CL_REFs::DETERMINE_CCDPOSITION: irregular linear equation");
+		}
 
 		for(CID=0;CID<(*NUM_CCD);CID++){
 			CCDs->CCD[CID].GPOS_L[0]+=MCXYT[0*(*NUM_CCD)+CID];
@@ -1084,12 +1127,6 @@ void CL_REFs::DETERMINE_CCDPOSITION(){
 		}
 
 	}
-
-	CPP_MEMORY_DELdouble2(2,NUM_COEF,COEF);
-	CPP_MEMORY_DELdouble2(3*(*NUM_CCD)+2*(NUM_COEF-1),3*(*NUM_CCD)+2*(NUM_COEF-1),MBXYT);
-	CPP_MEMORY_DELdouble2(3*(*NUM_CCD)+2*(NUM_COEF-1),3*(*NUM_CCD)+2*(NUM_COEF-1),InvMBXYT);
-	CPP_MEMORY_DELdouble3( *NUM_REF ,(*ORDER_PSIP+1)*(*ORDER_PSIP+1),(*ORDER_PSIP+1)*(*ORDER_PSIP+1),XY);
-	CPP_MEMORY_DELdouble2((*NUM_CCD),3,XYINIT);
 
 	if(*FLAG_STD>1.5)CCDs->SHOW();
 }
@@ -1208,10 +1245,10 @@ void CL_REFs::CALC_TANSIP(){
 }
 //DISTORTION
 void CL_REFs::CALC_OPTICAL_DISTORTION(){
-	DEVIATION_SIP(*ORDER_ASIP,ASIP[0],ASIP_DX[0].data(),ASIP_DY[0].data());
-	DEVIATION_SIP(*ORDER_ASIP,ASIP[1],ASIP_DX[1].data(),ASIP_DY[1].data());
-	DEVIATION_SIP(*ORDER_PSIP,PSIP[0],PSIP_DX[0].data(),PSIP_DY[0].data());
-	DEVIATION_SIP(*ORDER_PSIP,PSIP[1],PSIP_DX[1].data(),PSIP_DY[1].data());
+	DEVIATION_SIP(*ORDER_ASIP,ASIP[0],ASIP_DX[0].getData(),ASIP_DY[0].getData());
+	DEVIATION_SIP(*ORDER_ASIP,ASIP[1],ASIP_DX[1].getData(),ASIP_DY[1].getData());
+	DEVIATION_SIP(*ORDER_PSIP,PSIP[0],PSIP_DX[0].getData(),PSIP_DY[0].getData());
+	DEVIATION_SIP(*ORDER_PSIP,PSIP[1],PSIP_DX[1].getData(),PSIP_DY[1].getData());
 
 	SET_OPTICAL_DISTORTIONbyPSIP();
 	FIT_DIST();
@@ -1298,22 +1335,22 @@ void CL_REFs::FIT_DIST(){
 	CPP_MEMORY_DELdouble2(*NUM_REF,3,dJ );
 }
 void CL_REFs::CALC_OPTICAL_AXIS(){
-	std::vector<double>   JDX ((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1));
-	std::vector<double>   JDY ((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1));
-	std::vector<double> JDXDX ((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1));
-	std::vector<double> JDXDY ((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1));
-	std::vector<double> JDYDX ((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1));
-	std::vector<double> JDYDY ((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1));
+	ndarray::Array<double, 1, 1>   JDX = ndarray::allocate((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1));
+	ndarray::Array<double, 1, 1>   JDY = ndarray::allocate((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1));
+	ndarray::Array<double, 1, 1> JDXDX = ndarray::allocate((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1));
+	ndarray::Array<double, 1, 1> JDXDY = ndarray::allocate((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1));
+	ndarray::Array<double, 1, 1> JDYDX = ndarray::allocate((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1));
+	ndarray::Array<double, 1, 1> JDYDY = ndarray::allocate((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1));
 
-	DEVIATION_SIP(*ORDER_PSIP-1,PSIP_JACO,JDX.data(),JDY.data());
-	DEVIATION_SIP(*ORDER_PSIP-1,JDX.data(),JDXDX.data(),JDXDY.data());
-	DEVIATION_SIP(*ORDER_PSIP-1,JDY.data(),JDYDX.data(),JDYDY.data());
+	DEVIATION_SIP(*ORDER_PSIP-1,PSIP_JACO,JDX.getData(),JDY.getData());
+	DEVIATION_SIP(*ORDER_PSIP-1,JDX.getData(),JDXDX.getData(),JDXDY.getData());
+	DEVIATION_SIP(*ORDER_PSIP-1,JDY.getData(),JDYDX.getData(),JDYDY.getData());
 
 	int i,j,ij,LOOP;
 	double PX,PY;
 	double V_J,V_JDX,V_JDY,V_JDXDX,V_JDXDY,V_JDYDX,V_JDYDY;
-	std::vector<double> PXN (*ORDER_PSIP+1);
-	std::vector<double> PYN (*ORDER_PSIP+1);
+	ndarray::Array<double, 1, 1> PXN = ndarray::allocate(*ORDER_PSIP+1);
+	ndarray::Array<double, 1, 1> PYN = ndarray::allocate(*ORDER_PSIP+1);
 	PX=*CRPIX[0];
 	PY=*CRPIX[1];
 
