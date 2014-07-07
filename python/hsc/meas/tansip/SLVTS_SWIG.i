@@ -15,8 +15,6 @@
 #include "hsc/meas/tansip/SLVTS_LSST.h"
 %}
 
-%shared_ptr(CL_SLVTS);
-PTR(CL_SLVTS) SOLVETANSIP(std::vector< std::vector< std::vector< std::string > > > SLVTS_Argvs);
 
 %template(resultWcs_V) std::vector<lsst::afw::image::TanWcs::Ptr>;
 %template(SourceMatchVector) std::vector<PTR(hsc::meas::tansip::SourceMatch)>;

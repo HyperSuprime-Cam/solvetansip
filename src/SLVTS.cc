@@ -8,30 +8,31 @@
 #include <string>
 #include <boost/make_shared.hpp>
 #include "hsc/meas/tansip/SLVTS.h"
+#include "HIRES_CLOCK.h"
 
 using namespace std;
 boost::shared_ptr<CL_SLVTS> SOLVETANSIP(std::vector< std::vector< std::vector<std::string> > > SLVTS_Argvs){
-	clock_t TS,TE;
-	clock_t T1,T2;
-	TS=clock();
+	my::clock_t TS,TE;
+	my::clock_t T1,T2;
+	TS=my::clock();
 	boost::shared_ptr<CL_SLVTS> SLVTS = boost::make_shared<CL_SLVTS>();
 
-	T1=clock();
+	T1=my::clock();
 	SLVTS->SET_INIT();
 	SLVTS->SET_INPUT(SLVTS_Argvs);
 	if(SLVTS->CHECK_INPUT()==1){
 		cout << "Error : in checking Input Values" <<endl;
 		return boost::shared_ptr<CL_SLVTS>();
 	}
-	T2=clock();
-	if(SLVTS->APRM->FLAG_STD>0.5)cout<<"TIME SET INPUT         : "<<(T2-T1)/CLOCKS_PER_SEC << " (sec)"<<endl;
+	T2=my::clock();
+	if(SLVTS->APRM->FLAG_STD>0.5)cout<<"TIME SET INPUT         : "<<(T2-T1) << " (sec)"<<endl;
 
 	SLVTS->CALC_WCS();
 
 //	SLVTS->END()
 
-	TE=clock();
-	if(SLVTS->APRM->FLAG_STD>0.5)cout<<"TIME SOLVETANSIP TOTAL : "<<(TE-TS)/CLOCKS_PER_SEC << " (sec)"<<endl;
+	TE=my::clock();
+	if(SLVTS->APRM->FLAG_STD>0.5)cout<<"TIME SOLVETANSIP TOTAL : "<<(TE-TS) << " (sec)"<<endl;
 
 	return SLVTS;
 }
@@ -63,24 +64,24 @@ int CL_SLVTS::CHECK_INPUT(){
 	return 0;
 }
 void CL_SLVTS::CALC_WCS(){
-	clock_t T1,T2;
+	my::clock_t T1,T2;
 
-	T1=clock();
+	T1=my::clock();
 	if(APRM->MODE_REJ==1)
 	REFs->REJECT_BADREF();
-	T2=clock();
-	if(APRM->FLAG_STD>0.5)cout<<"TIME REJECTION         : "<<(T2-T1)/CLOCKS_PER_SEC << " (sec)"<<endl;
+	T2=my::clock();
+	if(APRM->FLAG_STD>0.5)cout<<"TIME REJECTION         : "<<(T2-T1) << " (sec)"<<endl;
 
-	T1=clock();
+	T1=my::clock();
 	if(APRM->MODE_CCDPOS==1)
 	REFs->DETERMINE_CCDPOSITION();
-	T2=clock();
-	if(APRM->FLAG_STD>0.5)cout<<"TIME CCDPOSITION       : "<<(T2-T1)/CLOCKS_PER_SEC << " (sec)"<<endl;
+	T2=my::clock();
+	if(APRM->FLAG_STD>0.5)cout<<"TIME CCDPOSITION       : "<<(T2-T1) << " (sec)"<<endl;
 
-	T1=clock();
+	T1=my::clock();
 	REFs->DETERMINE_TANSIP();
-	T2=clock();
-	if(APRM->FLAG_STD>0.5)cout<<"TIME TANSIP            : "<<(T2-T1)/CLOCKS_PER_SEC << " (sec)"<<endl;
+	T2=my::clock();
+	if(APRM->FLAG_STD>0.5)cout<<"TIME TANSIP            : "<<(T2-T1) << " (sec)"<<endl;
 
 }
 

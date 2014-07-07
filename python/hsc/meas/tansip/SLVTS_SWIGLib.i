@@ -12,8 +12,9 @@ Python interface to hsc::meas::tansip
 #include "lsst/afw/image.h"
 %}
 
-%include "std_vector.i"
-%include "std_string.i"
+%include <std_vector.i>
+%include <std_string.i>
+%include <boost_shared_ptr.i>
 
 // begin: These definitions must be before typemaps are smirched
 // by the labyrinthian swig libraries that'll be included later.
@@ -27,6 +28,10 @@ Python interface to hsc::meas::tansip
 
 %template(VI) std::vector<int>;
 %template(VQ) std::vector<long long int>;
+
+struct CL_SLVTS{};
+%shared_ptr(CL_SLVTS);
+boost::shared_ptr<CL_SLVTS> SOLVETANSIP(std::vector< std::vector< std::vector< std::string > > > SLVTS_Argvs);
 
 // end
 
