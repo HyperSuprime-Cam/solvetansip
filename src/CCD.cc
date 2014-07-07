@@ -140,21 +140,21 @@ int  CL_CCDs::CHECK_NUMFIT(){
 
 }
 int  CL_CCDs::CHECK_NUMFITALL(){
-	if(CCD[*NUM_CCD].NUM_FIT<0.5){
+	if(CCD[*NUM_CCD].NUM_FIT <= 0){
 		cout << "---------------------------------------------" << endl;
 		cout << "Input 'NUM_FIT' is '" << CCD[*NUM_CCD].NUM_FIT << "'"<< endl;
 		cout << "Error : NUM_FIT(Number of references for fitting) must be larger than 0" << endl;
 		cout << "---------------------------------------------" << endl;
 		return 1;
-	}else if(CCD[*NUM_CCD].NUM_FIT<(0.5*(*ORDER_ASIP+1)*(*ORDER_ASIP+2)+1)||
-		 CCD[*NUM_CCD].NUM_FIT<(0.5*(*ORDER_PSIP+1)*(*ORDER_PSIP+2)+1)){
+	}else if(CCD[*NUM_CCD].NUM_FIT <= (*ORDER_ASIP+1)*(*ORDER_ASIP+2)/2 ||
+		CCD[*NUM_CCD].NUM_FIT <= (*ORDER_PSIP+1)*(*ORDER_PSIP+2)/2 ){
 			cout << "---------------------------------------------" << endl;
 			cout << "Warning : NUM_FIT : CCD : ALL : ";
 			cout.width(5);
 			cout << CCD[*NUM_CCD].NUM_FIT << endl;
 			for(*ORDER_ASIP=0;*ORDER_ASIP<10;*ORDER_ASIP+=1)
-			if(0.5*(*ORDER_ASIP+1+1)*(*ORDER_ASIP+2+1)>CCD[*NUM_CCD].NUM_FIT)
-			break;
+				if((*ORDER_ASIP+1+1)*(*ORDER_ASIP+2+1)/2>CCD[*NUM_CCD].NUM_FIT)
+					break;
 			*ORDER_PSIP=*ORDER_ASIP;
 			cout << "Warning : SET ORDER_ASIP to " << *ORDER_ASIP << endl;
 			cout << "Warning : SET ORDER_PSIP to " << *ORDER_PSIP << endl;
@@ -610,7 +610,7 @@ void CL_CCD::SHOW(){
 	cout << "InvCD2_2      : " ;cout.width(10);cout<< InvCD[1][1] <<" (degree) " << endl;
 	cout << "ORDER  SIP_A  : " << *ORDER_ASIP<< endl;
 	int i,j;
-	j=int(0.5*(*ORDER_ASIP+1)*(*ORDER_ASIP+2)+0.1);
+	j=(*ORDER_ASIP+1)*(*ORDER_ASIP+2)/2;
 	for(i=0;i<j;i++){
 		cout<< " SIP_A ";cout.width(3);cout<<i<<"    : ";cout.width(10);cout<< ASIP[0][i]<<endl;
 	}

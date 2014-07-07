@@ -271,7 +271,7 @@ std::vector< std::vector< double > > GET_CCD_COEFSIPA(CL_SLVTS* SLVTS){
     std::vector< std::vector< double > >  CCDCOEF;
 
     S_ORDER=*SLVTS->CCDs->CCD[SLVTS->APRM->NUM_CCD].ORDER_ASIP;
-    for(ORDER=0;ORDER<(0.5*(S_ORDER+1)*(S_ORDER+2)+0.5);ORDER++){
+    for(ORDER=0;ORDER<(S_ORDER+1)*(S_ORDER+2)/2;ORDER++){
         for(ID=0;ID<SLVTS->APRM->NUM_CCD+1;ID++){
 	    COEF.push_back(SLVTS->CCDs->CCD[ID].ASIP[0][ORDER]);
         }
@@ -286,7 +286,7 @@ std::vector< std::vector< double > > GET_CCD_COEFSIPB(CL_SLVTS* SLVTS){
     std::vector< std::vector< double > >  CCDCOEF;
 
     S_ORDER=*SLVTS->CCDs->CCD[SLVTS->APRM->NUM_CCD].ORDER_ASIP;
-    for(ORDER=0;ORDER<(0.5*(S_ORDER+1)*(S_ORDER+2)+0.5);ORDER++){
+    for(ORDER=0;ORDER<(S_ORDER+1)*(S_ORDER+2)/2;ORDER++){
         for(ID=0;ID<SLVTS->APRM->NUM_CCD+1;ID++){
 	    COEF.push_back(SLVTS->CCDs->CCD[ID].ASIP[1][ORDER]);
         }
@@ -301,7 +301,7 @@ std::vector< std::vector< double > > GET_CCD_COEFPSIPA(CL_SLVTS* SLVTS){
     std::vector< std::vector< double > >  CCDCOEF;
 
     S_ORDER=*SLVTS->CCDs->CCD[SLVTS->APRM->NUM_CCD].ORDER_ASIP;
-    for(ORDER=0;ORDER<(0.5*(S_ORDER+1)*(S_ORDER+2)+0.5);ORDER++){
+    for(ORDER=0;ORDER<(S_ORDER+1)*(S_ORDER+2)/2;ORDER++){
         for(ID=0;ID<SLVTS->APRM->NUM_CCD+1;ID++){
 	    COEF.push_back(SLVTS->CCDs->CCD[ID].PSIP[0][ORDER]);
         }
@@ -316,7 +316,7 @@ std::vector< std::vector< double > > GET_CCD_COEFPSIPB(CL_SLVTS* SLVTS){
     std::vector< std::vector< double > >  CCDCOEF;
 
     S_ORDER=*SLVTS->CCDs->CCD[SLVTS->APRM->NUM_CCD].ORDER_ASIP;
-    for(ORDER=0;ORDER<(0.5*(S_ORDER+1)*(S_ORDER+2)+0.5);ORDER++){
+    for(ORDER=0;ORDER<(S_ORDER+1)*(S_ORDER+2)/2;ORDER++){
         for(ID=0;ID<SLVTS->APRM->NUM_CCD+1;ID++){
 	    COEF.push_back(SLVTS->CCDs->CCD[ID].PSIP[1][ORDER]);
         }
@@ -823,4 +823,4 @@ std::vector< std::vector< double > > GET_REF_CAMERADISTPSIP(CL_SLVTS* SLVTS){
     return DIST;
 }
 
- 
+
