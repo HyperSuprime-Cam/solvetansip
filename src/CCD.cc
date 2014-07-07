@@ -43,12 +43,12 @@ void CL_CCDs::SET_INIT(CL_APRM *APRM_IN){
 		CCD[i].ASIP[1]		 = ndarray::allocate((*ORDER_ASIP+1)*(*ORDER_ASIP+2)/2);
 		CCD[i].PSIP[0]		 = ndarray::allocate((*ORDER_PSIP+1)*(*ORDER_PSIP+2)/2);
 		CCD[i].PSIP[1]		 = ndarray::allocate((*ORDER_PSIP+1)*(*ORDER_PSIP+2)/2);
-		CCD[i].PSIP_CONV	 = ndarray::allocate((*ORDER_PSIP+1)*(*ORDER_PSIP+2)/2);
-		CCD[i].PSIP_ROT		 = ndarray::allocate((*ORDER_PSIP+1)*(*ORDER_PSIP+2)/2);
-		CCD[i].PSIP_SHEAR[0] = ndarray::allocate((*ORDER_PSIP+1)*(*ORDER_PSIP+2)/2);
-		CCD[i].PSIP_SHEAR[1] = ndarray::allocate((*ORDER_PSIP+1)*(*ORDER_PSIP+2)/2);
-		CCD[i].PSIP_MAG      = ndarray::allocate((*ORDER_PSIP+1)*(*ORDER_PSIP+2)/2);
-		CCD[i].PSIP_JACO     = ndarray::allocate((*ORDER_PSIP+1)*(*ORDER_PSIP+2)/2);
+		CCD[i].PSIP_CONV	 = ndarray::allocate((*ORDER_PSIP-1+1)*(*ORDER_PSIP-1+2)/2);
+		CCD[i].PSIP_ROT		 = ndarray::allocate((*ORDER_PSIP-1+1)*(*ORDER_PSIP-1+2)/2);
+		CCD[i].PSIP_SHEAR[0] = ndarray::allocate((*ORDER_PSIP-1+1)*(*ORDER_PSIP-1+2)/2);
+		CCD[i].PSIP_SHEAR[1] = ndarray::allocate((*ORDER_PSIP-1+1)*(*ORDER_PSIP-1+2)/2);
+		CCD[i].PSIP_MAG      = ndarray::allocate((*ORDER_PSIP-1+1)*(*ORDER_PSIP-1+2)/2);
+		CCD[i].PSIP_JACO     = ndarray::allocate((*ORDER_PSIP-1+1)*(*ORDER_PSIP-1+2)/2);
 	}
 	SET_CRPIX();
 }

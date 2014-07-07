@@ -1,13 +1,13 @@
+#ifndef SLVTS_GET_H
+#define SLVTS_GET_H
 //-----------------------------------------------------------
 //SLVTS_GET.h
 //getting information from class solvetansip
 //
 //Last modification : 2014/01/01
 //------------------------------------------------------------
-
 #include "hsc/meas/tansip/SLVTS.h"
-#ifndef SLVTS_GET_H
-#define SLVTS_GET_H
+
 //-----------------------------------------------------------------
 //Getting Functions : SUMMARY Info
 //-----------------------------------------------------------------

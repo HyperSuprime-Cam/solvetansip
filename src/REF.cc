@@ -680,6 +680,8 @@ void CL_REFs::CALC_STAT_SIP_LOCAL(){
 	ndarray::Array<double, 3, 3> DIFF= ndarray::allocate(*NUM_CCD,4,*NUM_REF);
 	ndarray::Array<double, 3, 3> STAT= ndarray::allocate(*NUM_CCD,4,4);
 
+	NUM.deep() = 0;
+
 	*NUM_FIT=0;
 	for(i=0;i<*NUM_REF;i++)
 	if(REF[i].FLAG_OBJ==1){

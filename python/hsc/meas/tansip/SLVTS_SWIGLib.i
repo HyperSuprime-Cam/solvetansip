@@ -12,6 +12,24 @@ Python interface to hsc::meas::tansip
 #include "lsst/afw/image.h"
 %}
 
+%include "std_vector.i"
+%include "std_string.i"
+
+// begin: These definitions must be before typemaps are smirched
+// by the labyrinthian swig libraries that'll be included later.
+
+%template(VS)   std::vector<std::string>;
+%template(VVS)  std::vector< std::vector<std::string> >;
+%template(VVVS) std::vector< std::vector< std::vector<std::string> > >;
+
+%template(VD)  std::vector<double>;
+%template(VVD) std::vector< std::vector<double> >;
+
+%template(VI) std::vector<int>;
+%template(VQ) std::vector<long long int>;
+
+// end
+
 %include "lsst/p_lsstSwig.i"
 
 %pythoncode %{
