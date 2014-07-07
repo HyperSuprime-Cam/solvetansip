@@ -30,6 +30,5 @@ public:
 	void CALC_WCS();//main calculation of solvetansip
 };
 
-std::vector< CL_SLVTS* > SOLVETANSIP(std::vector< std::vector< std::vector< std::string > > > SLVTS_Argvs);//called by lsst for calculating solvetansip
-void SET_END(std::vector< CL_SLVTS* > SOLVETANSIP);//called by lsst pipeline for destruction
+boost::shared_ptr<CL_SLVTS> SOLVETANSIP(std::vector< std::vector< std::vector< std::string > > > SLVTS_Argvs);//called by lsst for calculating solvetansip
 #endif

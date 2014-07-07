@@ -1316,12 +1316,8 @@ VSLVTS_swigregister(VSLVTS)
 
 
 def SOLVETANSIP(*args):
-  """SOLVETANSIP(VVVS SLVTS_Argvs) -> VSLVTS"""
+  """SOLVETANSIP(VVVS SLVTS_Argvs) -> boost::shared_ptr< CL_SLVTS >"""
   return _SLVTS_SWIGLib.SOLVETANSIP(*args)
-
-def SET_END(*args):
-  """SET_END(VSLVTS SOLVETANSIP)"""
-  return _SLVTS_SWIGLib.SET_END(*args)
 class resultWcs_V(_object):
     """Proxy of C++ std::vector<(lsst::afw::image::TanWcs::Ptr)> class"""
     __swig_setmethods__ = {}

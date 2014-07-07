@@ -4,7 +4,6 @@
 //Last modification : 2014/01/01
 //------------------------------------------------------------
 #include "hsc/meas/tansip/REF.h"
-#include "LAPACK_FUNCS.h"
 
 #include <stdexcept>
 
@@ -71,7 +70,7 @@ void CL_REFs::SET_INIT(CL_APRM *APRM_IN,CL_CCDs* CCDs_IN){
 	MIN_CRPIX_G[1] =&CCDs->MIN_CRPIX_G[1];
 	AVE_CRPIX_G[0] =&CCDs->AVE_CRPIX_G[0];
 	AVE_CRPIX_G[1] =&CCDs->AVE_CRPIX_G[1];
-	REF = new CL_REF[*NUM_REF];
+	REF.resize(*NUM_REF);
 
 	ASIP_DX[0] = ndarray::allocate((*ORDER_ASIP+1)*(*ORDER_ASIP+2));
 	ASIP_DX[1] = ndarray::allocate((*ORDER_ASIP+1)*(*ORDER_ASIP+2));
@@ -158,7 +157,6 @@ void CL_REFs::SET_NUM(){
 	}
 }
 void CL_REFs::SET_END(){
-	delete [] REF;
 }
 void CL_REFs::SET_CCD(CL_CCDs*  CCDs){
 	int i;
@@ -467,11 +465,10 @@ int  CL_REFs::GET_ID_NEAR_CRPIX(){
 //REFS::FIT
 void CL_REFs::FIT_CbyD(int ID_C,int ID_D){
 	int i;
-	double **dx,**dy,D[2],C[2];
-	C[0]=C[1]=D[0]=D[1]=0;
+	double D[2] = {}, C[2] = {};
 
-	dx = CPP_MEMORY_NEWdouble2(*NUM_REF,3);
-	dy = CPP_MEMORY_NEWdouble2(*NUM_REF,3);
+	ndarray::Array<double, 2, 2> dx = ndarray::allocate(*NUM_REF,3);
+	ndarray::Array<double, 2, 2> dy = ndarray::allocate(*NUM_REF,3);
 
 	*NUM_FIT=0;
 	for(i=0;i<*NUM_REF;i++)
@@ -519,19 +516,16 @@ void CL_REFs::FIT_CbyD(int ID_C,int ID_D){
 		}
 	}
 
-	CALC_FIT_LS2(*NUM_FIT,*ORDER_ASIP,dx,ASIP[0]);
-	CALC_FIT_LS2(*NUM_FIT,*ORDER_ASIP,dy,ASIP[1]);
-
-	CPP_MEMORY_DELdouble2(*NUM_REF,3,dx);
-	CPP_MEMORY_DELdouble2(*NUM_REF,3,dy);
+	ASIP[0].deep() = CALC_FIT_LS2(*NUM_FIT,*ORDER_ASIP,dx);
+	ASIP[1].deep() = CALC_FIT_LS2(*NUM_FIT,*ORDER_ASIP,dy);
 }
 void CL_REFs::FIT_DbyC(int ID_D,int ID_C){
 	int i;
-	double **dx,**dy,D[2],C[2];
+	double D[2] = {},C[2] = {};
 	C[0]=C[1]=D[0]=D[1]=0;
 
-	dx = CPP_MEMORY_NEWdouble2(*NUM_REF,3);
-	dy = CPP_MEMORY_NEWdouble2(*NUM_REF,3);
+	ndarray::Array<double, 2, 2> dx = ndarray::allocate(*NUM_REF,3);
+	ndarray::Array<double, 2, 2> dy = ndarray::allocate(*NUM_REF,3);
 
 	*NUM_FIT=0;
 	for(i=0;i<*NUM_REF;i++)
@@ -578,17 +572,15 @@ void CL_REFs::FIT_DbyC(int ID_D,int ID_C){
 		}
 	}
 
-	CALC_FIT_LS2(*NUM_FIT,*ORDER_PSIP,dx,PSIP[0]);
-	CALC_FIT_LS2(*NUM_FIT,*ORDER_PSIP,dy,PSIP[1]);
-
-	CPP_MEMORY_DELdouble2(*NUM_REF,3,dx);
-	CPP_MEMORY_DELdouble2(*NUM_REF,3,dy);
+	PSIP[0].deep() = CALC_FIT_LS2(*NUM_FIT,*ORDER_PSIP,dx);
+	PSIP[1].deep() = CALC_FIT_LS2(*NUM_FIT,*ORDER_PSIP,dy);
 }
 void CL_REFs::CALC_STAT_ASIP(){
 	int i;
-	double STAT[2][4],*DIFF[2];
-	DIFF[0]= new double [*NUM_REF];
-	DIFF[1]= new double [*NUM_REF];
+	double STAT[2][4];
+	ndarray::Array<double, 1, 1> DIFF[2];
+	DIFF[0]= ndarray::allocate(*NUM_REF);
+	DIFF[1]= ndarray::allocate(*NUM_REF);
 
 	*NUM_FIT=0;
 	for(i=0;i<*NUM_REF;i++)
@@ -597,8 +589,8 @@ void CL_REFs::CALC_STAT_ASIP(){
 		DIFF[1][*NUM_FIT]=REF[i].POS_DETECTED_ASIP_IMPIX_G[1]-REF[i].POS_CELESTIAL_IMPIX_G[1];
 		*NUM_FIT+=1;
 	}
-	CALC_STAT_RMSMAX(*NUM_FIT,DIFF[0],STAT[0]);
-	CALC_STAT_RMSMAX(*NUM_FIT,DIFF[1],STAT[1]);
+	CALC_STAT_RMSMAX(*NUM_FIT,DIFF[0].getData(),STAT[0]);
+	CALC_STAT_RMSMAX(*NUM_FIT,DIFF[1].getData(),STAT[1]);
 
 	*DIF_AVE_ASIP[0]=STAT[0][1];
 	*DIF_AVE_ASIP[1]=STAT[1][1];
@@ -631,15 +623,13 @@ void CL_REFs::CALC_STAT_ASIP(){
 		cout.width(10);
 		cout<<scientific<<setprecision(3)<<*DIF_MAX_ASIP[1]<<endl;
 	}
-
-	delete [] DIFF[0];
-	delete [] DIFF[1];
 }
 void CL_REFs::CALC_STAT_PSIP(){
 	int i;
-	double STAT[2][4],*DIFF[2];
-	DIFF[0]= new double [*NUM_REF];
-	DIFF[1]= new double [*NUM_REF];
+	double STAT[2][4];
+	ndarray::Array<double, 1, 1> DIFF[2];
+	DIFF[0]= ndarray::allocate(*NUM_REF);
+	DIFF[1]= ndarray::allocate(*NUM_REF);
 
 	*NUM_FIT=0;
 	for(i=0;i<*NUM_REF;i++)
@@ -648,8 +638,8 @@ void CL_REFs::CALC_STAT_PSIP(){
 		DIFF[1][*NUM_FIT]=REF[i].POS_CELESTIAL_PSIP_CRPIX_G[1]-REF[i].POS_DETECTED_CRPIX_G[1];
 		*NUM_FIT+=1;
 	}
-	CALC_STAT_RMSMAX(*NUM_FIT,DIFF[0],STAT[0]);
-	CALC_STAT_RMSMAX(*NUM_FIT,DIFF[1],STAT[1]);
+	CALC_STAT_RMSMAX(*NUM_FIT,DIFF[0].getData(),STAT[0]);
+	CALC_STAT_RMSMAX(*NUM_FIT,DIFF[1].getData(),STAT[1]);
 
 	*DIF_AVE_PSIP[0]=STAT[0][1];
 	*DIF_AVE_PSIP[1]=STAT[1][1];
@@ -682,17 +672,13 @@ void CL_REFs::CALC_STAT_PSIP(){
 		cout.width(10);
 		cout<<scientific<<setprecision(3)<<*DIF_MAX_PSIP[1]<<endl;
 	}
-
-	delete [] DIFF[0];
-	delete [] DIFF[1];
 }
 void CL_REFs::CALC_STAT_SIP_LOCAL(){
-	int i,*NUM;
-	double ***STAT,***DIFF;
+	int i;
 
-	NUM =CPP_MEMORY_NEWint1(*NUM_CCD);
-	DIFF=CPP_MEMORY_NEWdouble3(*NUM_CCD,4,*NUM_REF);
-	STAT=CPP_MEMORY_NEWdouble3(*NUM_CCD,4,4);
+	ndarray::Array<int   , 1, 1> NUM = ndarray::allocate(*NUM_CCD);
+	ndarray::Array<double, 3, 3> DIFF= ndarray::allocate(*NUM_CCD,4,*NUM_REF);
+	ndarray::Array<double, 3, 3> STAT= ndarray::allocate(*NUM_CCD,4,4);
 
 	*NUM_FIT=0;
 	for(i=0;i<*NUM_REF;i++)
@@ -705,10 +691,10 @@ void CL_REFs::CALC_STAT_SIP_LOCAL(){
 		*NUM_FIT+=1;
 	}
 	for(i=0;i<*NUM_CCD;i++){
-		CALC_STAT_RMSMAX(NUM[i],DIFF[i][0],STAT[i][0]);
-		CALC_STAT_RMSMAX(NUM[i],DIFF[i][1],STAT[i][1]);
-		CALC_STAT_RMSMAX(NUM[i],DIFF[i][2],STAT[i][2]);
-		CALC_STAT_RMSMAX(NUM[i],DIFF[i][3],STAT[i][3]);
+		CALC_STAT_RMSMAX(NUM[i],DIFF[i][0].getData(),STAT[i][0].getData());
+		CALC_STAT_RMSMAX(NUM[i],DIFF[i][1].getData(),STAT[i][1].getData());
+		CALC_STAT_RMSMAX(NUM[i],DIFF[i][2].getData(),STAT[i][2].getData());
+		CALC_STAT_RMSMAX(NUM[i],DIFF[i][3].getData(),STAT[i][3].getData());
 		CCDs->CCD[i].DIF_AVE_ASIP[0]=STAT[i][0][1];
 		CCDs->CCD[i].DIF_AVE_ASIP[1]=STAT[i][1][1];
 		CCDs->CCD[i].DIF_AVE_PSIP[0]=STAT[i][2][1];
@@ -722,10 +708,6 @@ void CL_REFs::CALC_STAT_SIP_LOCAL(){
 		CCDs->CCD[i].DIF_MAX_PSIP[0]=STAT[i][2][3];
 		CCDs->CCD[i].DIF_MAX_PSIP[1]=STAT[i][3][3];
 	}
-
-	CPP_MEMORY_DELint1(*NUM_CCD,NUM);
-	CPP_MEMORY_DELdouble3(*NUM_CCD,2,*NUM_REF,DIFF);
-	CPP_MEMORY_DELdouble3(*NUM_CCD,2,4,STAT);
 }
 void CL_REFs::CALC_CRPIXatCRVAL(){
 	SET_POS_CELESTIAL_IMWLDfromRADEC();
@@ -894,11 +876,10 @@ void CL_REFs::REJECT_BADREF_PSIP(){
 void CL_REFs::DETERMINE_CCDPOSITION(){
 	if(*FLAG_STD>0.5)cout<<"-- DETERMINE CCD POSITIONS --"<<endl;
 
-	int                          NUM_COEF = (int)(0.5*(*ORDER_PSIP+1)*(*ORDER_PSIP+2)+0.1);
+	int                          NUM_COEF = (*ORDER_PSIP+1)*(*ORDER_PSIP+2)/2;
 	ndarray::Array<double, 2, 2> COEF     = ndarray::allocate(2, NUM_COEF);
 	ndarray::Array<double, 1, 1> MAXYT    = ndarray::allocate(3*(*NUM_CCD)+2*(NUM_COEF-1));
 	ndarray::Array<double, 2, 2> MBXYT    = ndarray::allocate(3*(*NUM_CCD)+2*(NUM_COEF-1), 3*(*NUM_CCD)+2*(NUM_COEF-1));
-	ndarray::Array<double, 1, 1> MCXYT    = ndarray::allocate(3*(*NUM_CCD)+2*(NUM_COEF-1));
 	ndarray::Array<double, 3, 3> XY       = ndarray::allocate(*NUM_REF, (*ORDER_PSIP+1)*(*ORDER_PSIP+1), (*ORDER_PSIP+1)*(*ORDER_PSIP+1));
 	ndarray::Array<double, 1, 1> XLsYLc   = ndarray::allocate(*NUM_REF);
 	ndarray::Array<double, 1, 1> YLsXLc   = ndarray::allocate(*NUM_REF);
@@ -906,15 +887,7 @@ void CL_REFs::DETERMINE_CCDPOSITION(){
 	ndarray::Array<double, 1, 1> XN       = ndarray::allocate((*ORDER_PSIP+1)*(*ORDER_PSIP+1));
 	ndarray::Array<double, 1, 1> YN       = ndarray::allocate((*ORDER_PSIP+1)*(*ORDER_PSIP+1));
 
-	// workspace for dgesvx
-	ndarray::Array<double, 2, 2> dgesvx_af    = ndarray::allocate(MBXYT.getShape());
-	ndarray::Array<int   , 1, 1> dgesvx_ipiv  = ndarray::allocate(MAXYT.getSize<0>());
-	ndarray::Array<double, 1, 1> dgesvx_r     = ndarray::allocate(MAXYT.getSize<0>());
-	ndarray::Array<double, 1, 1> dgesvx_c     = ndarray::allocate(MAXYT.getSize<0>());
-	ndarray::Array<double, 1, 1> dgesvx_work  = ndarray::allocate(4 * MAXYT.getSize<0>());
-	ndarray::Array<int   , 1, 1> dgesvx_iwork = ndarray::allocate(MAXYT.getShape());
-
-	int i,j,ij,k,l,kl,CID,CID2,NUM;
+	int i,j,ij,k,l,kl,CID,NUM;
 	for(CID=0;CID<(*NUM_CCD);CID++){
 		XYINIT[CID][0]=CCDs->CCD[CID].GPOS_L[0];
 		XYINIT[CID][1]=CCDs->CCD[CID].GPOS_L[1];
@@ -1053,50 +1026,7 @@ void CL_REFs::DETERMINE_CCDPOSITION(){
 		}
 //--------------------------------------------------
 		// C = B^{-1} A
-		int    dgesvx_n = MAXYT.getSize<0>();
-		int    dgesvx_nrhs = 1;
-		char   dgesvx_equed;
-		double dgesvx_rcond;
-		double dgesvx_ferr ;
-		double dgesvx_berr ;
-		int    dgesvx_info ;
-		dgesvx_(
-			"Equilibrate",
-			"Transpose", // because row majar
-			&dgesvx_n,
-			&dgesvx_nrhs,
-			MBXYT.getData(),
-			&dgesvx_n,
-			dgesvx_af.getData(),
-			&dgesvx_n,
-			dgesvx_ipiv.getData(),
-			&dgesvx_equed,
-			dgesvx_r.getData(),
-			dgesvx_c.getData(),
-			MAXYT.getData(),
-			&dgesvx_n,
-			MCXYT.getData(),
-			&dgesvx_n,
-			&dgesvx_rcond,
-			&dgesvx_ferr,
-			&dgesvx_berr,
-			dgesvx_work.getData(),
-			dgesvx_iwork.getData(),
-			&dgesvx_info
-		);
-
-		if(dgesvx_info == 0){
-			cout << "info: CL_REFs::DETERMINE_CCDPOSITION: OK; N=" << dgesvx_n << endl;
-
-			; // OK
-		}
-		else if(dgesvx_info > dgesvx_n){
-			// the matrix is extremely bad, but not exactly irregular
-			cout << "warning: CL_REFs::DETERMINE_CCDPOSITION: linear equation is extremely bad." << endl;
-		}
-		else{
-			throw std::runtime_error("CL_REFs::DETERMINE_CCDPOSITION: irregular linear equation");
-		}
+		ndarray::Array<double, 1, 1> MCXYT = SOLVE_LINEAR_EQUATION(MBXYT, MAXYT);
 
 		for(CID=0;CID<(*NUM_CCD);CID++){
 			CCDs->CCD[CID].GPOS_L[0]+=MCXYT[0*(*NUM_CCD)+CID];
@@ -1245,10 +1175,10 @@ void CL_REFs::CALC_TANSIP(){
 }
 //DISTORTION
 void CL_REFs::CALC_OPTICAL_DISTORTION(){
-	DEVIATION_SIP(*ORDER_ASIP,ASIP[0],ASIP_DX[0].getData(),ASIP_DY[0].getData());
-	DEVIATION_SIP(*ORDER_ASIP,ASIP[1],ASIP_DX[1].getData(),ASIP_DY[1].getData());
-	DEVIATION_SIP(*ORDER_PSIP,PSIP[0],PSIP_DX[0].getData(),PSIP_DY[0].getData());
-	DEVIATION_SIP(*ORDER_PSIP,PSIP[1],PSIP_DX[1].getData(),PSIP_DY[1].getData());
+	DEVIATION_SIP(*ORDER_ASIP,ASIP[0].getData(),ASIP_DX[0].getData(),ASIP_DY[0].getData());
+	DEVIATION_SIP(*ORDER_ASIP,ASIP[1].getData(),ASIP_DX[1].getData(),ASIP_DY[1].getData());
+	DEVIATION_SIP(*ORDER_PSIP,PSIP[0].getData(),PSIP_DX[0].getData(),PSIP_DY[0].getData());
+	DEVIATION_SIP(*ORDER_PSIP,PSIP[1].getData(),PSIP_DX[1].getData(),PSIP_DY[1].getData());
 
 	SET_OPTICAL_DISTORTIONbyPSIP();
 	FIT_DIST();
@@ -1256,11 +1186,10 @@ void CL_REFs::CALC_OPTICAL_DISTORTION(){
 }
 void CL_REFs::DEVIATION_SIP(int ORDER,double *Coef,double *dxCoef,double *dyCoef){
 	int i,j,ij=0;
-	double **Coef2,**dxCoef2,**dyCoef2;
 
-	  Coef2 = CPP_MEMORY_NEWdouble2(ORDER+1,ORDER+1);
-	dxCoef2 = CPP_MEMORY_NEWdouble2(ORDER+1,ORDER+1);
-	dyCoef2 = CPP_MEMORY_NEWdouble2(ORDER+1,ORDER+1);
+	ndarray::Array<double, 2, 2>   Coef2 = ndarray::allocate(ORDER+1,ORDER+1);
+	ndarray::Array<double, 2, 2> dxCoef2 = ndarray::allocate(ORDER+1,ORDER+1);
+	ndarray::Array<double, 2, 2> dyCoef2 = ndarray::allocate(ORDER+1,ORDER+1);
 
 	for(i=0;i<ORDER+1  ;i++)
 	for(j=0;j<ORDER+1-i;j++){
@@ -1281,21 +1210,17 @@ void CL_REFs::DEVIATION_SIP(int ORDER,double *Coef,double *dxCoef,double *dyCoef
 		dyCoef[ij]=dyCoef2[i][j];
 		ij++;
 	}
-
-	CPP_MEMORY_DELdouble2(ORDER+1,ORDER+1,  Coef2);
-	CPP_MEMORY_DELdouble2(ORDER+1,ORDER+1,dxCoef2);
-	CPP_MEMORY_DELdouble2(ORDER+1,ORDER+1,dyCoef2);
 }
 void CL_REFs::FIT_DIST(){
 	int i;
-	double **dC,**dR,**dS1,**dS2,**dM,**dJ,C[2],D[6];
+	double C[2],D[6];
 
-	dC = CPP_MEMORY_NEWdouble2(*NUM_REF,3);
-	dR = CPP_MEMORY_NEWdouble2(*NUM_REF,3);
-	dS1= CPP_MEMORY_NEWdouble2(*NUM_REF,3);
-	dS2= CPP_MEMORY_NEWdouble2(*NUM_REF,3);
-	dM = CPP_MEMORY_NEWdouble2(*NUM_REF,3);
-	dJ = CPP_MEMORY_NEWdouble2(*NUM_REF,3);
+	ndarray::Array<double, 2, 2> dC = ndarray::allocate(*NUM_REF,3);
+	ndarray::Array<double, 2, 2> dR = ndarray::allocate(*NUM_REF,3);
+	ndarray::Array<double, 2, 2> dS1= ndarray::allocate(*NUM_REF,3);
+	ndarray::Array<double, 2, 2> dS2= ndarray::allocate(*NUM_REF,3);
+	ndarray::Array<double, 2, 2> dM = ndarray::allocate(*NUM_REF,3);
+	ndarray::Array<double, 2, 2> dJ = ndarray::allocate(*NUM_REF,3);
 
 	*NUM_FIT=0;
 	for(i=0;i<*NUM_REF;i++)
@@ -1320,19 +1245,12 @@ void CL_REFs::FIT_DIST(){
 		*NUM_FIT+=1;
 	}
 
-	CALC_FIT_LS2(*NUM_FIT,*ORDER_PSIP-1,dC ,PSIP_CONV);
-	CALC_FIT_LS2(*NUM_FIT,*ORDER_PSIP-1,dR ,PSIP_ROT);
-	CALC_FIT_LS2(*NUM_FIT,*ORDER_PSIP-1,dS1,PSIP_SHEAR[0]);
-	CALC_FIT_LS2(*NUM_FIT,*ORDER_PSIP-1,dS2,PSIP_SHEAR[1]);
-	CALC_FIT_LS2(*NUM_FIT,*ORDER_PSIP-1,dM ,PSIP_MAG);
-	CALC_FIT_LS2(*NUM_FIT,*ORDER_PSIP-1,dJ ,PSIP_JACO);
-
-	CPP_MEMORY_DELdouble2(*NUM_REF,3,dC );
-	CPP_MEMORY_DELdouble2(*NUM_REF,3,dR );
-	CPP_MEMORY_DELdouble2(*NUM_REF,3,dS1);
-	CPP_MEMORY_DELdouble2(*NUM_REF,3,dS2);
-	CPP_MEMORY_DELdouble2(*NUM_REF,3,dM );
-	CPP_MEMORY_DELdouble2(*NUM_REF,3,dJ );
+	PSIP_CONV    .deep() = CALC_FIT_LS2(*NUM_FIT,*ORDER_PSIP-1,dC );
+	PSIP_ROT     .deep() = CALC_FIT_LS2(*NUM_FIT,*ORDER_PSIP-1,dR );
+	PSIP_SHEAR[0].deep() = CALC_FIT_LS2(*NUM_FIT,*ORDER_PSIP-1,dS1);
+	PSIP_SHEAR[1].deep() = CALC_FIT_LS2(*NUM_FIT,*ORDER_PSIP-1,dS2);
+	PSIP_MAG     .deep() = CALC_FIT_LS2(*NUM_FIT,*ORDER_PSIP-1,dM );
+	PSIP_JACO    .deep() = CALC_FIT_LS2(*NUM_FIT,*ORDER_PSIP-1,dJ );
 }
 void CL_REFs::CALC_OPTICAL_AXIS(){
 	ndarray::Array<double, 1, 1>   JDX = ndarray::allocate((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1));
@@ -1342,7 +1260,7 @@ void CL_REFs::CALC_OPTICAL_AXIS(){
 	ndarray::Array<double, 1, 1> JDYDX = ndarray::allocate((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1));
 	ndarray::Array<double, 1, 1> JDYDY = ndarray::allocate((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1));
 
-	DEVIATION_SIP(*ORDER_PSIP-1,PSIP_JACO,JDX.getData(),JDY.getData());
+	DEVIATION_SIP(*ORDER_PSIP-1,PSIP_JACO.getData(),JDX.getData(),JDY.getData());
 	DEVIATION_SIP(*ORDER_PSIP-1,JDX.getData(),JDXDX.getData(),JDXDY.getData());
 	DEVIATION_SIP(*ORDER_PSIP-1,JDY.getData(),JDYDX.getData(),JDYDY.getData());
 
@@ -1484,10 +1402,9 @@ void CL_REF::SET_POS_DETECTED_RADEC_GfromIMWLD_G(){
 }
 void CL_REF::SET_POS_DETECTED_ASIP_IMPIX_LfromCRPIX_L(){
 	int i,j,ij;
-	double *XN,*YN;
 
-	XN = new double[*ORDER_ASIP+1];
-	YN = new double[*ORDER_ASIP+1];
+	ndarray::Array<double, 1, 1> XN = ndarray::allocate(*ORDER_ASIP+1);
+	ndarray::Array<double, 1, 1> YN = ndarray::allocate(*ORDER_ASIP+1);
 
 	XN[0]=YN[0]=1;
 	for(i=1;i<*ORDER_ASIP+1;i++){
@@ -1504,16 +1421,12 @@ void CL_REF::SET_POS_DETECTED_ASIP_IMPIX_LfromCRPIX_L(){
 		POS_DETECTED_ASIP_IMPIX_L[1]+=CCD->ASIP[1][ij]*XN[i]*YN[j];
 		ij++;
 	}
-
-	delete [] XN;
-	delete [] YN;
 }
 void CL_REF::SET_POS_DETECTED_ASIP_IMPIX_GfromCRPIX_G(){
 	int i,j,ij;
-	double *XN,*YN;
 
-	XN = new double[*ORDER_ASIP+1];
-	YN = new double[*ORDER_ASIP+1];
+	ndarray::Array<double, 1, 1> XN = ndarray::allocate(*ORDER_ASIP+1);
+	ndarray::Array<double, 1, 1> YN = ndarray::allocate(*ORDER_ASIP+1);
 
 	XN[0]=YN[0]=1;
 	for(i=1;i<*ORDER_ASIP+1;i++){
@@ -1530,9 +1443,6 @@ void CL_REF::SET_POS_DETECTED_ASIP_IMPIX_GfromCRPIX_G(){
 		POS_DETECTED_ASIP_IMPIX_G[1]+=GCD->ASIP[1][ij]*XN[i]*YN[j];
 		ij++;
 	}
-
-	delete [] XN;
-	delete [] YN;
 }
 void CL_REF::SET_POS_DETECTED_ASIP_IMWLD_LfromASIP_IMPIX_L(){
 	POS_DETECTED_ASIP_IMWLD_L[0]=CCD->CD[0][0]*POS_DETECTED_ASIP_IMPIX_L[0]+CCD->CD[0][1]*POS_DETECTED_ASIP_IMPIX_L[1];
@@ -1631,10 +1541,9 @@ void CL_REF::SET_POS_CELESTIAL_LOCAL_LfromCRPIX_L(){
 }
 void CL_REF::SET_POS_CELESTIAL_PSIP_LOCAL_GfromIMWLD(){
 	int i,j,ij;
-	double *XN,*YN;
 
-	XN = new double[*ORDER_PSIP+1];
-	YN = new double[*ORDER_PSIP+1];
+	ndarray::Array<double, 1, 1> XN = ndarray::allocate(*ORDER_PSIP+1);
+	ndarray::Array<double, 1, 1> YN = ndarray::allocate(*ORDER_PSIP+1);
 
 	XN[0]=YN[0]=1;
 	for(i=1;i<*ORDER_PSIP+1;i++){
@@ -1653,16 +1562,12 @@ void CL_REF::SET_POS_CELESTIAL_PSIP_LOCAL_GfromIMWLD(){
 		POS_CELESTIAL_PSIP_LOCAL_G[1]+=GCD->PSIP[1][ij]*XN[i]*YN[j];
 		ij++;
 	}
-
-	delete [] XN;
-	delete [] YN;
 }
 void CL_REF::SET_POS_CELESTIAL_PSIP_CRPIX_GfromIMPIX_G(){
 	int i,j,ij;
-	double *XN,*YN;
 
-	XN = new double[*ORDER_PSIP+1];
-	YN = new double[*ORDER_PSIP+1];
+	ndarray::Array<double, 1, 1> XN = ndarray::allocate(*ORDER_PSIP+1);
+	ndarray::Array<double, 1, 1> YN = ndarray::allocate(*ORDER_PSIP+1);
 
 	XN[0]=YN[0]=1;
 	for(i=1;i<*ORDER_PSIP+1;i++){
@@ -1679,16 +1584,12 @@ void CL_REF::SET_POS_CELESTIAL_PSIP_CRPIX_GfromIMPIX_G(){
 		POS_CELESTIAL_PSIP_CRPIX_G[1]+=GCD->PSIP[1][ij]*XN[i]*YN[j];
 		ij++;
 	}
-
-	delete [] XN;
-	delete [] YN;
 }
 void CL_REF::SET_POS_CELESTIAL_PSIP_CRPIX_LfromIMPIX_L(){
 	int i,j,ij;
-	double *XN,*YN;
 
-	XN = new double[*ORDER_PSIP+1];
-	YN = new double[*ORDER_PSIP+1];
+	ndarray::Array<double, 1, 1> XN = ndarray::allocate(*ORDER_PSIP+1);
+	ndarray::Array<double, 1, 1> YN = ndarray::allocate(*ORDER_PSIP+1);
 
 	XN[0]=YN[0]=1;
 	for(i=1;i<*ORDER_PSIP+1;i++){
@@ -1705,9 +1606,6 @@ void CL_REF::SET_POS_CELESTIAL_PSIP_CRPIX_LfromIMPIX_L(){
 		POS_CELESTIAL_PSIP_CRPIX_L[1]+=CCD->PSIP[1][ij]*XN[i]*YN[j];
 		ij++;
 	}
-
-	delete [] XN;
-	delete [] YN;
 }
 void CL_REF::SET_POS_CELESTIAL_PSIP_LOCAL_GfromPSIP_CRPIX_G(){
 	POS_CELESTIAL_PSIP_LOCAL_G[0]=POS_CELESTIAL_PSIP_CRPIX_G[0]+*CRPIX_G[0];
@@ -1725,10 +1623,10 @@ void CL_REF::SET_DIFF(){
 }
 void CL_REF::SET_OPTICAL_DISTORTIONbyPSIP(){
 	int i,j,ij;
-	double *XN,*YN,dCdI[2][2],InvdCdI[2][2];
+	double dCdI[2][2],InvdCdI[2][2];
 
-	XN = new double[*ORDER_PSIP+1];
-	YN = new double[*ORDER_PSIP+1];
+	ndarray::Array<double, 1, 1> XN = ndarray::allocate(*ORDER_PSIP+1);
+	ndarray::Array<double, 1, 1> YN = ndarray::allocate(*ORDER_PSIP+1);
 
 	XN[0]=YN[0]=1;
 	for(i=1;i<*ORDER_PSIP+1;i++){
@@ -1747,19 +1645,17 @@ void CL_REF::SET_OPTICAL_DISTORTIONbyPSIP(){
 		ij++;
 	}
 
-        InvdCdI[0][0]=(1+dCdI[1][1])/((1+dCdI[0][0])*(1+dCdI[1][1])-dCdI[0][1]*dCdI[1][0])-1;
-        InvdCdI[0][1]=( -dCdI[0][1])/((1+dCdI[0][0])*(1+dCdI[1][1])-dCdI[0][1]*dCdI[1][0]);
-        InvdCdI[1][0]=( -dCdI[1][0])/((1+dCdI[0][0])*(1+dCdI[1][1])-dCdI[0][1]*dCdI[1][0]);
-        InvdCdI[1][1]=(1+dCdI[0][0])/((1+dCdI[0][0])*(1+dCdI[1][1])-dCdI[0][1]*dCdI[1][0])-1;
+	InvdCdI[0][0]=(1+dCdI[1][1])/((1+dCdI[0][0])*(1+dCdI[1][1])-dCdI[0][1]*dCdI[1][0])-1;
+	InvdCdI[0][1]=( -dCdI[0][1])/((1+dCdI[0][0])*(1+dCdI[1][1])-dCdI[0][1]*dCdI[1][0]);
+	InvdCdI[1][0]=( -dCdI[1][0])/((1+dCdI[0][0])*(1+dCdI[1][1])-dCdI[0][1]*dCdI[1][0]);
+	InvdCdI[1][1]=(1+dCdI[0][0])/((1+dCdI[0][0])*(1+dCdI[1][1])-dCdI[0][1]*dCdI[1][0])-1;
 
 	CAMERA_CONV     =0.5*(1+dCdI[0][0]+1+dCdI[1][1]);
-        CAMERA_ROT      =0.5*(  dCdI[0][1]-  dCdI[1][0]);
-        CAMERA_SHEAR[0] =0.5*(  dCdI[0][0]-  dCdI[1][1]);
-        CAMERA_SHEAR[1] =0.5*(  dCdI[0][1]+  dCdI[1][0]);
-        CAMERA_MAG      =CAMERA_CONV*CAMERA_CONV-(CAMERA_SHEAR[0]*CAMERA_SHEAR[0]+CAMERA_SHEAR[1]*CAMERA_SHEAR[1]);
-        CAMERA_JACO     =(1+dCdI[0][0])*(1+dCdI[1][1])-dCdI[0][1]*dCdI[1][0];
+	CAMERA_ROT      =0.5*(  dCdI[0][1]-  dCdI[1][0]);
+	CAMERA_SHEAR[0] =0.5*(  dCdI[0][0]-  dCdI[1][1]);
+	CAMERA_SHEAR[1] =0.5*(  dCdI[0][1]+  dCdI[1][0]);
+	CAMERA_MAG      =CAMERA_CONV*CAMERA_CONV-(CAMERA_SHEAR[0]*CAMERA_SHEAR[0]+CAMERA_SHEAR[1]*CAMERA_SHEAR[1]);
+	CAMERA_JACO     =(1+dCdI[0][0])*(1+dCdI[1][1])-dCdI[0][1]*dCdI[1][0];
 
 //cout<< POS_CELESTIAL_IMPIX_G[0]<<"	"<<POS_CELESTIAL_IMPIX_G[1]<<"	"<<CAMERA_CONV<<"	"<<CAMERA_ROT<<"	"<<CAMERA_SHEAR[0]<<"	"<<CAMERA_SHEAR[1]<<"	"<<CAMERA_MAG<<"	"<<CAMERA_JACO<<endl;
-	delete [] XN;
-	delete [] YN;
 }

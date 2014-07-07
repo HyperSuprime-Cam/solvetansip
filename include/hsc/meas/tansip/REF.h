@@ -17,7 +17,6 @@
 
 #include "hsc/meas/tansip/APRM.h"
 #include "hsc/meas/tansip/CCD.h"
-#include "hsc/meas/tansip/CPP.h"
 #include "hsc/meas/tansip/CALC.h"
 
 #define PI (4*atan(1.0))
@@ -131,7 +130,7 @@ private:
 public:
 	CL_APRM *APRM;//SLVTS->APRM
 	CL_CCDs *CCDs;//SLVTS->CCDs
-	CL_REF  *REF;
+	std::vector<CL_REF>  REF;
 	string  *MODE_CR;//APRM->MODE_CR
 	int     *MODE_CCDPOS;//APRM->MODE_CCDPOS
 	int     *MODE_REJ;//APRM->MODE_REJ
@@ -148,8 +147,8 @@ public:
 	double  *GPOS_C_BASIS[3];//CCDs->GPOS_C_BASIS
 	double  *SIGMA_CLIP;//APRM->SIGMA_SLIP
 	double  *PRECISION_CCD;//APRM->PRECISION_CCD
-	double	*ASIP[2];//CCDs->ASIP
-	double	*PSIP[2];//CCDs->PSIP
+	ndarray::Array<double, 1, 1> ASIP[2];//CCDs->ASIP
+	ndarray::Array<double, 1, 1> PSIP[2];//CCDs->PSIP
 	double  *CD[2][2];//CCDs->CD
 	double  *InvCD[2][2];//CCDs->InvCD
 	double	*DIF_AVE_ASIP[2];//CCDs->DIF_AVE_ASIP
@@ -162,11 +161,11 @@ public:
 	ndarray::Array<double, 1, 1> ASIP_DY[2];
 	ndarray::Array<double, 1, 1> PSIP_DX[2];
 	ndarray::Array<double, 1, 1> PSIP_DY[2];
-	double	*PSIP_CONV;
-	double	*PSIP_ROT;
-	double	*PSIP_SHEAR[2];
-	double	*PSIP_MAG;
-	double	*PSIP_JACO;
+	ndarray::Array<double, 1, 1> PSIP_CONV;    //CCDs->PSIP_CONV
+	ndarray::Array<double, 1, 1> PSIP_ROT;     //CCDs->PSIP_ROT
+	ndarray::Array<double, 1, 1> PSIP_SHEAR[2];//CCDs->PSIP_SHEAR
+	ndarray::Array<double, 1, 1> PSIP_MAG;     //CCDs->PSIP_MAG
+	ndarray::Array<double, 1, 1> PSIP_JACO;    //CCDs->PSIP_JACO
 	double   MAX_LOCAL_G_R;
 	double   MAX_LOCAL_G[2];
 	double   MIN_LOCAL_G[2];

@@ -6,13 +6,15 @@
 #ifndef CCD_H
 #define CCD_H
 
-#include<vector>
-#include<string>
-#include<cmath>
-#include<iostream>
-#include<iomanip>
-#include"hsc/meas/tansip/APRM.h"
-#include"hsc/meas/tansip/CPP.h"
+#include <vector>
+#include <string>
+#include <cmath>
+#include <iostream>
+#include <iomanip>
+
+#include <ndarray.h>
+
+#include "hsc/meas/tansip/APRM.h"
 
 class CL_CCD{
 private:
@@ -27,19 +29,19 @@ public:
 	int      LENGTH[2];
 	double   ANGLE;
 	double	*CRVAL[2];//=APRM->CRVAL
-	double	*CRPIX[2];//=APRM->CRPIX
+	double	*CRPIX[2];//=APRM->CRVAL if this is the last element in CL_CCDs or is unique.
 	double	 OAPIX[2];
 	double	 CD[2][2];
 	double	 InvCD[2][2];
 	int	*ORDER_ASIP;//=APRM->ORDER_ASIP
 	int	*ORDER_PSIP;//=APRM->ORDER_PSIP
-	double	*ASIP[2];
-	double	*PSIP[2];
-	double	*PSIP_CONV;
-	double	*PSIP_ROT;
-	double	*PSIP_SHEAR[2];
-	double	*PSIP_MAG;
-	double	*PSIP_JACO;
+	ndarray::Array<double, 1, 1>  ASIP[2];
+	ndarray::Array<double, 1, 1>  PSIP[2];
+	ndarray::Array<double, 1, 1>  PSIP_CONV;
+	ndarray::Array<double, 1, 1>  PSIP_ROT;
+	ndarray::Array<double, 1, 1>  PSIP_SHEAR[2];
+	ndarray::Array<double, 1, 1>  PSIP_MAG;
+	ndarray::Array<double, 1, 1>  PSIP_JACO;
 	double	 DIF_AVE_ASIP[2];
 	double	 DIF_AVE_PSIP[2];
 	double	 DIF_RMS_ASIP[2];
@@ -60,7 +62,7 @@ class CL_CCDs{
 private:
 public:
 	CL_APRM *APRM;//=SLVTS->APRM
-	CL_CCD  *CCD;
+	std::vector<CL_CCD>  CCD;
 	int     *MODE_CCDPOS;//=APRM->MODE_CCDPOS
 	int     *NUM_CCD;
 	double	 GPOS_C_BASIS[4];//pixel,pixel,radian,degree
@@ -74,7 +76,8 @@ public:
 	double   MIN_CRPIX_G[2];
 	double   AVE_CRPIX_G[2];
 
-	
+	ndarray::Array<double, 1, 1> HOLDER_OF_CRPIX_OF_CCDS;
+
 	void SET_INIT(CL_APRM *APRM);//setting initial values
 	void SET_INPUT(std::vector< std::vector< std::string > > CCD_Argvs,CL_APRM *APRM);//setting input values
 	void SET_END();//destructor

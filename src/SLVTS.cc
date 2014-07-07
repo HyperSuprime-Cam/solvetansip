@@ -10,21 +10,18 @@
 #include "hsc/meas/tansip/SLVTS.h"
 
 using namespace std;
-std::vector< CL_SLVTS* > SOLVETANSIP(std::vector< std::vector< std::vector<std::string> > > SLVTS_Argvs){
+boost::shared_ptr<CL_SLVTS> SOLVETANSIP(std::vector< std::vector< std::vector<std::string> > > SLVTS_Argvs){
 	clock_t TS,TE;
 	clock_t T1,T2;
 	TS=clock();
-	CL_SLVTS* SLVTS;
-	SLVTS = new CL_SLVTS[1];
+	boost::shared_ptr<CL_SLVTS> SLVTS = boost::make_shared<CL_SLVTS>();
 
 	T1=clock();
 	SLVTS->SET_INIT();
 	SLVTS->SET_INPUT(SLVTS_Argvs);
 	if(SLVTS->CHECK_INPUT()==1){
 		cout << "Error : in checking Input Values" <<endl;
-		std::vector< CL_SLVTS* > V_SLVTS;
-		V_SLVTS.push_back(SLVTS);
-		return V_SLVTS;
+		return boost::shared_ptr<CL_SLVTS>();
 	}
 	T2=clock();
 	if(SLVTS->APRM->FLAG_STD>0.5)cout<<"TIME SET INPUT         : "<<(T2-T1)/CLOCKS_PER_SEC << " (sec)"<<endl;
@@ -33,17 +30,10 @@ std::vector< CL_SLVTS* > SOLVETANSIP(std::vector< std::vector< std::vector<std::
 
 //	SLVTS->END()
 
-	std::vector< CL_SLVTS* > V_SLVTS;
-	V_SLVTS.push_back(SLVTS);
-
 	TE=clock();
 	if(SLVTS->APRM->FLAG_STD>0.5)cout<<"TIME SOLVETANSIP TOTAL : "<<(TE-TS)/CLOCKS_PER_SEC << " (sec)"<<endl;
 
-	return V_SLVTS;
-}
-void SET_END(std::vector< CL_SLVTS* > SOLVETANSIP){
-	SOLVETANSIP[0]->SET_END();
-	delete [] SOLVETANSIP[0];
+	return SLVTS;
 }
 void CL_SLVTS::SET_END(){
 	APRM->SET_END();

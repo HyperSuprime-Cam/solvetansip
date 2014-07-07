@@ -4,8 +4,8 @@
 #include<fstream>
 #include<cstring>
 #include<iomanip>
-#include "lsst/afw/cameraGeom.h" 
-#include "lsst/pex/logging.h"    
+#include "lsst/afw/cameraGeom.h"
+#include "lsst/pex/logging.h"
 #include "lsst/pex/policy/Policy.h"
 #include "lsst/afw/cameraGeom/Camera.h"
 #include "lsst/afw/image/TanWcs.h"
@@ -23,10 +23,11 @@
 %template(VVS) std::vector< std::vector<std::string> >;
 %template(VVVS) std::vector< std::vector< std::vector<std::string> > >;
 %template(VSLVTS)  std::vector<CL_SLVTS*>;
-std::vector< CL_SLVTS* > SOLVETANSIP(std::vector< std::vector< std::vector< std::string > > > SLVTS_Argvs);
-void SET_END(std::vector< CL_SLVTS* > SOLVETANSIP);
-%template(resultWcs_V) std::vector<lsst::afw::image::TanWcs::Ptr>;
 
+%shared_ptr(CL_SLVTS);
+PTR(CL_SLVTS) SOLVETANSIP(std::vector< std::vector< std::vector< std::string > > > SLVTS_Argvs);
+
+%template(resultWcs_V) std::vector<lsst::afw::image::TanWcs::Ptr>;
 %template(SourceMatchVector) std::vector<PTR(hsc::meas::tansip::SourceMatch)>;
 %template(SourceMatchVectorVector) std::vector<std::vector<PTR(hsc::meas::tansip::SourceMatch)> >;
 %shared_ptr(hsc::meas::tansip::SourceMatch);

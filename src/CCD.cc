@@ -12,7 +12,7 @@ void CL_CCDs::SET_INIT(CL_APRM *APRM_IN){
 	MODE_CCDPOS=&APRM_IN->MODE_CCDPOS;
 	NUM_CCD    =&APRM_IN->NUM_CCD;
 	FLAG_STD   =&APRM_IN->FLAG_STD;
-	CCD = new CL_CCD[*NUM_CCD+1];
+	CCD.resize(*NUM_CCD+1);
 
 	ORDER_ASIP     =&APRM->ORDER_ASIP;
 	ORDER_PSIP     =&APRM->ORDER_PSIP;
@@ -21,33 +21,35 @@ void CL_CCDs::SET_INIT(CL_APRM *APRM_IN){
 	CRVAL[0]       =&APRM->CRVAL[0];
 	CRVAL[1]       =&APRM->CRVAL[1];
 
-	int i;
-	for(i=0;i<*NUM_CCD;i++){
-		CCD[i].CRPIX[0]=new double[1];
-		CCD[i].CRPIX[1]=new double[1];
+	HOLDER_OF_CRPIX_OF_CCDS = ndarray::allocate(2 * (*NUM_CCD));
+	double* ptr = HOLDER_OF_CRPIX_OF_CCDS.getData();
+	for(int i=0;i<*NUM_CCD;i++){
+		CCD[i].CRPIX[0] = ptr++;
+		CCD[i].CRPIX[1] = ptr++;
 	}
-	for(i=0;i<*NUM_CCD+1;i++){
+	CCD[*NUM_CCD].CRPIX[0] = CRPIX[0];
+	CCD[*NUM_CCD].CRPIX[1] = CRPIX[1];
+
+	for(int i=0;i<*NUM_CCD+1;i++){
 		CCD[i].SET_INIT();
-		CCD[i].ORDER_ASIP	=ORDER_ASIP;
-		CCD[i].ORDER_PSIP	=ORDER_PSIP;
-		CCD[i].NUM_REF		=0;
-		CCD[i].NUM_FIT		=0;
-		CCD[i].NUM_REJ		=0;
-		CCD[i].CRVAL[0]		=CRVAL[0];
-		CCD[i].CRVAL[1]		=CRVAL[1];
-		CCD[i].ASIP[0]		=new double[(*ORDER_ASIP+1)*(*ORDER_ASIP+2)];
-		CCD[i].ASIP[1]		=new double[(*ORDER_ASIP+1)*(*ORDER_ASIP+2)];
-		CCD[i].PSIP[0]		=new double[(*ORDER_PSIP+1)*(*ORDER_PSIP+2)];
-		CCD[i].PSIP[1]		=new double[(*ORDER_PSIP+1)*(*ORDER_PSIP+2)];
-		CCD[i].PSIP_CONV	=new double[(*ORDER_PSIP+1)*(*ORDER_PSIP+2)];
-		CCD[i].PSIP_ROT		=new double[(*ORDER_PSIP+1)*(*ORDER_PSIP+2)];
-		CCD[i].PSIP_SHEAR[0]	=new double[(*ORDER_PSIP+1)*(*ORDER_PSIP+2)];
-		CCD[i].PSIP_SHEAR[1]	=new double[(*ORDER_PSIP+1)*(*ORDER_PSIP+2)];
-		CCD[i].PSIP_MAG		=new double[(*ORDER_PSIP+1)*(*ORDER_PSIP+2)];
-		CCD[i].PSIP_JACO	=new double[(*ORDER_PSIP+1)*(*ORDER_PSIP+2)];
+		CCD[i].ORDER_ASIP	 =ORDER_ASIP;
+		CCD[i].ORDER_PSIP	 =ORDER_PSIP;
+		CCD[i].NUM_REF		 =0;
+		CCD[i].NUM_FIT		 =0;
+		CCD[i].NUM_REJ		 =0;
+		CCD[i].CRVAL[0]      =CRVAL[0];
+		CCD[i].CRVAL[1]      =CRVAL[1];
+		CCD[i].ASIP[0]		 = ndarray::allocate((*ORDER_ASIP+1)*(*ORDER_ASIP+2)/2);
+		CCD[i].ASIP[1]		 = ndarray::allocate((*ORDER_ASIP+1)*(*ORDER_ASIP+2)/2);
+		CCD[i].PSIP[0]		 = ndarray::allocate((*ORDER_PSIP+1)*(*ORDER_PSIP+2)/2);
+		CCD[i].PSIP[1]		 = ndarray::allocate((*ORDER_PSIP+1)*(*ORDER_PSIP+2)/2);
+		CCD[i].PSIP_CONV	 = ndarray::allocate((*ORDER_PSIP+1)*(*ORDER_PSIP+2)/2);
+		CCD[i].PSIP_ROT		 = ndarray::allocate((*ORDER_PSIP+1)*(*ORDER_PSIP+2)/2);
+		CCD[i].PSIP_SHEAR[0] = ndarray::allocate((*ORDER_PSIP+1)*(*ORDER_PSIP+2)/2);
+		CCD[i].PSIP_SHEAR[1] = ndarray::allocate((*ORDER_PSIP+1)*(*ORDER_PSIP+2)/2);
+		CCD[i].PSIP_MAG      = ndarray::allocate((*ORDER_PSIP+1)*(*ORDER_PSIP+2)/2);
+		CCD[i].PSIP_JACO     = ndarray::allocate((*ORDER_PSIP+1)*(*ORDER_PSIP+2)/2);
 	}
-	CCD[*NUM_CCD].CRPIX[0]=CRPIX[0];
-	CCD[*NUM_CCD].CRPIX[1]=CRPIX[1];
 	SET_CRPIX();
 }
 void CL_CCDs::SET_INPUT(std::vector< std::vector< std::string > > CCD_Argvs,CL_APRM *APRM){
@@ -92,24 +94,6 @@ void CL_CCDs::SET_INPUT(std::vector< std::vector< std::string > > CCD_Argvs,CL_A
 	GET_GPOS_LfromGPOS_C();
 }
 void CL_CCDs::SET_END(){
-	delete [] CCD;
-	int i;
-	for(i=0;i<*NUM_CCD;i++){
-		delete [] CCD[i].CRPIX[0];
-		delete [] CCD[i].CRPIX[1];
-	}
-	for(i=0;i<*NUM_CCD+1;i++){
-		delete [] CCD[i].ASIP[0];
-		delete [] CCD[i].ASIP[1];
-		delete [] CCD[i].PSIP[0];
-		delete [] CCD[i].PSIP[1];
-		delete [] CCD[i].PSIP_CONV;
-		delete [] CCD[i].PSIP_ROT;
-		delete [] CCD[i].PSIP_SHEAR[0];
-		delete [] CCD[i].PSIP_SHEAR[1];
-		delete [] CCD[i].PSIP_MAG;
-		delete [] CCD[i].PSIP_JACO;
-	}
 }
 int  CL_CCDs::CHECK(){
 	if(CHECK_NUMCCD()==1)return 1;
@@ -227,11 +211,11 @@ void CL_CCDs::SET_CCDs(){
 	SET_OAPIX();
 
 //CD SIP DIST FUNCTIONS
-	std::vector<double> G_ASIP[2], G_PSIP[2];
-	G_ASIP[0].resize((*ORDER_ASIP+1)*(*ORDER_ASIP+2));
-	G_ASIP[1].resize((*ORDER_ASIP+1)*(*ORDER_ASIP+2));
-	G_PSIP[0].resize((*ORDER_PSIP+1)*(*ORDER_PSIP+2));
-	G_PSIP[1].resize((*ORDER_PSIP+1)*(*ORDER_PSIP+2));
+	ndarray::Array<double, 1, 1> G_ASIP[2], G_PSIP[2];
+	G_ASIP[0] = ndarray::allocate((*ORDER_ASIP+1)*(*ORDER_ASIP+2)/2);
+	G_ASIP[1] = ndarray::allocate((*ORDER_ASIP+1)*(*ORDER_ASIP+2)/2);
+	G_PSIP[0] = ndarray::allocate((*ORDER_PSIP+1)*(*ORDER_PSIP+2)/2);
+	G_PSIP[1] = ndarray::allocate((*ORDER_PSIP+1)*(*ORDER_PSIP+2)/2);
 
 	int i,j,ij,CID;
 	ij=0;
@@ -260,10 +244,10 @@ void CL_CCDs::SET_CCDs(){
 
 	double IABP[2];
 	for(CID=0;CID<*NUM_CCD;CID++){
-		CCD[CID].SET_SIPROT(*ORDER_ASIP,G_ASIP[0].data(),CCD[CID].ASIP[0]);
-		CCD[CID].SET_SIPROT(*ORDER_ASIP,G_ASIP[1].data(),CCD[CID].ASIP[1]);
-		CCD[CID].SET_SIPROT(*ORDER_PSIP,G_PSIP[0].data(),CCD[CID].PSIP[0]);
-		CCD[CID].SET_SIPROT(*ORDER_PSIP,G_PSIP[1].data(),CCD[CID].PSIP[1]);
+		CCD[CID].SET_SIPROT(*ORDER_ASIP,G_ASIP[0].getData(),CCD[CID].ASIP[0].getData());
+		CCD[CID].SET_SIPROT(*ORDER_ASIP,G_ASIP[1].getData(),CCD[CID].ASIP[1].getData());
+		CCD[CID].SET_SIPROT(*ORDER_PSIP,G_PSIP[0].getData(),CCD[CID].PSIP[0].getData());
+		CCD[CID].SET_SIPROT(*ORDER_PSIP,G_PSIP[1].getData(),CCD[CID].PSIP[1].getData());
 		CCD[CID].SET_CDASIP();
 		ij=0;
 		for(i=0;i<*ORDER_PSIP+1  ;i++)
@@ -276,12 +260,12 @@ void CL_CCDs::SET_CCDs(){
 		}
 		CCD[CID].SET_CDPSIP();
 
-		CCD[CID].SET_SIPROT(*ORDER_PSIP-1,CCD[(*NUM_CCD)].PSIP_CONV    ,CCD[CID].PSIP_CONV    );
-		CCD[CID].SET_SIPROT(*ORDER_PSIP-1,CCD[(*NUM_CCD)].PSIP_ROT     ,CCD[CID].PSIP_ROT     );
-		CCD[CID].SET_SIPROT(*ORDER_PSIP-1,CCD[(*NUM_CCD)].PSIP_SHEAR[0],CCD[CID].PSIP_SHEAR[0]);
-		CCD[CID].SET_SIPROT(*ORDER_PSIP-1,CCD[(*NUM_CCD)].PSIP_SHEAR[1],CCD[CID].PSIP_SHEAR[1]);
-		CCD[CID].SET_SIPROT(*ORDER_PSIP-1,CCD[(*NUM_CCD)].PSIP_MAG     ,CCD[CID].PSIP_MAG     );
-		CCD[CID].SET_SIPROT(*ORDER_PSIP-1,CCD[(*NUM_CCD)].PSIP_JACO    ,CCD[CID].PSIP_JACO    );
+		CCD[CID].SET_SIPROT(*ORDER_PSIP-1,CCD[(*NUM_CCD)].PSIP_CONV    .getData(), CCD[CID].PSIP_CONV    .getData());
+		CCD[CID].SET_SIPROT(*ORDER_PSIP-1,CCD[(*NUM_CCD)].PSIP_ROT     .getData(), CCD[CID].PSIP_ROT     .getData());
+		CCD[CID].SET_SIPROT(*ORDER_PSIP-1,CCD[(*NUM_CCD)].PSIP_SHEAR[0].getData(), CCD[CID].PSIP_SHEAR[0].getData());
+		CCD[CID].SET_SIPROT(*ORDER_PSIP-1,CCD[(*NUM_CCD)].PSIP_SHEAR[1].getData(), CCD[CID].PSIP_SHEAR[1].getData());
+		CCD[CID].SET_SIPROT(*ORDER_PSIP-1,CCD[(*NUM_CCD)].PSIP_MAG     .getData(), CCD[CID].PSIP_MAG     .getData());
+		CCD[CID].SET_SIPROT(*ORDER_PSIP-1,CCD[(*NUM_CCD)].PSIP_JACO    .getData(), CCD[CID].PSIP_JACO    .getData());
 	}
 }
 void CL_CCDs::SHOW(){
@@ -345,9 +329,7 @@ void CL_CCD::GET_GPOS_CfromGPOS_L(){
 }
 void CL_CCD::SET_CDASIP(){
 	int i;
-	double *TSIP[2];
-	TSIP[0] = new double[(*ORDER_ASIP+1)*(*ORDER_ASIP+2)];
-	TSIP[1] = new double[(*ORDER_ASIP+1)*(*ORDER_ASIP+2)];
+	double TSIP[2];
 
 	CD[0][0]=ASIP[0][1*(*ORDER_ASIP)+1];
 	CD[0][1]=ASIP[0][0*(*ORDER_ASIP)+1];
@@ -357,19 +339,16 @@ void CL_CCD::SET_CDASIP(){
 	InvCD[0][1]=-CD[0][1]/(CD[0][0]*CD[1][1]-CD[0][1]*CD[1][0]);
 	InvCD[1][0]=-CD[1][0]/(CD[0][0]*CD[1][1]-CD[0][1]*CD[1][0]);
 	InvCD[1][1]= CD[0][0]/(CD[0][0]*CD[1][1]-CD[0][1]*CD[1][0]);
-	for(i=0;i<int(0.5*(*ORDER_ASIP+1)*(*ORDER_ASIP+2)+0.1);i++){
-		TSIP[0][i]=ASIP[0][i];
-		TSIP[1][i]=ASIP[1][i];
-		ASIP[0][i]=InvCD[0][0]*TSIP[0][i]+InvCD[0][1]*TSIP[1][i];
-		ASIP[1][i]=InvCD[1][0]*TSIP[0][i]+InvCD[1][1]*TSIP[1][i];
+	for(i=0;i<(*ORDER_ASIP+1)*(*ORDER_ASIP+2)/2;i++){
+		TSIP[0]=ASIP[0][i];
+		TSIP[1]=ASIP[1][i];
+		ASIP[0][i]=InvCD[0][0]*TSIP[0]+InvCD[0][1]*TSIP[1];
+		ASIP[1][i]=InvCD[1][0]*TSIP[0]+InvCD[1][1]*TSIP[1];
 	}
 	ASIP[0][1*(*ORDER_ASIP)+1]-=1;
 	ASIP[1][0*(*ORDER_ASIP)+1]-=1;
 
-        ANGLE=atan2(CD[0][0]-CD[1][1],-CD[1][0]-CD[0][1]);
-
-	delete [] TSIP[0];
-	delete [] TSIP[1];
+	ANGLE=atan2(CD[0][0]-CD[1][1],-CD[1][0]-CD[0][1]);
 }
 void CL_CCD::SET_CDPSIP(){
 	PSIP[0][1*(*ORDER_PSIP)+1]-=1;
@@ -377,12 +356,11 @@ void CL_CCD::SET_CDPSIP(){
 }
 void CL_CCD::SET_SIPROT(int ORDER,double *COEF_IN, double *COEF){
 	int i,j,ij;
-	double ***Coef;
 
 	double THETA;
 	THETA=GPOS_L[2];
 
-	Coef = CPP_MEMORY_NEWdouble3(2,ORDER+1,ORDER+1);
+	ndarray::Array<double, 3, 3> Coef = ndarray::allocate(2,ORDER+1,ORDER+1);
 //--------------------------------------------------
 	double ABS[10],PHI[10],Z[10][2];
 
@@ -595,8 +573,6 @@ void CL_CCD::SET_SIPROT(int ORDER,double *COEF_IN, double *COEF){
 		ij++;
 	}
 //--------------------------------------------------
-	CPP_MEMORY_DELdouble3(2,ORDER+1,ORDER+1,Coef);
-
 }
 
 void CL_CCD::SHOW(){

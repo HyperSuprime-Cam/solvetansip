@@ -1,102 +1,95 @@
 //--------------------------------------------------
 //CALC_FIT.cc
 //
-//Calculating Coefficients of Least Squares Fitting 
+//Calculating Coefficients of Least Squares Fitting
 //Output coefficients of F_LS2 are
-//x^0y^0, x^0y^1, x^0y^2, x^0y^3, x^1y^0, x^1y^1, x^1y^2, x^2y^0, x^2y^1, x^3y^0 (in Order = 3)  
+//x^0y^0, x^0y^1, x^0y^2, x^0y^3, x^1y^0, x^1y^1, x^1y^2, x^2y^0, x^2y^1, x^3y^0 (in Order = 3)
 //
 //Last modification : 2014/01/01
 //Yuki Okura : yuki.okura@nao.ac.jp
 //--------------------------------------------------
 
-#include<cmath>
-#include<iostream>
+#include <cmath>
+#include <iostream>
+#include <stdexcept>
+#include "hsc/meas/tansip/CALC.h"
+#include "LAPACK_FUNCS.h"
+
 using namespace std;
-void    CALC_MATRIX_INVERSE(int MNUM,double **Min,double **Mout){
-	int i,j,k;
-	double Mdi,**Mtemp,**Mtemp2,**I,**Itemp;
+ndarray::Array<double, 1, 1>
+SOLVE_LINEAR_EQUATION(ndarray::Array<double, 2, 1> const& A, ndarray::Array<double, 1, 1> const& b){
 
-	Mtemp  = new double*[MNUM];
-	Mtemp2 = new double*[MNUM];
-	I      = new double*[MNUM];
-	Itemp  = new double*[MNUM];
-	for(i=0;i<MNUM;i++){
-		Mtemp[i]  = new double[MNUM];
-		Mtemp2[i] = new double[MNUM];
-		I[i]      = new double[MNUM];
-		Itemp[i]  = new double[MNUM];
+	int N = A.getSize<1>();
+	if(A.getSize<0>() != N || b.getSize<0>() != N){
+		throw std::logic_error("SOLVE_LINEAR_EQUATION: dimensions are inconsistent");
 	}
 
-	for(i=0;i<MNUM;i++)
-	for(j=0;j<MNUM;j++){
-		Mtemp[i][j]=0;
-		Mtemp2[i][j]=0;
-		I[i][j]=0;
-		Itemp[i][j]=0;
+	ndarray::Array<double, 2, 2> AF    = ndarray::allocate(N, N);
+	ndarray::Array<int   , 1, 1> ipiv  = ndarray::allocate(N);
+	ndarray::Array<double, 1, 1> r     = ndarray::allocate(N);
+	ndarray::Array<double, 1, 1> c     = ndarray::allocate(N);
+	ndarray::Array<double, 1, 1> x     = ndarray::allocate(N);
+	ndarray::Array<double, 1, 1> work  = ndarray::allocate(4 * N);
+	ndarray::Array<int   , 1, 1> iwork = ndarray::allocate(N);
+
+	int    nrhs = 1;
+	int    lda = A.getStride<0>();
+	char   equed;
+	double rcond;
+	double ferr ;
+	double berr ;
+	int    info ;
+	dgesvx_(
+		"Equilibrate",
+		"Transpose", // because row majar
+		&N,
+		&nrhs,
+		A.getData(),
+		&lda,
+		AF.getData(),
+		&N,
+		ipiv.getData(),
+		&equed,
+		r.getData(),
+		c.getData(),
+		b.getData(),
+		&N,
+		x.getData(),
+		&N,
+		&rcond,
+		&ferr,
+		&berr,
+		work.getData(),
+		iwork.getData(),
+		&info
+	);
+
+	if(info == 0){
+		; // OK
+	}
+	else if(info > N){
+		// the matrix is extremely bad, but not exactly irregular
+		cout << "warning: SOLVE_LINEAR_EQUATION: linear equation is extremely bad." << endl;
+	}
+	else{
+		throw std::runtime_error("SOLVE_LINEAR_EQUATION: irregular linear equation");
 	}
 
-	for(i=0;i<MNUM;i++)
-	for(j=0;j<MNUM;j++){
-		Itemp[i][j]=0;
-		if(i==j){
-			I[i][j]=1;
-		}else{
-			I[i][j]=0;
-		}
-	}
-
-	for(k=0;k<MNUM;k++){
-		Mdi=Min[k][k];
-		for(i=0;i<MNUM;i++){
-			Min[i][k]=Min[i][k]/Mdi;
-			  I[i][k]=  I[i][k]/Mdi;
-		}
-	
-		for(i=0;i<MNUM;i++)
-		for(j=0;j<MNUM;j++)
-		Mtemp[i][j]=Min[i][j];
-		for(j=0;j<MNUM;j++)
-		if(j==k){
-		}else{
-			for(i=0;i<MNUM;i++){
-				Min[i][j]-=Mtemp[k][j]*Min[i][k];
-				  I[i][j]-=Mtemp[k][j]*  I[i][k];
-			}
-		}
-	}
-	for(i=0;i<MNUM;i++)
-	for(j=0;j<MNUM;j++)
-	Mout[i][j]=I[i][j];
-
-	for(i=0;i<MNUM;i++){
-		delete [] Mtemp[i];
-		delete [] Mtemp2[i];
-		delete [] I[i];
-		delete [] Itemp[i];
-	}
-	delete [] Mtemp;
-	delete [] Mtemp2;
-	delete [] I;
-	delete [] Itemp;
-	
+	return x;
 }
-void    CALC_FIT_LS1(int dataNUM,int Order,double **data,double *Coef){
+
+#if 0
+ndarray::Array<double, 1, 1> // Return coefficients
+CALC_FIT_LS1(int dataNUM, int Order, ndarray::Array<double, 2, 1> const& data){
 	int i,j,NUM;
-	double **XA,**XB,*Z;
-	double *XN;
 
-	for(i=0;i<Order+1;i++)
-	Coef[i]=0;
+	ndarray::Array<double, 2, 2> XA = ndarray::allocate(Order+1, Order+1);
+	ndarray::Array<double, 1, 1>  Z = ndarray::allocate(Order+1);
+	ndarray::Array<double, 1, 1> XN = ndarray::allocate(Order+1);
 
-	XA = new double*[Order+1];
-	XB = new double*[Order+1];
-	 Z = new double [Order+1];
-	XN = new double [Order+1];
-	for(i=0;i<Order+1;i++){
-		XA[i] = new double[Order+1];
-		XB[i] = new double[Order+1];
-	}
-	
+	XA.deep() = 0;
+	Z.deep() = 0;
+
 	for(NUM=0;NUM<dataNUM;NUM++){
 		XN[0]=1;
 		for(i=1;i<Order+1;i++){
@@ -108,48 +101,22 @@ void    CALC_FIT_LS1(int dataNUM,int Order,double **data,double *Coef){
 			Z[i]+=data[NUM][1]*XN[i];
 		}
 	}
-	CALC_MATRIX_INVERSE(Order+1,XA,XB);
 
-	for(i=0;i<Order+1;i++)
-	for(j=0;j<Order+1;j++)
-	Coef[i]+=XB[i][j]*Z[j];
-
-	for(i=0;i<Order+1;i++){
-		delete [] XA[i];
-		delete [] XB[i];
-	}
-	delete [] XN;
-	delete [] XA;
-	delete [] XB;
-	delete [] Z;
+	return SOLVE_LINEAR_EQUATION(XA, Z);
 }
-void    CALC_FIT_LS2(int dataNUM,int Order,double **data,double *Coef){
+#endif
+
+ndarray::Array<double, 1, 1> // Return coefficients
+CALC_FIT_LS2(int dataNUM, int Order, ndarray::Array<double, 2, 1> const& data){
 	int i,j,k,l,ij,kl,NUM;
-	double **XA,**XB,*Z;
-	double *XN,*YN;
 
-	XA = new double*[(Order+1)*(Order+1)];
-	XB = new double*[(Order+1)*(Order+1)];
-	 Z = new double [(Order+1)*(Order+1)];
-	XN = new double [(Order+1)*(Order+1)];
-	YN = new double [(Order+1)*(Order+1)];
-	for(i=0;i<(Order+1)*(Order+1);i++){
-		XA[i] = new double[(Order+1)*(Order+1)];
-		XB[i] = new double[(Order+1)*(Order+1)];
-	}
+	ndarray::Array<double, 2, 2> XA = ndarray::allocate((Order+1)*(Order+2)/2, (Order+1)*(Order+2)/2);
+	ndarray::Array<double, 1, 1>  Z = ndarray::allocate((Order+1)*(Order+2)/2);
+	ndarray::Array<double, 1, 1> XN = ndarray::allocate((Order+1)*(Order+1));
+	ndarray::Array<double, 1, 1> YN = ndarray::allocate((Order+1)*(Order+1));
 
-	for(i=0;i<(Order+1)*(Order+1);i++){
-		for(j=0;j<(Order+1)*(Order+1);j++)
-		XA[i][j]=XB[i][j]=0;
-		Z[i]=0;
-	}
-
-	ij=0;
-	for(i=0;i<Order+1  ;i++)
-	for(j=0;j<Order+1-i;j++){
-		Coef[ij]=0;
-		ij++;
-	}
+	XA.deep() = 0;
+	Z.deep()  = 0;
 
 	for(NUM=0;NUM<dataNUM;NUM++){
 		XN[0]=YN[0]=1;
@@ -172,28 +139,10 @@ void    CALC_FIT_LS2(int dataNUM,int Order,double **data,double *Coef){
 		}
 	}
 
-	CALC_MATRIX_INVERSE((int)((Order+1)*(Order+2)*0.5+0.1),XA,XB);
-	ij=0;
-	for(i=0;i<Order+1  ;i++)
-	for(j=0;j<Order+1-i;j++){
-		kl=0;
-		for(k=0;k<Order+1  ;k++)
-		for(l=0;l<Order+1-k;l++){
-			Coef[ij]+=XB[ij][kl]*Z[kl];
-			kl+=1;
-		}
-		ij+=1;
-	}
-	for(i=0;i<(Order+1)*(Order+1);i++){
-		delete [] XA[i];
-		delete [] XB[i];
-	}
-	delete [] XN;
-	delete [] YN;
-	delete [] XA;
-	delete [] XB;
-	delete [] Z;
-} 
+	return SOLVE_LINEAR_EQUATION(XA, Z);
+}
+
+#if 0
 void    CALC_FIT_LS3_2(int dataNUM,double **data,double *Coef){
 	int i,j;
 	double **XA,**XB,Z[10];
@@ -395,7 +344,7 @@ double  CALC_FIT_VALUE2(int Order,double *Coef,double *X){
 		XN[i]=XN[i-1]*X[0];
 		YN[i]=YN[i-1]*X[1];
 	}
-	
+
 	Z=ij=0;
 	for(i=0;i<Order+1  ;i++)
 	for(j=0;j<Order+1-i;j++){
@@ -405,3 +354,4 @@ double  CALC_FIT_VALUE2(int Order,double *Coef,double *X){
     	delete [] XN;
 	return Z;
 }
+#endif
