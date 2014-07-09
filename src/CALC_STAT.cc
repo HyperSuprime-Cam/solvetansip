@@ -4,9 +4,9 @@
 //Yuki Okura : yuki.okura@nao.ac.jp
 //Last modification : 2014/01/01
 //--------------------------------------------------
-#include<iostream>      
-#include<cmath>
-#include<cstdlib>
+#include <iostream>
+#include <cmath>
+#include <cstdlib>
 
 using namespace std;
 #define INFMIN pow(10.0,-10.0)
@@ -67,7 +67,7 @@ void	CALC_STAT_RMS(int NUM,double *data,double *STAT){
 //Calculating Average and RMS and MAXIMUM
 void	CALC_STAT_RMSMAX(int NUM,double *data,double *STAT){
 	int i;
-	double SUM[4],VAR;
+	double SUM[3],VAR;
 
 /*	if(NUM<2){
                 cout << "---------------------------------------------" << endl;

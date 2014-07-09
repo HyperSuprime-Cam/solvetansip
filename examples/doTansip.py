@@ -104,10 +104,7 @@ def OUTPUT_SUMMARY(S_RESULT, DIR_OUT):
 	if os.path.exists(DIR_OUT) == False:
 		os.makedirs(DIR_OUT)
 
-	f = open(DIR_OUT + "/solvetansipresult_SUMMARY.txt", "w")
-
-	def OUTPUT(key, value, description):
-		print>>f, "{:8s}  {}".format(key, value)
+	SUMNAME = DIR_OUT + "/solvetansipresult_SUMMARY.fits"
 
 	MODE_CR    = SLVTS.GET_SUM_MODECR     (S_RESULT)
 	MODE_REJ   = SLVTS.GET_SUM_MODEREJ    (S_RESULT)
@@ -125,38 +122,40 @@ def OUTPUT_SUMMARY(S_RESULT, DIR_OUT):
 	RMS_SIP    = SLVTS.GET_SUM_RMSASIP    (S_RESULT)
 	RMS_PSIP   = SLVTS.GET_SUM_RMSPSIP    (S_RESULT)
 
-	OUTPUT("MODE_CR" ,MODE_CR ,"CR MODE")
-	OUTPUT("MODE_REJ",MODE_CCD,"REJECTION MODE(1=REJECTION)")
-	OUTPUT("MODE_CCD",MODE_REJ,"CCD POSITION MODE(i=DETERMINING CCD POSITIONs)")
-	OUTPUT("NUM_REF",NUM_REF ,"Number of References")
-	OUTPUT("NUM_FIT",NUM_FIT ,"Number of References fot fitting")
-	OUTPUT("CRVAL_1",CRVAL[0],"CRVAL 1")
-	OUTPUT("CRVAL_2",CRVAL[1],"CRVAL 2")
-	OUTPUT("CRPIX_1",CRPIX[0],"CRPIX 1")
-	OUTPUT("CRPIX_2",CRPIX[1],"CRPIX 2")
-	OUTPUT("OAPIX_1",OAPIX[0],"Position X of Optical Axis")
-	OUTPUT("OAPIX_2",OAPIX[1],"Position Y of Optical Axis")
-	OUTPUT("CD1_1"  ,CD[0]   ,"CD Matrix at CRPIX")
-	OUTPUT("CD1_2"  ,CD[1]   ,"CD Matrix at CRPIX")
-	OUTPUT("CD2_1"  ,CD[2]   ,"CD Matrix at CRPIX")
-	OUTPUT("CD2_2"  ,CD[3]   ,"CD Matrix at CRPIX")
-	OUTPUT("ANGLE"  ,ANGLE   ,"ANGLE from 0.5PI(radian)")
-	OUTPUT("CDCA1_1",CD_COR[0],"CD Matrix of Corrected Angle")
-	OUTPUT("CDCA1_2",CD_COR[1],"CD Matrix of Corrected Angle")
-	OUTPUT("CDCA2_1",CD_COR[2],"CD Matrix of Corrected Angle")
-	OUTPUT("CDCA2_2",CD_COR[3],"CD Matrix of Corrected Angle")
-	OUTPUT("MAX_R"  ,ST_CRPIX_G[0],"MAXIMUM Radius from CRPIX")
-	OUTPUT("MAX_X"  ,ST_CRPIX_G[1],"MAXIMUM X position from CRPIX")
-	OUTPUT("MAX_Y"  ,ST_CRPIX_G[2],"MAXIMUM Y position from CRPIX")
-	OUTPUT("MIN_X"  ,ST_CRPIX_G[3],"MINIMUM X position from CRPIX")
-	OUTPUT("MIN_Y"  ,ST_CRPIX_G[4],"MINIMUM Y position from CRPIX")
-	OUTPUT("AVE_X"  ,ST_CRPIX_G[5],"AVERAGE X position from CRPIX")
-	OUTPUT("AVE_Y"  ,ST_CRPIX_G[6],"AVERAGE Y position from CRPIX")
-	OUTPUT("RMSSIPX",RMS_SIP[0],"RMS X of  SIP fitting Error")
-	OUTPUT("RMSSIPY",RMS_SIP[1],"RMS Y of  SIP fitting Error")
-	OUTPUT("RMSPSIPX",RMS_PSIP[0],"RMS X of PSIP fitting Error")
-	OUTPUT("RMSPSIPY",RMS_PSIP[1],"RMS Y of PSIP fitting Error")
-
+	SUMhdu = pyfits.PrimaryHDU()
+	SUMhdr = SUMhdu.header
+	SUMhdr.update("MODE_CR" , MODE_CR      ,"CR MODE")
+	SUMhdr.update("MODE_REJ", MODE_CCD     ,"REJECTION MODE(1=REJECTION)")
+	SUMhdr.update("MODE_CCD", MODE_REJ     ,"CCD POSITION MODE(i=DETERMINING CCD POSITIONs)")
+	SUMhdr.update("NUM_REF" , NUM_REF      ,"Number of References")
+	SUMhdr.update("NUM_FIT" , NUM_FIT      ,"Number of References fot fitting")
+	SUMhdr.update("CRVAL_1" , CRVAL[0]     ,"CRVAL 1")
+	SUMhdr.update("CRVAL_2" , CRVAL[1]     ,"CRVAL 2")
+	SUMhdr.update("CRPIX_1" , CRPIX[0]     ,"CRPIX 1")
+	SUMhdr.update("CRPIX_2" , CRPIX[1]     ,"CRPIX 2")
+	SUMhdr.update("OAPIX_1" , OAPIX[0]     ,"Position X of Optical Axis")
+	SUMhdr.update("OAPIX_2" , OAPIX[1]     ,"Position Y of Optical Axis")
+	SUMhdr.update("CD1_1"   , CD[0]        ,"CD Matrix at CRPIX")
+	SUMhdr.update("CD1_2"   , CD[1]        ,"CD Matrix at CRPIX")
+	SUMhdr.update("CD2_1"   , CD[2]        ,"CD Matrix at CRPIX")
+	SUMhdr.update("CD2_2"   , CD[3]        ,"CD Matrix at CRPIX")
+	SUMhdr.update("ANGLE"   , ANGLE        ,"ANGLE from 0.5PI(radian)")
+	SUMhdr.update("CDCA1_1" , CD_COR[0]    ,"CD Matrix of Corrected Angle")
+	SUMhdr.update("CDCA1_2" , CD_COR[1]    ,"CD Matrix of Corrected Angle")
+	SUMhdr.update("CDCA2_1" , CD_COR[2]    ,"CD Matrix of Corrected Angle")
+	SUMhdr.update("CDCA2_2" , CD_COR[3]    ,"CD Matrix of Corrected Angle")
+	SUMhdr.update("MAX_R"   , ST_CRPIX_G[0],"MAXIMUM Radius from CRPIX")
+	SUMhdr.update("MAX_X"   , ST_CRPIX_G[1],"MAXIMUM X position from CRPIX")
+	SUMhdr.update("MAX_Y"   , ST_CRPIX_G[2],"MAXIMUM Y position from CRPIX")
+	SUMhdr.update("MIN_X"   , ST_CRPIX_G[3],"MINIMUM X position from CRPIX")
+	SUMhdr.update("MIN_Y"   , ST_CRPIX_G[4],"MINIMUM Y position from CRPIX")
+	SUMhdr.update("AVE_X"   , ST_CRPIX_G[5],"AVERAGE X position from CRPIX")
+	SUMhdr.update("AVE_Y"   , ST_CRPIX_G[6],"AVERAGE Y position from CRPIX")
+	SUMhdr.update("RMSSIPX" , RMS_SIP[0]   ,"RMS X of  SIP fitting Error")
+	SUMhdr.update("RMSSIPY" , RMS_SIP[1]   ,"RMS Y of  SIP fitting Error")
+	SUMhdr.update("RMSPSIPX", RMS_PSIP[0]  ,"RMS X of PSIP fitting Error")
+	SUMhdr.update("RMSPSIPY", RMS_PSIP[1]  ,"RMS Y of PSIP fitting Error")
+	SUMhdu.writeto(SUMNAME,clobber=True)
 
 def OUTPUT_BTBL(S_RESULT,DIR_OUT):
 	if os.path.exists(DIR_OUT) == False:
@@ -369,7 +368,7 @@ def OUTPUT_BTBL(S_RESULT,DIR_OUT):
 if __name__== '__main__':
 	analysisParam = "WCS_MAKEAPROP.paf"
 	ccds          = "CCD.dat"
-	refCatalog    = "REF_904410.dat"
+	refCatalog    = "REF_0902050.dat"
 
 	doTansip(analysisParam, ccds, refCatalog)
 

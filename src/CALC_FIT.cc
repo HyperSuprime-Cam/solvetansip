@@ -16,6 +16,7 @@
 #include "LAPACK_FUNCS.h"
 
 using namespace std;
+
 ndarray::Array<double, 1, 1>
 SOLVE_LINEAR_EQUATION(ndarray::Array<double, 2, 1> const& A, ndarray::Array<double, 1, 1> const& b){
 
@@ -40,22 +41,22 @@ SOLVE_LINEAR_EQUATION(ndarray::Array<double, 2, 1> const& A, ndarray::Array<doub
 	double berr ;
 	int    info ;
 	dgesvx_(
-		"Equilibrate",
-		"Transpose", // because row majar
-		&N,
-		&nrhs,
+		*"Equilibrate",
+		*"Transpose", // because row majar
+		N,
+		nrhs,
 		A.getData(),
-		&lda,
+		lda,
 		AF.getData(),
-		&N,
+		N,
 		ipiv.getData(),
 		&equed,
 		r.getData(),
 		c.getData(),
 		b.getData(),
-		&N,
+		N,
 		x.getData(),
-		&N,
+		N,
 		&rcond,
 		&ferr,
 		&berr,
@@ -77,6 +78,7 @@ SOLVE_LINEAR_EQUATION(ndarray::Array<double, 2, 1> const& A, ndarray::Array<doub
 
 	return x;
 }
+
 
 #if 0
 ndarray::Array<double, 1, 1> // Return coefficients
@@ -351,7 +353,7 @@ double  CALC_FIT_VALUE2(int Order,double *Coef,double *X){
 		Z+=Coef[ij]*XN[i]*YN[j];
 		ij++;
 	}
-    	delete [] XN;
+	delete [] XN;
 	return Z;
 }
 #endif
