@@ -21,9 +21,7 @@ dafbase::PropertySet::Ptr SET_EMPTYMETADATA(){
 	return boost::make_shared<dafbase::PropertySet>();
 }
 
-void SET_METADATA(std::vector< CL_SLVTS* > VSLVTS, dafbase::PropertySet::Ptr &meta){
-	CL_SLVTS* SLVTS;
-	SLVTS=VSLVTS[0];
+void SET_METADATA(CL_SLVTS* SLVTS, dafbase::PropertySet::Ptr &meta){
 
 	meta->add("ST_A_MODE_CR"    ,SLVTS->APRM->MODE_CR);
 	meta->add("ST_A_MODE_REJ"   ,SLVTS->APRM->MODE_REJ);
@@ -168,13 +166,11 @@ cout<<scientific<<setprecision(6)<<"R : "<<SLVTS->CCDs->MAX_CRPIX_G_R<<"	"<<VALU
 	meta->add("nref_fitting"        , SLVTS->APRM->NUM_FIT);
 
 }
-void CHECK_METADATA(std::vector< CL_SLVTS* > VSLVTS,dafbase::PropertySet::Ptr &meta){
+void CHECK_METADATA(CL_SLVTS* SLVTS,dafbase::PropertySet::Ptr &meta){
 	std::string VAL_S;
 	int         VAL_I,GL;
 	double	    VAL_D;
 	char KEY[100];
-	CL_SLVTS* SLVTS;
-	SLVTS=VSLVTS[0];
 	GL=SLVTS->APRM->NUM_CCD;
 
 	if(SLVTS->APRM->FLAG_STD>0.5){
@@ -223,11 +219,9 @@ void CHECK_METADATA(std::vector< CL_SLVTS* > VSLVTS,dafbase::PropertySet::Ptr &m
 		cout<<"psip_residuals_rms_y : "<<VAL_D<<endl;
 	}
 }
-std::vector <lsst::afw::image::TanWcs::Ptr> SET_TANWCS(std::vector< CL_SLVTS* > VSLVTS){
+std::vector <lsst::afw::image::TanWcs::Ptr> SET_TANWCS(CL_SLVTS* SLVTS){
 	std::vector <lsst::afw::image::TanWcs::Ptr> V_TanWcs;
 	int CID;
-	CL_SLVTS* SLVTS;
-	SLVTS=VSLVTS[0];
 
 	int OAS,OPS;
 	int i,j,ij;

@@ -14,8 +14,8 @@
 namespace dafbase = lsst::daf::base;
 
 lsst::daf::base::PropertySet::Ptr SET_EMPTYMETADATA();//making empty metadata
-void SET_METADATA(std::vector< CL_SLVTS* > SLVTS, lsst::daf::base::PropertySet::Ptr &meta);//setting solvetansip result to metadata 
-void CHECK_METADATA(std::vector< CL_SLVTS* > SLVTS, lsst::daf::base::PropertySet::Ptr &meta);//checking values in metadata
-std::vector <lsst::afw::image::TanWcs::Ptr> SET_TANWCS(std::vector< CL_SLVTS* > VSLVTS);//setting solvetansip result to lsst WCS type
+void SET_METADATA(CL_SLVTS* SLVTS, lsst::daf::base::PropertySet::Ptr &meta);//setting solvetansip result to metadata
+void CHECK_METADATA(CL_SLVTS* SLVTS, lsst::daf::base::PropertySet::Ptr &meta);//checking values in metadata
+std::vector <lsst::afw::image::TanWcs::Ptr> SET_TANWCS(CL_SLVTS* SLVTS);//setting solvetansip result to lsst WCS type
 
 #endif

@@ -19,7 +19,6 @@
 %template(resultWcs_V) std::vector<lsst::afw::image::TanWcs::Ptr>;
 %template(SourceMatchVector) std::vector<PTR(hsc::meas::tansip::SourceMatch)>;
 %template(SourceMatchVectorVector) std::vector<std::vector<PTR(hsc::meas::tansip::SourceMatch)> >;
-%shared_ptr(hsc::meas::tansip::SourceMatch);
 
 %include "lsst/daf/base/PropertySet.h"
 %include "hsc/meas/tansip/SourceMatch.h"

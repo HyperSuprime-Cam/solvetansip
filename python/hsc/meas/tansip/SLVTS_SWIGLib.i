@@ -15,6 +15,8 @@ Python interface to hsc::meas::tansip
 %include <std_vector.i>
 %include <std_string.i>
 %include <boost_shared_ptr.i>
+%shared_ptr(CL_SLVTS);
+%shared_ptr(hsc::meas::tansip::SourceMatch);
 
 // begin: These definitions must be before typemaps are smirched
 // by the labyrinthian swig libraries that'll be included later.
@@ -30,7 +32,6 @@ Python interface to hsc::meas::tansip
 %template(VQ) std::vector<long long int>;
 
 struct CL_SLVTS{};
-%shared_ptr(CL_SLVTS);
 boost::shared_ptr<CL_SLVTS> SOLVETANSIP(std::vector< std::vector< std::vector< std::string > > > SLVTS_Argvs);
 
 // end
@@ -63,4 +64,3 @@ def version(HeadURL = r"$HeadURL: ssh://hsc-gw2.mtk.nao.ac.jp/ana/hgrepo/hscAstr
 %import "lsst/afw/geom/geomLib.i"
 
 %include "SLVTS_SWIG.i"
-
