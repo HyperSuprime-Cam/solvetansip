@@ -1255,12 +1255,12 @@ void CL_REFs::FIT_DIST(){
 	PSIP_JACO    .deep() = CALC_FIT_LS2(*NUM_FIT,*ORDER_PSIP-1,dJ );
 }
 void CL_REFs::CALC_OPTICAL_AXIS(){
-	ndarray::Array<double, 1, 1>   JDX = ndarray::allocate((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1));
-	ndarray::Array<double, 1, 1>   JDY = ndarray::allocate((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1));
-	ndarray::Array<double, 1, 1> JDXDX = ndarray::allocate((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1));
-	ndarray::Array<double, 1, 1> JDXDY = ndarray::allocate((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1));
-	ndarray::Array<double, 1, 1> JDYDX = ndarray::allocate((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1));
-	ndarray::Array<double, 1, 1> JDYDY = ndarray::allocate((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1));
+	ndarray::Array<double, 1, 1>   JDX = ndarray::allocate((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1)/2);
+	ndarray::Array<double, 1, 1>   JDY = ndarray::allocate((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1)/2);
+	ndarray::Array<double, 1, 1> JDXDX = ndarray::allocate((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1)/2);
+	ndarray::Array<double, 1, 1> JDXDY = ndarray::allocate((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1)/2);
+	ndarray::Array<double, 1, 1> JDYDX = ndarray::allocate((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1)/2);
+	ndarray::Array<double, 1, 1> JDYDY = ndarray::allocate((*ORDER_PSIP-1+2)*(*ORDER_PSIP-1+1)/2);
 
 	DEVIATION_SIP(*ORDER_PSIP-1,PSIP_JACO.getData(),JDX.getData(),JDY.getData());
 	DEVIATION_SIP(*ORDER_PSIP-1,JDX.getData(),JDXDX.getData(),JDXDY.getData());
