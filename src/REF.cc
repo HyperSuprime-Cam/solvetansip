@@ -1200,10 +1200,18 @@ void CL_REFs::DEVIATION_SIP(int ORDER,double *Coef,double *dxCoef,double *dyCoef
 	}
 	for(i=0;i<ORDER+1;i++)
 	for(j=0;j<ORDER+1;j++){
-		if(i<(ORDER+1)-1)
-		dxCoef2[i][j]=(i+1)*Coef2[i+1][j];
-		if(j<(ORDER+1)-1)
-		dyCoef2[i][j]=(j+1)*Coef2[i][j+1];
+		if(i<(ORDER+1)-1){
+			dxCoef2[i][j]=(i+1)*Coef2[i+1][j];
+		}
+		else{
+			dxCoef2[i][j] = 0;
+		}
+		if(j<(ORDER+1)-1){
+			dyCoef2[i][j]=(j+1)*Coef2[i][j+1];
+		}
+		else{
+			dyCoef2[i][j] = 0;
+		}
 	}
 	ij=0;
 	for(i=0;i<ORDER+1  ;i++)
