@@ -1311,9 +1311,9 @@ void CL_REFs::CALC_OPTICAL_AXIS(){
 		}else{
 			break;
 		}
-	}//PX,PY is OA Point at CRPIX coordinate
-	*OAPIX[0]=PX+*CRPIX[0];
-	*OAPIX[1]=PY+*CRPIX[1];
+	}
+	*OAPIX[0]=PX;
+	*OAPIX[1]=PY;
 }
 
 //REF
