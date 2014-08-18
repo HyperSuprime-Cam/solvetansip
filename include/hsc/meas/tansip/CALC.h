@@ -10,7 +10,6 @@
 #include <ndarray.h>
 
 //CALC_STAT
-void	CALC_STAT_GAUSSUNIT(int srandNUM, int RNDNUM, double *RNDSET);
 int	CALC_STAT_RMS(int NUM,double *data,double *STAT);
 int	CALC_STAT_RMS(int NUM,float  *data,double *STAT);
 double	CALC_MEDIAN(int NUM,double *data);

@@ -19,8 +19,6 @@
 #include "hsc/meas/tansip/CCD.h"
 #include "hsc/meas/tansip/CALC.h"
 
-#define PI (4*atan(1.0))
-
 
 class CL_REF{
 private:

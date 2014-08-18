@@ -29,13 +29,10 @@ void CL_APRM::SET_INIT(){
 
 }
 void CL_APRM::SET_INPUT(std::vector< std::vector< std::string > > APRM_Argvs){
-	int i;
-	std::string KEY,VAL;
-
 	SET_INIT();
-	for(i=0;i<int(APRM_Argvs.size());i++){
-		KEY=APRM_Argvs[i][0];
-		VAL=APRM_Argvs[i][1];
+	for(std::size_t i = 0; i < APRM_Argvs.size(); ++i){
+		std::string const& KEY=APRM_Argvs[i][0];
+		std::string const& VAL=APRM_Argvs[i][1];
 		if(KEY=="INSTR")
 		INSTR         = VAL;
 		if(KEY=="MODE_CR")
