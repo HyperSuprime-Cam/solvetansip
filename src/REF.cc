@@ -72,14 +72,14 @@ void CL_REFs::SET_INIT(CL_APRM *APRM_IN,CL_CCDs* CCDs_IN){
 	AVE_CRPIX_G[1] =&CCDs->AVE_CRPIX_G[1];
 	REF.resize(*NUM_REF);
 
-	ASIP_DX[0] = ndarray::allocate((*ORDER_ASIP+1)*(*ORDER_ASIP+2));
-	ASIP_DX[1] = ndarray::allocate((*ORDER_ASIP+1)*(*ORDER_ASIP+2));
-	ASIP_DY[0] = ndarray::allocate((*ORDER_ASIP+1)*(*ORDER_ASIP+2));
-	ASIP_DY[1] = ndarray::allocate((*ORDER_ASIP+1)*(*ORDER_ASIP+2));
-	PSIP_DX[0] = ndarray::allocate((*ORDER_PSIP+1)*(*ORDER_PSIP+2));
-	PSIP_DX[1] = ndarray::allocate((*ORDER_PSIP+1)*(*ORDER_PSIP+2));
-	PSIP_DY[0] = ndarray::allocate((*ORDER_PSIP+1)*(*ORDER_PSIP+2));
-	PSIP_DY[1] = ndarray::allocate((*ORDER_PSIP+1)*(*ORDER_PSIP+2));
+	ASIP_DX[0] = ndarray::allocate((*ORDER_ASIP+1)*(*ORDER_ASIP+2)/2);
+	ASIP_DX[1] = ndarray::allocate((*ORDER_ASIP+1)*(*ORDER_ASIP+2)/2);
+	ASIP_DY[0] = ndarray::allocate((*ORDER_ASIP+1)*(*ORDER_ASIP+2)/2);
+	ASIP_DY[1] = ndarray::allocate((*ORDER_ASIP+1)*(*ORDER_ASIP+2)/2);
+	PSIP_DX[0] = ndarray::allocate((*ORDER_PSIP+1)*(*ORDER_PSIP+2)/2);
+	PSIP_DX[1] = ndarray::allocate((*ORDER_PSIP+1)*(*ORDER_PSIP+2)/2);
+	PSIP_DY[0] = ndarray::allocate((*ORDER_PSIP+1)*(*ORDER_PSIP+2)/2);
+	PSIP_DY[1] = ndarray::allocate((*ORDER_PSIP+1)*(*ORDER_PSIP+2)/2);
 
 	int i;
 	for(i=0;i<*NUM_REF;i++){
@@ -1192,6 +1192,8 @@ void CL_REFs::DEVIATION_SIP(int ORDER,double *Coef,double *dxCoef,double *dyCoef
 	ndarray::Array<double, 2, 2>   Coef2 = ndarray::allocate(ORDER+1,ORDER+1);
 	ndarray::Array<double, 2, 2> dxCoef2 = ndarray::allocate(ORDER+1,ORDER+1);
 	ndarray::Array<double, 2, 2> dyCoef2 = ndarray::allocate(ORDER+1,ORDER+1);
+
+	Coef2.deep() = 0.0;
 
 	for(i=0;i<ORDER+1  ;i++)
 	for(j=0;j<ORDER+1-i;j++){
