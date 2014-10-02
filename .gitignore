@@ -7,3 +7,4 @@ python/hsc/meas/tansip/WCS_PL_MAINLib_wrap.cc
 python/hsc/meas/tansip/SLVTS_SWIGLib_wrap.cc
 python/hsc/meas/tansip/version.py
 ups/solvetansip.cfgc
+python/hsc/meas/tansip/SLVTS_SWIGLib.py
