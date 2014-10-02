@@ -3,6 +3,12 @@
 
 #include <time.h>
 
+// Mac alternative to clock_gettime
+#ifdef __MACH__
+#include <mach/clock.h>
+#include <mach/mach.h>
+#endif
+
 namespace my {
 
     struct clock_t: public timespec
@@ -17,7 +23,17 @@ namespace my {
     inline clock_t clock()
     {
         clock_t c;
+#if defined(__MACH__) // OS X does not have clock_gettime, use clock_get_time
+        clock_serv_t cclock;
+        mach_timespec_t mts;
+        host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+        clock_get_time(cclock, &mts);
+        mach_port_deallocate(mach_task_self(), cclock);
+        c.tv_sec = mts.tv_sec;
+        c.tv_nsec = mts.tv_nsec;
+#else
         clock_gettime(CLOCK_REALTIME, &c);
+#endif
         return c;
     }
 
