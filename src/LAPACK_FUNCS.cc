@@ -3,6 +3,10 @@
 #include <dlfcn.h>
 #include <cstddef>
 
+#ifndef RTLD_DEEPBIND /* non-posix flag */
+#define RTLD_DEEPBIND  0  /* zero so's to be ignored */
+#endif
+
 namespace lapack
 {
 
