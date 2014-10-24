@@ -30,8 +30,6 @@ public:
 	int     *LENGTH_CCD[2];//=CCD->LENGTH
 	int	*ORDER_ASIP;//=GCD->ORDER_ASIP
 	int	*ORDER_PSIP;//=GCD->ORDER_PSIP
-	double	*CRVAL[2];//=GCD->CRVAL
-	double	*CRPIX_G[2];//=GCD->CRPIX
 	double	*CRPIX_L[2];//=CCD->CRPIX
 	double  *CD[2][2];//=GCD->CD
 	double  *InvCD[2][2];//=GCD->InvCD
