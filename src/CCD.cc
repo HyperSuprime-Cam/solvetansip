@@ -9,20 +9,9 @@ using namespace std;
 //CCDs
 void CL_CCDs::SET_INIT(CL_APRM *APRM_IN){
 	APRM        = APRM_IN;
-	MODE_CCDPOS = &APRM_IN->MODE_CCDPOS;
-	NUM_CCD     = &APRM_IN->NUM_CCD;
-	FLAG_STD    = &APRM_IN->FLAG_STD;
 
-	int const NUM_CCD = *this->NUM_CCD;
-
+	int const NUM_CCD = APRM->NUM_CCD;
 	CCD.resize(NUM_CCD+1);
-
-	ORDER_ASIP     =&APRM->ORDER_ASIP;
-	ORDER_PSIP     =&APRM->ORDER_PSIP;
-	CRPIX[0]       =&APRM->CRPIX[0];
-	CRPIX[1]       =&APRM->CRPIX[1];
-	CRVAL[0]       =&APRM->CRVAL[0];
-	CRVAL[1]       =&APRM->CRVAL[1];
 
 	HOLDER_OF_CRPIX_OF_CCDS = ndarray::allocate(2 * NUM_CCD);
 	double* ptr = HOLDER_OF_CRPIX_OF_CCDS.getData();
@@ -30,34 +19,34 @@ void CL_CCDs::SET_INIT(CL_APRM *APRM_IN){
 		CCD[i].CRPIX[0] = ptr++;
 		CCD[i].CRPIX[1] = ptr++;
 	}
-	CCD[NUM_CCD].CRPIX[0] = CRPIX[0];
-	CCD[NUM_CCD].CRPIX[1] = CRPIX[1];
+	CCD[NUM_CCD].CRPIX[0] = &APRM->CRPIX[0];
+	CCD[NUM_CCD].CRPIX[1] = &APRM->CRPIX[1];
 
 	for(int i = 0; i < NUM_CCD+1; ++i){
 		CCD[i].SET_INIT();
-		CCD[i].ORDER_ASIP	 =ORDER_ASIP;
-		CCD[i].ORDER_PSIP	 =ORDER_PSIP;
+		CCD[i].ORDER_ASIP	 =&APRM->ORDER_ASIP;
+		CCD[i].ORDER_PSIP	 =&APRM->ORDER_PSIP;
 		CCD[i].NUM_REF		 =0;
 		CCD[i].NUM_FIT		 =0;
 		CCD[i].NUM_REJ		 =0;
-		CCD[i].CRVAL[0]      =CRVAL[0];
-		CCD[i].CRVAL[1]      =CRVAL[1];
-		CCD[i].ASIP[0]		 = ndarray::allocate((*ORDER_ASIP+1)*(*ORDER_ASIP+2)/2);
-		CCD[i].ASIP[1]		 = ndarray::allocate((*ORDER_ASIP+1)*(*ORDER_ASIP+2)/2);
-		CCD[i].PSIP[0]		 = ndarray::allocate((*ORDER_PSIP+1)*(*ORDER_PSIP+2)/2);
-		CCD[i].PSIP[1]		 = ndarray::allocate((*ORDER_PSIP+1)*(*ORDER_PSIP+2)/2);
-		CCD[i].PSIP_CONV	 = ndarray::allocate((*ORDER_PSIP-1+1)*(*ORDER_PSIP-1+2)/2);
-		CCD[i].PSIP_ROT		 = ndarray::allocate((*ORDER_PSIP-1+1)*(*ORDER_PSIP-1+2)/2);
-		CCD[i].PSIP_SHEAR[0] = ndarray::allocate((*ORDER_PSIP-1+1)*(*ORDER_PSIP-1+2)/2);
-		CCD[i].PSIP_SHEAR[1] = ndarray::allocate((*ORDER_PSIP-1+1)*(*ORDER_PSIP-1+2)/2);
-		CCD[i].PSIP_MAG      = ndarray::allocate((*ORDER_PSIP-1+1)*(*ORDER_PSIP-1+2)/2);
-		CCD[i].PSIP_JACO     = ndarray::allocate((*ORDER_PSIP-1+1)*(*ORDER_PSIP-1+2)/2);
+		CCD[i].CRVAL[0]      =&APRM->CRVAL[0];
+		CCD[i].CRVAL[1]      =&APRM->CRVAL[1];
+		CCD[i].ASIP[0]		 = ndarray::allocate((APRM->ORDER_ASIP  +1)*(APRM->ORDER_ASIP  +2)/2);
+		CCD[i].ASIP[1]		 = ndarray::allocate((APRM->ORDER_ASIP  +1)*(APRM->ORDER_ASIP  +2)/2);
+		CCD[i].PSIP[0]		 = ndarray::allocate((APRM->ORDER_PSIP  +1)*(APRM->ORDER_PSIP  +2)/2);
+		CCD[i].PSIP[1]		 = ndarray::allocate((APRM->ORDER_PSIP  +1)*(APRM->ORDER_PSIP  +2)/2);
+		CCD[i].PSIP_CONV	 = ndarray::allocate((APRM->ORDER_PSIP-1+1)*(APRM->ORDER_PSIP-1+2)/2);
+		CCD[i].PSIP_ROT		 = ndarray::allocate((APRM->ORDER_PSIP-1+1)*(APRM->ORDER_PSIP-1+2)/2);
+		CCD[i].PSIP_SHEAR[0] = ndarray::allocate((APRM->ORDER_PSIP-1+1)*(APRM->ORDER_PSIP-1+2)/2);
+		CCD[i].PSIP_SHEAR[1] = ndarray::allocate((APRM->ORDER_PSIP-1+1)*(APRM->ORDER_PSIP-1+2)/2);
+		CCD[i].PSIP_MAG      = ndarray::allocate((APRM->ORDER_PSIP-1+1)*(APRM->ORDER_PSIP-1+2)/2);
+		CCD[i].PSIP_JACO     = ndarray::allocate((APRM->ORDER_PSIP-1+1)*(APRM->ORDER_PSIP-1+2)/2);
 	}
 	SET_CRPIX();
 }
 void CL_CCDs::SET_INPUT(std::vector< std::vector< std::string > > CCD_Argvs,CL_APRM *APRM){
 	SET_INIT(APRM);
-	int const NUM_CCD = *this->NUM_CCD;
+	int const NUM_CCD = APRM->NUM_CCD;
 
 	MAX_CRPIX_G_R =0;
 	MAX_CRPIX_G[0]=0;
@@ -69,7 +58,7 @@ void CL_CCDs::SET_INPUT(std::vector< std::vector< std::string > > CCD_Argvs,CL_A
 	GPOS_C_BASIS[0]=0;
 	GPOS_C_BASIS[1]=0;
 	GPOS_C_BASIS[2]=0;
-	if(*FLAG_STD>0.5)cout<<"-- SET CCDs --"<<endl;
+	if(APRM->FLAG_STD>0.5)cout<<"-- SET CCDs --"<<endl;
 	for(int i = 0; i < NUM_CCD; ++i){
 		CCD[i].ID       =atoi(CCD_Argvs[i][0].c_str());
 		CCD[i].GPOS_C[0]=atof(CCD_Argvs[i][1].c_str());
@@ -105,23 +94,23 @@ int  CL_CCDs::CHECK(){
 	return 0;
 }
 int  CL_CCDs::CHECK_NUMCCD(){
-	if(*NUM_CCD > 0){
-		if(*FLAG_STD>1.5)cout << "OK : NUM_CCD : " << *NUM_CCD << endl;
+	if(APRM->NUM_CCD > 0){
+		if(APRM->FLAG_STD>1.5)cout << "OK : NUM_CCD : " << APRM->NUM_CCD << endl;
 		return 0;
 	}else{
 		cout << "---------------------------------------------" << endl;
-		cout << "Input 'NUM_CCD' is '" << NUM_CCD << "'"<< endl;
+		cout << "Input 'NUM_CCD' is '" << APRM->NUM_CCD << "'"<< endl;
 		cout << "Error : NUM_CCD(Number of CCDs) must be larger than 0" << endl;
 		cout << "---------------------------------------------" << endl;
 		return 1;
 	}
 }
 int  CL_CCDs::CHECK_NUMFIT(){
-	int const NUM_CCD = *this->NUM_CCD;
+	int const NUM_CCD = APRM->NUM_CCD;
 
 	for(int i = 0; i < NUM_CCD; ++i){
 		if(CCD[i].NUM_FIT > 2){
-			if(*FLAG_STD>1.5){
+			if(APRM->FLAG_STD>1.5){
 				cout << "OK : NUM_FIT : CCD : ";
 				cout.width(3);
 				cout << i << " : " ;
@@ -135,17 +124,17 @@ int  CL_CCDs::CHECK_NUMFIT(){
 			cout << i << " : ";
 			cout.width(5);
 			cout << CCD[i].NUM_FIT << endl;
-			*MODE_CCDPOS=0;
-			cout << "Warning : SET MODE_CCDPOS to " << *MODE_CCDPOS << endl;
+			APRM->MODE_CCDPOS=0;
+			cout << "Warning : SET MODE_CCDPOS to " << APRM->MODE_CCDPOS << endl;
 			cout << "---------------------------------------------" << endl;
 		}
 	}
 	return 0;
 }
 int  CL_CCDs::CHECK_NUMFITALL(){
-	int const NUM_CCD    = *this->NUM_CCD   ;
-	int       ORDER_ASIP = *this->ORDER_ASIP;
-	int const ORDER_PSIP = *this->ORDER_PSIP;
+	int const NUM_CCD    = APRM->NUM_CCD   ;
+	int       ORDER_ASIP = APRM->ORDER_ASIP;
+	int const ORDER_PSIP = APRM->ORDER_PSIP;
 
 	if(CCD[NUM_CCD].NUM_FIT <= 0){
 		cout << "---------------------------------------------" << endl;
@@ -164,14 +153,14 @@ int  CL_CCDs::CHECK_NUMFITALL(){
 					break;
 				}
 			}
-			*this->ORDER_ASIP = ORDER_ASIP;
-			*this->ORDER_PSIP = ORDER_ASIP;
-			cout << "Warning : SET ORDER_ASIP to " << *this->ORDER_ASIP << endl;
-			cout << "Warning : SET ORDER_PSIP to " << *this->ORDER_PSIP << endl;
+			APRM->ORDER_ASIP = ORDER_ASIP;
+			APRM->ORDER_PSIP = ORDER_ASIP;
+			cout << "Warning : SET ORDER_ASIP to " << APRM->ORDER_ASIP << endl;
+			cout << "Warning : SET ORDER_PSIP to " << APRM->ORDER_PSIP << endl;
 			cout << "---------------------------------------------" << endl;
 		return 0;
 	}else{
-		if(*FLAG_STD>1.5){
+		if(APRM->FLAG_STD>1.5){
 			cout << "OK : NUM_FIT : CCD : ALL : " ;
 			cout.width(5);
 			cout << CCD[NUM_CCD].NUM_FIT << endl;
@@ -180,19 +169,19 @@ int  CL_CCDs::CHECK_NUMFITALL(){
 	}
 }
 void CL_CCDs::GET_GPOS_LfromGPOS_C(){
-	int const NUM_CCD = *this->NUM_CCD;
+	int const NUM_CCD = APRM->NUM_CCD;
 
 	for(int i = 0; i< NUM_CCD+1; ++i)
 	CCD[i].GET_GPOS_LfromGPOS_C();
 }
 void CL_CCDs::GET_GPOS_CfromGPOS_L(){
-	int const NUM_CCD = *this->NUM_CCD;
+	int const NUM_CCD = APRM->NUM_CCD;
 
 	for(int i = 0; i< NUM_CCD; ++i)
 	CCD[i].GET_GPOS_CfromGPOS_L();
 }
 void CL_CCDs::SET_CRVAL(){
-	int const NUM_CCD = *this->NUM_CCD;
+	int const NUM_CCD = APRM->NUM_CCD;
 
 	for(int i = 0; i < NUM_CCD; ++i){
 		*CCD[i].CRVAL[0]=*CCD[NUM_CCD].CRVAL[0];
@@ -200,7 +189,7 @@ void CL_CCDs::SET_CRVAL(){
 	}
 }
 void CL_CCDs::SET_CRPIX(){
-	int const NUM_CCD = *this->NUM_CCD;
+	int const NUM_CCD = APRM->NUM_CCD;
 
 	for(int i = 0; i < NUM_CCD; ++i){
 		*CCD[i].CRPIX[0]=-(CCD[i].GPOS_L[0]-*CCD[NUM_CCD].CRPIX[0])*cos(CCD[i].GPOS_L[2])
@@ -210,7 +199,7 @@ void CL_CCDs::SET_CRPIX(){
 	}
 }
 void CL_CCDs::SET_OAPIX(){
-	int const NUM_CCD = *this->NUM_CCD;
+	int const NUM_CCD = APRM->NUM_CCD;
 
 	for(int i = 0; i < NUM_CCD; ++i){
 		 CCD[i].OAPIX[0]=-(CCD[i].GPOS_L[0]-CCD[NUM_CCD].OAPIX[0])*cos(CCD[i].GPOS_L[2])
@@ -225,9 +214,9 @@ void CL_CCDs::SET_CCDs(){
 	SET_CRPIX();
 	SET_OAPIX();
 
-	int const NUM_CCD    = *this->NUM_CCD   ;
-	int const ORDER_ASIP = *this->ORDER_ASIP;
-	int const ORDER_PSIP = *this->ORDER_PSIP;
+	int const NUM_CCD    = APRM->NUM_CCD   ;
+	int const ORDER_ASIP = APRM->ORDER_ASIP;
+	int const ORDER_PSIP = APRM->ORDER_PSIP;
 
 //CD SIP DIST FUNCTIONS
 	ndarray::Array<double, 1, 1> G_ASIP[2], G_PSIP[2];
@@ -287,7 +276,7 @@ void CL_CCDs::SET_CCDs(){
 	}
 }
 void CL_CCDs::SHOW(){
-	int const NUM_CCD    = *this->NUM_CCD   ;
+	int const NUM_CCD    = APRM->NUM_CCD   ;
 
 	cout << setprecision(3);
 	cout << scientific;

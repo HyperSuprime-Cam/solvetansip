@@ -63,14 +63,7 @@ private:
 public:
 	CL_APRM *APRM;//=SLVTS->APRM
 	std::vector<CL_CCD>  CCD;
-	int     *MODE_CCDPOS;//=APRM->MODE_CCDPOS
-	int     *NUM_CCD;
 	double	 GPOS_C_BASIS[4];//pixel,pixel,radian,degree
-	int	*ORDER_ASIP;
-	int	*ORDER_PSIP;
-	double	*CRVAL[2];
-	double	*CRPIX[2];
-	int	*FLAG_STD;//=APRM->FLAG_STD
 	double   MAX_CRPIX_G_R;
 	double   MAX_CRPIX_G[2];
 	double   MIN_CRPIX_G[2];
