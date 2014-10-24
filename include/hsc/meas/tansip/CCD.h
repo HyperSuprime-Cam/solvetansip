@@ -28,13 +28,10 @@ public:
 	double	 GPOS_L[4];//pixel,pixel,radian,degree
 	int      LENGTH[2];
 	double   ANGLE;
-	double	*CRVAL[2];//=APRM->CRVAL
 	double	*CRPIX[2];//=APRM->CRVAL if this is the last element in CL_CCDs or is unique.
 	double	 OAPIX[2];
 	double	 CD[2][2];
 	double	 InvCD[2][2];
-	int	*ORDER_ASIP;//=APRM->ORDER_ASIP
-	int	*ORDER_PSIP;//=APRM->ORDER_PSIP
 	ndarray::Array<double, 1, 1>  ASIP[2];
 	ndarray::Array<double, 1, 1>  PSIP[2];
 	ndarray::Array<double, 1, 1>  PSIP_CONV;
@@ -80,7 +77,6 @@ public:
 	int  CHECK_NUMFITALL();//checking current number for fitting of all CCDs
 	void GET_GPOS_LfromGPOS_C();//setting lower left corner position from center position in global coordinate for all CCDs
 	void GET_GPOS_CfromGPOS_L();//setting center position from lower left corner position in global coordinate for all CCDs
-	void SET_CRVAL();//setting CRVAL for all CCDs
 	void SET_CRPIX();//setting CRPIX for all CCDs
 	void SET_OAPIX();//setting OAXPI for all CCDs
 	void SET_CCDs();//setting solvtansip information of local CCDs from global information

@@ -28,8 +28,6 @@ public:
 	CL_CCD  *GCD;//=SLVTS->CCDs->CCD[NUMCCD]
 	double  *GPOS_L[4];//=CCD->GPOS_L
 	int     *LENGTH_CCD[2];//=CCD->LENGTH
-	int	*ORDER_ASIP;//=GCD->ORDER_ASIP
-	int	*ORDER_PSIP;//=GCD->ORDER_PSIP
 	double	*CRPIX_L[2];//=CCD->CRPIX
 	double  *CD[2][2];//=GCD->CD
 	double  *InvCD[2][2];//=GCD->InvCD

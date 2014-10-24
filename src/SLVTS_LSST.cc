@@ -74,9 +74,9 @@ cout<<scientific<<setprecision(6)<<"R : "<<SLVTS->CCDs->MAX_CRPIX_G_R<<"	"<<VALU
                 sprintf(KEY,"ST_C%03d_CRPIX2"  ,CID);
 	        meta->add(KEY,*SLVTS->CCDs->CCD[CID].CRPIX[1]);
                 sprintf(KEY,"ST_C%03d_CRVAL1"  ,CID);
-	        meta->add(KEY,*SLVTS->CCDs->CCD[CID].CRVAL[0]);
+	        meta->add(KEY,SLVTS->APRM->CRVAL[0]);
                 sprintf(KEY,"ST_C%03d_CRVAL2"  ,CID);
-	        meta->add(KEY,*SLVTS->CCDs->CCD[CID].CRVAL[1]);
+	        meta->add(KEY,SLVTS->APRM->CRVAL[1]);
                 sprintf(KEY,"ST_C%03d_CD1_1"  ,CID);
 	        meta->add(KEY,SLVTS->CCDs->CCD[CID].CD[0][0]);
                 sprintf(KEY,"ST_C%03d_CD1_2"  ,CID);
@@ -94,7 +94,7 @@ cout<<scientific<<setprecision(6)<<"R : "<<SLVTS->CCDs->MAX_CRPIX_G_R<<"	"<<VALU
                 sprintf(KEY,"ST_C%03d_InvCD2_2",CID);
 	        meta->add(KEY,SLVTS->CCDs->CCD[CID].InvCD[1][1]);
                 sprintf(KEY,"ST_C%03d_OREDER_ASIP",CID);
-	        meta->add(KEY,*SLVTS->CCDs->CCD[CID].ORDER_ASIP);
+	        meta->add(KEY,SLVTS->APRM->ORDER_ASIP);
 		ij=0;
 		for(i=0;i<SLVTS->APRM->ORDER_ASIP+1  ;i++)
                 for(j=0;j<SLVTS->APRM->ORDER_ASIP+1-i;j++){
@@ -123,7 +123,7 @@ cout<<scientific<<setprecision(6)<<"R : "<<SLVTS->CCDs->MAX_CRPIX_G_R<<"	"<<VALU
 	        meta->add(KEY,SLVTS->CCDs->CCD[CID].DIF_MAX_ASIP[1]);
 
                 sprintf(KEY,"ST_C%03d_ORDER_PSIP" ,CID);
-	        meta->add(KEY,*SLVTS->CCDs->CCD[CID].ORDER_PSIP);
+	        meta->add(KEY,SLVTS->APRM->ORDER_PSIP);
                 ij=0;
                 for(i=0;i<SLVTS->APRM->ORDER_PSIP+1  ;i++)
                 for(j=0;j<SLVTS->APRM->ORDER_PSIP+1-i;j++){
@@ -227,13 +227,13 @@ std::vector <lsst::afw::image::TanWcs::Ptr> SET_TANWCS(CL_SLVTS* SLVTS){
 	int i,j,ij;
 	for(CID=0;CID<SLVTS->APRM->NUM_CCD+1;CID++){
 		afwGeom::PointD crpix = afwGeom::PointD(*SLVTS->CCDs->CCD[CID].CRPIX[0],*SLVTS->CCDs->CCD[CID].CRPIX[1]);
-		afwGeom::PointD crval = afwGeom::PointD(*SLVTS->CCDs->CCD[CID].CRVAL[0],*SLVTS->CCDs->CCD[CID].CRVAL[1]);
+		afwGeom::PointD crval = afwGeom::PointD(SLVTS->APRM->CRVAL[0]          ,SLVTS->APRM->CRVAL[1]          );
 
 		Eigen::Matrix2d cdMatrix;
 		cdMatrix << SLVTS->CCDs->CCD[CID].CD[0][0],SLVTS->CCDs->CCD[CID].CD[0][1],SLVTS->CCDs->CCD[CID].CD[1][0],SLVTS->CCDs->CCD[CID].CD[1][1];
 
-		OAS=*SLVTS->CCDs->CCD[CID].ORDER_ASIP;
-		OPS=*SLVTS->CCDs->CCD[CID].ORDER_PSIP;
+		OAS=SLVTS->APRM->ORDER_ASIP;
+		OPS=SLVTS->APRM->ORDER_PSIP;
 		Eigen::MatrixXd sipA  = Eigen::MatrixXd::Zero(OAS+1,OAS+1);
 		Eigen::MatrixXd sipB  = Eigen::MatrixXd::Zero(OAS+1,OAS+1);
 		Eigen::MatrixXd sipAp = Eigen::MatrixXd::Zero(OPS+1,OPS+1);

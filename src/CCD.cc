@@ -24,13 +24,10 @@ void CL_CCDs::SET_INIT(CL_APRM *APRM_IN){
 
 	for(int i = 0; i < NUM_CCD+1; ++i){
 		CCD[i].SET_INIT();
-		CCD[i].ORDER_ASIP	 =&APRM->ORDER_ASIP;
-		CCD[i].ORDER_PSIP	 =&APRM->ORDER_PSIP;
+		CCD[i].APRM	 = APRM;
 		CCD[i].NUM_REF		 =0;
 		CCD[i].NUM_FIT		 =0;
 		CCD[i].NUM_REJ		 =0;
-		CCD[i].CRVAL[0]      =&APRM->CRVAL[0];
-		CCD[i].CRVAL[1]      =&APRM->CRVAL[1];
 		CCD[i].ASIP[0]		 = ndarray::allocate((APRM->ORDER_ASIP  +1)*(APRM->ORDER_ASIP  +2)/2);
 		CCD[i].ASIP[1]		 = ndarray::allocate((APRM->ORDER_ASIP  +1)*(APRM->ORDER_ASIP  +2)/2);
 		CCD[i].PSIP[0]		 = ndarray::allocate((APRM->ORDER_PSIP  +1)*(APRM->ORDER_PSIP  +2)/2);
@@ -180,14 +177,6 @@ void CL_CCDs::GET_GPOS_CfromGPOS_L(){
 	for(int i = 0; i< NUM_CCD; ++i)
 	CCD[i].GET_GPOS_CfromGPOS_L();
 }
-void CL_CCDs::SET_CRVAL(){
-	int const NUM_CCD = APRM->NUM_CCD;
-
-	for(int i = 0; i < NUM_CCD; ++i){
-		*CCD[i].CRVAL[0]=*CCD[NUM_CCD].CRVAL[0];
-		*CCD[i].CRVAL[1]=*CCD[NUM_CCD].CRVAL[1];
-	}
-}
 void CL_CCDs::SET_CRPIX(){
 	int const NUM_CCD = APRM->NUM_CCD;
 
@@ -210,7 +199,6 @@ void CL_CCDs::SET_OAPIX(){
 }
 void CL_CCDs::SET_CCDs(){
 //CR
-	SET_CRVAL();
 	SET_CRPIX();
 	SET_OAPIX();
 
@@ -335,7 +323,7 @@ void CL_CCD::GET_GPOS_CfromGPOS_L(){
 	GPOS_C[3]=GPOS_L[3];
 }
 void CL_CCD::SET_CDASIP(){
-	int const ORDER_ASIP = *this->ORDER_ASIP;
+	int const ORDER_ASIP = APRM->ORDER_ASIP;
 
 	CD[0][0]=ASIP[0][1*ORDER_ASIP+1];
 	CD[0][1]=ASIP[0][0*ORDER_ASIP+1];
@@ -358,7 +346,7 @@ void CL_CCD::SET_CDASIP(){
 	ANGLE=atan2(CD[0][0]-CD[1][1],-CD[1][0]-CD[0][1]);
 }
 void CL_CCD::SET_CDPSIP(){
-	int const ORDER_PSIP = *this->ORDER_PSIP;
+	int const ORDER_PSIP = APRM->ORDER_PSIP;
 
 	PSIP[0][1*ORDER_PSIP+1]-=1;
 	PSIP[1][0*ORDER_PSIP+1]-=1;
@@ -582,8 +570,8 @@ void CL_CCD::SET_SIPROT(int ORDER,double *COEF_IN, double *COEF){
 }
 
 void CL_CCD::SHOW(){
-	int const ORDER_ASIP = *this->ORDER_ASIP;
-	int const ORDER_PSIP = *this->ORDER_PSIP;
+	int const ORDER_ASIP = APRM->ORDER_ASIP;
+	int const ORDER_PSIP = APRM->ORDER_PSIP;
 
 	cout << setprecision(3);
 	cout << scientific;
@@ -605,8 +593,8 @@ void CL_CCD::SHOW(){
 	cout << "ANGLE         : " ;cout.width(10);cout<< ANGLE << endl;
 	cout << "CRPIX 1       : " ;cout.width(10);cout<< *CRPIX[0] << endl;
 	cout << "CRPIX 2       : " ;cout.width(10);cout<< *CRPIX[1] << endl;
-	cout << "CRVAL Ra      : " ;cout.width(10);cout<< *CRVAL[0] <<" (degree) " << endl;
-	cout << "CRVAL Dec     : " ;cout.width(10);cout<< *CRVAL[1] <<" (degree) " << endl;
+	cout << "CRVAL Ra      : " ;cout.width(10);cout<< APRM->CRVAL[0] <<" (degree) " << endl;
+	cout << "CRVAL Dec     : " ;cout.width(10);cout<< APRM->CRVAL[1] <<" (degree) " << endl;
 	cout << "OAPIX 1       : " ;cout.width(10);cout<<  OAPIX[0] << endl;
 	cout << "OAPIX 2       : " ;cout.width(10);cout<<  OAPIX[1] << endl;
 	cout << "CD1_1         : " ;cout.width(10);cout<< CD[0][0] <<" (degree) " << endl;
