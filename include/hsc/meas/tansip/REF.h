@@ -129,22 +129,8 @@ public:
 	CL_APRM *APRM;//SLVTS->APRM
 	CL_CCDs *CCDs;//SLVTS->CCDs
 	std::vector<CL_REF>  REF;
-	string  *MODE_CR;//APRM->MODE_CR
-	int     *MODE_CCDPOS;//APRM->MODE_CCDPOS
-	int     *MODE_REJ;//APRM->MODE_REJ
-	int	*ORDER_ASIP;//APRM->ORDER_ASIP
-	int	*ORDER_PSIP;//APRM->ORDER_PSIP
-	double	*CRVAL[2];//APRM->CRVAL
-	double	*CRPIX[2];//APRM->CRPIX
-	double  *OAPIX[2];//APRM->OAPIX
-	int	*FLAG_STD;//APRM->FLAG_STD
-	int     *NUM_CCD;//APRM->NUM_CCD
-	int     *NUM_REF;//APRM->NUM_REF
-	int     *NUM_FIT;//APRM->NUM_FIT
-	int     *NUM_REJ;//APRM->NUM_REJ
+	double  *OAPIX[2];//CCDs->CCD[NUM_CCD]->OAPIX
 	double  *GPOS_C_BASIS[3];//CCDs->GPOS_C_BASIS
-	double  *SIGMA_CLIP;//APRM->SIGMA_SLIP
-	double  *PRECISION_CCD;//APRM->PRECISION_CCD
 	ndarray::Array<double, 1, 1> ASIP[2];//CCDs->ASIP
 	ndarray::Array<double, 1, 1> PSIP[2];//CCDs->PSIP
 	double  *CD[2][2];//CCDs->CD
