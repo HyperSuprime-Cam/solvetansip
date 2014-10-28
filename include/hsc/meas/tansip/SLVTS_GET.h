@@ -1,5 +1,6 @@
-#ifndef SLVTS_GET_H
-#define SLVTS_GET_H
+#ifndef  g35236865_3fc2_4f50_94c7_2537fbd63cc7
+#define  g35236865_3fc2_4f50_94c7_2537fbd63cc7
+
 //-----------------------------------------------------------
 //SLVTS_GET.h
 //getting information from class solvetansip
@@ -7,6 +8,9 @@
 //Last modification : 2014/01/01
 //------------------------------------------------------------
 #include "hsc/meas/tansip/SLVTS.h"
+
+namespace hsc { namespace meas {
+namespace tansip {
 
 //-----------------------------------------------------------------
 //Getting Functions : SUMMARY Info
@@ -87,5 +91,7 @@ std::vector< std::vector< double > > GET_REF_POS_DETECTED_ASIP_RADEC_G(CL_SLVTS*
 std::vector< std::vector< double > > GET_REF_DIFF(CL_SLVTS* SLVTS);//getting DIFF from SIP and PSIP fitting of all references
 std::vector< std::vector< double > > GET_REF_CAMERADISTPSIP(CL_SLVTS* SLVTS);//getting DISTORTION from PSIP fitting of all references
 
-#endif
+} // namespace tansip
+}} // namespace hsc::meas
+#endif //g35236865_3fc2_4f50_94c7_2537fbd63cc7
 

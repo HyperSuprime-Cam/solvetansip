@@ -1,5 +1,5 @@
-#ifndef HSC_MEAS_TANSIP_SOURCEMATCH_H
-#define HSC_MEAS_TANSIP_SOURCEMATCH_H
+#ifndef  g756b9590_676d_43ae_8c81_f578a39c2f87
+#define  g756b9590_676d_43ae_8c81_f578a39c2f87
 
 #include "lsst/afw/coord/Coord.h"
 #include "lsst/afw/geom/Point.h"
@@ -7,8 +7,7 @@
 
 
 // Declarations
-namespace hsc {
-namespace meas {
+namespace hsc { namespace meas {
 namespace tansip {
 
 /// Interface between LSST measurement code and solvetansip
@@ -44,7 +43,7 @@ private:
     float _xErr, _yErr;                 // Error in pixel coordinates
     double _flux;                       // Flux of source
 };
-   
+
 
 // Defintions
 
@@ -52,7 +51,7 @@ private:
 inline SourceMatch::SourceMatch(SourceIdType id, lsst::afw::coord::Coord const& sky,
                                 lsst::afw::geom::Point2D const& pixels,
                                 lsst::afw::geom::Point2D const& pixelErrors,
-                                double flux) :  
+                                double flux) :
     _id(id),
     _ra(sky.getLongitude().asDegrees()),
     _dec(sky.getLatitude().asDegrees()),
@@ -63,7 +62,7 @@ inline SourceMatch::SourceMatch(SourceIdType id, lsst::afw::coord::Coord const& 
     _flux(flux)
 {}
 
-inline SourceMatch::SourceMatch(lsst::afw::table::ReferenceMatch match) :  
+inline SourceMatch::SourceMatch(lsst::afw::table::ReferenceMatch match) :
     _id(match.first->getId()),
     _ra(match.first->getRa().asDegrees()),
     _dec(match.first->getDec().asDegrees()),
@@ -75,7 +74,6 @@ inline SourceMatch::SourceMatch(lsst::afw::table::ReferenceMatch match) :
 {}
 
 
-}}} // namespace hsc::meas::tansip
-
-
-#endif
+} // namespace tansip
+}} // namespace hsc::meas
+#endif //g756b9590_676d_43ae_8c81_f578a39c2f87

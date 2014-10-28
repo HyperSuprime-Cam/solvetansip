@@ -4,10 +4,13 @@
 //Last Update 2014/07/07
 //Originally by Yuki Okura : yuki.okura@nao.ac.jp
 //------------------------------------------------------------
-#ifndef CALC_H
-#define CALC_H
+#ifndef  g599a60b9_5b86_4a72_a0ca_e47479c8e738
+#define  g599a60b9_5b86_4a72_a0ca_e47479c8e738
 
 #include <ndarray.h>
+
+namespace hsc { namespace meas {
+namespace tansip {
 
 //CALC_STAT
 int	CALC_STAT_RMS(int NUM,double *data,double *STAT);
@@ -21,4 +24,6 @@ SOLVE_LINEAR_EQUATION(ndarray::Array<double, 2, 1> const& A, ndarray::Array<doub
 ndarray::Array<double, 1, 1> // Return coefficients
 CALC_FIT_LS2(int dataNUM, int Order, ndarray::Array<double, 2, 1> const& data);
 
-#endif
+} // namespace tansip
+}} // namespace hsc::meas
+#endif //g599a60b9_5b86_4a72_a0ca_e47479c8e738

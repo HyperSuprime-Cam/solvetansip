@@ -7,6 +7,9 @@
 #define RTLD_DEEPBIND  0  /* zero so's to be ignored */
 #endif
 
+namespace hsc { namespace meas {
+namespace tansip {
+
 namespace lapack
 {
 
@@ -29,5 +32,7 @@ namespace {
     bool const dummy = init();
 }
 
-
 } // namespace lapack
+
+} // namespace tansip
+}} // namespace hsc::meas

@@ -5,6 +5,9 @@
 //------------------------------------------------------------
 #include "hsc/meas/tansip/CCD.h"
 
+namespace hsc { namespace meas {
+namespace tansip {
+
 using namespace std;
 //CCDs
 void CL_CCDs::SET_INIT(CL_APRM *APRM_IN){
@@ -637,3 +640,5 @@ void CL_CCD::SHOW(){
 	cout << "DIF MAX PSIPY : " ;cout.width(10);cout<< DIF_MAX_PSIP[1] <<" (pixel) " << endl;
 }
 
+} // namespace tansip
+}} // namespace hsc::meas

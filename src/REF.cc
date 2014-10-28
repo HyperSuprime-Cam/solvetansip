@@ -7,6 +7,9 @@
 
 #include <stdexcept>
 
+namespace hsc { namespace meas {
+namespace tansip {
+
 using namespace std;
 //REFs
 void CL_REFs::SET_INIT(CL_APRM *APRM_IN,CL_CCDs* CCDs_IN){
@@ -1633,3 +1636,6 @@ void CL_REF::SET_OPTICAL_DISTORTIONbyPSIP(){
 
 //cout<< POS_CELESTIAL_IMPIX_G[0]<<"	"<<POS_CELESTIAL_IMPIX_G[1]<<"	"<<CAMERA_CONV<<"	"<<CAMERA_ROT<<"	"<<CAMERA_SHEAR[0]<<"	"<<CAMERA_SHEAR[1]<<"	"<<CAMERA_MAG<<"	"<<CAMERA_JACO<<endl;
 }
+
+} // namespace tansip
+}} // namespace hsc::meas

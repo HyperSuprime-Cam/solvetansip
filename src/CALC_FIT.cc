@@ -20,6 +20,10 @@
 
 #include "LAPACK_FUNCS.h"
 
+
+namespace hsc { namespace meas {
+namespace tansip {
+
 using namespace std;
 
 namespace {
@@ -140,3 +144,5 @@ CALC_FIT_LS2(int dataNUM, int Order, ndarray::Array<double, 2, 1> const& data){
 	return SOLVE_LINEAR_EQUATION(XA, Z);
 }
 
+} // namespace tansip
+}} // namespace hsc::meas

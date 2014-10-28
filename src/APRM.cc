@@ -5,6 +5,9 @@
 //------------------------------------------------------------
 #include"hsc/meas/tansip/APRM.h"
 
+namespace hsc { namespace meas {
+namespace tansip {
+
 using namespace std;
 void CL_APRM::SET_INIT(){
 	INSTR         = "HSC";
@@ -145,3 +148,6 @@ void CL_APRM::SHOW(){
 void CL_APRM::SET_END(){
 
 }
+
+} // namespace tansip
+}} // namespace hsc::meas

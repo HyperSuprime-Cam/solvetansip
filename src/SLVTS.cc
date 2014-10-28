@@ -10,6 +10,9 @@
 #include "hsc/meas/tansip/SLVTS.h"
 #include "HIRES_CLOCK.h"
 
+namespace hsc { namespace meas {
+namespace tansip {
+
 using namespace std;
 boost::shared_ptr<CL_SLVTS> SOLVETANSIP(std::vector< std::vector< std::vector<std::string> > > SLVTS_Argvs){
 	my::clock_t TS,TE;
@@ -85,3 +88,5 @@ void CL_SLVTS::CALC_WCS(){
 
 }
 
+} // namespace tansip
+}} // namespace hsc::meas

@@ -3,20 +3,22 @@
 //
 //Last modification : 2014/01/01
 //------------------------------------------------------------
-#ifndef APRM_H
-#define APRM_H
+#ifndef  gd3b2467b_f431_4fa4_94cb_a1f35bb9e186
+#define  gd3b2467b_f431_4fa4_94cb_a1f35bb9e186
 
 #include<vector>
 #include<string>
 #include<iostream>
 #include<stdlib.h>
 
-using namespace std;
+namespace hsc { namespace meas {
+namespace tansip {
+
 class CL_APRM{
 private:
 public:
-	string  INSTR;//HSC or SC
-	string	MODE_CR;
+	std::string  INSTR;//HSC or SC
+	std::string	 MODE_CR;
 //CCD
 	int	NUM_CCD;
 	int	MODE_CCDPOS;
@@ -35,7 +37,7 @@ public:
 //OUTPUT
 	int	FLAG_STD;
 	int	FLAG_OUT;
-	string	DIR_OUT;
+	std:: string  DIR_OUT;
 
 //FUNCTIONs
 	void SET_INIT();//setting initial values
@@ -47,4 +49,7 @@ public:
 	int  CHECK_ORDERPSIP();//checking current PSIP order
 	void SET_END();//destructor
 };
-#endif
+
+} // namespace tansip
+}} // namespace hsc::meas
+#endif //gd3b2467b_f431_4fa4_94cb_a1f35bb9e186

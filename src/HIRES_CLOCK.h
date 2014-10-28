@@ -9,6 +9,9 @@
 #include <mach/mach.h>
 #endif
 
+namespace hsc { namespace meas {
+namespace tansip {
+
 namespace my {
 
     struct clock_t: public timespec
@@ -37,6 +40,8 @@ namespace my {
         return c;
     }
 
-}
+} // namespace my
 
+} // namespace tansip
+}} // namespace hsc::meas
 #endif //gb9b065e3_3938_48ea_a6ff_ddbf238b103d

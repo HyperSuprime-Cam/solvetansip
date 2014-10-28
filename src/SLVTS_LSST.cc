@@ -12,6 +12,9 @@
 
 #include "hsc/meas/tansip/SLVTS_LSST.h"
 
+namespace hsc { namespace meas {
+namespace tansip {
+
 using namespace std;
 namespace dafbase  = lsst::daf::base;
 namespace afwGeom  = lsst::afw::geom;
@@ -268,3 +271,5 @@ std::vector <lsst::afw::image::TanWcs::Ptr> SET_TANWCS(CL_SLVTS* SLVTS){
 	return V_TanWcs;
 }
 
+} // namespace tansip
+}} // namespace hsc::meas

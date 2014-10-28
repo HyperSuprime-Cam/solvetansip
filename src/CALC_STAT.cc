@@ -8,6 +8,9 @@
 #include <cmath>
 #include <cstdlib>
 
+namespace hsc { namespace meas {
+namespace tansip {
+
 using namespace std;
 
 //Calculating Average and RMS
@@ -72,3 +75,6 @@ void	CALC_STAT_RMSMAX(int NUM,double *data,double *STAT){
 
 	return;
 }
+
+} // namespace tansip
+}} // namespace hsc::meas

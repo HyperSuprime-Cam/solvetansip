@@ -1,6 +1,9 @@
 #ifndef  g9edcf01e_bcf6_4344_b6d2_fc21c92519b1
 #define  g9edcf01e_bcf6_4344_b6d2_fc21c92519b1
 
+namespace hsc { namespace meas {
+namespace tansip {
+
 namespace lapack
 {
 
@@ -48,4 +51,6 @@ extern dgesvx_t  dgesvx_;
 
 } // namespace lapack
 
+} // namespace tansip
+}} // namespace hsc::meas
 #endif //g9edcf01e_bcf6_4344_b6d2_fc21c92519b1

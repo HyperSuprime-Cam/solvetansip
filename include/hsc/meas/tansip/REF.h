@@ -3,8 +3,8 @@
 //
 //Last modification : 2014/01/01
 //------------------------------------------------------------
-#ifndef REF_H
-#define REF_H
+#ifndef  g34c2d15f_e6b5_475f_ba9f_16a88227c416
+#define  g34c2d15f_e6b5_475f_ba9f_16a88227c416
 
 #include <vector>
 #include <string>
@@ -18,6 +18,9 @@
 #include "hsc/meas/tansip/APRM.h"
 #include "hsc/meas/tansip/CCD.h"
 #include "hsc/meas/tansip/CALC.h"
+
+namespace hsc { namespace meas {
+namespace tansip {
 
 class CL_REFs;
 
@@ -199,4 +202,7 @@ public:
 	void SHOW();//show information of references
 
 };
-#endif
+
+} // namespace tansip
+}} // namespace hsc::meas
+#endif //g34c2d15f_e6b5_475f_ba9f_16a88227c416

@@ -10,6 +10,9 @@
 #include<fstream>
 #include "hsc/meas/tansip/SLVTS_GET.h"
 
+namespace hsc { namespace meas {
+namespace tansip {
+
 using namespace std;
 //-----------------------------------------------------------------
 //Getting Functions : SUMMARY Info
@@ -823,4 +826,5 @@ std::vector< std::vector< double > > GET_REF_CAMERADISTPSIP(CL_SLVTS* SLVTS){
     return DIST;
 }
 
-
+} // namespace tansip
+}} // namespace hsc::meas

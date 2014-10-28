@@ -3,8 +3,8 @@
 //
 //Last modification : 2014/01/01
 //------------------------------------------------------------
-#ifndef CCD_H
-#define CCD_H
+#ifndef  gfe76caaa_f951_46d7_ae0f_d78e88e8cbe1
+#define  gfe76caaa_f951_46d7_ae0f_d78e88e8cbe1
 
 #include <vector>
 #include <string>
@@ -15,6 +15,9 @@
 #include <ndarray.h>
 
 #include "hsc/meas/tansip/APRM.h"
+
+namespace hsc { namespace meas {
+namespace tansip {
 
 class CL_CCD{
 private:
@@ -82,4 +85,7 @@ public:
 	void SET_CCDs();//setting solvtansip information of local CCDs from global information
 	void SHOW();//showing CCDs infomation
 };
-#endif
+
+} // namespace tansip
+}} // namespace hsc::meas
+#endif //gfe76caaa_f951_46d7_ae0f_d78e88e8cbe1

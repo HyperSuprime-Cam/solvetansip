@@ -4,8 +4,8 @@
 //
 //Last modification : 2014/01/01
 //------------------------------------------------------------
-#ifndef SLVTS_H
-#define SLVTS_H
+#ifndef  g99cf6978_db6c_4a74_9c0b_2cf5231f0aab
+#define  g99cf6978_db6c_4a74_9c0b_2cf5231f0aab
 
 #include <vector>
 #include <string>
@@ -14,6 +14,9 @@
 #include "hsc/meas/tansip/APRM.h"
 #include "hsc/meas/tansip/CCD.h"
 #include "hsc/meas/tansip/REF.h"
+
+namespace hsc { namespace meas {
+namespace tansip {
 
 class CL_SLVTS{
 private:
@@ -31,4 +34,7 @@ public:
 };
 
 boost::shared_ptr<CL_SLVTS> SOLVETANSIP(std::vector< std::vector< std::vector< std::string > > > SLVTS_Argvs);//called by lsst for calculating solvetansip
-#endif
+
+} // namespace tansip
+}} // namespace hsc::meas
+#endif //g99cf6978_db6c_4a74_9c0b_2cf5231f0aab
