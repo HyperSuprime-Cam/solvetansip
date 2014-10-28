@@ -19,20 +19,15 @@
 #include "hsc/meas/tansip/CCD.h"
 #include "hsc/meas/tansip/CALC.h"
 
+class CL_REFs;
 
 class CL_REF{
 private:
 public:
 	CL_APRM *APRM;//=SLVTS->APRM
+	CL_REFs *REFs;
 	CL_CCD  *CCD;//=SLVTS->CCDs->CCD[ID_CCD]
 	CL_CCD  *GCD;//=SLVTS->CCDs->CCD[NUMCCD]
-	double  *GPOS_L[4];//=CCD->GPOS_L
-	int     *LENGTH_CCD[2];//=CCD->LENGTH
-	double	*CRPIX_L[2];//=CCD->CRPIX
-	double  *CD[2][2];//=GCD->CD
-	double  *InvCD[2][2];//=GCD->InvCD
-	double  *PSIP_DX[2];
-	double  *PSIP_DY[2];
 
 	long long int ID_OBJ;
 	int	ID_CCD;
