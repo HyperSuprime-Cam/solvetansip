@@ -31,8 +31,6 @@ public:
 	double	*CRPIX_L[2];//=CCD->CRPIX
 	double  *CD[2][2];//=GCD->CD
 	double  *InvCD[2][2];//=GCD->InvCD
-	double  *ASIP_DX[2];
-	double  *ASIP_DY[2];
 	double  *PSIP_DX[2];
 	double  *PSIP_DY[2];
 
@@ -125,35 +123,12 @@ public:
 	CL_APRM *APRM;//SLVTS->APRM
 	CL_CCDs *CCDs;//SLVTS->CCDs
 	std::vector<CL_REF>  REF;
-	double  *OAPIX[2];//CCDs->CCD[NUM_CCD]->OAPIX
-	double  *GPOS_C_BASIS[3];//CCDs->GPOS_C_BASIS
-	ndarray::Array<double, 1, 1> ASIP[2];//CCDs->ASIP
-	ndarray::Array<double, 1, 1> PSIP[2];//CCDs->PSIP
-	double  *CD[2][2];//CCDs->CD
-	double  *InvCD[2][2];//CCDs->InvCD
-	double	*DIF_AVE_ASIP[2];//CCDs->DIF_AVE_ASIP
-	double	*DIF_RMS_ASIP[2];//CCDs->DIF_RMS_ASIP
-	double	*DIF_MAX_ASIP[2];//CCDs->DIF_MAX_ASIP
-	double	*DIF_AVE_PSIP[2];//CCDs->DIF_AVE_PSIP
-	double	*DIF_RMS_PSIP[2];//CCDs->DIF_RMS_PSIP
-	double	*DIF_MAX_PSIP[2];//CCDs->DIF_MAX_PSIP
-	ndarray::Array<double, 1, 1> ASIP_DX[2];
-	ndarray::Array<double, 1, 1> ASIP_DY[2];
 	ndarray::Array<double, 1, 1> PSIP_DX[2];
 	ndarray::Array<double, 1, 1> PSIP_DY[2];
-	ndarray::Array<double, 1, 1> PSIP_CONV;    //CCDs->PSIP_CONV
-	ndarray::Array<double, 1, 1> PSIP_ROT;     //CCDs->PSIP_ROT
-	ndarray::Array<double, 1, 1> PSIP_SHEAR[2];//CCDs->PSIP_SHEAR
-	ndarray::Array<double, 1, 1> PSIP_MAG;     //CCDs->PSIP_MAG
-	ndarray::Array<double, 1, 1> PSIP_JACO;    //CCDs->PSIP_JACO
 	double   MAX_LOCAL_G_R;
 	double   MAX_LOCAL_G[2];
 	double   MIN_LOCAL_G[2];
 	double   AVE_LOCAL_G[2];
-	double  *MAX_CRPIX_G_R;//CCDs->MAX_CRPIX_G_R
-	double  *MAX_CRPIX_G[2];//CCDs->MAX_CRPIX_G
-	double  *MIN_CRPIX_G[2];//CCDs->MIN_CRPIX_G
-	double  *AVE_CRPIX_G[2];//CCDs->AVE_CRPIX_G
 
 //FUNCTIONS
 	void SET_INIT(CL_APRM *APRM,CL_CCDs* CCDs);//setting inital values
