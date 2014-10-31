@@ -168,7 +168,7 @@ void CHECK_METADATA(CL_SLVTS* SLVTS,dafbase::PropertySet::Ptr &meta){
 	char KEY[100];
 	GL=SLVTS->APRM->NUM_CCD;
 
-	if(SLVTS->APRM->FLAG_STD>0.5){
+	if(SLVTS->APRM->FLAG_STD >= 1){
 		cout<<"--- CHECK metadata ---"<<endl;
 		VAL_S=meta->getAsString("ST_A_MODE_CR");
 		cout<<"ST_A_MODE_CR : "<<VAL_S<<endl;

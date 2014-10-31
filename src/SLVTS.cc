@@ -28,14 +28,14 @@ boost::shared_ptr<CL_SLVTS> SOLVETANSIP(std::vector< std::vector< std::vector<st
 		return boost::shared_ptr<CL_SLVTS>();
 	}
 	T2=my::clock();
-	if(SLVTS->APRM->FLAG_STD>0.5)cout<<"TIME SET INPUT         : "<<(T2-T1) << " (sec)"<<endl;
+	if(SLVTS->APRM->FLAG_STD >= 1)cout<<"TIME SET INPUT         : "<<(T2-T1) << " (sec)"<<endl;
 
 	SLVTS->CALC_WCS();
 
 //	SLVTS->END()
 
 	TE=my::clock();
-	if(SLVTS->APRM->FLAG_STD>0.5)cout<<"TIME SOLVETANSIP TOTAL : "<<(TE-TS) << " (sec)"<<endl;
+	if(SLVTS->APRM->FLAG_STD >= 1)cout<<"TIME SOLVETANSIP TOTAL : "<<(TE-TS) << " (sec)"<<endl;
 
 	return SLVTS;
 }
@@ -54,13 +54,13 @@ void CL_SLVTS::SET_INPUT(std::vector< std::vector< std::vector< std::string > > 
 	APRM->SET_INPUT(SLVTS_Argvs[0]);
 	CCDs->SET_INPUT(SLVTS_Argvs[1], APRM.get());
 	REFs->SET_INPUT(SLVTS_Argvs[2], APRM.get(), CCDs.get());
-	if(APRM->FLAG_STD>1.5)APRM->SHOW();
-	if(APRM->FLAG_STD>1.5)CCDs->SHOW();
-	if(APRM->FLAG_STD>1.5)REFs->SHOW();
+	if(APRM->FLAG_STD >= 2)APRM->SHOW();
+	if(APRM->FLAG_STD >= 2)CCDs->SHOW();
+	if(APRM->FLAG_STD >= 2)REFs->SHOW();
 
 }
 int CL_SLVTS::CHECK_INPUT(){
-	if(APRM->FLAG_STD>0.5)cout<<"-- CHECK INPUT --"<<endl;
+	if(APRM->FLAG_STD >= 1)cout<<"-- CHECK INPUT --"<<endl;
 	if(APRM->CHECK()==1)return 1;
 	if(CCDs->CHECK()==1)return 1;
 	if(REFs->CHECK()==1)return 1;
@@ -73,18 +73,18 @@ void CL_SLVTS::CALC_WCS(){
 	if(APRM->MODE_REJ==1)
 	REFs->REJECT_BADREF();
 	T2=my::clock();
-	if(APRM->FLAG_STD>0.5)cout<<"TIME REJECTION         : "<<(T2-T1) << " (sec)"<<endl;
+	if(APRM->FLAG_STD >= 1)cout<<"TIME REJECTION         : "<<(T2-T1) << " (sec)"<<endl;
 
 	T1=my::clock();
 	if(APRM->MODE_CCDPOS==1)
 	REFs->DETERMINE_CCDPOSITION();
 	T2=my::clock();
-	if(APRM->FLAG_STD>0.5)cout<<"TIME CCDPOSITION       : "<<(T2-T1) << " (sec)"<<endl;
+	if(APRM->FLAG_STD >= 1)cout<<"TIME CCDPOSITION       : "<<(T2-T1) << " (sec)"<<endl;
 
 	T1=my::clock();
 	REFs->DETERMINE_TANSIP();
 	T2=my::clock();
-	if(APRM->FLAG_STD>0.5)cout<<"TIME TANSIP            : "<<(T2-T1) << " (sec)"<<endl;
+	if(APRM->FLAG_STD >= 1)cout<<"TIME TANSIP            : "<<(T2-T1) << " (sec)"<<endl;
 
 }
 

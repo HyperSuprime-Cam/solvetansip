@@ -58,7 +58,7 @@ void CL_CCDs::SET_INPUT(std::vector< std::vector< std::string > > CCD_Argvs,CL_A
 	GPOS_C_BASIS[0]=0;
 	GPOS_C_BASIS[1]=0;
 	GPOS_C_BASIS[2]=0;
-	if(APRM->FLAG_STD>0.5)cout<<"-- SET CCDs --"<<endl;
+	if(APRM->FLAG_STD >= 1)cout<<"-- SET CCDs --"<<endl;
 	for(int i = 0; i < NUM_CCD; ++i){
 		CCD[i].ID       =atoi(CCD_Argvs[i][0].c_str());
 		CCD[i].GPOS_C[0]=atof(CCD_Argvs[i][1].c_str());
@@ -95,7 +95,7 @@ int  CL_CCDs::CHECK(){
 }
 int  CL_CCDs::CHECK_NUMCCD(){
 	if(APRM->NUM_CCD > 0){
-		if(APRM->FLAG_STD>1.5)cout << "OK : NUM_CCD : " << APRM->NUM_CCD << endl;
+		if(APRM->FLAG_STD >= 2)cout << "OK : NUM_CCD : " << APRM->NUM_CCD << endl;
 		return 0;
 	}else{
 		cout << "---------------------------------------------" << endl;
@@ -110,7 +110,7 @@ int  CL_CCDs::CHECK_NUMFIT(){
 
 	for(int i = 0; i < NUM_CCD; ++i){
 		if(CCD[i].NUM_FIT > 2){
-			if(APRM->FLAG_STD>1.5){
+			if(APRM->FLAG_STD >= 2){
 				cout << "OK : NUM_FIT : CCD : ";
 				cout.width(3);
 				cout << i << " : " ;
@@ -160,7 +160,7 @@ int  CL_CCDs::CHECK_NUMFITALL(){
 			cout << "---------------------------------------------" << endl;
 		return 0;
 	}else{
-		if(APRM->FLAG_STD>1.5){
+		if(APRM->FLAG_STD >= 2){
 			cout << "OK : NUM_FIT : CCD : ALL : " ;
 			cout.width(5);
 			cout << CCD[NUM_CCD].NUM_FIT << endl;

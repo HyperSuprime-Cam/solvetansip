@@ -27,9 +27,6 @@ void CL_APRM::SET_INIT(){
 	SIGMA_CLIP    = 10.0;
 	PRECISION_CCD = 0.1;
 	FLAG_STD      = 1;
-	FLAG_OUT      = 2;
-	DIR_OUT       = "./";
-
 }
 void CL_APRM::SET_INPUT(std::vector< std::vector< std::string > > APRM_Argvs){
 	SET_INIT();
@@ -62,17 +59,13 @@ void CL_APRM::SET_INPUT(std::vector< std::vector< std::string > > APRM_Argvs){
 		CRVAL[1]      = atof(VAL.c_str());
 		if(KEY=="FLAG_STD")
 		FLAG_STD      = atoi(VAL.c_str());
-		if(KEY=="FLAG_OUT")
-		FLAG_OUT      = atoi(VAL.c_str());
-		if(KEY=="DIR_OUT")
-		DIR_OUT       = VAL;
 		if(KEY=="NUM_CCD")
 		NUM_CCD       = atoi(VAL.c_str());
 		if(KEY=="NUM_REF")
 		NUM_REF       = atoi(VAL.c_str());
 		NUM_FIT       = NUM_REF;
 	}
-	if(FLAG_STD>0.5)cout<<"-- SET APRM --"<<endl;
+	if(FLAG_STD >= 1)cout<<"-- SET APRM --"<<endl;
 
 }
 int  CL_APRM::CHECK(){
@@ -83,7 +76,7 @@ int  CL_APRM::CHECK(){
 }
 int  CL_APRM::CHECK_MODECR(){
 	if(MODE_CR=="PIX"||MODE_CR=="VAL"||MODE_CR=="AUTO"){
-		if(FLAG_STD>1.5)cout << "OK : MODE_CR   : " << MODE_CR << endl;
+		if(FLAG_STD >= 2)cout << "OK : MODE_CR   : " << MODE_CR << endl;
 		return 0;
 	}else{
 		cout << "---------------------------------------------" << endl;
@@ -97,7 +90,7 @@ int  CL_APRM::CHECK_MODECR(){
 }
 int  CL_APRM::CHECK_ORDERASIP(){
 	if(ORDER_ASIP>0.5&&ORDER_ASIP<9.5){
-		if(FLAG_STD>1.5)cout << "OK : ORDER_ASIP : " << ORDER_ASIP << endl;
+		if(FLAG_STD >= 2)cout << "OK : ORDER_ASIP : " << ORDER_ASIP << endl;
 		return 0;
 	}else{
 		cout << "---------------------------------------------" << endl;
@@ -111,7 +104,7 @@ int  CL_APRM::CHECK_ORDERASIP(){
 }
 int  CL_APRM::CHECK_ORDERPSIP(){
 	if(ORDER_PSIP>0.5&&ORDER_PSIP<9.5){
-		if(FLAG_STD>1.5)cout << "OK : ORDER_PSIP : " << ORDER_PSIP << endl;
+		if(FLAG_STD >= 2)cout << "OK : ORDER_PSIP : " << ORDER_PSIP << endl;
 		return 0;
 	}else{
 		cout << "---------------------------------------------" << endl;
@@ -141,9 +134,7 @@ void CL_APRM::SHOW(){
 	cout << "CRIP_SIGMA  : " << SIGMA_CLIP   << endl;
 	cout << "PRECISIONPOS: " << PRECISION_CCD<< endl;
 	cout << "STDOUT      : " << FLAG_STD     << endl;
-	cout << "OUTFLAG     : " << FLAG_OUT     << endl;
-	cout << "OUTDIR      : " << DIR_OUT      << endl;
-	cout <<endl;
+	cout << endl;
 }
 void CL_APRM::SET_END(){
 

@@ -36,8 +36,6 @@ public:
 
 //OUTPUT
 	int	FLAG_STD;
-	int	FLAG_OUT;
-	std:: string  DIR_OUT;
 
 //FUNCTIONs
 	void SET_INIT();//setting initial values

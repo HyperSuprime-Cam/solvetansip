@@ -29,7 +29,7 @@ void CL_REFs::SET_INPUT(std::vector< std::vector< std::string > > REF_Argvs,CL_A
 
 	int const NUM_REF    = APRM->NUM_REF;
 
-	if(APRM->FLAG_STD>0.5)cout<<"-- SET REFs --"<<endl;
+	if(APRM->FLAG_STD >= 1)cout<<"-- SET REFs --"<<endl;
 	for(int i = 0; i < NUM_REF; ++i){
 		long long IDOBJ = atoll(REF_Argvs[i][0].c_str());
 		int       IDCCD = atoi (REF_Argvs[i][1].c_str());
@@ -541,7 +541,7 @@ void CL_REFs::CALC_STAT_ASIP(){
 	DIF_MAX_ASIP[0]=STAT[0][3];
 	DIF_MAX_ASIP[1]=STAT[1][3];
 
-	if(APRM->FLAG_STD>1.5){
+	if(APRM->FLAG_STD >= 2){
 		cout<<"-- STAT ASIP DIFF --"<<endl;
 		cout<<"NUM    : ";
 		cout.width(10);
@@ -597,7 +597,7 @@ void CL_REFs::CALC_STAT_PSIP(){
 	DIF_MAX_PSIP[0]=STAT[0][3];
 	DIF_MAX_PSIP[1]=STAT[1][3];
 
-	if(APRM->FLAG_STD>1.5){
+	if(APRM->FLAG_STD >= 2){
 		cout<<"-- STAT PSIP DIFF --"<<endl;
 		cout<<"NUM    : ";
 		cout.width(10);
@@ -675,7 +675,7 @@ void CL_REFs::CALC_CRPIXatCRVAL(){
 	SET_POS_CELESTIAL_IMPIX_GfromIMWLD();
 	FIT_DbyC(1,2);
 	CCDs->CCD[NUM_CCD].SET_CDPSIP();
-	if(APRM->FLAG_STD>1.5){
+	if(APRM->FLAG_STD >= 2){
 		double (&CD)[2][2] = CCDs->CCD[NUM_CCD].CD;
 		cout<<"-- CRPIX at CRVAL --"<<endl;
 		cout<<"CRVAL1 : ";
@@ -728,7 +728,7 @@ void CL_REFs::CALC_CRVALatCRPIX(){
 		}
 	}
 	CCDs->CCD[NUM_CCD].SET_CDASIP();
-	if(APRM->FLAG_STD>1.5){
+	if(APRM->FLAG_STD >= 2){
 		double (&CD)[2][2] = CCDs->CCD[NUM_CCD].CD;
 		cout<<"-- CRVAL at CRPIX --"<<endl;
 		cout<<"CRPIX1 : ";
@@ -765,7 +765,7 @@ void CL_REFs::SET_CRPIXatCENTER(){
 
 //REJECTION
 void CL_REFs::REJECT_BADREF(){
-	if(APRM->FLAG_STD>0.5)cout<<"-- REJECT BAD REFERENCES --"<<endl;
+	if(APRM->FLAG_STD >= 1)cout<<"-- REJECT BAD REFERENCES --"<<endl;
 
 	      if(APRM->MODE_CR=="PIX"||APRM->MODE_CR=="AUTO"){
 		if(APRM->MODE_CR=="AUTO"){
@@ -776,7 +776,7 @@ void CL_REFs::REJECT_BADREF(){
 		SET_POS_CELESTIAL_IMPIX_GfromIMWLD();
 		SET_POS_DETECTED_ASIP_IMPIX_GfromCRPIX_G();
 		CALC_STAT_ASIP();
-		if(APRM->FLAG_STD>1.5)cout<<"-- REJECTION by ASIP --"<<endl;
+		if(APRM->FLAG_STD >= 2)cout<<"-- REJECTION by ASIP --"<<endl;
 		REJECT_BADREF_ASIP();
 		if(APRM->MODE_CR=="AUTO"){
 			SET_MAXMIN_LOCAL_G();
@@ -790,14 +790,14 @@ void CL_REFs::REJECT_BADREF(){
 		CALC_CRPIXatCRVAL();
 		SET_POS_CELESTIAL_PSIP_CRPIX_GfromIMPIX_G();
 		CALC_STAT_PSIP();
-		if(APRM->FLAG_STD>1.5)cout<<"-- REJECTION by PSIP --"<<endl;
+		if(APRM->FLAG_STD >= 2)cout<<"-- REJECTION by PSIP --"<<endl;
 		REJECT_BADREF_PSIP();
 		CALC_CRPIXatCRVAL();
 		SET_POS_CELESTIAL_PSIP_CRPIX_GfromIMPIX_G();
 		CALC_STAT_PSIP();
 	}
 	SET_NUM();
-	if(APRM->FLAG_STD>1.5)CCDs->SHOW();
+	if(APRM->FLAG_STD >= 2)CCDs->SHOW();
 	CCDs->CHECK_NUMFIT();
 	CCDs->CHECK_NUMFITALL();
 
@@ -838,7 +838,7 @@ void CL_REFs::REJECT_BADREF_PSIP(){
 }
 //CCD POSITION
 void CL_REFs::DETERMINE_CCDPOSITION(){
-	if(APRM->FLAG_STD>0.5)cout<<"-- DETERMINE CCD POSITIONS --"<<endl;
+	if(APRM->FLAG_STD >= 1)cout<<"-- DETERMINE CCD POSITIONS --"<<endl;
 
 	int const NUM_REF    = APRM->NUM_REF;
 	int const NUM_CCD    = APRM->NUM_CCD;
@@ -1015,7 +1015,7 @@ void CL_REFs::DETERMINE_CCDPOSITION(){
 		if(ENDFLAG==1){
 			break;
 		}else{
-			if(APRM->FLAG_STD>1.5)cout << "CCD GPOS LOOP : " << XYLOOP+1 << endl;
+			if(APRM->FLAG_STD >= 2)cout << "CCD GPOS LOOP : " << XYLOOP+1 << endl;
 			for(int CID = 0; CID < NUM_CCD; ++CID){
 				XYINIT[CID][0]=CCDs->CCD[CID].GPOS_L[0];
 				XYINIT[CID][1]=CCDs->CCD[CID].GPOS_L[1];
@@ -1025,7 +1025,7 @@ void CL_REFs::DETERMINE_CCDPOSITION(){
 
 	}
 
-	if(APRM->FLAG_STD>1.5)CCDs->SHOW();
+	if(APRM->FLAG_STD >= 2)CCDs->SHOW();
 }
 void CL_REFs::SET_CCDAVE(){
 	int const NUM_CCD    = APRM->NUM_CCD;
@@ -1081,34 +1081,34 @@ int  CL_REFs::CHECK(){
 //SIP,PSIP
 void CL_REFs::DETERMINE_TANSIP(){
 //CALC TANSIP
-	if(APRM->FLAG_STD>0.5)cout<<"-- CALC TANSIP --"<<endl;
+	if(APRM->FLAG_STD >= 1)cout<<"-- CALC TANSIP --"<<endl;
 	CALC_TANSIP();
 //CALC OPTICAL DISTORTION
-	if(APRM->FLAG_STD>0.5)cout<<"-- CALC OPTICAL DISTORTION --"<<endl;
+	if(APRM->FLAG_STD >= 1)cout<<"-- CALC OPTICAL DISTORTION --"<<endl;
 	CALC_OPTICAL_DISTORTION();
 
 //SET CCD (CRPIX CD SIP DIST OA)
-	if(APRM->FLAG_STD>0.5)cout<<"-- SET CCD --"<<endl;
+	if(APRM->FLAG_STD >= 1)cout<<"-- SET CCD --"<<endl;
 	CCDs->SET_CCDs();
 
 //SET POS REFERENCES();
-	if(APRM->FLAG_STD>0.5)cout<<"-- SET REFERENCES --"<<endl;
+	if(APRM->FLAG_STD >= 1)cout<<"-- SET REFERENCES --"<<endl;
 	SET_POS_DETECTED_ALL();
 	SET_POS_CELESTIAL_ALL();
 
 //CALC LOCAL RMS
 	CALC_STAT_SIP_LOCAL();
 
-	if(APRM->FLAG_STD>1.5)CCDs->CCD[APRM->NUM_CCD].SHOW();
-//	if(APRM->FLAG_STD>1.5)CCDs->CCD[0].SHOW();
+	if(APRM->FLAG_STD >= 2)CCDs->CCD[APRM->NUM_CCD].SHOW();
+//	if(APRM->FLAG_STD >= 2)CCDs->CCD[0].SHOW();
 	if(APRM->NUM_CCD>=49) { // assumes HSC, and show DET-ID=50
-	  if(APRM->FLAG_STD>1.5)CCDs->CCD[49].SHOW();
+	  if(APRM->FLAG_STD >= 2)CCDs->CCD[49].SHOW();
 	}
 	else { // assumes SC, and show DET-ID=5
-	  if(APRM->FLAG_STD>1.5)CCDs->CCD[4].SHOW();
+	  if(APRM->FLAG_STD >= 2)CCDs->CCD[4].SHOW();
 	}
 //	if(APRM->NUM_CCD>103)
-//	if(APRM->FLAG_STD>1.5)CCDs->CCD[100].SHOW();
+//	if(APRM->FLAG_STD >= 2)CCDs->CCD[100].SHOW();
 
 }
 void CL_REFs::CALC_TANSIP(){
