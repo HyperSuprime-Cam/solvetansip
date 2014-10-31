@@ -269,62 +269,70 @@ std::vector< int > GET_CCD_ORDERPSIP(CL_SLVTS* SLVTS){
     return PORD;
 }
 std::vector< std::vector< double > > GET_CCD_COEFSIPA(CL_SLVTS* SLVTS){
-    int ID,ORDER,S_ORDER;
-    std::vector< double > COEF;
-    std::vector< std::vector< double > >  CCDCOEF;
+    std::vector< Polynomial2D::CoeffVector > coeffs(SLVTS->APRM->NUM_CCD + 1);
+    for(std::size_t ID = 0; ID < coeffs.size(); ++ID){
+        coeffs[ID] = SLVTS->CCDs->CCD[ID].ASIP[0].getCoeffVector();
+    }
 
-    S_ORDER=SLVTS->APRM->ORDER_ASIP;
-    for(ORDER=0;ORDER<(S_ORDER+1)*(S_ORDER+2)/2;ORDER++){
-        for(ID=0;ID<SLVTS->APRM->NUM_CCD+1;ID++){
-	    COEF.push_back(SLVTS->CCDs->CCD[ID].ASIP[0][ORDER]);
+    // transpose coeffs => CCDCOEF
+
+    std::vector< std::vector< double > >  CCDCOEF(coeffs.front().length);
+    for(std::size_t ORDER = 0; ORDER < CCDCOEF.size(); ++ORDER){
+        std::vector< double >& COEF = CCDCOEF[ORDER];
+        for(std::size_t ID = 0; ID < coeffs.size(); ++ID){
+            COEF.push_back(coeffs[ID][ORDER]);
         }
-        CCDCOEF.push_back(COEF);
-        COEF.clear();
     }
     return CCDCOEF;
 }
 std::vector< std::vector< double > > GET_CCD_COEFSIPB(CL_SLVTS* SLVTS){
-    int ID,ORDER,S_ORDER;
-    std::vector< double > COEF;
-    std::vector< std::vector< double > >  CCDCOEF;
+    std::vector< Polynomial2D::CoeffVector > coeffs(SLVTS->APRM->NUM_CCD + 1);
+    for(std::size_t ID = 0; ID < coeffs.size(); ++ID){
+        coeffs[ID] = SLVTS->CCDs->CCD[ID].ASIP[1].getCoeffVector();
+    }
 
-    S_ORDER=SLVTS->APRM->ORDER_ASIP;
-    for(ORDER=0;ORDER<(S_ORDER+1)*(S_ORDER+2)/2;ORDER++){
-        for(ID=0;ID<SLVTS->APRM->NUM_CCD+1;ID++){
-	    COEF.push_back(SLVTS->CCDs->CCD[ID].ASIP[1][ORDER]);
+    // transpose coeffs => CCDCOEF
+
+    std::vector< std::vector< double > >  CCDCOEF(coeffs.front().length);
+    for(std::size_t ORDER = 0; ORDER < CCDCOEF.size(); ++ORDER){
+        std::vector< double >& COEF = CCDCOEF[ORDER];
+        for(std::size_t ID = 0; ID < coeffs.size(); ++ID){
+            COEF.push_back(coeffs[ID][ORDER]);
         }
-        CCDCOEF.push_back(COEF);
-        COEF.clear();
     }
     return CCDCOEF;
 }
 std::vector< std::vector< double > > GET_CCD_COEFPSIPA(CL_SLVTS* SLVTS){
-    int ID,ORDER,S_ORDER;
-    std::vector< double > COEF;
-    std::vector< std::vector< double > >  CCDCOEF;
+    std::vector< Polynomial2D::CoeffVector > coeffs(SLVTS->APRM->NUM_CCD + 1);
+    for(std::size_t ID = 0; ID < coeffs.size(); ++ID){
+        coeffs[ID] = SLVTS->CCDs->CCD[ID].PSIP[0].getCoeffVector();
+    }
 
-    S_ORDER=SLVTS->APRM->ORDER_ASIP;
-    for(ORDER=0;ORDER<(S_ORDER+1)*(S_ORDER+2)/2;ORDER++){
-        for(ID=0;ID<SLVTS->APRM->NUM_CCD+1;ID++){
-	    COEF.push_back(SLVTS->CCDs->CCD[ID].PSIP[0][ORDER]);
+    // transpose coeffs => CCDCOEF
+
+    std::vector< std::vector< double > >  CCDCOEF(coeffs.front().length);
+    for(std::size_t ORDER = 0; ORDER < CCDCOEF.size(); ++ORDER){
+        std::vector< double >& COEF = CCDCOEF[ORDER];
+        for(std::size_t ID = 0; ID < coeffs.size(); ++ID){
+            COEF.push_back(coeffs[ID][ORDER]);
         }
-        CCDCOEF.push_back(COEF);
-        COEF.clear();
     }
     return CCDCOEF;
 }
 std::vector< std::vector< double > > GET_CCD_COEFPSIPB(CL_SLVTS* SLVTS){
-    int ID,ORDER,S_ORDER;
-    std::vector< double > COEF;
-    std::vector< std::vector< double > >  CCDCOEF;
+    std::vector< Polynomial2D::CoeffVector > coeffs(SLVTS->APRM->NUM_CCD + 1);
+    for(std::size_t ID = 0; ID < coeffs.size(); ++ID){
+        coeffs[ID] = SLVTS->CCDs->CCD[ID].PSIP[1].getCoeffVector();
+    }
 
-    S_ORDER=SLVTS->APRM->ORDER_ASIP;
-    for(ORDER=0;ORDER<(S_ORDER+1)*(S_ORDER+2)/2;ORDER++){
-        for(ID=0;ID<SLVTS->APRM->NUM_CCD+1;ID++){
-	    COEF.push_back(SLVTS->CCDs->CCD[ID].PSIP[1][ORDER]);
+    // transpose coeffs => CCDCOEF
+
+    std::vector< std::vector< double > >  CCDCOEF(coeffs.front().length);
+    for(std::size_t ORDER = 0; ORDER < CCDCOEF.size(); ++ORDER){
+        std::vector< double >& COEF = CCDCOEF[ORDER];
+        for(std::size_t ID = 0; ID < coeffs.size(); ++ID){
+            COEF.push_back(coeffs[ID][ORDER]);
         }
-        CCDCOEF.push_back(COEF);
-        COEF.clear();
     }
     return CCDCOEF;
 }

@@ -15,6 +15,7 @@
 #include <ndarray.h>
 
 #include "hsc/meas/tansip/APRM.h"
+#include "hsc/meas/tansip/Polynomial.h"
 
 namespace hsc { namespace meas {
 namespace tansip {
@@ -35,13 +36,13 @@ public:
 	double	 OAPIX[2];
 	double	 CD[2][2];
 	double	 InvCD[2][2];
-	ndarray::Array<double, 1, 1>  ASIP[2];
-	ndarray::Array<double, 1, 1>  PSIP[2];
-	ndarray::Array<double, 1, 1>  PSIP_CONV;
-	ndarray::Array<double, 1, 1>  PSIP_ROT;
-	ndarray::Array<double, 1, 1>  PSIP_SHEAR[2];
-	ndarray::Array<double, 1, 1>  PSIP_MAG;
-	ndarray::Array<double, 1, 1>  PSIP_JACO;
+	Polynomial2D  ASIP[2];
+	Polynomial2D  PSIP[2];
+	Polynomial2D  PSIP_CONV;
+	Polynomial2D  PSIP_ROT;
+	Polynomial2D  PSIP_SHEAR[2];
+	Polynomial2D  PSIP_MAG;
+	Polynomial2D  PSIP_JACO;
 	double	 DIF_AVE_ASIP[2];
 	double	 DIF_AVE_PSIP[2];
 	double	 DIF_RMS_ASIP[2];
@@ -55,7 +56,7 @@ public:
 	void GET_GPOS_CfromGPOS_L();//setting center position from lower left corner position in global coordinate
 	void SET_CDASIP();//divide fitting coefficients into CD matrix and others and setting SIP coefficients
 	void SET_CDPSIP();//setting PSF coefficients
-	void SET_SIPROT(int ORDER,double *COEF_IN, double *COEF);//calculating SIP and PSIP coefficients with effect due to CCD rotation
+	Polynomial2D SET_SIPROT(Polynomial2D const& POLY);//calculating SIP and PSIP coefficients with effect due to CCD rotation
 	void SHOW();//showing CCD infomation
 };
 class CL_CCDs{

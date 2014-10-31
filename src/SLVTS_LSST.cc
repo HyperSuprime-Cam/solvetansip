@@ -40,7 +40,7 @@ void SET_METADATA(CL_SLVTS* SLVTS, dafbase::PropertySet::Ptr &meta){
         meta->add("ST_A_SIGMA_CLIP" ,SLVTS->APRM->SIGMA_CLIP);
  	meta->add("ST_G_MAX_CRPIX_G_R",SLVTS->CCDs->MAX_CRPIX_G_R);
 
-	int CID,i,j,ij;
+	int CID,i,j;
 	char KEY[100];
 /*
 double VALUE;
@@ -98,19 +98,15 @@ cout<<scientific<<setprecision(6)<<"R : "<<SLVTS->CCDs->MAX_CRPIX_G_R<<"	"<<VALU
 	        meta->add(KEY,SLVTS->CCDs->CCD[CID].InvCD[1][1]);
                 sprintf(KEY,"ST_C%03d_OREDER_ASIP",CID);
 	        meta->add(KEY,SLVTS->APRM->ORDER_ASIP);
-		ij=0;
 		for(i=0;i<SLVTS->APRM->ORDER_ASIP+1  ;i++)
                 for(j=0;j<SLVTS->APRM->ORDER_ASIP+1-i;j++){
         	        sprintf(KEY,"ST_C%03d_ASIP_X_%d_%d" ,CID,i,j);
-	        	meta->add(KEY,SLVTS->CCDs->CCD[CID].ASIP[0][ij]);
-			ij++;
+	        	meta->add(KEY,SLVTS->CCDs->CCD[CID].ASIP[0].coeff(i,j));
 		}
-                ij=0;
                 for(i=0;i<SLVTS->APRM->ORDER_ASIP+1  ;i++)
                 for(j=0;j<SLVTS->APRM->ORDER_ASIP+1-i;j++){
                         sprintf(KEY,"ST_C%03d_ASIP_Y_%d_%d" ,CID,i,j);
-	        	meta->add(KEY,SLVTS->CCDs->CCD[CID].ASIP[1][ij]);
-                        ij++;
+	        	meta->add(KEY,SLVTS->CCDs->CCD[CID].ASIP[1].coeff(i,j));
                 }
                 sprintf(KEY,"ST_C%03d_ASIP_DIF_AVE_X",CID);
 	        meta->add(KEY,SLVTS->CCDs->CCD[CID].DIF_AVE_ASIP[0]);
@@ -127,19 +123,15 @@ cout<<scientific<<setprecision(6)<<"R : "<<SLVTS->CCDs->MAX_CRPIX_G_R<<"	"<<VALU
 
                 sprintf(KEY,"ST_C%03d_ORDER_PSIP" ,CID);
 	        meta->add(KEY,SLVTS->APRM->ORDER_PSIP);
-                ij=0;
                 for(i=0;i<SLVTS->APRM->ORDER_PSIP+1  ;i++)
                 for(j=0;j<SLVTS->APRM->ORDER_PSIP+1-i;j++){
                         sprintf(KEY,"ST_C%03d_PSIP_X_%d_%d" ,CID,i,j);
-	    		meta->add(KEY,SLVTS->CCDs->CCD[CID].PSIP[0][ij]);
-                        ij++;
+	    		meta->add(KEY,SLVTS->CCDs->CCD[CID].PSIP[0].coeff(i,j));
                 }
-                ij=0;
                 for(i=0;i<SLVTS->APRM->ORDER_PSIP+1  ;i++)
                 for(j=0;j<SLVTS->APRM->ORDER_PSIP+1-i;j++){
                         sprintf(KEY,"ST_C%03d_PSIP_Y_%d_%d" ,CID,i,j);
-	 	   	meta->add(KEY,SLVTS->CCDs->CCD[CID].PSIP[1][ij]);
-                        ij++;
+	 	   	meta->add(KEY,SLVTS->CCDs->CCD[CID].PSIP[1].coeff(i,j));
                 }
                 sprintf(KEY,"ST_C%03d_PSIP_DIF_AVE_X",CID);
 	        meta->add(KEY,SLVTS->CCDs->CCD[CID].DIF_AVE_PSIP[0]);
@@ -227,7 +219,7 @@ std::vector <lsst::afw::image::TanWcs::Ptr> SET_TANWCS(CL_SLVTS* SLVTS){
 	int CID;
 
 	int OAS,OPS;
-	int i,j,ij;
+	int i,j;
 	for(CID=0;CID<SLVTS->APRM->NUM_CCD+1;CID++){
 		afwGeom::PointD crpix = afwGeom::PointD(*SLVTS->CCDs->CCD[CID].CRPIX[0],*SLVTS->CCDs->CCD[CID].CRPIX[1]);
 		afwGeom::PointD crval = afwGeom::PointD(SLVTS->APRM->CRVAL[0]          ,SLVTS->APRM->CRVAL[1]          );
@@ -242,24 +234,20 @@ std::vector <lsst::afw::image::TanWcs::Ptr> SET_TANWCS(CL_SLVTS* SLVTS){
 		Eigen::MatrixXd sipAp = Eigen::MatrixXd::Zero(OPS+1,OPS+1);
 		Eigen::MatrixXd sipBp = Eigen::MatrixXd::Zero(OPS+1,OPS+1);
 
-		ij=0;
 		for(i=0;i<OAS+1;i++)
 		for(j=0;j<OAS+1;j++)
 		if(i+j<OAS+1){
-			sipA(i,j)=SLVTS->CCDs->CCD[CID].ASIP[0][ij];
-			sipB(i,j)=SLVTS->CCDs->CCD[CID].ASIP[1][ij];
-			ij++;
+			sipA(i,j)=SLVTS->CCDs->CCD[CID].ASIP[0].coeff(i,j);
+			sipB(i,j)=SLVTS->CCDs->CCD[CID].ASIP[1].coeff(i,j);
 		}else{
 			sipA(i,j)=0.0;
 			sipB(i,j)=0.0;
 		}
-		ij=0;
 		for(i=0;i<OAS+1;i++)
 		for(j=0;j<OAS+1;j++)
 		if(i+j<OAS+1){
-			sipAp(i,j)=SLVTS->CCDs->CCD[CID].PSIP[0][ij];
-			sipBp(i,j)=SLVTS->CCDs->CCD[CID].PSIP[1][ij];
-			ij++;
+			sipAp(i,j)=SLVTS->CCDs->CCD[CID].PSIP[0].coeff(i,j);
+			sipBp(i,j)=SLVTS->CCDs->CCD[CID].PSIP[1].coeff(i,j);
 		}else{
 			sipAp(i,j)=0.0;
 			sipBp(i,j)=0.0;

@@ -17,14 +17,7 @@ void CL_REFs::SET_INIT(CL_APRM *APRM_IN,CL_CCDs* CCDs_IN){
 	CCDs=CCDs_IN;
 
 	int const NUM_REF    = APRM->NUM_REF;
-	int const ORDER_PSIP = APRM->ORDER_PSIP;
-
 	REF.resize(NUM_REF);
-
-	PSIP_DX[0] = ndarray::allocate((ORDER_PSIP+1)*(ORDER_PSIP+2)/2);
-	PSIP_DX[1] = ndarray::allocate((ORDER_PSIP+1)*(ORDER_PSIP+2)/2);
-	PSIP_DY[0] = ndarray::allocate((ORDER_PSIP+1)*(ORDER_PSIP+2)/2);
-	PSIP_DY[1] = ndarray::allocate((ORDER_PSIP+1)*(ORDER_PSIP+2)/2);
 
 	for(int i = 0; i < NUM_REF; ++i){
 		REF[i].APRM = APRM;
@@ -456,9 +449,9 @@ void CL_REFs::FIT_CbyD(int ID_C,int ID_D){
 		}
 	}
 
-	ndarray::Array<double, 1, 1> (&ASIP)[2] = CCDs->CCD[APRM->NUM_CCD].ASIP;
-	ASIP[0].deep() = CALC_FIT_LS2(APRM->NUM_FIT,APRM->ORDER_ASIP,dx);
-	ASIP[1].deep() = CALC_FIT_LS2(APRM->NUM_FIT,APRM->ORDER_ASIP,dy);
+	Polynomial2D (&ASIP)[2] = CCDs->CCD[APRM->NUM_CCD].ASIP;
+	ASIP[0] = CALC_FIT_LS2(APRM->NUM_FIT,APRM->ORDER_ASIP,dx);
+	ASIP[1] = CALC_FIT_LS2(APRM->NUM_FIT,APRM->ORDER_ASIP,dy);
 }
 void CL_REFs::FIT_DbyC(int ID_D,int ID_C){
 	int const NUM_REF    = APRM->NUM_REF;
@@ -513,9 +506,9 @@ void CL_REFs::FIT_DbyC(int ID_D,int ID_C){
 		}
 	}
 
-	ndarray::Array<double, 1, 1> (&PSIP)[2] = CCDs->CCD[APRM->NUM_CCD].PSIP;
-	PSIP[0].deep() = CALC_FIT_LS2(APRM->NUM_FIT,APRM->ORDER_PSIP,dx);
-	PSIP[1].deep() = CALC_FIT_LS2(APRM->NUM_FIT,APRM->ORDER_PSIP,dy);
+	Polynomial2D (&PSIP)[2] = CCDs->CCD[APRM->NUM_CCD].PSIP;
+	PSIP[0] = CALC_FIT_LS2(APRM->NUM_FIT,APRM->ORDER_PSIP,dx);
+	PSIP[1] = CALC_FIT_LS2(APRM->NUM_FIT,APRM->ORDER_PSIP,dy);
 }
 void CL_REFs::CALC_STAT_ASIP(){
 	int const NUM_REF    = APRM->NUM_REF;
@@ -670,12 +663,12 @@ void CL_REFs::CALC_STAT_SIP_LOCAL(){
 }
 void CL_REFs::CALC_CRPIXatCRVAL(){
 	int const NUM_CCD    = APRM->NUM_CCD;
-	ndarray::Array<double, 1, 1> (&PSIP)[2] = CCDs->CCD[NUM_CCD].PSIP;
+	Polynomial2D (&PSIP)[2] = CCDs->CCD[NUM_CCD].PSIP;
 
 	SET_POS_CELESTIAL_IMWLDfromRADEC();
 	FIT_DbyC(0,1);
-	APRM->CRPIX[0]=PSIP[0][0];
-	APRM->CRPIX[1]=PSIP[1][0];
+	APRM->CRPIX[0]=PSIP[0].coeff(0,0);
+	APRM->CRPIX[1]=PSIP[1].coeff(0,0);
 	SET_POS_DETECTED_CRPIX_GfromLOCAL_G();
 	FIT_CbyD(1,1);
 	CCDs->CCD[NUM_CCD].SET_CDASIP();
@@ -715,8 +708,7 @@ void CL_REFs::CALC_CRPIXatCRVAL(){
 }
 void CL_REFs::CALC_CRVALatCRPIX(){
 	int const NUM_CCD    = APRM->NUM_CCD;
-	int const ORDER_ASIP = APRM->ORDER_ASIP;
-	ndarray::Array<double, 1, 1> (&ASIP)[2] = CCDs->CCD[NUM_CCD].ASIP;
+	Polynomial2D (&ASIP)[2] = CCDs->CCD[NUM_CCD].ASIP;
 
 	int ID;
 	SET_POS_DETECTED_CRPIX_GfromLOCAL_G();
@@ -727,12 +719,12 @@ void CL_REFs::CALC_CRVALatCRPIX(){
 	for(int LOOP = 0; LOOP < 10; ++LOOP){
 		SET_POS_CELESTIAL_IMWLDfromRADEC();
 		FIT_CbyD(1,1);
-		double SCALE=sqrt(-ASIP[0][1*ORDER_ASIP+1]*ASIP[1][0*ORDER_ASIP+1]+ASIP[0][0*ORDER_ASIP+1]*ASIP[1][1*ORDER_ASIP+1]);
-		if(hypot(ASIP[0][0],ASIP[1][0])/SCALE<0.001){
-		break;
+		double SCALE=sqrt(-ASIP[0].coeff(1,0)*ASIP[1].coeff(0,1)+ASIP[0].coeff(0,1)*ASIP[1].coeff(1,0));
+		if(hypot(ASIP[0].coeff(0,0),ASIP[1].coeff(0,0))/SCALE<0.001){
+			break;
 		}else{
-			APRM->CRVAL[0]+=ASIP[0][0]/cos(APRM->CRVAL[1]*(M_PI/180));
-			APRM->CRVAL[1]+=ASIP[1][0];
+			APRM->CRVAL[0]+=ASIP[0].coeff(0,0)/cos(APRM->CRVAL[1]*(M_PI/180));
+			APRM->CRVAL[1]+=ASIP[1].coeff(0,0);
 		}
 	}
 	CCDs->CCD[NUM_CCD].SET_CDASIP();
@@ -1152,50 +1144,15 @@ void CL_REFs::CALC_TANSIP(){
 }
 //DISTORTION
 void CL_REFs::CALC_OPTICAL_DISTORTION(){
-	ndarray::Array<double, 1, 1> (&PSIP)[2] = CCDs->CCD[APRM->NUM_CCD].PSIP;
-	DEVIATION_SIP(APRM->ORDER_PSIP,PSIP[0].getData(),PSIP_DX[0].getData(),PSIP_DY[0].getData());
-	DEVIATION_SIP(APRM->ORDER_PSIP,PSIP[1].getData(),PSIP_DX[1].getData(),PSIP_DY[1].getData());
+	Polynomial2D (&PSIP)[2] = CCDs->CCD[APRM->NUM_CCD].PSIP;
+	PSIP_DX[0] = PSIP[0].dx();
+	PSIP_DY[0] = PSIP[0].dy();
+	PSIP_DX[1] = PSIP[1].dx();
+	PSIP_DY[1] = PSIP[1].dy();
 
 	SET_OPTICAL_DISTORTIONbyPSIP();
 	FIT_DIST();
 	CALC_OPTICAL_AXIS();
-}
-void CL_REFs::DEVIATION_SIP(int ORDER,double *Coef,double *dxCoef,double *dyCoef){
-	int i,j,ij=0;
-
-	ndarray::Array<double, 2, 2>   Coef2 = ndarray::allocate(ORDER+1,ORDER+1);
-	ndarray::Array<double, 2, 2> dxCoef2 = ndarray::allocate(ORDER+1,ORDER+1);
-	ndarray::Array<double, 2, 2> dyCoef2 = ndarray::allocate(ORDER+1,ORDER+1);
-
-	Coef2.deep() = 0.0;
-
-	for(i=0;i<ORDER+1  ;i++)
-	for(j=0;j<ORDER+1-i;j++){
-		Coef2[i][j]=Coef[ij];
-		ij++;
-	}
-	for(i=0;i<ORDER+1;i++)
-	for(j=0;j<ORDER+1;j++){
-		if(i<(ORDER+1)-1){
-			dxCoef2[i][j]=(i+1)*Coef2[i+1][j];
-		}
-		else{
-			dxCoef2[i][j] = 0;
-		}
-		if(j<(ORDER+1)-1){
-			dyCoef2[i][j]=(j+1)*Coef2[i][j+1];
-		}
-		else{
-			dyCoef2[i][j] = 0;
-		}
-	}
-	ij=0;
-	for(i=0;i<ORDER+1  ;i++)
-	for(j=0;j<ORDER+1-i;j++){
-		dxCoef[ij]=dxCoef2[i][j];
-		dyCoef[ij]=dyCoef2[i][j];
-		ij++;
-	}
 }
 void CL_REFs::FIT_DIST(){
 	int const NUM_REF    = APRM->NUM_REF;
@@ -1233,57 +1190,40 @@ void CL_REFs::FIT_DIST(){
 		APRM->NUM_FIT+=1;
 	}
 
-	CCDs->CCD[APRM->NUM_CCD].PSIP_CONV    .deep() = CALC_FIT_LS2(APRM->NUM_FIT,ORDER_PSIP-1,dC );
-	CCDs->CCD[APRM->NUM_CCD].PSIP_ROT     .deep() = CALC_FIT_LS2(APRM->NUM_FIT,ORDER_PSIP-1,dR );
-	CCDs->CCD[APRM->NUM_CCD].PSIP_SHEAR[0].deep() = CALC_FIT_LS2(APRM->NUM_FIT,ORDER_PSIP-1,dS1);
-	CCDs->CCD[APRM->NUM_CCD].PSIP_SHEAR[1].deep() = CALC_FIT_LS2(APRM->NUM_FIT,ORDER_PSIP-1,dS2);
-	CCDs->CCD[APRM->NUM_CCD].PSIP_MAG     .deep() = CALC_FIT_LS2(APRM->NUM_FIT,ORDER_PSIP-1,dM );
-	CCDs->CCD[APRM->NUM_CCD].PSIP_JACO    .deep() = CALC_FIT_LS2(APRM->NUM_FIT,ORDER_PSIP-1,dJ );
+	CCDs->CCD[APRM->NUM_CCD].PSIP_CONV     = CALC_FIT_LS2(APRM->NUM_FIT,ORDER_PSIP-1,dC );
+	CCDs->CCD[APRM->NUM_CCD].PSIP_ROT      = CALC_FIT_LS2(APRM->NUM_FIT,ORDER_PSIP-1,dR );
+	CCDs->CCD[APRM->NUM_CCD].PSIP_SHEAR[0] = CALC_FIT_LS2(APRM->NUM_FIT,ORDER_PSIP-1,dS1);
+	CCDs->CCD[APRM->NUM_CCD].PSIP_SHEAR[1] = CALC_FIT_LS2(APRM->NUM_FIT,ORDER_PSIP-1,dS2);
+	CCDs->CCD[APRM->NUM_CCD].PSIP_MAG      = CALC_FIT_LS2(APRM->NUM_FIT,ORDER_PSIP-1,dM );
+	CCDs->CCD[APRM->NUM_CCD].PSIP_JACO     = CALC_FIT_LS2(APRM->NUM_FIT,ORDER_PSIP-1,dJ );
 }
 void CL_REFs::CALC_OPTICAL_AXIS(){
-	int const ORDER_PSIP = APRM->ORDER_PSIP;
-	ndarray::Array<double, 1, 1>& PSIP_JACO = CCDs->CCD[APRM->NUM_CCD].PSIP_JACO;
+	Polynomial2D& PSIP_JACO = CCDs->CCD[APRM->NUM_CCD].PSIP_JACO;
 
-	ndarray::Array<double, 1, 1>   JDX = ndarray::allocate((ORDER_PSIP-1+2)*(ORDER_PSIP-1+1)/2);
-	ndarray::Array<double, 1, 1>   JDY = ndarray::allocate((ORDER_PSIP-1+2)*(ORDER_PSIP-1+1)/2);
-	ndarray::Array<double, 1, 1> JDXDX = ndarray::allocate((ORDER_PSIP-1+2)*(ORDER_PSIP-1+1)/2);
-	ndarray::Array<double, 1, 1> JDXDY = ndarray::allocate((ORDER_PSIP-1+2)*(ORDER_PSIP-1+1)/2);
-	ndarray::Array<double, 1, 1> JDYDX = ndarray::allocate((ORDER_PSIP-1+2)*(ORDER_PSIP-1+1)/2);
-	ndarray::Array<double, 1, 1> JDYDY = ndarray::allocate((ORDER_PSIP-1+2)*(ORDER_PSIP-1+1)/2);
+	Polynomial2D JDX = PSIP_JACO.dx();
+	Polynomial2D JDY = PSIP_JACO.dy();
 
-	DEVIATION_SIP(ORDER_PSIP-1,PSIP_JACO.getData(),JDX.getData(),JDY.getData());
-	DEVIATION_SIP(ORDER_PSIP-1,JDX.getData(),JDXDX.getData(),JDXDY.getData());
-	DEVIATION_SIP(ORDER_PSIP-1,JDY.getData(),JDYDX.getData(),JDYDY.getData());
+	Polynomial2D JDXDX = JDX.dx();
+	Polynomial2D JDXDY = JDX.dy();
+	Polynomial2D JDYDX = JDY.dx();
+	Polynomial2D JDYDY = JDY.dy();
 
-	ndarray::Array<double, 1, 1> PXN = ndarray::allocate(ORDER_PSIP+1);
-	ndarray::Array<double, 1, 1> PYN = ndarray::allocate(ORDER_PSIP+1);
 	double PX=APRM->CRPIX[0];
 	double PY=APRM->CRPIX[1];
 
 	for(int LOOP=0;LOOP<10;LOOP++){
-		PXN[0]=PYN[0]=1;
-		for(int i=1;i<ORDER_PSIP+1;i++){
-			PXN[i]=PXN[i-1]*PX;
-			PYN[i]=PYN[i-1]*PY;
-		}
-		double V_J=0;
-		double V_JDX=0, V_JDY=0;
-		double V_JDXDX=0, V_JDXDY=0, V_JDYDX=0, V_JDYDY=0;
-		int ij=0;
-		for(int i=0;i<ORDER_PSIP-1+1  ;i++)
-		for(int j=0;j<ORDER_PSIP-1+1-i;j++){
-			V_J    +=PSIP_JACO[ij]*PXN[i]*PYN[j];
-			V_JDX  +=JDX[ij]*PXN[i]*PYN[j];
-			V_JDY  +=JDY[ij]*PXN[i]*PYN[j];
-			V_JDXDX+=JDXDX[ij]*PXN[i]*PYN[j];
-			V_JDXDY+=JDXDY[ij]*PXN[i]*PYN[j];
-			V_JDYDX+=JDYDX[ij]*PXN[i]*PYN[j];
-			V_JDYDY+=JDYDY[ij]*PXN[i]*PYN[j];
-			ij++;
-		}
-		if(hypot((V_JDX/V_JDXDX),(V_JDY/V_JDYDY))>0.01){
-			PX-=(V_JDX/V_JDXDX);
-			PY-=(V_JDY/V_JDYDY);
+		double V_JDX   = JDX  (PX, PY);
+		double V_JDY   = JDY  (PX, PY);
+		double V_JDXDX = JDXDX(PX, PY);
+		double V_JDXDY = JDXDY(PX, PY);
+		double V_JDYDX = JDYDX(PX, PY);
+		double V_JDYDY = JDYDY(PX, PY);
+
+		if(hypot((V_JDX/V_JDXDX),(V_JDY/V_JDYDY)) > 0.01){
+			// P -= H^{-1} \nabla f
+			double Idet = 1.0 / (V_JDXDX*V_JDYDY - V_JDXDY*V_JDYDX);
+			PX -= Idet * (V_JDYDY*V_JDX - V_JDXDY*V_JDY);
+			PY -= Idet * (V_JDXDX*V_JDY - V_JDYDX*V_JDX);
 		}else{
 			break;
 		}
@@ -1371,52 +1311,12 @@ void CL_REF::SET_POS_DETECTED_RADEC_GfromIMWLD_G(){
 	POS_DETECTED_RADEC_G[1]=RADECrad[1]*(180/M_PI);
 }
 void CL_REF::SET_POS_DETECTED_ASIP_IMPIX_LfromCRPIX_L(){
-	int i,j,ij;
-
-	int const ORDER_ASIP = APRM->ORDER_ASIP;
-
-	ndarray::Array<double, 1, 1> XN = ndarray::allocate(ORDER_ASIP+1);
-	ndarray::Array<double, 1, 1> YN = ndarray::allocate(ORDER_ASIP+1);
-
-	XN[0]=YN[0]=1;
-	for(i=1;i<ORDER_ASIP+1;i++){
-		XN[i]=XN[i-1]*POS_DETECTED_CRPIX_L[0];
-		YN[i]=YN[i-1]*POS_DETECTED_CRPIX_L[1];
-	}
-
-	POS_DETECTED_ASIP_IMPIX_L[0]=POS_DETECTED_CRPIX_L[0];
-	POS_DETECTED_ASIP_IMPIX_L[1]=POS_DETECTED_CRPIX_L[1];
-	ij=0;
-	for(i=0;i<ORDER_ASIP+1  ;i++)
-	for(j=0;j<ORDER_ASIP+1-i;j++){
-		POS_DETECTED_ASIP_IMPIX_L[0]+=CCD->ASIP[0][ij]*XN[i]*YN[j];
-		POS_DETECTED_ASIP_IMPIX_L[1]+=CCD->ASIP[1][ij]*XN[i]*YN[j];
-		ij++;
-	}
+	POS_DETECTED_ASIP_IMPIX_L[0]=POS_DETECTED_CRPIX_L[0] + CCD->ASIP[0](POS_DETECTED_CRPIX_L[0], POS_DETECTED_CRPIX_L[1]);
+	POS_DETECTED_ASIP_IMPIX_L[1]=POS_DETECTED_CRPIX_L[1] + CCD->ASIP[1](POS_DETECTED_CRPIX_L[0], POS_DETECTED_CRPIX_L[1]);
 }
 void CL_REF::SET_POS_DETECTED_ASIP_IMPIX_GfromCRPIX_G(){
-	int i,j,ij;
-
-	int const ORDER_ASIP = APRM->ORDER_ASIP;
-
-	ndarray::Array<double, 1, 1> XN = ndarray::allocate(ORDER_ASIP+1);
-	ndarray::Array<double, 1, 1> YN = ndarray::allocate(ORDER_ASIP+1);
-
-	XN[0]=YN[0]=1;
-	for(i=1;i<ORDER_ASIP+1;i++){
-		XN[i]=XN[i-1]*POS_DETECTED_CRPIX_G[0];
-		YN[i]=YN[i-1]*POS_DETECTED_CRPIX_G[1];
-	}
-
-	POS_DETECTED_ASIP_IMPIX_G[0]=POS_DETECTED_CRPIX_G[0];
-	POS_DETECTED_ASIP_IMPIX_G[1]=POS_DETECTED_CRPIX_G[1];
-	ij=0;
-	for(i=0;i<ORDER_ASIP+1  ;i++)
-	for(j=0;j<ORDER_ASIP+1-i;j++){
-		POS_DETECTED_ASIP_IMPIX_G[0]+=GCD->ASIP[0][ij]*XN[i]*YN[j];
-		POS_DETECTED_ASIP_IMPIX_G[1]+=GCD->ASIP[1][ij]*XN[i]*YN[j];
-		ij++;
-	}
+	POS_DETECTED_ASIP_IMPIX_G[0]=POS_DETECTED_CRPIX_G[0] + GCD->ASIP[0](POS_DETECTED_CRPIX_G[0], POS_DETECTED_CRPIX_G[1]);
+	POS_DETECTED_ASIP_IMPIX_G[1]=POS_DETECTED_CRPIX_G[1] + GCD->ASIP[1](POS_DETECTED_CRPIX_G[0], POS_DETECTED_CRPIX_G[1]);
 }
 void CL_REF::SET_POS_DETECTED_ASIP_IMWLD_LfromASIP_IMPIX_L(){
 	POS_DETECTED_ASIP_IMWLD_L[0]=CCD->CD[0][0]*POS_DETECTED_ASIP_IMPIX_L[0]+CCD->CD[0][1]*POS_DETECTED_ASIP_IMPIX_L[1];
@@ -1514,78 +1414,16 @@ void CL_REF::SET_POS_CELESTIAL_LOCAL_LfromCRPIX_L(){
 	POS_CELESTIAL_LOCAL_L[1]=POS_CELESTIAL_CRPIX_L[1]+*CCD->CRPIX[1];
 }
 void CL_REF::SET_POS_CELESTIAL_PSIP_LOCAL_GfromIMWLD(){
-	int i,j,ij;
-
-	int const ORDER_PSIP = APRM->ORDER_PSIP;
-
-	ndarray::Array<double, 1, 1> XN = ndarray::allocate(ORDER_PSIP+1);
-	ndarray::Array<double, 1, 1> YN = ndarray::allocate(ORDER_PSIP+1);
-
-	XN[0]=YN[0]=1;
-	for(i=1;i<ORDER_PSIP+1;i++){
-		XN[i]=XN[i-1]*POS_CELESTIAL_IMWLD[0];
-		YN[i]=YN[i-1]*POS_CELESTIAL_IMWLD[1];
-	}
-
-//	POS_CELESTIAL_PSIP_LOCAL_G[0]=POS_CELESTIAL_IMWLD[0];
-//	POS_CELESTIAL_PSIP_LOCAL_G[1]=POS_CELESTIAL_IMWLD[1];
-	POS_CELESTIAL_PSIP_LOCAL_G[0]=0;
-	POS_CELESTIAL_PSIP_LOCAL_G[1]=0;
-	ij=0;
-	for(i=0;i<ORDER_PSIP+1  ;i++)
-	for(j=0;j<ORDER_PSIP+1-i;j++){
-		POS_CELESTIAL_PSIP_LOCAL_G[0]+=GCD->PSIP[0][ij]*XN[i]*YN[j];
-		POS_CELESTIAL_PSIP_LOCAL_G[1]+=GCD->PSIP[1][ij]*XN[i]*YN[j];
-		ij++;
-	}
+	POS_CELESTIAL_PSIP_LOCAL_G[0] = GCD->PSIP[0](POS_CELESTIAL_IMWLD[0], POS_CELESTIAL_IMWLD[1]);
+	POS_CELESTIAL_PSIP_LOCAL_G[1] = GCD->PSIP[1](POS_CELESTIAL_IMWLD[0], POS_CELESTIAL_IMWLD[1]);
 }
 void CL_REF::SET_POS_CELESTIAL_PSIP_CRPIX_GfromIMPIX_G(){
-	int i,j,ij;
-
-	int const ORDER_PSIP = APRM->ORDER_PSIP;
-
-	ndarray::Array<double, 1, 1> XN = ndarray::allocate(ORDER_PSIP+1);
-	ndarray::Array<double, 1, 1> YN = ndarray::allocate(ORDER_PSIP+1);
-
-	XN[0]=YN[0]=1;
-	for(i=1;i<ORDER_PSIP+1;i++){
-		XN[i]=XN[i-1]*POS_CELESTIAL_IMPIX_G[0];
-		YN[i]=YN[i-1]*POS_CELESTIAL_IMPIX_G[1];
-	}
-
-	POS_CELESTIAL_PSIP_CRPIX_G[0]=POS_CELESTIAL_IMPIX_G[0];
-	POS_CELESTIAL_PSIP_CRPIX_G[1]=POS_CELESTIAL_IMPIX_G[1];
-	ij=0;
-	for(i=0;i<ORDER_PSIP+1  ;i++)
-	for(j=0;j<ORDER_PSIP+1-i;j++){
-		POS_CELESTIAL_PSIP_CRPIX_G[0]+=GCD->PSIP[0][ij]*XN[i]*YN[j];
-		POS_CELESTIAL_PSIP_CRPIX_G[1]+=GCD->PSIP[1][ij]*XN[i]*YN[j];
-		ij++;
-	}
+	POS_CELESTIAL_PSIP_CRPIX_G[0]=POS_CELESTIAL_IMPIX_G[0] + GCD->PSIP[0](POS_CELESTIAL_IMPIX_G[0], POS_CELESTIAL_IMPIX_G[1]);
+	POS_CELESTIAL_PSIP_CRPIX_G[1]=POS_CELESTIAL_IMPIX_G[1] + GCD->PSIP[1](POS_CELESTIAL_IMPIX_G[0], POS_CELESTIAL_IMPIX_G[1]);
 }
 void CL_REF::SET_POS_CELESTIAL_PSIP_CRPIX_LfromIMPIX_L(){
-	int i,j,ij;
-
-	int const ORDER_PSIP = APRM->ORDER_PSIP;
-
-	ndarray::Array<double, 1, 1> XN = ndarray::allocate(ORDER_PSIP+1);
-	ndarray::Array<double, 1, 1> YN = ndarray::allocate(ORDER_PSIP+1);
-
-	XN[0]=YN[0]=1;
-	for(i=1;i<ORDER_PSIP+1;i++){
-		XN[i]=XN[i-1]*POS_CELESTIAL_IMPIX_L[0];
-		YN[i]=YN[i-1]*POS_CELESTIAL_IMPIX_L[1];
-	}
-
-	POS_CELESTIAL_PSIP_CRPIX_L[0]=POS_CELESTIAL_IMPIX_L[0];
-	POS_CELESTIAL_PSIP_CRPIX_L[1]=POS_CELESTIAL_IMPIX_L[1];
-	ij=0;
-	for(i=0;i<ORDER_PSIP+1  ;i++)
-	for(j=0;j<ORDER_PSIP+1-i;j++){
-		POS_CELESTIAL_PSIP_CRPIX_L[0]+=CCD->PSIP[0][ij]*XN[i]*YN[j];
-		POS_CELESTIAL_PSIP_CRPIX_L[1]+=CCD->PSIP[1][ij]*XN[i]*YN[j];
-		ij++;
-	}
+	POS_CELESTIAL_PSIP_CRPIX_L[0]=POS_CELESTIAL_IMPIX_L[0] + CCD->PSIP[0](POS_CELESTIAL_IMPIX_L[0], POS_CELESTIAL_IMPIX_L[1]);
+	POS_CELESTIAL_PSIP_CRPIX_L[1]=POS_CELESTIAL_IMPIX_L[1] + CCD->PSIP[1](POS_CELESTIAL_IMPIX_L[0], POS_CELESTIAL_IMPIX_L[1]);
 }
 void CL_REF::SET_POS_CELESTIAL_PSIP_LOCAL_GfromPSIP_CRPIX_G(){
 	POS_CELESTIAL_PSIP_LOCAL_G[0]=POS_CELESTIAL_PSIP_CRPIX_G[0]+APRM->CRPIX[0];
@@ -1602,30 +1440,12 @@ void CL_REF::SET_DIFF(){
 	DIFF_PSIP[1]=POS_CELESTIAL_PSIP_CRPIX_G[1]-POS_DETECTED_CRPIX_G[1];
 }
 void CL_REF::SET_OPTICAL_DISTORTIONbyPSIP(){
-	int i,j,ij;
 	double dCdI[2][2];
 
-	int const ORDER_PSIP = APRM->ORDER_PSIP;
-
-	ndarray::Array<double, 1, 1> XN = ndarray::allocate(ORDER_PSIP+1);
-	ndarray::Array<double, 1, 1> YN = ndarray::allocate(ORDER_PSIP+1);
-
-	XN[0]=YN[0]=1;
-	for(i=1;i<ORDER_PSIP+1;i++){
-		XN[i]=XN[i-1]*POS_CELESTIAL_IMPIX_G[0];
-		YN[i]=YN[i-1]*POS_CELESTIAL_IMPIX_G[1];
-	}
-
-	dCdI[0][0]=dCdI[0][1]=dCdI[1][0]=dCdI[1][1]=0;
-	ij=0;
-	for(i=0;i<ORDER_PSIP+1  ;i++)
-	for(j=0;j<ORDER_PSIP+1-i;j++){
-		dCdI[0][0]+=REFs->PSIP_DX[0][ij]*XN[i]*YN[j];
-		dCdI[0][1]+=REFs->PSIP_DY[0][ij]*XN[i]*YN[j];
-		dCdI[1][0]+=REFs->PSIP_DX[1][ij]*XN[i]*YN[j];
-		dCdI[1][1]+=REFs->PSIP_DY[1][ij]*XN[i]*YN[j];
-		ij++;
-	}
+	dCdI[0][0] = REFs->PSIP_DX[0](POS_CELESTIAL_IMPIX_G[0], POS_CELESTIAL_IMPIX_G[1]);
+	dCdI[0][1] = REFs->PSIP_DY[0](POS_CELESTIAL_IMPIX_G[0], POS_CELESTIAL_IMPIX_G[1]);
+	dCdI[1][0] = REFs->PSIP_DX[1](POS_CELESTIAL_IMPIX_G[0], POS_CELESTIAL_IMPIX_G[1]);
+	dCdI[1][1] = REFs->PSIP_DY[1](POS_CELESTIAL_IMPIX_G[0], POS_CELESTIAL_IMPIX_G[1]);
 
 	CAMERA_CONV     =0.5*(1+dCdI[0][0]+1+dCdI[1][1]);
 	CAMERA_ROT      =0.5*(  dCdI[0][1]-  dCdI[1][0]);

@@ -110,7 +110,7 @@ SOLVE_LINEAR_EQUATION(ndarray::Array<double, 2, 1> const& A, ndarray::Array<doub
 }
 
 
-ndarray::Array<double, 1, 1> // Return coefficients
+Polynomial2D
 CALC_FIT_LS2(int dataNUM, int Order, ndarray::Array<double, 2, 1> const& data){
 	ndarray::Array<double, 2, 2> XA = ndarray::allocate((Order+1)*(Order+2)/2, (Order+1)*(Order+2)/2);
 	ndarray::Array<double, 1, 1>  Z = ndarray::allocate((Order+1)*(Order+2)/2);
@@ -141,7 +141,7 @@ CALC_FIT_LS2(int dataNUM, int Order, ndarray::Array<double, 2, 1> const& data){
 		}
 	}
 
-	return SOLVE_LINEAR_EQUATION(XA, Z);
+	return Polynomial2D(Order, SOLVE_LINEAR_EQUATION(XA, Z).getData());
 }
 
 } // namespace tansip

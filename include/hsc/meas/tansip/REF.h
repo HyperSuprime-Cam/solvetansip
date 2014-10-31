@@ -18,6 +18,7 @@
 #include "hsc/meas/tansip/APRM.h"
 #include "hsc/meas/tansip/CCD.h"
 #include "hsc/meas/tansip/CALC.h"
+#include "hsc/meas/tansip/Polynomial.h"
 
 namespace hsc { namespace meas {
 namespace tansip {
@@ -121,8 +122,8 @@ public:
 	CL_APRM *APRM;//SLVTS->APRM
 	CL_CCDs *CCDs;//SLVTS->CCDs
 	std::vector<CL_REF>  REF;
-	ndarray::Array<double, 1, 1> PSIP_DX[2];
-	ndarray::Array<double, 1, 1> PSIP_DY[2];
+	Polynomial2D PSIP_DX[2];
+	Polynomial2D PSIP_DY[2];
 	double   MAX_LOCAL_G_R;
 	double   MAX_LOCAL_G[2];
 	double   MIN_LOCAL_G[2];
@@ -195,7 +196,6 @@ public:
 	void CALC_TANSIP();//calculating CD, SIP and PSIP coefficients
 //DISTORTION
 	void CALC_OPTICAL_DISTORTION();//CALC Distortion from PSIP
-	void DEVIATION_SIP(int ORDER,double *Coef,double *dxCoef,double *dyCoef);//calculating deviation of SIP and PSIP
 	void FIT_DIST();//fitting optical distortion
 	void CALC_OPTICAL_AXIS();//caluclationg optical axis
 
