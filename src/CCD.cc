@@ -87,25 +87,25 @@ void CL_CCDs::SET_INPUT(std::vector< std::vector< std::string > > CCD_Argvs,CL_A
 }
 void CL_CCDs::SET_END(){
 }
-int  CL_CCDs::CHECK(){
-	if(CHECK_NUMCCD()==1)return 1;
-	if(CHECK_NUMFIT()==1)return 1;
-	if(CHECK_NUMFITALL()==1)return 1;
-	return 0;
+bool CL_CCDs::CHECK(){
+	return CHECK_NUMCCD   ()
+		&& CHECK_NUMFIT   ()
+		&& CHECK_NUMFITALL()
+	;
 }
-int  CL_CCDs::CHECK_NUMCCD(){
+bool CL_CCDs::CHECK_NUMCCD(){
 	if(APRM->NUM_CCD > 0){
 		if(APRM->FLAG_STD >= 2)cout << "OK : NUM_CCD : " << APRM->NUM_CCD << endl;
-		return 0;
+		return true;
 	}else{
 		cout << "---------------------------------------------" << endl;
 		cout << "Input 'NUM_CCD' is '" << APRM->NUM_CCD << "'"<< endl;
 		cout << "Error : NUM_CCD(Number of CCDs) must be larger than 0" << endl;
 		cout << "---------------------------------------------" << endl;
-		return 1;
+		return false;
 	}
 }
-int  CL_CCDs::CHECK_NUMFIT(){
+bool CL_CCDs::CHECK_NUMFIT(){
 	int const NUM_CCD = APRM->NUM_CCD;
 
 	for(int i = 0; i < NUM_CCD; ++i){
@@ -129,9 +129,9 @@ int  CL_CCDs::CHECK_NUMFIT(){
 			cout << "---------------------------------------------" << endl;
 		}
 	}
-	return 0;
+	return true;
 }
-int  CL_CCDs::CHECK_NUMFITALL(){
+bool CL_CCDs::CHECK_NUMFITALL(){
 	int const NUM_CCD    = APRM->NUM_CCD   ;
 	int       ORDER_ASIP = APRM->ORDER_ASIP;
 	int const ORDER_PSIP = APRM->ORDER_PSIP;
@@ -141,7 +141,7 @@ int  CL_CCDs::CHECK_NUMFITALL(){
 		cout << "Input 'NUM_FIT' is '" << CCD[NUM_CCD].NUM_FIT << "'"<< endl;
 		cout << "Error : NUM_FIT(Number of references for fitting) must be larger than 0" << endl;
 		cout << "---------------------------------------------" << endl;
-		return 1;
+		return false;
 	}else if(CCD[NUM_CCD].NUM_FIT <= (ORDER_ASIP+1)*(ORDER_ASIP+2)/2 ||
 		CCD[NUM_CCD].NUM_FIT <= (ORDER_PSIP+1)*(ORDER_PSIP+2)/2 ){
 			cout << "---------------------------------------------" << endl;
@@ -158,14 +158,14 @@ int  CL_CCDs::CHECK_NUMFITALL(){
 			cout << "Warning : SET ORDER_ASIP to " << APRM->ORDER_ASIP << endl;
 			cout << "Warning : SET ORDER_PSIP to " << APRM->ORDER_PSIP << endl;
 			cout << "---------------------------------------------" << endl;
-		return 0;
+		return true;
 	}else{
 		if(APRM->FLAG_STD >= 2){
 			cout << "OK : NUM_FIT : CCD : ALL : " ;
 			cout.width(5);
 			cout << CCD[NUM_CCD].NUM_FIT << endl;
 		}
-		return 0;
+		return true;
 	}
 }
 void CL_CCDs::GET_GPOS_LfromGPOS_C(){

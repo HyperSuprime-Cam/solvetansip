@@ -134,7 +134,7 @@ public:
 	void SET_INPUT(std::vector< std::vector< std::string > > REF_Argvs,CL_APRM* APRM,CL_CCDs* CCDs);//setting input values
 	void SET_NUM();//setting NUM_REF, NUM_FIT, NUM_REJ
 	void SET_END();//destructor
-	int  CHECK();//checking current values
+	bool  CHECK();//checking current values
 	void SET_CCD(CL_CCDs*  CCDs);//setting initial values of all CCDs
 //FUNCTIONS::POS
 

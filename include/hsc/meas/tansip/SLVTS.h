@@ -29,7 +29,7 @@ public:
 	void SET_INIT();//setting initial values
 	void SET_INPUT(std::vector< std::vector< std::vector< std::string > > > SLVTS_Argvs);//setting input information
 	void SET_END();//deleting memories
-	int  CHECK_INPUT();//checking input values
+	bool CHECK_INPUT();//checking input values
 	void CALC_WCS();//main calculation of solvetansip
 };
 

@@ -41,10 +41,10 @@ public:
 	void SET_INIT();//setting initial values
 	void SET_INPUT(std::vector< std::vector< std::string > > APRM_Argvs);//setting input values
 	void SHOW();//showing curret values
-	int  CHECK();//checking current values
-	int  CHECK_MODECR();//checking current MODECR
-	int  CHECK_ORDERASIP();//checking current SIP oreder
-	int  CHECK_ORDERPSIP();//checking current PSIP order
+	bool  CHECK();//checking current values
+	bool  CHECK_MODECR();//checking current MODECR
+	bool  CHECK_ORDERASIP();//checking current SIP oreder
+	bool  CHECK_ORDERPSIP();//checking current PSIP order
 	void SET_END();//destructor
 };
 

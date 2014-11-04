@@ -1075,8 +1075,8 @@ void CL_REFs::SET_CCDAVE(){
 
 	CCDs->GET_GPOS_LfromGPOS_C();
 }
-int  CL_REFs::CHECK(){
-	return 0;
+bool  CL_REFs::CHECK(){
+	return true;
 }
 //SIP,PSIP
 void CL_REFs::DETERMINE_TANSIP(){

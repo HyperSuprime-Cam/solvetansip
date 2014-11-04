@@ -75,10 +75,10 @@ public:
 	void SET_INIT(CL_APRM *APRM);//setting initial values
 	void SET_INPUT(std::vector< std::vector< std::string > > CCD_Argvs,CL_APRM *APRM);//setting input values
 	void SET_END();//destructor
-	int  CHECK();//checking current values
-	int  CHECK_NUMCCD();//checking number of CCDs
-	int  CHECK_NUMFIT();//checking current number for fitting of each CCDs
-	int  CHECK_NUMFITALL();//checking current number for fitting of all CCDs
+	bool CHECK();//checking current values
+	bool CHECK_NUMCCD();//checking number of CCDs
+	bool CHECK_NUMFIT();//checking current number for fitting of each CCDs
+	bool CHECK_NUMFITALL();//checking current number for fitting of all CCDs
 	void GET_GPOS_LfromGPOS_C();//setting lower left corner position from center position in global coordinate for all CCDs
 	void GET_GPOS_CfromGPOS_L();//setting center position from lower left corner position in global coordinate for all CCDs
 	void SET_CRPIX();//setting CRPIX for all CCDs

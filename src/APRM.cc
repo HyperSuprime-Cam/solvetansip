@@ -8,7 +8,6 @@
 namespace hsc { namespace meas {
 namespace tansip {
 
-using namespace std;
 void CL_APRM::SET_INIT(){
 	INSTR         = "HSC";
 	MODE_CR       = "PIX";
@@ -65,76 +64,79 @@ void CL_APRM::SET_INPUT(std::vector< std::vector< std::string > > APRM_Argvs){
 		NUM_REF       = atoi(VAL.c_str());
 		NUM_FIT       = NUM_REF;
 	}
-	if(FLAG_STD >= 1)cout<<"-- SET APRM --"<<endl;
+	if(FLAG_STD >= 1) std::cout <<"-- SET APRM --"<< std::endl;
 
 }
-int  CL_APRM::CHECK(){
-	if(CHECK_MODECR()==1)return 1;
-	if(CHECK_ORDERASIP()==1)return 1;
-	if(CHECK_ORDERPSIP()==1)return 1;
-	return 0;
+bool  CL_APRM::CHECK(){
+	return CHECK_MODECR   ()
+		&& CHECK_ORDERASIP()
+		&& CHECK_ORDERPSIP()
+	;
 }
-int  CL_APRM::CHECK_MODECR(){
+bool  CL_APRM::CHECK_MODECR(){
 	if(MODE_CR=="PIX"||MODE_CR=="VAL"||MODE_CR=="AUTO"){
-		if(FLAG_STD >= 2)cout << "OK : MODE_CR   : " << MODE_CR << endl;
-		return 0;
+		if(FLAG_STD >= 2) std::cout << "OK : MODE_CR   : " << MODE_CR << std::endl;
+		return true;
 	}else{
-		cout << "---------------------------------------------" << endl;
-		cout <<	"Input 'MODE_CR' is '" << MODE_CR << "'"<< endl;
-		cout << "Warning : MODE_CR must be 'AUTO' or 'VAL' or 'PIX'" << endl;
+		std::cout << "---------------------------------------------" << std::endl;
+		std::cout <<	"Input 'MODE_CR' is '" << MODE_CR << "'"<< std::endl;
+		std::cout << "Warning : MODE_CR must be 'AUTO' or 'VAL' or 'PIX'" << std::endl;
 		MODE_CR="AUTO";
-		cout << "Warning : SET MODE_CR to " << MODE_CR << endl;
-		cout << "---------------------------------------------" << endl;
-		return 0;
+		std::cout << "Warning : SET MODE_CR to " << MODE_CR << std::endl;
+		std::cout << "---------------------------------------------" << std::endl;
+		// return true in any case
+		return true;
 	}
 }
-int  CL_APRM::CHECK_ORDERASIP(){
-	if(ORDER_ASIP>0.5&&ORDER_ASIP<9.5){
-		if(FLAG_STD >= 2)cout << "OK : ORDER_ASIP : " << ORDER_ASIP << endl;
-		return 0;
+bool  CL_APRM::CHECK_ORDERASIP(){
+	if(ORDER_ASIP >=1 && ORDER_ASIP <= 9){
+		if(FLAG_STD >= 2) std::cout << "OK : ORDER_ASIP : " << ORDER_ASIP << std::endl;
+		return true;
 	}else{
-		cout << "---------------------------------------------" << endl;
-		cout << "Input 'ORDER_ASIP' is '" << ORDER_ASIP << "'"<< endl;
-		cout << "Warning : ORDER_ASIP must be between 0 and 9" << endl;
+		std::cout << "---------------------------------------------" << std::endl;
+		std::cout << "Input 'ORDER_ASIP' is '" << ORDER_ASIP << "'"<< std::endl;
+		std::cout << "Warning : ORDER_ASIP must be between 0 and 9" << std::endl;
 		ORDER_ASIP=9;
-		cout << "Warning : SET ORDER_ASIP to " << ORDER_ASIP << endl;
-		cout << "---------------------------------------------" << endl;
-		return 0;
+		std::cout << "Warning : SET ORDER_ASIP to " << ORDER_ASIP << std::endl;
+		std::cout << "---------------------------------------------" << std::endl;
+		// return true in any case
+		return true;
 	}
 }
-int  CL_APRM::CHECK_ORDERPSIP(){
-	if(ORDER_PSIP>0.5&&ORDER_PSIP<9.5){
-		if(FLAG_STD >= 2)cout << "OK : ORDER_PSIP : " << ORDER_PSIP << endl;
-		return 0;
+bool  CL_APRM::CHECK_ORDERPSIP(){
+	if(ORDER_PSIP >= 1 && ORDER_PSIP <= 9){
+		if(FLAG_STD >= 2) std::cout << "OK : ORDER_PSIP : " << ORDER_PSIP << std::endl;
+		return true;
 	}else{
-		cout << "---------------------------------------------" << endl;
-		cout << "Input 'ORDER_PSIP' is '" << ORDER_PSIP << "'"<< endl;
-		cout << "Warning : ORDER_PSIP must be between 0 and 9" << endl;
+		std::cout << "---------------------------------------------" << std::endl;
+		std::cout << "Input 'ORDER_PSIP' is '" << ORDER_PSIP << "'"<< std::endl;
+		std::cout << "Warning : ORDER_PSIP must be between 0 and 9" << std::endl;
 		ORDER_PSIP=9;
-		cout << "Warning : SET ORDER_PSIP to " << ORDER_PSIP << endl;
-		cout << "---------------------------------------------" << endl;
-		return 0;
+		std::cout << "Warning : SET ORDER_PSIP to " << ORDER_PSIP << std::endl;
+		std::cout << "---------------------------------------------" << std::endl;
+		// return true in any case
+		return true;
 	}
 }
 void CL_APRM::SHOW(){
-	cout << "-- SHOW APROP --" << endl;
-	cout << "INSTRUMENT  : " << INSTR        << endl;
-	cout << "MODE_CR     : " << MODE_CR      << endl;
-	cout << "MODE_CCDPOS : " << MODE_CCDPOS  << endl;
-	cout << "MODE_REJ    : " << MODE_REJ     << endl;
-	cout << "NUM_CCD     : " << NUM_CCD      << endl;
-	cout << "NUM_REF     : " << NUM_REF      << endl;
-	cout << "NUM_FIT     : " << NUM_FIT      << endl;
-	cout << "CRPIX1      : " << CRPIX[0]     << endl;
-	cout << "CRPIX2      : " << CRPIX[1]     << endl;
-	cout << "CRVAL1      : " << CRVAL[0]     << endl;
-	cout << "CRVAL2      : " << CRVAL[1]     << endl;
-	cout << "SIPORDER    : " << ORDER_ASIP   << endl;
-	cout << "SIPPORDER   : " << ORDER_PSIP   << endl;
-	cout << "CRIP_SIGMA  : " << SIGMA_CLIP   << endl;
-	cout << "PRECISIONPOS: " << PRECISION_CCD<< endl;
-	cout << "STDOUT      : " << FLAG_STD     << endl;
-	cout << endl;
+	std::cout << "-- SHOW APROP --"               << std::endl;
+	std::cout << "INSTRUMENT  : " << INSTR        << std::endl;
+	std::cout << "MODE_CR     : " << MODE_CR      << std::endl;
+	std::cout << "MODE_CCDPOS : " << MODE_CCDPOS  << std::endl;
+	std::cout << "MODE_REJ    : " << MODE_REJ     << std::endl;
+	std::cout << "NUM_CCD     : " << NUM_CCD      << std::endl;
+	std::cout << "NUM_REF     : " << NUM_REF      << std::endl;
+	std::cout << "NUM_FIT     : " << NUM_FIT      << std::endl;
+	std::cout << "CRPIX1      : " << CRPIX[0]     << std::endl;
+	std::cout << "CRPIX2      : " << CRPIX[1]     << std::endl;
+	std::cout << "CRVAL1      : " << CRVAL[0]     << std::endl;
+	std::cout << "CRVAL2      : " << CRVAL[1]     << std::endl;
+	std::cout << "SIPORDER    : " << ORDER_ASIP   << std::endl;
+	std::cout << "SIPPORDER   : " << ORDER_PSIP   << std::endl;
+	std::cout << "CRIP_SIGMA  : " << SIGMA_CLIP   << std::endl;
+	std::cout << "PRECISIONPOS: " << PRECISION_CCD<< std::endl;
+	std::cout << "STDOUT      : " << FLAG_STD     << std::endl;
+	std::cout << std::endl;
 }
 void CL_APRM::SET_END(){
 

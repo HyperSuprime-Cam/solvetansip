@@ -13,7 +13,6 @@
 namespace hsc { namespace meas {
 namespace tansip {
 
-using namespace std;
 boost::shared_ptr<CL_SLVTS> SOLVETANSIP(std::vector< std::vector< std::vector<std::string> > > SLVTS_Argvs){
 	my::clock_t TS,TE;
 	my::clock_t T1,T2;
@@ -23,19 +22,19 @@ boost::shared_ptr<CL_SLVTS> SOLVETANSIP(std::vector< std::vector< std::vector<st
 	T1=my::clock();
 	SLVTS->SET_INIT();
 	SLVTS->SET_INPUT(SLVTS_Argvs);
-	if(SLVTS->CHECK_INPUT()==1){
-		cout << "Error : in checking Input Values" <<endl;
+	if(!SLVTS->CHECK_INPUT()){
+		std::cout << "Error : in checking Input Values" << std::endl;
 		return boost::shared_ptr<CL_SLVTS>();
 	}
 	T2=my::clock();
-	if(SLVTS->APRM->FLAG_STD >= 1)cout<<"TIME SET INPUT         : "<<(T2-T1) << " (sec)"<<endl;
+	if(SLVTS->APRM->FLAG_STD >= 1) std::cout << "TIME SET INPUT         : "<<(T2-T1) << " (sec)" << std::endl;
 
 	SLVTS->CALC_WCS();
 
 //	SLVTS->END()
 
 	TE=my::clock();
-	if(SLVTS->APRM->FLAG_STD >= 1)cout<<"TIME SOLVETANSIP TOTAL : "<<(TE-TS) << " (sec)"<<endl;
+	if(SLVTS->APRM->FLAG_STD >= 1) std::cout << "TIME SOLVETANSIP TOTAL : "<<(TE-TS) << " (sec)" << std::endl;
 
 	return SLVTS;
 }
@@ -59,12 +58,12 @@ void CL_SLVTS::SET_INPUT(std::vector< std::vector< std::vector< std::string > > 
 	if(APRM->FLAG_STD >= 2)REFs->SHOW();
 
 }
-int CL_SLVTS::CHECK_INPUT(){
-	if(APRM->FLAG_STD >= 1)cout<<"-- CHECK INPUT --"<<endl;
-	if(APRM->CHECK()==1)return 1;
-	if(CCDs->CHECK()==1)return 1;
-	if(REFs->CHECK()==1)return 1;
-	return 0;
+bool CL_SLVTS::CHECK_INPUT(){
+	if(APRM->FLAG_STD >= 1) std::cout << "-- CHECK INPUT --" << std::endl;
+	return APRM->CHECK()
+		&& CCDs->CHECK()
+		&& REFs->CHECK()
+	;
 }
 void CL_SLVTS::CALC_WCS(){
 	my::clock_t T1,T2;
@@ -73,18 +72,18 @@ void CL_SLVTS::CALC_WCS(){
 	if(APRM->MODE_REJ==1)
 	REFs->REJECT_BADREF();
 	T2=my::clock();
-	if(APRM->FLAG_STD >= 1)cout<<"TIME REJECTION         : "<<(T2-T1) << " (sec)"<<endl;
+	if(APRM->FLAG_STD >= 1) std::cout << "TIME REJECTION         : "<<(T2-T1) << " (sec)" << std::endl;
 
 	T1=my::clock();
 	if(APRM->MODE_CCDPOS==1)
 	REFs->DETERMINE_CCDPOSITION();
 	T2=my::clock();
-	if(APRM->FLAG_STD >= 1)cout<<"TIME CCDPOSITION       : "<<(T2-T1) << " (sec)"<<endl;
+	if(APRM->FLAG_STD >= 1) std::cout << "TIME CCDPOSITION       : "<<(T2-T1) << " (sec)" << std::endl;
 
 	T1=my::clock();
 	REFs->DETERMINE_TANSIP();
 	T2=my::clock();
-	if(APRM->FLAG_STD >= 1)cout<<"TIME TANSIP            : "<<(T2-T1) << " (sec)"<<endl;
+	if(APRM->FLAG_STD >= 1) std::cout <<"TIME TANSIP            : "<<(T2-T1) << " (sec)" << std::endl;
 
 }
 
