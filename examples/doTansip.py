@@ -24,13 +24,8 @@ def doTansip(APRM, CCD, REF):
 	KV.append(str(len(REF)))
 	APRM.append(KV)
 
-	SLVTS_Argvs=SLVTS.VVVS([])
-	SLVTS_Argvs.append(APRM)
-	SLVTS_Argvs.append(CCD)
-	SLVTS_Argvs.append(REF)
-
 	print '--- doTansip : SOLVE TANSIP ---'
-	SLVTSRESULT=SLVTS.SOLVETANSIP(SLVTS_Argvs)
+	SLVTSRESULT=SLVTS.SOLVETANSIP(APRM, CCD, REF)
 
 	FLAG_OUT=1
 	if FLAG_OUT==1:

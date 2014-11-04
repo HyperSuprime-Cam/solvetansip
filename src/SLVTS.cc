@@ -13,7 +13,12 @@
 namespace hsc { namespace meas {
 namespace tansip {
 
-boost::shared_ptr<CL_SLVTS> SOLVETANSIP(std::vector< std::vector< std::vector<std::string> > > SLVTS_Argvs){
+boost::shared_ptr<CL_SLVTS>
+SOLVETANSIP(
+	std::vector< std::vector< std::string > > const& APRM,
+	std::vector< std::vector< std::string > > const& CCD,
+	std::vector< std::vector< std::string > > const& REF
+){
 	my::clock_t TS,TE;
 	my::clock_t T1,T2;
 	TS=my::clock();
@@ -21,7 +26,7 @@ boost::shared_ptr<CL_SLVTS> SOLVETANSIP(std::vector< std::vector< std::vector<st
 
 	T1=my::clock();
 	SLVTS->SET_INIT();
-	SLVTS->SET_INPUT(SLVTS_Argvs);
+	SLVTS->SET_INPUT(APRM, CCD, REF);
 	if(!SLVTS->CHECK_INPUT()){
 		std::cout << "Error : in checking Input Values" << std::endl;
 		return boost::shared_ptr<CL_SLVTS>();
@@ -48,14 +53,17 @@ void CL_SLVTS::SET_INIT(){
 	CCDs = boost::make_shared<CL_CCDs>();
 	REFs = boost::make_shared<CL_REFs>();
 }
-void CL_SLVTS::SET_INPUT(std::vector< std::vector< std::vector< std::string > > > SLVTS_Argvs){
-
-	APRM->SET_INPUT(SLVTS_Argvs[0]);
-	CCDs->SET_INPUT(SLVTS_Argvs[1], APRM.get());
-	REFs->SET_INPUT(SLVTS_Argvs[2], APRM.get(), CCDs.get());
-	if(APRM->FLAG_STD >= 2)APRM->SHOW();
-	if(APRM->FLAG_STD >= 2)CCDs->SHOW();
-	if(APRM->FLAG_STD >= 2)REFs->SHOW();
+void CL_SLVTS::SET_INPUT(
+	std::vector< std::vector< std::string > > const& APRM_,
+	std::vector< std::vector< std::string > > const& CCD_,
+	std::vector< std::vector< std::string > > const& REF_
+){
+	APRM->SET_INPUT(APRM_);
+	CCDs->SET_INPUT(CCD_, APRM.get());
+	REFs->SET_INPUT(REF_, APRM.get(), CCDs.get());
+	if(APRM->FLAG_STD >= 2) APRM->SHOW();
+	if(APRM->FLAG_STD >= 2) CCDs->SHOW();
+	if(APRM->FLAG_STD >= 2) REFs->SHOW();
 
 }
 bool CL_SLVTS::CHECK_INPUT(){

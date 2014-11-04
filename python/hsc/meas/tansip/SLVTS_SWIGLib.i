@@ -24,7 +24,6 @@ Python interface to hsc::meas::tansip
 
 %template(VS)   std::vector<std::string>;
 %template(VVS)  std::vector< std::vector<std::string> >;
-%template(VVVS) std::vector< std::vector< std::vector<std::string> > >;
 
 %template(VD)  std::vector<double>;
 %template(VVD) std::vector< std::vector<double> >;
@@ -35,7 +34,11 @@ Python interface to hsc::meas::tansip
 namespace hsc { namespace meas { namespace tansip
 {
     struct CL_SLVTS{};
-    boost::shared_ptr<CL_SLVTS> SOLVETANSIP(std::vector< std::vector< std::vector< std::string > > > SLVTS_Argvs);
+    boost::shared_ptr<CL_SLVTS> SOLVETANSIP(
+        std::vector< std::vector< std::string > > const& APRM,
+        std::vector< std::vector< std::string > > const& CCD,
+        std::vector< std::vector< std::string > > const& REF
+    );
 }}} // hsc::meas::tansip
 // end
 

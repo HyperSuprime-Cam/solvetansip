@@ -27,13 +27,21 @@ public:
 
 //FUNCTIONs
 	void SET_INIT();//setting initial values
-	void SET_INPUT(std::vector< std::vector< std::vector< std::string > > > SLVTS_Argvs);//setting input information
+	void SET_INPUT(
+		std::vector< std::vector< std::string > > const& APRM,
+		std::vector< std::vector< std::string > > const& CCD,
+		std::vector< std::vector< std::string > > const& REF
+	);//setting input information
 	void SET_END();//deleting memories
 	bool CHECK_INPUT();//checking input values
 	void CALC_WCS();//main calculation of solvetansip
 };
 
-boost::shared_ptr<CL_SLVTS> SOLVETANSIP(std::vector< std::vector< std::vector< std::string > > > SLVTS_Argvs);//called by lsst for calculating solvetansip
+boost::shared_ptr<CL_SLVTS> SOLVETANSIP(
+	std::vector< std::vector< std::string > > const& APRM,
+	std::vector< std::vector< std::string > > const& CCD,
+	std::vector< std::vector< std::string > > const& REF
+);//called by lsst for calculating solvetansip
 
 } // namespace tansip
 }} // namespace hsc::meas

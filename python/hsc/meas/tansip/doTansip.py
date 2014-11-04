@@ -11,13 +11,13 @@ def doTansip(matchListAllCcd, policy=None, camera=None, rerun=None):
     print "meta:",metaTANSIP
     SLVTSresult=SOLVETANSIP(matchListAllCcd, metaTANSIP, policy=policy, camera=camera, rerun=rerun)
     return SLVTSresult
-	
+
 def doTansipQa(matchListAllCcd, policy=None, camera=None, rerun=None):
     metaTANSIP = SLVTS.SET_EMPTYMETADATA()
     print "metaQa:",metaTANSIP
     SLVTSresult=SOLVETANSIP(matchListAllCcd, metaTANSIP, policy=policy, camera=camera, rerun=rerun)
     return SLVTSresult,metaTANSIP
-	
+
 def SOLVETANSIP(matchListAllCcd, metaTANSIP, policy=None, camera=None, rerun=None):
     print '--- doTansip : start ---'
 
@@ -35,11 +35,7 @@ def SOLVETANSIP(matchListAllCcd, metaTANSIP, policy=None, camera=None, rerun=Non
     APRM.append(KV)
 
     print '--- doTansip : SOLVE TANSIP ---'
-    SLVTS_Argvs=SLVTS.VVVS([])
-    SLVTS_Argvs.append(APRM)
-    SLVTS_Argvs.append(CCD)
-    SLVTS_Argvs.append(REF)
-    SLVTSRESULT=SLVTS.SOLVETANSIP(SLVTS_Argvs)
+    SLVTSRESULT=SLVTS.SOLVETANSIP(APRM, CCD, REF)
     SLVTS.SET_METADATA(SLVTSRESULT, metaTANSIP)
     SLVTS.CHECK_METADATA(SLVTSRESULT,metaTANSIP)
     TANWCS=SLVTS.SET_TANWCS(SLVTSRESULT)
@@ -108,7 +104,7 @@ def SLVTS_CCD(NUMCCD,camera):
     for CID in range(NUMCCD):
         DID=cameraGeom.Id(CID)
         CGeom=cameraGeomUtils.findCcd(camera,DID)
-	PS = CGeom.getPixelSize()
+        PS = CGeom.getPixelSize()
         CCD=SLVTS.VS([])
         CCD.append(str(DID.getSerial()))
         CCD.append(str(CGeom.getCenter().getPixels(PS)[0]))
@@ -130,7 +126,7 @@ def SLVTS_CCD(NUMCCD,camera):
 def OUTPUT_SUMMARY(V_S_RESULT,DIR_OUT):
     S_RESULT=V_S_RESULT[0]
     if os.path.exists(DIR_OUT) == False:
-	os.makedirs(DIR_OUT)    
+        os.makedirs(DIR_OUT)
 
     SUMNAME=DIR_OUT+"/solvetansipresult_SUMMARY.fits"
 
@@ -149,7 +145,7 @@ def OUTPUT_SUMMARY(V_S_RESULT,DIR_OUT):
     CD_COR    =SLVTS.GET_SUM_CD_CORANGLE(S_RESULT)
     RMS_SIP   =SLVTS.GET_SUM_RMSASIP(S_RESULT)
     RMS_PSIP  =SLVTS.GET_SUM_RMSPSIP(S_RESULT)
-    
+
     SUMhdu = pyfits.PrimaryHDU()
     SUMhdr = SUMhdu.header
     SUMhdr.update("MODE_CR" ,MODE_CR ,"CR MODE")
@@ -188,7 +184,7 @@ def OUTPUT_SUMMARY(V_S_RESULT,DIR_OUT):
 def OUTPUT_BTBL(V_S_RESULT,DIR_OUT):
     S_RESULT=V_S_RESULT[0]
     if os.path.exists(DIR_OUT) == False:
-	os.makedirs(DIR_OUT)    
+        os.makedirs(DIR_OUT)
 
 #CCD-----
     CCDNAME=DIR_OUT+"/solvetansipresult_CCDs.fits"
@@ -379,10 +375,10 @@ def OUTPUT_BTBL(V_S_RESULT,DIR_OUT):
     REFCOL.append(Column(name="POSITION_DETECTED_ASIP_DEC_L"     ,format="D",unit="degree",array=REFPOS_DASIP_RADECL[1]))
     REFCOL.append(Column(name="POSITION_DETECTED_ASIP_RA_G"      ,format="D",unit="degree",array=REFPOS_DASIP_RADECG[0]))
     REFCOL.append(Column(name="POSITION_DETECTED_ASIP_DEC_G"     ,format="D",unit="degree",array=REFPOS_DASIP_RADECG[1]))
-    REFCOL.append(Column(name="DIFF_ASIP_X"		         ,format="D",array=REFDIFF[0]))
-    REFCOL.append(Column(name="DIFF_ASIP_Y"		         ,format="D",array=REFDIFF[1]))
-    REFCOL.append(Column(name="DIFF_PSIP_X"		         ,format="D",array=REFDIFF[2]))
-    REFCOL.append(Column(name="DIFF_PSIP_Y"		         ,format="D",array=REFDIFF[3]))
+    REFCOL.append(Column(name="DIFF_ASIP_X"                      ,format="D",array=REFDIFF[0]))
+    REFCOL.append(Column(name="DIFF_ASIP_Y"                      ,format="D",array=REFDIFF[1]))
+    REFCOL.append(Column(name="DIFF_PSIP_X"                      ,format="D",array=REFDIFF[2]))
+    REFCOL.append(Column(name="DIFF_PSIP_Y"                      ,format="D",array=REFDIFF[3]))
     REFCOL.append(Column(name="CAMERA_DIST_CONVERGENCE"          ,format="D",array=REFDISTP[0]))
     REFCOL.append(Column(name="CAMERA_DIST_ROTATION"             ,format="D",array=REFDISTP[1]))
     REFCOL.append(Column(name="CAMERA_DIST_SHEAR1"               ,format="D",array=REFDISTP[2]))
