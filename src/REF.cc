@@ -844,21 +844,41 @@ void CL_REFs::DETERMINE_CCDPOSITION(){
 	int const NUM_CCD    = APRM->NUM_CCD;
 	int const ORDER_PSIP = APRM->ORDER_PSIP;
 
+	// Find CCDs that have sufficient references on them
+	std::vector<CL_CCD*> validCcd;
+	validCcd.reserve(NUM_CCD);
+
+	std::vector<int> ccdIdToValidId(NUM_CCD, -1);
+
+	for(int i = 0; i < NUM_CCD; ++i){
+		if(CCDs->CCD[i].areReferencesSufficient()){
+			ccdIdToValidId[i] = validCcd.size();
+			validCcd.push_back(&CCDs->CCD[i]);
+		}
+	}
+
+	int const nValidCcd = validCcd.size();
+	if(nValidCcd <= 0){
+		cout << "Warning: No ccd has sufficient number of references on it." << endl;
+		cout << "    DETERMINE_CCDPOSITION() did nothing." << endl;
+		return;
+	}
+
 	int const                    NUM_COEF = (ORDER_PSIP+1)*(ORDER_PSIP+2)/2;
 	ndarray::Array<double, 2, 2> COEF     = ndarray::allocate(2, NUM_COEF);
-	ndarray::Array<double, 1, 1> MAXYT    = ndarray::allocate(3*NUM_CCD+2*(NUM_COEF-1));
-	ndarray::Array<double, 2, 2> MBXYT    = ndarray::allocate(3*NUM_CCD+2*(NUM_COEF-1), 3*NUM_CCD+2*(NUM_COEF-1));
+	ndarray::Array<double, 1, 1> MAXYT    = ndarray::allocate(3*nValidCcd+2*(NUM_COEF-1));
+	ndarray::Array<double, 2, 2> MBXYT    = ndarray::allocate(3*nValidCcd+2*(NUM_COEF-1), 3*nValidCcd+2*(NUM_COEF-1));
 	ndarray::Array<double, 3, 3> XY       = ndarray::allocate(NUM_REF, (ORDER_PSIP+1)*(ORDER_PSIP+1), (ORDER_PSIP+1)*(ORDER_PSIP+1));
 	ndarray::Array<double, 1, 1> XLsYLc   = ndarray::allocate(NUM_REF);
 	ndarray::Array<double, 1, 1> YLsXLc   = ndarray::allocate(NUM_REF);
-	ndarray::Array<double, 2, 2> XYINIT   = ndarray::allocate(NUM_CCD, 3);
+	ndarray::Array<double, 2, 2> XYINIT   = ndarray::allocate(nValidCcd, 3);
 	ndarray::Array<double, 1, 1> XN       = ndarray::allocate((ORDER_PSIP+1)*(ORDER_PSIP+1));
 	ndarray::Array<double, 1, 1> YN       = ndarray::allocate((ORDER_PSIP+1)*(ORDER_PSIP+1));
 
-	for(int CID = 0; CID < NUM_CCD; ++CID){
-		XYINIT[CID][0]=CCDs->CCD[CID].GPOS_L[0];
-		XYINIT[CID][1]=CCDs->CCD[CID].GPOS_L[1];
-		XYINIT[CID][2]=CCDs->CCD[CID].GPOS_L[2];
+	for(int i = 0; i < nValidCcd; ++i){
+		XYINIT[i][0] = validCcd[i]->GPOS_L[0];
+		XYINIT[i][1] = validCcd[i]->GPOS_L[1];
+		XYINIT[i][2] = validCcd[i]->GPOS_L[2];
 	}
 
 
@@ -890,10 +910,13 @@ void CL_REFs::DETERMINE_CCDPOSITION(){
 			XY[NUM][i][j] = XN[i]*YN[j];
 		}
 		for(int NUM = 0; NUM < NUM_REF; ++NUM){
-			XLsYLc[NUM]=REF[NUM].POS_DETECTED_LOCAL_L[0]*sin(CCDs->CCD[REF[NUM].ID_CCD].GPOS_L[2])+
-				    REF[NUM].POS_DETECTED_LOCAL_L[1]*cos(CCDs->CCD[REF[NUM].ID_CCD].GPOS_L[2]);
-			YLsXLc[NUM]=REF[NUM].POS_DETECTED_LOCAL_L[1]*sin(CCDs->CCD[REF[NUM].ID_CCD].GPOS_L[2])-
-				    REF[NUM].POS_DETECTED_LOCAL_L[0]*cos(CCDs->CCD[REF[NUM].ID_CCD].GPOS_L[2]);
+			int ID_CCD = REF[NUM].ID_CCD;
+			if(ccdIdToValidId[ID_CCD] < 0) continue;
+
+			XLsYLc[NUM]=REF[NUM].POS_DETECTED_LOCAL_L[0]*sin(CCDs->CCD[ID_CCD].GPOS_L[2])+
+				    REF[NUM].POS_DETECTED_LOCAL_L[1]*cos(CCDs->CCD[ID_CCD].GPOS_L[2]);
+			YLsXLc[NUM]=REF[NUM].POS_DETECTED_LOCAL_L[1]*sin(CCDs->CCD[ID_CCD].GPOS_L[2])-
+				    REF[NUM].POS_DETECTED_LOCAL_L[0]*cos(CCDs->CCD[ID_CCD].GPOS_L[2]);
 		}
 
 //--------------------------------------------------
@@ -906,9 +929,12 @@ void CL_REFs::DETERMINE_CCDPOSITION(){
 //dAXYT
 		for(int NUM = 0; NUM < NUM_REF; ++NUM)
 		if(REF[NUM].FLAG_OBJ==1){
-			MAXYT[0*NUM_CCD+REF[NUM].ID_CCD]-=(REF[NUM].POS_DETECTED_LOCAL_G[0]-REF[NUM].POS_CELESTIAL_PSIP_LOCAL_G[0]);
-			MAXYT[1*NUM_CCD+REF[NUM].ID_CCD]-=(REF[NUM].POS_DETECTED_LOCAL_G[1]-REF[NUM].POS_CELESTIAL_PSIP_LOCAL_G[1]);
-			MAXYT[2*NUM_CCD+REF[NUM].ID_CCD]-=-XLsYLc[NUM]*(REF[NUM].POS_DETECTED_LOCAL_G[0]-REF[NUM].POS_CELESTIAL_PSIP_LOCAL_G[0])
+			int validCcdId = ccdIdToValidId[REF[NUM].ID_CCD];
+			if(validCcdId < 0) continue;
+
+			MAXYT[0*nValidCcd+validCcdId]-=(REF[NUM].POS_DETECTED_LOCAL_G[0]-REF[NUM].POS_CELESTIAL_PSIP_LOCAL_G[0]);
+			MAXYT[1*nValidCcd+validCcdId]-=(REF[NUM].POS_DETECTED_LOCAL_G[1]-REF[NUM].POS_CELESTIAL_PSIP_LOCAL_G[1]);
+			MAXYT[2*nValidCcd+validCcdId]-=-XLsYLc[NUM]*(REF[NUM].POS_DETECTED_LOCAL_G[0]-REF[NUM].POS_CELESTIAL_PSIP_LOCAL_G[0])
 							     -YLsXLc[NUM]*(REF[NUM].POS_DETECTED_LOCAL_G[1]-REF[NUM].POS_CELESTIAL_PSIP_LOCAL_G[1]);
 		}
 //dAA
@@ -918,8 +944,8 @@ void CL_REFs::DETERMINE_CCDPOSITION(){
 		if(i+j!=0){
 			for(int NUM = 0; NUM < NUM_REF; ++NUM)
 			if(REF[NUM].FLAG_OBJ==1){
-				MAXYT[3*NUM_CCD+0*(NUM_COEF-1)+ij]-=-(REF[NUM].POS_DETECTED_LOCAL_G[0]-REF[NUM].POS_CELESTIAL_PSIP_LOCAL_G[0])*XY[NUM][i][j];
-				MAXYT[3*NUM_CCD+1*(NUM_COEF-1)+ij]-=-(REF[NUM].POS_DETECTED_LOCAL_G[1]-REF[NUM].POS_CELESTIAL_PSIP_LOCAL_G[1])*XY[NUM][i][j];
+				MAXYT[3*nValidCcd+0*(NUM_COEF-1)+ij]-=-(REF[NUM].POS_DETECTED_LOCAL_G[0]-REF[NUM].POS_CELESTIAL_PSIP_LOCAL_G[0])*XY[NUM][i][j];
+				MAXYT[3*nValidCcd+1*(NUM_COEF-1)+ij]-=-(REF[NUM].POS_DETECTED_LOCAL_G[1]-REF[NUM].POS_CELESTIAL_PSIP_LOCAL_G[1])*XY[NUM][i][j];
 			}
 			ij++;
 		}
@@ -928,15 +954,18 @@ void CL_REFs::DETERMINE_CCDPOSITION(){
 //dBXYTXYT
 		for(int NUM = 0; NUM < NUM_REF; ++NUM)
 		if(REF[NUM].FLAG_OBJ==1){
-			MBXYT[0*NUM_CCD+REF[NUM].ID_CCD][0*NUM_CCD+REF[NUM].ID_CCD]+=1;
-//			MBXYT[0*NUM_CCD+REF[NUM].ID_CCD][1*NUM_CCD+REF[NUM].ID_CCD]+=0;
-			MBXYT[0*NUM_CCD+REF[NUM].ID_CCD][2*NUM_CCD+REF[NUM].ID_CCD]+=-XLsYLc[NUM];
-//			MBXYT[1*NUM_CCD+REF[NUM].ID_CCD][0*NUM_CCD+REF[NUM].ID_CCD]+=0;
-			MBXYT[1*NUM_CCD+REF[NUM].ID_CCD][1*NUM_CCD+REF[NUM].ID_CCD]+=1;
-			MBXYT[1*NUM_CCD+REF[NUM].ID_CCD][2*NUM_CCD+REF[NUM].ID_CCD]+=-YLsXLc[NUM];
-			MBXYT[2*NUM_CCD+REF[NUM].ID_CCD][0*NUM_CCD+REF[NUM].ID_CCD]+=-XLsYLc[NUM];
-			MBXYT[2*NUM_CCD+REF[NUM].ID_CCD][1*NUM_CCD+REF[NUM].ID_CCD]+=-YLsXLc[NUM];
-			MBXYT[2*NUM_CCD+REF[NUM].ID_CCD][2*NUM_CCD+REF[NUM].ID_CCD]+= XLsYLc[NUM]*XLsYLc[NUM]+YLsXLc[NUM]*YLsXLc[NUM];
+			int validCcdId = ccdIdToValidId[REF[NUM].ID_CCD];
+			if(validCcdId < 0) continue;
+
+			MBXYT[0*nValidCcd+validCcdId][0*nValidCcd+validCcdId]+=1;
+//			MBXYT[0*nValidCcd+validCcdId][1*nValidCcd+validCcdId]+=0;
+			MBXYT[0*nValidCcd+validCcdId][2*nValidCcd+validCcdId]+=-XLsYLc[NUM];
+//			MBXYT[1*nValidCcd+validCcdId][0*nValidCcd+validCcdId]+=0;
+			MBXYT[1*nValidCcd+validCcdId][1*nValidCcd+validCcdId]+=1;
+			MBXYT[1*nValidCcd+validCcdId][2*nValidCcd+validCcdId]+=-YLsXLc[NUM];
+			MBXYT[2*nValidCcd+validCcdId][0*nValidCcd+validCcdId]+=-XLsYLc[NUM];
+			MBXYT[2*nValidCcd+validCcdId][1*nValidCcd+validCcdId]+=-YLsXLc[NUM];
+			MBXYT[2*nValidCcd+validCcdId][2*nValidCcd+validCcdId]+= XLsYLc[NUM]*XLsYLc[NUM]+YLsXLc[NUM]*YLsXLc[NUM];
 		}
 //dBXYTA
 
@@ -944,12 +973,16 @@ void CL_REFs::DETERMINE_CCDPOSITION(){
 		for(int i=0;i<ORDER_PSIP+1  ;i++)
 		for(int j=0;j<ORDER_PSIP+1-i;j++)
 		if(i+j!=0){
-			for(int NUM = 0; NUM < NUM_REF; ++NUM)
-			if(REF[NUM].FLAG_OBJ==1){
-				MBXYT[0*NUM_CCD+REF[NUM].ID_CCD][3*NUM_CCD+0*(NUM_COEF-1)+ij]+=-XY[NUM][i][j];
-				MBXYT[1*NUM_CCD+REF[NUM].ID_CCD][3*NUM_CCD+1*(NUM_COEF-1)+ij]+=-XY[NUM][i][j];
-				MBXYT[2*NUM_CCD+REF[NUM].ID_CCD][3*NUM_CCD+0*(NUM_COEF-1)+ij]+=-XY[NUM][i][j]*(-XLsYLc[NUM]);
-				MBXYT[2*NUM_CCD+REF[NUM].ID_CCD][3*NUM_CCD+1*(NUM_COEF-1)+ij]+=-XY[NUM][i][j]*(-YLsXLc[NUM]);
+			for(int NUM = 0; NUM < NUM_REF; ++NUM){
+				if(REF[NUM].FLAG_OBJ==1){
+					int validCcdId = ccdIdToValidId[REF[NUM].ID_CCD];
+					if(validCcdId < 0) continue;
+
+					MBXYT[0*nValidCcd+validCcdId][3*nValidCcd+0*(NUM_COEF-1)+ij]+=-XY[NUM][i][j];
+					MBXYT[1*nValidCcd+validCcdId][3*nValidCcd+1*(NUM_COEF-1)+ij]+=-XY[NUM][i][j];
+					MBXYT[2*nValidCcd+validCcdId][3*nValidCcd+0*(NUM_COEF-1)+ij]+=-XY[NUM][i][j]*(-XLsYLc[NUM]);
+					MBXYT[2*nValidCcd+validCcdId][3*nValidCcd+1*(NUM_COEF-1)+ij]+=-XY[NUM][i][j]*(-YLsXLc[NUM]);
+				}
 			}
 			ij++;
 		}
@@ -959,12 +992,16 @@ void CL_REFs::DETERMINE_CCDPOSITION(){
 		for(int i=0;i<ORDER_PSIP+1  ;i++)
 		for(int j=0;j<ORDER_PSIP+1-i;j++)
 		if(i+j!=0){
-			for(int NUM = 0; NUM < NUM_REF; ++NUM)
-			if(REF[NUM].FLAG_OBJ==1){
-				MBXYT[3*NUM_CCD+0*(NUM_COEF-1)+ij][0*NUM_CCD+REF[NUM].ID_CCD]+=-XY[NUM][i][j];
-				MBXYT[3*NUM_CCD+1*(NUM_COEF-1)+ij][1*NUM_CCD+REF[NUM].ID_CCD]+=-XY[NUM][i][j];
-				MBXYT[3*NUM_CCD+0*(NUM_COEF-1)+ij][2*NUM_CCD+REF[NUM].ID_CCD]+=-XY[NUM][i][j]*(-XLsYLc[NUM]);
-				MBXYT[3*NUM_CCD+1*(NUM_COEF-1)+ij][2*NUM_CCD+REF[NUM].ID_CCD]+=-XY[NUM][i][j]*(-YLsXLc[NUM]);
+			for(int NUM = 0; NUM < NUM_REF; ++NUM) {
+				if(REF[NUM].FLAG_OBJ==1){
+					int validCcdId = ccdIdToValidId[REF[NUM].ID_CCD];
+					if(validCcdId < 0) continue;
+
+					MBXYT[3*nValidCcd+0*(NUM_COEF-1)+ij][0*nValidCcd+validCcdId]+=-XY[NUM][i][j];
+					MBXYT[3*nValidCcd+1*(NUM_COEF-1)+ij][1*nValidCcd+validCcdId]+=-XY[NUM][i][j];
+					MBXYT[3*nValidCcd+0*(NUM_COEF-1)+ij][2*nValidCcd+validCcdId]+=-XY[NUM][i][j]*(-XLsYLc[NUM]);
+					MBXYT[3*nValidCcd+1*(NUM_COEF-1)+ij][2*nValidCcd+validCcdId]+=-XY[NUM][i][j]*(-YLsXLc[NUM]);
+				}
 			}
 			ij++;
 		}
@@ -980,11 +1017,11 @@ void CL_REFs::DETERMINE_CCDPOSITION(){
 			if(k+l!=0){
 				for(int NUM = 0; NUM < NUM_REF; ++NUM)
 				if(REF[NUM].FLAG_OBJ==1){
-					MBXYT[3*NUM_CCD+0*(NUM_COEF-1)+ij][3*NUM_CCD+0*(NUM_COEF-1)+kl]+=XY[NUM][i+k][j+l];
+					MBXYT[3*nValidCcd+0*(NUM_COEF-1)+ij][3*nValidCcd+0*(NUM_COEF-1)+kl]+=XY[NUM][i+k][j+l];
 
-//					MBXYT[3*NUM_CCD+0*(NUM_COEF-1)+ij][3*NUM_CCD+1*(NUM_COEF-1)+kl]+=0;
-//					MBXYT[3*NUM_CCD+1*(NUM_COEF-1)+ij][3*NUM_CCD+0*(NUM_COEF-1)+kl]+=0;
-					MBXYT[3*NUM_CCD+1*(NUM_COEF-1)+ij][3*NUM_CCD+1*(NUM_COEF-1)+kl]+=XY[NUM][i+k][j+l];
+//					MBXYT[3*nValidCcd+0*(NUM_COEF-1)+ij][3*nValidCcd+1*(NUM_COEF-1)+kl]+=0;
+//					MBXYT[3*nValidCcd+1*(NUM_COEF-1)+ij][3*nValidCcd+0*(NUM_COEF-1)+kl]+=0;
+					MBXYT[3*nValidCcd+1*(NUM_COEF-1)+ij][3*nValidCcd+1*(NUM_COEF-1)+kl]+=XY[NUM][i+k][j+l];
 				}
 				kl++;
 			}
@@ -994,11 +1031,11 @@ void CL_REFs::DETERMINE_CCDPOSITION(){
 		// C = B^{-1} A
 		ndarray::Array<double, 1, 1> MCXYT = SOLVE_LINEAR_EQUATION(MBXYT, MAXYT);
 
-		for(int CID = 0; CID < NUM_CCD; ++CID){
-			CCDs->CCD[CID].GPOS_L[0]+=MCXYT[0*NUM_CCD+CID];
-			CCDs->CCD[CID].GPOS_L[1]+=MCXYT[1*NUM_CCD+CID];
-			CCDs->CCD[CID].GPOS_L[2]+=MCXYT[2*NUM_CCD+CID];
-			CCDs->CCD[CID].GPOS_L[3]=CCDs->CCD[CID].GPOS_L[2]*(180/M_PI);
+		for(int CID = 0; CID < nValidCcd; ++CID){
+			validCcd[CID]->GPOS_L[0] += MCXYT[0*nValidCcd+CID];
+			validCcd[CID]->GPOS_L[1] += MCXYT[1*nValidCcd+CID];
+			validCcd[CID]->GPOS_L[2] += MCXYT[2*nValidCcd+CID];
+			validCcd[CID]->GPOS_L[3] = validCcd[CID]->GPOS_L[2]*(180/M_PI);
 		}
 		SET_CCDAVE();
 
@@ -1006,20 +1043,20 @@ void CL_REFs::DETERMINE_CCDPOSITION(){
 
 		double const PRECISION_CCD = APRM->PRECISION_CCD;
 		int ENDFLAG=1;
-		for(int CID = 0; CID < NUM_CCD; ++CID)
-		if(hypot(XYINIT[CID][0]-CCDs->CCD[CID].GPOS_L[0],
-			 XYINIT[CID][1]-CCDs->CCD[CID].GPOS_L[1])>PRECISION_CCD||
-		    fabs(XYINIT[CID][2]-CCDs->CCD[CID].GPOS_L[2])>PRECISION_CCD/5000)
+		for(int CID = 0; CID < nValidCcd; ++CID)
+		if(hypot(XYINIT[CID][0] - validCcd[CID]->GPOS_L[0],
+			 XYINIT[CID][1] - validCcd[CID]->GPOS_L[1]) > PRECISION_CCD ||
+		    fabs(XYINIT[CID][2] - validCcd[CID]->GPOS_L[2]) > PRECISION_CCD/5000)
 		ENDFLAG=0;
 
 		if(ENDFLAG==1){
 			break;
 		}else{
 			if(APRM->FLAG_STD >= 2)cout << "CCD GPOS LOOP : " << XYLOOP+1 << endl;
-			for(int CID = 0; CID < NUM_CCD; ++CID){
-				XYINIT[CID][0]=CCDs->CCD[CID].GPOS_L[0];
-				XYINIT[CID][1]=CCDs->CCD[CID].GPOS_L[1];
-				XYINIT[CID][2]=CCDs->CCD[CID].GPOS_L[2];
+			for(int CID = 0; CID < nValidCcd; ++CID){
+				XYINIT[CID][0] = validCcd[CID]->GPOS_L[0];
+				XYINIT[CID][1] = validCcd[CID]->GPOS_L[1];
+				XYINIT[CID][2] = validCcd[CID]->GPOS_L[2];
 			}
 		}
 

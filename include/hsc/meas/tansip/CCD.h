@@ -21,7 +21,6 @@ namespace hsc { namespace meas {
 namespace tansip {
 
 class CL_CCD{
-private:
 public:
 	CL_APRM *APRM;//=SLVTS->APRM
 	int	 ID;
@@ -58,6 +57,10 @@ public:
 	void SET_CDPSIP();//setting PSF coefficients
 	Polynomial2D SET_SIPROT(Polynomial2D const& POLY);//calculating SIP and PSIP coefficients with effect due to CCD rotation
 	void SHOW();//showing CCD infomation
+
+	bool areReferencesSufficient() const {
+		return this->NUM_FIT >= 3;
+	}
 };
 class CL_CCDs{
 private:

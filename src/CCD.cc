@@ -109,7 +109,7 @@ bool CL_CCDs::CHECK_NUMFIT(){
 	int const NUM_CCD = APRM->NUM_CCD;
 
 	for(int i = 0; i < NUM_CCD; ++i){
-		if(CCD[i].NUM_FIT > 2){
+		if(CCD[i].areReferencesSufficient()){
 			if(APRM->FLAG_STD >= 2){
 				cout << "OK : NUM_FIT : CCD : ";
 				cout.width(3);
@@ -124,9 +124,7 @@ bool CL_CCDs::CHECK_NUMFIT(){
 			cout << i << " : ";
 			cout.width(5);
 			cout << CCD[i].NUM_FIT << endl;
-			APRM->MODE_CCDPOS=0;
-			cout << "Warning : SET MODE_CCDPOS to " << APRM->MODE_CCDPOS << endl;
-			cout << "---------------------------------------------" << endl;
+			cout << "This ccd will be omitted when determining CCD positions." << endl;
 		}
 	}
 	return true;
