@@ -395,7 +395,7 @@ int  CL_REFs::GET_ID_NEAR_CRPIX(){
 }
 
 //REFS::FIT
-void CL_REFs::FIT_CbyD(int ID_C,int ID_D){
+void CL_REFs::FIT_CbyD(EPosCelestial ID_C, EPosDetected ID_D){
 	int const NUM_REF    = APRM->NUM_REF;
 
 	ndarray::Array<double, 2, 2> dx = ndarray::allocate(NUM_REF,3);
@@ -406,41 +406,53 @@ void CL_REFs::FIT_CbyD(int ID_C,int ID_D){
 	if(REF[i].FLAG_OBJ==1){
 		double D[2] = {}, C[2] = {};
 
-		      if(ID_D== 0){
+		switch(ID_D){
+		case DETECTED_LOCAL_G:
 			D[0]=REF[i].POS_DETECTED_LOCAL_G[0];
 			D[1]=REF[i].POS_DETECTED_LOCAL_G[1];
-		}else if(ID_D== 1){
+			break;
+		case DETECTED_CRPIX_G:
 			D[0]=REF[i].POS_DETECTED_CRPIX_G[0];
 			D[1]=REF[i].POS_DETECTED_CRPIX_G[1];
-		}else if(ID_D== 2){
+			break;
+		case DETECTED_IMPIX_G:
 			D[0]=REF[i].POS_DETECTED_IMPIX_G[0];
 			D[1]=REF[i].POS_DETECTED_IMPIX_G[1];
-		}else if(ID_D== 3){
+			break;
+		case DETECTED_IMWLD_G:
 			D[0]=REF[i].POS_DETECTED_IMWLD_G[0];
 			D[1]=REF[i].POS_DETECTED_IMWLD_G[1];
-		}else if(ID_D== 4){
+			break;
+		case DETECTED_RADEC_G:
 			D[0]=REF[i].POS_DETECTED_RADEC_G[0];
 			D[1]=REF[i].POS_DETECTED_RADEC_G[1];
+			break;
 		}
-		      if(ID_C== 0){
+		switch(ID_C){
+		case CELESTIAL_RADEC:
 			C[0]=REF[i].POS_CELESTIAL_RADEC[0];
 			C[1]=REF[i].POS_CELESTIAL_RADEC[1];
-		}else if(ID_C== 1){
+			break;
+		case CELESTIAL_IMWLD:
 			C[0]=REF[i].POS_CELESTIAL_IMWLD[0];
 			C[1]=REF[i].POS_CELESTIAL_IMWLD[1];
-		}else if(ID_C== 2){
+			break;
+		case CELESTIAL_IMPIX_G:
 			C[0]=REF[i].POS_CELESTIAL_IMPIX_G[0];
 			C[1]=REF[i].POS_CELESTIAL_IMPIX_G[1];
-		}else if(ID_C== 3){
+			break;
+		case CELESTIAL_CRPIX_G:
 			C[0]=REF[i].POS_CELESTIAL_CRPIX_G[0];
 			C[1]=REF[i].POS_CELESTIAL_CRPIX_G[1];
-		}else if(ID_C== 4){
+			break;
+		case CELESTIAL_LOCAL_G:
 			C[0]=REF[i].POS_CELESTIAL_LOCAL_G[0];
 			C[1]=REF[i].POS_CELESTIAL_LOCAL_G[1];
+			break;
 		}
-
-		if(isfinite(D[0])&&isfinite(D[1])&&
-		   isfinite(C[0])&&isfinite(C[1])){
+		if(isfinite(D[0]) && isfinite(D[1])
+		&& isfinite(C[0]) && isfinite(C[1])
+		){
 			dx[APRM->NUM_FIT][0]=dy[APRM->NUM_FIT][0]=D[0];
 			dx[APRM->NUM_FIT][1]=dy[APRM->NUM_FIT][1]=D[1];
 			dx[APRM->NUM_FIT][2]=C[0];
@@ -453,7 +465,7 @@ void CL_REFs::FIT_CbyD(int ID_C,int ID_D){
 	ASIP[0] = CALC_FIT_LS2(APRM->NUM_FIT,APRM->ORDER_ASIP,dx);
 	ASIP[1] = CALC_FIT_LS2(APRM->NUM_FIT,APRM->ORDER_ASIP,dy);
 }
-void CL_REFs::FIT_DbyC(int ID_D,int ID_C){
+void CL_REFs::FIT_DbyC(EPosDetected ID_D, EPosCelestial ID_C){
 	int const NUM_REF    = APRM->NUM_REF;
 
 	ndarray::Array<double, 2, 2> dx = ndarray::allocate(NUM_REF,3);
@@ -462,42 +474,55 @@ void CL_REFs::FIT_DbyC(int ID_D,int ID_C){
 	APRM->NUM_FIT=0;
 	for(int i = 0; i < NUM_REF; ++i)
 	if(REF[i].FLAG_OBJ==1){
-		double D[2] = {},C[2] = {};
+		double D[2] = {}, C[2] = {};
 
-		      if(ID_D== 0){
+		switch(ID_D){
+		case DETECTED_LOCAL_G:
 			D[0]=REF[i].POS_DETECTED_LOCAL_G[0];
 			D[1]=REF[i].POS_DETECTED_LOCAL_G[1];
-		}else if(ID_D== 1){
+			break;
+		case DETECTED_CRPIX_G:
 			D[0]=REF[i].POS_DETECTED_CRPIX_G[0];
 			D[1]=REF[i].POS_DETECTED_CRPIX_G[1];
-		}else if(ID_D== 2){
+			break;
+		case DETECTED_IMPIX_G:
 			D[0]=REF[i].POS_DETECTED_IMPIX_G[0];
 			D[1]=REF[i].POS_DETECTED_IMPIX_G[1];
-		}else if(ID_D== 3){
+			break;
+		case DETECTED_IMWLD_G:
 			D[0]=REF[i].POS_DETECTED_IMWLD_G[0];
 			D[1]=REF[i].POS_DETECTED_IMWLD_G[1];
-		}else if(ID_D== 4){
+			break;
+		case DETECTED_RADEC_G:
 			D[0]=REF[i].POS_DETECTED_RADEC_G[0];
 			D[1]=REF[i].POS_DETECTED_RADEC_G[1];
+			break;
 		}
-		      if(ID_C== 0){
+		switch(ID_C){
+		case CELESTIAL_RADEC:
 			C[0]=REF[i].POS_CELESTIAL_RADEC[0];
 			C[1]=REF[i].POS_CELESTIAL_RADEC[1];
-		}else if(ID_C== 1){
+			break;
+		case CELESTIAL_IMWLD:
 			C[0]=REF[i].POS_CELESTIAL_IMWLD[0];
 			C[1]=REF[i].POS_CELESTIAL_IMWLD[1];
-		}else if(ID_C== 2){
+			break;
+		case CELESTIAL_IMPIX_G:
 			C[0]=REF[i].POS_CELESTIAL_IMPIX_G[0];
 			C[1]=REF[i].POS_CELESTIAL_IMPIX_G[1];
-		}else if(ID_C== 3){
+			break;
+		case CELESTIAL_CRPIX_G:
 			C[0]=REF[i].POS_CELESTIAL_CRPIX_G[0];
 			C[1]=REF[i].POS_CELESTIAL_CRPIX_G[1];
-		}else if(ID_C== 4){
+			break;
+		case CELESTIAL_LOCAL_G:
 			C[0]=REF[i].POS_CELESTIAL_LOCAL_G[0];
 			C[1]=REF[i].POS_CELESTIAL_LOCAL_G[1];
+			break;
 		}
-                if(isfinite(D[0])&&isfinite(D[1])&&
-                   isfinite(C[0])&&isfinite(C[1])){
+		if(isfinite(D[0]) && isfinite(D[1])
+		&& isfinite(C[0]) && isfinite(C[1])
+		){
 			dx[APRM->NUM_FIT][0]=dy[APRM->NUM_FIT][0]=C[0];
 			dx[APRM->NUM_FIT][1]=dy[APRM->NUM_FIT][1]=C[1];
 			dx[APRM->NUM_FIT][2]=D[0];
@@ -666,14 +691,14 @@ void CL_REFs::CALC_CRPIXatCRVAL(){
 	Polynomial2D (&PSIP)[2] = CCDs->CCD[NUM_CCD].PSIP;
 
 	SET_POS_CELESTIAL_IMWLDfromRADEC();
-	FIT_DbyC(0,1);
+	FIT_DbyC(DETECTED_LOCAL_G, CELESTIAL_IMWLD);
 	APRM->CRPIX[0]=PSIP[0].coeff(0,0);
 	APRM->CRPIX[1]=PSIP[1].coeff(0,0);
 	SET_POS_DETECTED_CRPIX_GfromLOCAL_G();
-	FIT_CbyD(1,1);
+	FIT_CbyD(CELESTIAL_IMWLD, DETECTED_CRPIX_G);
 	CCDs->CCD[NUM_CCD].SET_CDASIP();
 	SET_POS_CELESTIAL_IMPIX_GfromIMWLD();
-	FIT_DbyC(1,2);
+	FIT_DbyC(DETECTED_CRPIX_G, CELESTIAL_IMPIX_G);
 	CCDs->CCD[NUM_CCD].SET_CDPSIP();
 	if(APRM->FLAG_STD >= 2){
 		double (&CD)[2][2] = CCDs->CCD[NUM_CCD].CD;
@@ -718,7 +743,7 @@ void CL_REFs::CALC_CRVALatCRPIX(){
 
 	for(int LOOP = 0; LOOP < 10; ++LOOP){
 		SET_POS_CELESTIAL_IMWLDfromRADEC();
-		FIT_CbyD(1,1);
+		FIT_CbyD(CELESTIAL_IMWLD, DETECTED_CRPIX_G);
 		double SCALE=sqrt(-ASIP[0].coeff(1,0)*ASIP[1].coeff(0,1)+ASIP[0].coeff(0,1)*ASIP[1].coeff(1,0));
 		if(hypot(ASIP[0].coeff(0,0),ASIP[1].coeff(0,0))/SCALE<0.001){
 			break;
@@ -894,7 +919,7 @@ void CL_REFs::DETERMINE_CCDPOSITION(){
 			CALC_CRPIXatCRVAL();
 		}
 		SET_POS_CELESTIAL_IMWLDfromRADEC();
-		FIT_DbyC(0,1);
+		FIT_DbyC(DETECTED_LOCAL_G, CELESTIAL_IMWLD);
 		SET_POS_CELESTIAL_PSIP_LOCAL_GfromIMWLD();
 //--------------------------------------------------
 //XY
@@ -1165,13 +1190,13 @@ void CL_REFs::CALC_TANSIP(){
 //CALC CD AND SIP GLOBAL
 	SET_POS_CELESTIAL_IMWLDfromRADEC();
 	SET_POS_DETECTED_CRPIX_GfromLOCAL_G();
-	FIT_CbyD(1,1);
+	FIT_CbyD(CELESTIAL_IMWLD, DETECTED_CRPIX_G);
 	CCDs->CCD[NUM_CCD].SET_CDASIP();
 	SET_POS_DETECTED_ASIP_IMPIX_GfromCRPIX_G();
 	SET_POS_CELESTIAL_IMPIX_GfromIMWLD();
 	CALC_STAT_ASIP();
 
-	FIT_DbyC(1,2);
+	FIT_DbyC(DETECTED_CRPIX_G, CELESTIAL_IMPIX_G);
 	CCDs->CCD[NUM_CCD].SET_CDPSIP();
 	SET_POS_CELESTIAL_PSIP_CRPIX_GfromIMPIX_G();
 	CALC_STAT_PSIP();

@@ -23,6 +23,24 @@
 namespace hsc { namespace meas {
 namespace tansip {
 
+enum EPosDetected
+{
+	DETECTED_LOCAL_G,
+	DETECTED_CRPIX_G,
+	DETECTED_IMPIX_G,
+	DETECTED_IMWLD_G,
+	DETECTED_RADEC_G,
+};
+
+enum EPosCelestial
+{
+	CELESTIAL_RADEC,
+	CELESTIAL_IMWLD,
+	CELESTIAL_IMPIX_G,
+	CELESTIAL_CRPIX_G,
+	CELESTIAL_LOCAL_G,
+};
+
 class CL_REFs;
 
 class CL_REF{
@@ -175,8 +193,8 @@ public:
 	int  GET_ID_NEAR_CRVAL();//getting ID of reference which is nearest to CRVAL
 	int  GET_ID_NEAR_CRPIX();//getting ID of reference which is nearest to CRPIX
 //FUNCTIONS::FIT
-	void FIT_CbyD(int ID_C,int ID_D);//fitting Celestial position by Detected position and getting coefficients of polynomial fitting. coordinates are assined by ID_C and ID_D
-	void FIT_DbyC(int ID_D,int ID_C);//fitting Detected position by Celestial position and getting coefficients of polynomial fitting. coordinates are assined by ID_C and ID_D
+	void FIT_CbyD(EPosCelestial ID_C, EPosDetected ID_D);//fitting Celestial position by Detected position and getting coefficients of polynomial fitting. coordinates are assined by ID_C and ID_D
+	void FIT_DbyC(EPosDetected ID_D, EPosCelestial ID_C);//fitting Detected position by Celestial position and getting coefficients of polynomial fitting. coordinates are assined by ID_C and ID_D
 	void CALC_STAT_ASIP();//getting statistics of SIP fitting for global fitting
 	void CALC_STAT_PSIP();//getting statistics of PSIP fitting for global fitting
 	void CALC_STAT_SIP_LOCAL();//getting statistics of SIP and PSIP fitting for each CCD fitting
