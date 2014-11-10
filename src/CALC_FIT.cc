@@ -114,25 +114,25 @@ Polynomial2D
 CALC_FIT_LS2(int dataNUM, int Order, ndarray::Array<double, 2, 1> const& data){
 	ndarray::Array<double, 2, 2> XA = ndarray::allocate((Order+1)*(Order+2)/2, (Order+1)*(Order+2)/2);
 	ndarray::Array<double, 1, 1>  Z = ndarray::allocate((Order+1)*(Order+2)/2);
-	ndarray::Array<double, 1, 1> XN = ndarray::allocate((Order+1)*(Order+1));
-	ndarray::Array<double, 1, 1> YN = ndarray::allocate((Order+1)*(Order+1));
+	ndarray::Array<double, 1, 1> XN = ndarray::allocate(2*Order+1);
+	ndarray::Array<double, 1, 1> YN = ndarray::allocate(2*Order+1);
 
 	XA.deep() = 0;
 	Z.deep()  = 0;
 
 	for(int NUM=0;NUM<dataNUM;NUM++){
 		XN[0]=YN[0]=1;
-		for(int i=1;i<(Order+1)*(Order+1);i++){
+		for(int i = 1; i <= 2*Order; ++i){
 			XN[i]=XN[i-1]*data[NUM][0];
 			YN[i]=YN[i-1]*data[NUM][1];
 		}
 
 		int ij=0;
-		for(int i=0;i<Order+1  ;i++)
-		for(int j=0;j<Order+1-i;j++){
+		for(int i = 0; i <= Order  ; ++i)
+		for(int j = 0; j <= Order-i; ++j){
 			int kl=0;
-			for(int k=0;k<Order+1  ;k++)
-			for(int l=0;l<Order+1-k;l++){
+			for(int k = 0 ; k <= Order  ; ++k)
+			for(int l = 0 ; l <= Order-k; ++l){
 				XA[ij][kl]+=XN[i+k]*YN[j+l];
 				kl+=1;
 			}
