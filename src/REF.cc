@@ -865,6 +865,9 @@ void CL_REFs::REJECT_BADREF_PSIP(){
 void CL_REFs::DETERMINE_CCDPOSITION(){
 	if(APRM->FLAG_STD >= 1)cout<<"-- DETERMINE CCD POSITIONS --"<<endl;
 
+	// See doc/determine_ccdposition.tex for a mathematical description
+	// of this function
+
 	int const NUM_REF    = APRM->NUM_REF;
 	int const NUM_CCD    = APRM->NUM_CCD;
 	int const ORDER_PSIP = APRM->ORDER_PSIP;
@@ -893,12 +896,12 @@ void CL_REFs::DETERMINE_CCDPOSITION(){
 	ndarray::Array<double, 2, 2> COEF     = ndarray::allocate(2, NUM_COEF);
 	ndarray::Array<double, 1, 1> MAXYT    = ndarray::allocate(3*nValidCcd+2*(NUM_COEF-1));
 	ndarray::Array<double, 2, 2> MBXYT    = ndarray::allocate(3*nValidCcd+2*(NUM_COEF-1), 3*nValidCcd+2*(NUM_COEF-1));
-	ndarray::Array<double, 3, 3> XY       = ndarray::allocate(NUM_REF, (ORDER_PSIP+1)*(ORDER_PSIP+1), (ORDER_PSIP+1)*(ORDER_PSIP+1));
+	ndarray::Array<double, 3, 3> XY       = ndarray::allocate(NUM_REF, 2*ORDER_PSIP+1, 2*ORDER_PSIP+1);
 	ndarray::Array<double, 1, 1> XLsYLc   = ndarray::allocate(NUM_REF);
 	ndarray::Array<double, 1, 1> YLsXLc   = ndarray::allocate(NUM_REF);
 	ndarray::Array<double, 2, 2> XYINIT   = ndarray::allocate(nValidCcd, 3);
-	ndarray::Array<double, 1, 1> XN       = ndarray::allocate((ORDER_PSIP+1)*(ORDER_PSIP+1));
-	ndarray::Array<double, 1, 1> YN       = ndarray::allocate((ORDER_PSIP+1)*(ORDER_PSIP+1));
+	ndarray::Array<double, 1, 1> XN       = ndarray::allocate(2*ORDER_PSIP+1);
+	ndarray::Array<double, 1, 1> YN       = ndarray::allocate(2*ORDER_PSIP+1);
 
 	for(int i = 0; i < nValidCcd; ++i){
 		XYINIT[i][0] = validCcd[i]->GPOS_L[0];
@@ -926,13 +929,13 @@ void CL_REFs::DETERMINE_CCDPOSITION(){
 		for(int NUM = 0; NUM < NUM_REF; ++NUM){
 			XN[0]=1;
 			YN[0]=1;
-			for(int i=1;i<(ORDER_PSIP+1)*(ORDER_PSIP+1);i++){
+			for(int i = 1; i <= 2*ORDER_PSIP; ++i){
 				XN[i]=XN[i-1]*REF[NUM].POS_CELESTIAL_IMWLD[0];
 				YN[i]=YN[i-1]*REF[NUM].POS_CELESTIAL_IMWLD[1];
 			}
-			for(int i=0;i<(ORDER_PSIP+1)*(ORDER_PSIP+1);i++)
-			for(int j=0;j<(ORDER_PSIP+1)*(ORDER_PSIP+1);j++)
-			XY[NUM][i][j] = XN[i]*YN[j];
+			for(int i = 0; i <= 2*ORDER_PSIP; ++i)
+			for(int j = 0; j <= 2*ORDER_PSIP; ++j)
+				XY[NUM][i][j] = XN[i]*YN[j];
 		}
 		for(int NUM = 0; NUM < NUM_REF; ++NUM){
 			int ID_CCD = REF[NUM].ID_CCD;

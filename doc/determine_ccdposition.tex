@@ -1,0 +1,162 @@
+\documentclass{scrartcl}
+\usepackage{amsmath, amssymb}
+
+\begin{document}
+Let \texttt{LOCAL\_G} coordinates the coordinates that cover all CCDs.
+Let \texttt{LOCAL\_L} coordinates the coordinates that cover a single CCD.
+
+For each CCD $c$, let $(X_c, Y_c)$ the position of the left-bottom corner of the CCD
+in the \texttt{LOCAL\_G} coordinates.
+The CCD $c$ is rotated around its left-bottom corner by $\Theta_c$
+against the \texttt{LOCAL\_G} coordinates.
+
+Let $R(c)$ the group of celestial objects found in the CCD $c$.
+An object $i \in R(c)$ is found at $(p_i, q_i)$ in the \texttt{LOCAL\_L} coordinates
+of the CCD $c$. The position of the object in the \texttt{LOCAL\_G} coordinates is:
+\begin{align}
+    \begin{pmatrix}
+        x_{ci} \\ y_{ci}
+    \end{pmatrix}
+    &= \begin{pmatrix}
+        \cos \Theta_c && -\sin \Theta_c
+    \\  \sin \Theta_c &&  \cos \Theta_c
+    \end{pmatrix}
+        \begin{pmatrix}
+            p_i \\ q_i
+        \end{pmatrix}
+        + \begin{pmatrix}
+            X_c \\ Y_c
+        \end{pmatrix}
+    .
+\end{align}
+When small deviation $X_c \mapsto X_c + \delta X_c$, $Y_c \mapsto Y_c + \delta Y_c$,
+and $\Theta_c \mapsto \Theta_c + \delta \Theta_c$ takes place, then $(x_{ci}, y_{ci})$
+changes by
+\begin{align}
+    \begin{pmatrix}
+        \delta x_{ci} \\ \delta y_{ci}
+    \end{pmatrix}
+    &= \delta \Theta_c
+        \begin{pmatrix}
+            -\sin \Theta_c && -\cos \Theta_c
+        \\   \cos \Theta_c && -\sin \Theta_c
+        \end{pmatrix}
+        \begin{pmatrix}
+            p_i \\ q_i
+        \end{pmatrix}
+        + \begin{pmatrix}
+            \delta X_c \\ \delta Y_c
+        \end{pmatrix}
+    .
+\end{align}
+
+Let $(s_i, t_i)$ the reference position of the object $i \in R(c)$
+in the intermediate-world-coordinates. We project it into the $LOCAL\_G$ coordinates
+with the use of polynomials:
+\begin{align}
+    \left\{\begin{aligned}
+        x'_i &= \sum_{m,n} a_{mn} s_i^m t_i^n
+    ,\\ y'_i &= \sum_{m,n} b_{mn} s_i^m t_i^n
+    .
+    \end{aligned}\right.
+\end{align}
+When small deviation $a_{mn} \mapsto a_{mn} + \delta a_{mn}$
+and $b_{mn} \mapsto b_{mn} + \delta b_{mn}$ occurs, then the projected
+position changes by
+\begin{align}
+    \left\{\begin{aligned}
+        \delta x'_i &= \sum_{m,n} \delta a_{mn} s_i^m t_i^n
+    ,\\ \delta y'_i &= \sum_{m,n} \delta b_{mn} s_i^m t_i^n
+    .
+    \end{aligned}\right.
+\end{align}
+
+The quantity that we are to minimize is:
+\begin{align}
+&   L(\delta a_{mn}, \delta b_{mn}, \delta X_c, \delta Y_c, \delta\Theta_c)
+\\  &= \frac{1}{2} \sum_{c,i} \left(
+        \left( x_{ci} + \delta x_{ci} - x'_i - \delta x'_i \right)^2
+        + \left( y_{ci} + \delta y_{ci} - y'_i - \delta y'_i \right)^2
+        \right)
+    .
+\end{align}
+
+Therefore,
+\begin{align}
+    0
+    &= \frac{\partial L}{\partial \delta X_{c}}
+\\  &= \sum_{i \in R(c)} \left( x_{ci} - x'_i + \delta x_{ci} - \delta x'_i\right)
+\\  &= \sum_{i \in R(c)} \left( x_{ci} - x'_i \right)
+        + \sum_{i \in R(c)} \delta X_{c}
+        + \sum_{i \in R(c)} \left(- p_i \sin \Theta_c - q_i \cos \Theta_c \right) \delta \Theta_c
+            \nonumber \\ & \qquad
+        - \sum_{m,n} \delta a_{mn} \sum_{i \in R(c)} s_i^{m} t_i^{n}
+,
+\end{align}
+
+\begin{align}
+    0
+    &= \frac{\partial L}{\partial \delta Y_{c}}
+\\  &= \sum_{i \in R(c)} \left( y_{ci} - y'_i + \delta y_{ci} - \delta y'_i\right)
+\\  &= \sum_{i \in R(c)} \left( y_{ci} - y'_i \right)
+        + \sum_{i \in R(c)} \delta Y_{c}
+        + \sum_{i \in R(c)} \left(p_i \cos \Theta_c - q_i \sin \Theta_c \right) \delta \Theta_c
+            \nonumber \\ & \qquad
+        - \sum_{m,n} \delta b_{mn} \sum_{i \in R(c)} s_i^{m} t_i^{n}
+,
+\end{align}
+
+\begin{align}
+    0
+    &= \frac{\partial L}{\partial \delta \Theta_{c}}
+\\  &= \sum_{i \in R(c)} \Big(
+          \left( x_{ci} - x'_i + \delta x_{ci} - \delta x'_i \right) \left(-p_i \sin \Theta_c - q_i \cos \Theta_c \right)
+            \nonumber \\ & \qquad
+        + \left( y_{ci} - y'_i + \delta y_{ci} - \delta y'_i \right) \left( p_i \cos \Theta_c - q_i \sin \Theta_c \right)
+        \Big)
+\\  &= \sum_{i \in R(c)} \left(
+            \left(x_{ci} - x'_i \right) \left(-p_i \sin \Theta_c - q_i \cos \Theta_c \right)
+           +\left(y_{ci} - y'_i \right) \left( p_i \cos \Theta_c - q_i \sin \Theta_c \right)
+        \right)
+            \nonumber \\ & \qquad
+        + \sum_{i \in R(c)} \left(-p_i \sin \Theta_c - q_i \cos \Theta_c \right) \delta X_{c}
+        + \sum_{i \in R(c)} \left( p_i \cos \Theta_c - q_i \sin \Theta_c \right) \delta Y_{c}
+            \nonumber \\ & \qquad
+        + \sum_{i \in R(c)} \left(p_i^2 + q_i^2\right) \delta \Theta_c
+            \nonumber \\ & \qquad
+        - \sum_{m,n} \delta a_{mn} \sum_{i \in R(c)} s_i^{m} t_i^{n}
+            \left(- p_i \sin \Theta_c - q_i \cos \Theta_c \right)
+            \nonumber \\ & \qquad
+        - \sum_{m,n} \delta b_{mn} \sum_{i \in R(c)} s_i^{m} t_i^{n}
+            \left( p_i \cos \Theta_c + q_i \sin \Theta_c \right)
+,
+\end{align}
+
+\begin{align}
+    0
+    &=\frac{\partial L}{\partial \delta a_{m'n'}}
+\\  &= - \sum_{c,i} \left( x_{ci} - x'_i + \delta x_{ci} - \delta x'_i \right) s_i^{m'} t_i^{n'}
+\\  &= - \sum_{c,i} (x_{ci} - x'_i) s_i^{m'} t_i^{n'}
+        - \sum_{c,i} s_i^{m'} t_i^{n'} \delta X_{c}
+        - \sum_{c,i} s_i^{m'} t_i^{n'} \left(-p_i \sin \Theta_c - q_i \cos \Theta_c \right) \delta \Theta_c
+            \nonumber \\ & \qquad
+        + \sum_{m,n} \delta a_{mn} \sum_{c,i} s_i^{m+m'} t_i^{n+n'}
+,
+\end{align}
+
+\begin{align}
+    0
+    &=\frac{\partial L}{\partial \delta b_{m'n'}}
+\\  &= - \sum_{c,i} \left( y_{ci} - y'_i + \delta y_{ci} - \delta y'_i \right) s_i^{m'} t_i^{n'}
+\\  &= - \sum_{c,i} (y_{ci} - y'_i) s_i^{m'} t_i^{n'}
+        - \sum_{c,i} s_i^{m'} t_i^{n'} \delta Y_{c}
+        - \sum_{c,i} s_i^{m'} t_i^{n'} \left(p_i \cos \Theta_c - q_i \sin \Theta_c \right) \delta \Theta_c
+            \nonumber \\ & \qquad
+        + \sum_{m,n} \delta b_{mn} \sum_{c,i} s_i^{m+m'} t_i^{n+n'}
+.
+\end{align}
+
+The above equations are linear equations of
+$\delta X_c$, $\delta Y_c$, $\delta \Theta_c$, $\delta a_{mn}$, and $\delta b_{mn}$;
+which are solved in function \texttt{CL\_REFs::DETERMINE\_CCDPOSITION()}.
+\end{document}
