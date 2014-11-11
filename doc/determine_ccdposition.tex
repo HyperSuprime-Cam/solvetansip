@@ -2,6 +2,9 @@
 \usepackage{amsmath, amssymb}
 
 \begin{document}
+
+\section*{What CL\_REFs::DETERMINE\_CCDPOSITION() does}
+
 Let \texttt{LOCAL\_G} coordinates the coordinates that cover all CCDs.
 Let \texttt{LOCAL\_L} coordinates the coordinates that cover a single CCD.
 
@@ -51,7 +54,7 @@ changes by
 \end{align}
 
 Let $(s_i, t_i)$ the reference position of the object $i \in R(c)$
-in the intermediate-world-coordinates. We project it into the $LOCAL\_G$ coordinates
+in the intermediate-world-coordinates. We project it into the \texttt{LOCAL\_G} coordinates
 with the use of polynomials:
 \begin{align}
     \left\{\begin{aligned}
@@ -77,9 +80,17 @@ The quantity that we are to minimize is:
 \\  &= \frac{1}{2} \sum_{c,i} \left(
         \left( x_{ci} + \delta x_{ci} - x'_i - \delta x'_i \right)^2
         + \left( y_{ci} + \delta y_{ci} - y'_i - \delta y'_i \right)^2
-        \right)
+        \right) + \lambda \sum_c \delta \Theta_c
     .
 \end{align}
+The last term $\lambda \sum_c \delta \Theta_c$ is introduced for a constraint
+$\sum_c \delta \Theta_c = 0$ with $\lambda$ the Lagrange multiplier.
+The constraint is required since a rotation of the whole CCDs can be attained
+with the use of $\delta X_c$, $\delta Y_c$, and the deviation of the polynomials.
+In addition, we do not let $a_{00}$ and $b_{00}$ deviate since a translation of
+the whole CCDs can be attained with the use of $\delta X_c$ and $\delta Y_c$.
+We exclude $\delta a_{00}$ and $\delta b_{00}$ from the equations rather than
+introduce constraint terms for them.
 
 Therefore,
 \begin{align}
@@ -114,6 +125,8 @@ Therefore,
             \nonumber \\ & \qquad
         + \left( y_{ci} - y'_i + \delta y_{ci} - \delta y'_i \right) \left( p_i \cos \Theta_c - q_i \sin \Theta_c \right)
         \Big)
+            \nonumber \\ & \qquad
+        + \lambda
 \\  &= \sum_{i \in R(c)} \left(
             \left(x_{ci} - x'_i \right) \left(-p_i \sin \Theta_c - q_i \cos \Theta_c \right)
            +\left(y_{ci} - y'_i \right) \left( p_i \cos \Theta_c - q_i \sin \Theta_c \right)
@@ -129,6 +142,8 @@ Therefore,
             \nonumber \\ & \qquad
         - \sum_{m,n} \delta b_{mn} \sum_{i \in R(c)} s_i^{m} t_i^{n}
             \left( p_i \cos \Theta_c + q_i \sin \Theta_c \right)
+            \nonumber \\ & \qquad
+        + \lambda
 ,
 \end{align}
 
@@ -153,10 +168,15 @@ Therefore,
         - \sum_{c,i} s_i^{m'} t_i^{n'} \left(p_i \cos \Theta_c - q_i \sin \Theta_c \right) \delta \Theta_c
             \nonumber \\ & \qquad
         + \sum_{m,n} \delta b_{mn} \sum_{c,i} s_i^{m+m'} t_i^{n+n'}
+,
+\end{align}
+and the constraint
+\begin{align}
+    0 &= \sum_{c} \delta \Theta_c
 .
 \end{align}
 
 The above equations are linear equations of
-$\delta X_c$, $\delta Y_c$, $\delta \Theta_c$, $\delta a_{mn}$, and $\delta b_{mn}$;
+$\delta X_c$, $\delta Y_c$, $\delta \Theta_c$, $\delta a_{mn}$, $\delta b_{mn}$ and $\lambda$;
 which are solved in function \texttt{CL\_REFs::DETERMINE\_CCDPOSITION()}.
 \end{document}

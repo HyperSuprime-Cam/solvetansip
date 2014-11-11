@@ -894,8 +894,8 @@ void CL_REFs::DETERMINE_CCDPOSITION(){
 
 	int const                    NUM_COEF = (ORDER_PSIP+1)*(ORDER_PSIP+2)/2;
 	ndarray::Array<double, 2, 2> COEF     = ndarray::allocate(2, NUM_COEF);
-	ndarray::Array<double, 1, 1> MAXYT    = ndarray::allocate(3*nValidCcd+2*(NUM_COEF-1));
-	ndarray::Array<double, 2, 2> MBXYT    = ndarray::allocate(3*nValidCcd+2*(NUM_COEF-1), 3*nValidCcd+2*(NUM_COEF-1));
+	ndarray::Array<double, 1, 1> MAXYT    = ndarray::allocate(3*nValidCcd+2*(NUM_COEF-1)+1);
+	ndarray::Array<double, 2, 2> MBXYT    = ndarray::allocate(3*nValidCcd+2*(NUM_COEF-1)+1, 3*nValidCcd+2*(NUM_COEF-1)+1);
 	ndarray::Array<double, 3, 3> XY       = ndarray::allocate(NUM_REF, 2*ORDER_PSIP+1, 2*ORDER_PSIP+1);
 	ndarray::Array<double, 1, 1> XLsYLc   = ndarray::allocate(NUM_REF);
 	ndarray::Array<double, 1, 1> YLsXLc   = ndarray::allocate(NUM_REF);
@@ -948,13 +948,12 @@ void CL_REFs::DETERMINE_CCDPOSITION(){
 		}
 
 //--------------------------------------------------
-//INIT
+//INIT a & B: we are solving B*c = a
 		MAXYT.deep() = 0;
 		MBXYT.deep() = 0;
 
 //--------------------------------------------------
-//dA
-//dAXYT
+// CCD positions (\delta X, \delta Y, \delta \Theta)
 		for(int NUM = 0; NUM < NUM_REF; ++NUM)
 		if(REF[NUM].FLAG_OBJ==1){
 			int validCcdId = ccdIdToValidId[REF[NUM].ID_CCD];
@@ -965,7 +964,7 @@ void CL_REFs::DETERMINE_CCDPOSITION(){
 			MAXYT[2*nValidCcd+validCcdId]-=-XLsYLc[NUM]*(REF[NUM].POS_DETECTED_LOCAL_G[0]-REF[NUM].POS_CELESTIAL_PSIP_LOCAL_G[0])
 							     -YLsXLc[NUM]*(REF[NUM].POS_DETECTED_LOCAL_G[1]-REF[NUM].POS_CELESTIAL_PSIP_LOCAL_G[1]);
 		}
-//dAA
+// Polynomial coefficients (\delta a_{mn}, \delta b_{mn})
 		int ij=0;
 		for(int i=0;i<ORDER_PSIP+1  ;i++)
 		for(int j=0;j<ORDER_PSIP+1-i;j++)
@@ -978,8 +977,7 @@ void CL_REFs::DETERMINE_CCDPOSITION(){
 			ij++;
 		}
 //--------------------------------------------------
-//dB
-//dBXYTXYT
+// CCD positions \times CCD positions
 		for(int NUM = 0; NUM < NUM_REF; ++NUM)
 		if(REF[NUM].FLAG_OBJ==1){
 			int validCcdId = ccdIdToValidId[REF[NUM].ID_CCD];
@@ -995,8 +993,8 @@ void CL_REFs::DETERMINE_CCDPOSITION(){
 			MBXYT[2*nValidCcd+validCcdId][1*nValidCcd+validCcdId]+=-YLsXLc[NUM];
 			MBXYT[2*nValidCcd+validCcdId][2*nValidCcd+validCcdId]+= XLsYLc[NUM]*XLsYLc[NUM]+YLsXLc[NUM]*YLsXLc[NUM];
 		}
-//dBXYTA
 
+// CCD positions \times Polynomial coefficients
 		ij=0;
 		for(int i=0;i<ORDER_PSIP+1  ;i++)
 		for(int j=0;j<ORDER_PSIP+1-i;j++)
@@ -1014,8 +1012,8 @@ void CL_REFs::DETERMINE_CCDPOSITION(){
 			}
 			ij++;
 		}
-//dBAXYT
 
+// Polynomial coefficients \times CCD positions
 		ij=0;
 		for(int i=0;i<ORDER_PSIP+1  ;i++)
 		for(int j=0;j<ORDER_PSIP+1-i;j++)
@@ -1033,8 +1031,8 @@ void CL_REFs::DETERMINE_CCDPOSITION(){
 			}
 			ij++;
 		}
-//dBAA
 
+// Polynomial coefficients \times Polynomial coefficients
 		ij=0;
 		for(int i=0;i<ORDER_PSIP+1  ;i++)
 		for(int j=0;j<ORDER_PSIP+1-i;j++)
@@ -1054,6 +1052,12 @@ void CL_REFs::DETERMINE_CCDPOSITION(){
 				kl++;
 			}
 			ij++;
+		}
+
+// restraint conditions: \sum_c \delta \Theta_c = 0
+		for(int validCcdId = 0; validCcdId < nValidCcd; ++validCcdId){
+			MBXYT[2*nValidCcd+validCcdId][3*nValidCcd+2*(NUM_COEF-1) + 0] = 1;
+			MBXYT[3*nValidCcd+2*(NUM_COEF-1) + 0][2*nValidCcd+validCcdId] = 1;
 		}
 //--------------------------------------------------
 		// C = B^{-1} A
