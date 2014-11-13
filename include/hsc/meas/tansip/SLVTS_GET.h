@@ -89,7 +89,7 @@ std::vector< std::vector< double > > GET_REF_POS_DETECTED_ASIP_IMWLD_G(CL_SLVTS*
 std::vector< std::vector< double > > GET_REF_POS_DETECTED_ASIP_RADEC_L(CL_SLVTS* SLVTS);//getting RADEC from DETECTED of all references
 std::vector< std::vector< double > > GET_REF_POS_DETECTED_ASIP_RADEC_G(CL_SLVTS* SLVTS);//getting RADEC from DETECTED of all references
 std::vector< std::vector< double > > GET_REF_DIFF(CL_SLVTS* SLVTS);//getting DIFF from SIP and PSIP fitting of all references
-std::vector< std::vector< double > > GET_REF_CAMERADISTPSIP(CL_SLVTS* SLVTS);//getting DISTORTION from PSIP fitting of all references
+std::vector< double > GET_REF_CAMERAJACOPSIP(CL_SLVTS* SLVTS);//getting DISTORTION from PSIP fitting of all references
 
 } // namespace tansip
 }} // namespace hsc::meas

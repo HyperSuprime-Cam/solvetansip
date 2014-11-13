@@ -95,10 +95,6 @@ public:
 	double  DIFF_PSIP[2];
 //DIST
 	double	CAMERA_JACO;
-	double	CAMERA_MAG;
-	double	CAMERA_CONV;
-	double	CAMERA_SHEAR[2];
-	double	CAMERA_ROT;
 
 //FUNCTIONS
 	void SET_INIT(CL_CCD*  CCD,CL_CCD*  GCD);//setting initial values
@@ -214,7 +210,7 @@ public:
 	void CALC_TANSIP();//calculating CD, SIP and PSIP coefficients
 //DISTORTION
 	void CALC_OPTICAL_DISTORTION();//CALC Distortion from PSIP
-	void FIT_DIST();//fitting optical distortion
+	Polynomial2D FIT_PSIP_JACO(); //fitting CCDs' Jacobian with PSIP
 	void CALC_OPTICAL_AXIS();//caluclationg optical axis
 
 	void SHOW();//show information of references

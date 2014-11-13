@@ -1220,54 +1220,27 @@ void CL_REFs::CALC_OPTICAL_DISTORTION(){
 	PSIP_DY[1] = PSIP[1].dy();
 
 	SET_OPTICAL_DISTORTIONbyPSIP();
-	FIT_DIST();
 	CALC_OPTICAL_AXIS();
 }
-void CL_REFs::FIT_DIST(){
+Polynomial2D CL_REFs::FIT_PSIP_JACO(){
 	int const NUM_REF    = APRM->NUM_REF;
 	int const ORDER_PSIP = APRM->ORDER_PSIP;
 
-	ndarray::Array<double, 2, 2> dC = ndarray::allocate(NUM_REF,3);
-	ndarray::Array<double, 2, 2> dR = ndarray::allocate(NUM_REF,3);
-	ndarray::Array<double, 2, 2> dS1= ndarray::allocate(NUM_REF,3);
-	ndarray::Array<double, 2, 2> dS2= ndarray::allocate(NUM_REF,3);
-	ndarray::Array<double, 2, 2> dM = ndarray::allocate(NUM_REF,3);
 	ndarray::Array<double, 2, 2> dJ = ndarray::allocate(NUM_REF,3);
 
 	APRM->NUM_FIT=0;
 	for(int i = 0; i < NUM_REF; ++i)
 	if(REF[i].FLAG_OBJ==1){
-		double C[2],D[6];
-
-		C[0]=REF[i].POS_CELESTIAL_IMPIX_G[0];
-		C[1]=REF[i].POS_CELESTIAL_IMPIX_G[1];
-		D[0]=REF[i].CAMERA_CONV;
-		D[1]=REF[i].CAMERA_ROT;
-		D[2]=REF[i].CAMERA_SHEAR[0];
-		D[3]=REF[i].CAMERA_SHEAR[1];
-		D[4]=REF[i].CAMERA_MAG;
-		D[5]=REF[i].CAMERA_JACO;
-
-		 dC[APRM->NUM_FIT][0]=dR[APRM->NUM_FIT][0]=dS1[APRM->NUM_FIT][0]=dS2[APRM->NUM_FIT][0]=dM[APRM->NUM_FIT][0]=dJ[APRM->NUM_FIT][0]=C[0];
-		 dC[APRM->NUM_FIT][1]=dR[APRM->NUM_FIT][1]=dS1[APRM->NUM_FIT][1]=dS2[APRM->NUM_FIT][1]=dM[APRM->NUM_FIT][1]=dJ[APRM->NUM_FIT][1]=C[1];
-		 dC[APRM->NUM_FIT][2]=D[0];
-		 dR[APRM->NUM_FIT][2]=D[1];
-		dS1[APRM->NUM_FIT][2]=D[2];
-		dS2[APRM->NUM_FIT][2]=D[3];
-		 dM[APRM->NUM_FIT][2]=D[4];
-		 dJ[APRM->NUM_FIT][2]=D[5];
+		dJ[APRM->NUM_FIT][0] = REF[i].POS_CELESTIAL_IMPIX_G[0];
+		dJ[APRM->NUM_FIT][1] = REF[i].POS_CELESTIAL_IMPIX_G[1];
+		dJ[APRM->NUM_FIT][2] = REF[i].CAMERA_JACO;
 		APRM->NUM_FIT+=1;
 	}
 
-	CCDs->CCD[APRM->NUM_CCD].PSIP_CONV     = CALC_FIT_LS2(APRM->NUM_FIT,ORDER_PSIP-1,dC );
-	CCDs->CCD[APRM->NUM_CCD].PSIP_ROT      = CALC_FIT_LS2(APRM->NUM_FIT,ORDER_PSIP-1,dR );
-	CCDs->CCD[APRM->NUM_CCD].PSIP_SHEAR[0] = CALC_FIT_LS2(APRM->NUM_FIT,ORDER_PSIP-1,dS1);
-	CCDs->CCD[APRM->NUM_CCD].PSIP_SHEAR[1] = CALC_FIT_LS2(APRM->NUM_FIT,ORDER_PSIP-1,dS2);
-	CCDs->CCD[APRM->NUM_CCD].PSIP_MAG      = CALC_FIT_LS2(APRM->NUM_FIT,ORDER_PSIP-1,dM );
-	CCDs->CCD[APRM->NUM_CCD].PSIP_JACO     = CALC_FIT_LS2(APRM->NUM_FIT,ORDER_PSIP-1,dJ );
+	return CALC_FIT_LS2(APRM->NUM_FIT,ORDER_PSIP-1,dJ );
 }
 void CL_REFs::CALC_OPTICAL_AXIS(){
-	Polynomial2D& PSIP_JACO = CCDs->CCD[APRM->NUM_CCD].PSIP_JACO;
+	Polynomial2D PSIP_JACO = FIT_PSIP_JACO();
 
 	Polynomial2D JDX = PSIP_JACO.dx();
 	Polynomial2D JDY = PSIP_JACO.dy();
@@ -1516,14 +1489,7 @@ void CL_REF::SET_OPTICAL_DISTORTIONbyPSIP(){
 	dCdI[1][0] = REFs->PSIP_DX[1](POS_CELESTIAL_IMPIX_G[0], POS_CELESTIAL_IMPIX_G[1]);
 	dCdI[1][1] = REFs->PSIP_DY[1](POS_CELESTIAL_IMPIX_G[0], POS_CELESTIAL_IMPIX_G[1]);
 
-	CAMERA_CONV     =0.5*(1+dCdI[0][0]+1+dCdI[1][1]);
-	CAMERA_ROT      =0.5*(  dCdI[0][1]-  dCdI[1][0]);
-	CAMERA_SHEAR[0] =0.5*(  dCdI[0][0]-  dCdI[1][1]);
-	CAMERA_SHEAR[1] =0.5*(  dCdI[0][1]+  dCdI[1][0]);
-	CAMERA_MAG      =CAMERA_CONV*CAMERA_CONV-(CAMERA_SHEAR[0]*CAMERA_SHEAR[0]+CAMERA_SHEAR[1]*CAMERA_SHEAR[1]);
 	CAMERA_JACO     =(1+dCdI[0][0])*(1+dCdI[1][1])-dCdI[0][1]*dCdI[1][0];
-
-//cout<< POS_CELESTIAL_IMPIX_G[0]<<"	"<<POS_CELESTIAL_IMPIX_G[1]<<"	"<<CAMERA_CONV<<"	"<<CAMERA_ROT<<"	"<<CAMERA_SHEAR[0]<<"	"<<CAMERA_SHEAR[1]<<"	"<<CAMERA_MAG<<"	"<<CAMERA_JACO<<endl;
 }
 
 } // namespace tansip

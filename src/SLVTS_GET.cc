@@ -812,26 +812,13 @@ std::vector< std::vector< double > > GET_REF_DIFF(CL_SLVTS* SLVTS){
 
     return DIFF;
 }
-std::vector< std::vector< double > > GET_REF_CAMERADISTPSIP(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > CONV,ROT,SHR1,SHR2,MAG,JAC;
-    std::vector< std::vector< double > > DIST;
-    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++){
-        CONV.push_back(SLVTS->REFs->REF[ID].CAMERA_CONV);
-         ROT.push_back(SLVTS->REFs->REF[ID].CAMERA_ROT);
-        SHR1.push_back(SLVTS->REFs->REF[ID].CAMERA_SHEAR[0]);
-        SHR2.push_back(SLVTS->REFs->REF[ID].CAMERA_SHEAR[1]);
-         MAG.push_back(SLVTS->REFs->REF[ID].CAMERA_MAG);
-         JAC.push_back(SLVTS->REFs->REF[ID].CAMERA_JACO);
+std::vector< double > GET_REF_CAMERAJACOPSIP(CL_SLVTS* SLVTS){
+    std::vector< double > JACO;
+    for(int ID = 0; ID < SLVTS->APRM->NUM_REF; ++ID){
+         JACO.push_back(SLVTS->REFs->REF[ID].CAMERA_JACO);
     }
-    DIST.push_back(CONV);
-    DIST.push_back(ROT);
-    DIST.push_back(SHR1);
-    DIST.push_back(SHR2);
-    DIST.push_back(MAG);
-    DIST.push_back(JAC);
 
-    return DIST;
+    return JACO;
 }
 
 } // namespace tansip

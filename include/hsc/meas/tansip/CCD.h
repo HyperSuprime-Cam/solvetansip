@@ -37,11 +37,6 @@ public:
 	double	 InvCD[2][2];
 	Polynomial2D  ASIP[2];
 	Polynomial2D  PSIP[2];
-	Polynomial2D  PSIP_CONV;
-	Polynomial2D  PSIP_ROT;
-	Polynomial2D  PSIP_SHEAR[2];
-	Polynomial2D  PSIP_MAG;
-	Polynomial2D  PSIP_JACO;
 	double	 DIF_AVE_ASIP[2];
 	double	 DIF_AVE_PSIP[2];
 	double	 DIF_RMS_ASIP[2];
