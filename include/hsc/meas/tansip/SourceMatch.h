@@ -68,8 +68,8 @@ inline SourceMatch::SourceMatch(lsst::afw::table::ReferenceMatch match) :
     _dec(match.first->getDec().asDegrees()),
     _x(match.second->getX()),
     _y(match.second->getY()),
-    _xErr(match.second->get(match.second->getTable()->getCentroidErrKey()(0,0))),
-    _yErr(match.second->get(match.second->getTable()->getCentroidErrKey()(1,1))),
+    _xErr(match.second->getTable()->getCentroidErrKey().getElement(*match.second, 0, 0)),
+    _yErr(match.second->getTable()->getCentroidErrKey().getElement(*match.second, 1, 1)),
     _flux(match.second->getPsfFlux())
 {}
 
