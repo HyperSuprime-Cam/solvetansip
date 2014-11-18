@@ -24,7 +24,6 @@ public:
 	int	MODE_CCDPOS;
 	double  PRECISION_CCD;//pixel
 //REF
-	int	NUM_REF;
 	int	NUM_FIT;
 	int	NUM_REJ;
 	double	CRPIX[2];

@@ -59,18 +59,17 @@ class SolveTansipTask(CmdLineTask):
         wcsList = doTansip.getwcsList(wcs)
         return wcsList
 
-    def convert(self, matchList):
-        if matchList is None: # match for this CCD is None
-            #return [ None ]
-            return None
-        xErrKey = matchList[0].second.getTable().getCentroidErrKey()[0,0]
-        yErrKey = matchList[0].second.getTable().getCentroidErrKey()[1,1]
-        return [tansip.SourceMatch(m.second.getId(), # id for second is ok?
-                                   afwCoord.IcrsCoord(m.first.getRa(), m.first.getDec()),
-                                   afwGeom.Point2D(m.second.getX(), m.second.getY()),
-                                   afwGeom.Point2D(m.second.get(xErrKey), m.second.get(yErrKey)),
-                                   m.second.getPsfFlux())
+    def convert(self, matchLists):
+        refMatchLists = tansip.ReferenceMatchVector()
+
+        for ccdId in range(len(matchLists)):
+            matchList = matchLists[ccdId]
+            if matchList is None: continue
+
+            refMatchLists[len(refMatchLists):] = (
+                tansip.toReferenceMatch(m, ccdId)
                 for m in matchList if (m.first and m.second)] # both ref and src to have valid values
+            )
 
     def read(self, butler, dataRefList, nCcd = None):
         """
@@ -125,7 +124,7 @@ class SolveTansipTask(CmdLineTask):
 
     def run(self, camera, butler, dataRefList):
         matchLists = self.read(butler, dataRefList)
-        matchLists = [self.convert(ml) for ml in matchLists]
+        matchLists = self.convert(matchLists)
         return self.solve(camera, butler.mapper.camera, matchLists)
 
 
@@ -168,7 +167,7 @@ class SolveTansipQaTask(SolveTansipTask):
 
     def run(self, camera, butler, dataRefList, policy=None):
         matchLists = self.read(butler, dataRefList)
-        matchListsForSolveTansip = [self.convert(ml) for ml in matchLists]
+        matchListsForSolveTansip = self.convert(matchLists)
 
         dataTansip = self.solve(camera, butler.mapper.camera, matchListsForSolveTansip, policy=policy)
 

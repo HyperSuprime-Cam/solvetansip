@@ -15,6 +15,7 @@
 
 #include <ndarray.h>
 
+#include "hsc/meas/tansip/ReferenceMatch.h"
 #include "hsc/meas/tansip/APRM.h"
 #include "hsc/meas/tansip/CCD.h"
 #include "hsc/meas/tansip/CALC.h"
@@ -22,6 +23,7 @@
 
 namespace hsc { namespace meas {
 namespace tansip {
+
 
 enum EPosDetected
 {
@@ -41,17 +43,15 @@ enum EPosCelestial
 	CELESTIAL_LOCAL_G,
 };
 
-class CL_REFs;
+struct CL_REFs;
 
-class CL_REF{
-private:
-public:
+struct CL_REF
+{
 	CL_APRM *APRM;//=SLVTS->APRM
 	CL_REFs *REFs;
 	CL_CCD  *CCD;//=SLVTS->CCDs->CCD[ID_CCD]
 	CL_CCD  *GCD;//=SLVTS->CCDs->CCD[NUMCCD]
 
-	long long int ID_OBJ;
 	int	ID_CCD;
 	int	FLAG_OBJ;
 //POS_CELESTIC
@@ -63,16 +63,13 @@ public:
 	double 	POS_CELESTIAL_CRPIX_G[2];
 	double 	POS_CELESTIAL_LOCAL_G[2];
 	double	POS_CELESTIAL_LOCAL_L[2];
-	double	POS_CELESTIAL_LOCAL_C[2];
 	double	POS_CELESTIAL_PSIP_CRPIX_L[2];
 	double 	POS_CELESTIAL_PSIP_CRPIX_G[2];
 	double 	POS_CELESTIAL_PSIP_LOCAL_G[2];
 	double	POS_CELESTIAL_PSIP_LOCAL_L[2];
-	double	POS_CELESTIAL_PSIP_LOCAL_C[2];
 
 //POS_DETECTED
 	double	POS_DETECTED_LOCAL_L[2];
-	double	POS_DETECTED_LOCAL_C[2];
 	double	POS_DETECTED_LOCAL_G[2];
 	double	POS_DETECTED_CRPIX_L[2];
 	double 	POS_DETECTED_CRPIX_G[2];
@@ -96,10 +93,14 @@ public:
 //DIST
 	double	CAMERA_JACO;
 
-//FUNCTIONS
-	void SET_INIT(CL_CCD*  CCD,CL_CCD*  GCD);//setting initial values
-//FUNCTIONS::POS
-	void SET_POS_DETECTED_LOCAL_CfromLOCAL_L();//setting detected position of LOCAL_C from LOCAL_L
+//Run-time position selectors
+	double const (&(POS(EPosDetected  d) const))[2];
+	double const (&(POS(EPosCelestial c) const))[2];
+
+	double (&POS(EPosDetected  d))[2];
+	double (&POS(EPosCelestial c))[2];
+
+// Position converters
 	void SET_POS_DETECTED_LOCAL_GfromLOCAL_L();//setting detected position of LOCAL_G from LOCAL_L
 	void SET_POS_DETECTED_CRPIX_LfromLOCAL_L();//setting detected position of CRPIX_L from LOCAL_L
 	void SET_POS_DETECTED_CRPIX_GfromLOCAL_G();//setting detected position of CRPIX_G from LOCAL_G
@@ -130,29 +131,107 @@ public:
 	void SET_DIFF();//calculating differences from SIP and PSIP fitting
 	void SET_OPTICAL_DISTORTIONbyPSIP();//calculating distortion from PSIP
 };
-class CL_REFs{
-private:
+
+
+inline double const (&(CL_REF::POS(EPosDetected  d) const))[2]
+{
+	switch(d){
+	case DETECTED_LOCAL_G:
+		return POS_DETECTED_LOCAL_G;
+	case DETECTED_CRPIX_G:
+		return POS_DETECTED_CRPIX_G;
+	case DETECTED_IMPIX_G:
+		return POS_DETECTED_IMPIX_G;
+	case DETECTED_IMWLD_G:
+		return POS_DETECTED_IMWLD_G;
+	case DETECTED_RADEC_G:
+		return POS_DETECTED_RADEC_G;
+	}
+}
+
+
+inline double (&CL_REF::POS(EPosDetected  d))[2]
+{
+	switch(d){
+	case DETECTED_LOCAL_G:
+		return POS_DETECTED_LOCAL_G;
+	case DETECTED_CRPIX_G:
+		return POS_DETECTED_CRPIX_G;
+	case DETECTED_IMPIX_G:
+		return POS_DETECTED_IMPIX_G;
+	case DETECTED_IMWLD_G:
+		return POS_DETECTED_IMWLD_G;
+	case DETECTED_RADEC_G:
+		return POS_DETECTED_RADEC_G;
+	}
+}
+
+
+inline double const (&(CL_REF::POS(EPosCelestial c) const))[2]
+{
+	switch(c){
+	case CELESTIAL_RADEC:
+		return POS_CELESTIAL_RADEC;
+	case CELESTIAL_IMWLD:
+		return POS_CELESTIAL_IMWLD;
+	case CELESTIAL_IMPIX_G:
+		return POS_CELESTIAL_IMPIX_G;
+	case CELESTIAL_CRPIX_G:
+		return POS_CELESTIAL_CRPIX_G;
+	case CELESTIAL_LOCAL_G:
+		return POS_CELESTIAL_LOCAL_G;
+	}
+}
+
+
+inline double (&CL_REF::POS(EPosCelestial c))[2]
+{
+	switch(c){
+	case CELESTIAL_RADEC:
+		return POS_CELESTIAL_RADEC;
+	case CELESTIAL_IMWLD:
+		return POS_CELESTIAL_IMWLD;
+	case CELESTIAL_IMPIX_G:
+		return POS_CELESTIAL_IMPIX_G;
+	case CELESTIAL_CRPIX_G:
+		return POS_CELESTIAL_CRPIX_G;
+	case CELESTIAL_LOCAL_G:
+		return POS_CELESTIAL_LOCAL_G;
+	}
+}
+
+
+struct CL_REFs{
 public:
 	CL_APRM *APRM;//SLVTS->APRM
 	CL_CCDs *CCDs;//SLVTS->CCDs
 	std::vector<CL_REF>  REF;
 	Polynomial2D PSIP_DX[2];
 	Polynomial2D PSIP_DY[2];
-	double   MAX_LOCAL_G_R;
 	double   MAX_LOCAL_G[2];
 	double   MIN_LOCAL_G[2];
 	double   AVE_LOCAL_G[2];
 
 //FUNCTIONS
-	void SET_INIT(CL_APRM *APRM,CL_CCDs* CCDs);//setting inital values
-	void SET_INPUT(std::vector< std::vector< std::string > > REF_Argvs,CL_APRM* APRM,CL_CCDs* CCDs);//setting input values
-	void SET_NUM();//setting NUM_REF, NUM_FIT, NUM_REJ
-	void SET_END();//destructor
-	bool  CHECK();//checking current values
-	void SET_CCD(CL_CCDs*  CCDs);//setting initial values of all CCDs
-//FUNCTIONS::POS
+	CL_REFs(
+		std::vector<ReferenceMatch> const& matchList,
+		CL_APRM                          * APRM_IN,
+		CL_CCDs                          * CCDs_IN
+	);
 
-	void SET_POS_DETECTED_LOCAL_CfromLOCAL_L();//setting detected position of LOCAL_C from LOCAL_L for all references
+	void SET_NUM() const;//setting NUM_REF, NUM_FIT, NUM_REJ
+	bool CHECK();//checking current values
+
+	template <class CL_REF_MemberFunc>
+	void forAllRef(CL_REF_MemberFunc const& memFunc){
+		for(std::vector<CL_REF>::iterator r = REF.begin();
+			r != REF.end(); ++r
+		){
+			((*r).*memFunc)();
+		}
+	}
+
+//FUNCTIONS::POS
 	void SET_POS_DETECTED_LOCAL_GfromLOCAL_L();//setting detected position of LOCAL_G from LOCAL_L for all references
 	void SET_POS_DETECTED_CRPIX_LfromLOCAL_L();//setting detected position of CRPIX_L from LOCAL_L for all references
 	void SET_POS_DETECTED_CRPIX_GfromLOCAL_G();//setting detected position of CRPIX_G from LOCAL_G for all references
@@ -184,8 +263,8 @@ public:
 	void SET_POS_CELESTIAL_ALL();//setting all celestial positions for all references
 	void SET_DIFF();//calculating differences from SIP and PSIP fitting for all references
 	void SET_OPTICAL_DISTORTIONbyPSIP();//calculating distortion from PSIP all references
-	void SET_MAXMIN_LOCAL_G();//setting maximun position in global coordinate
-	void SET_MAXMIN_CRPIX_G();//setting maximun position in global CRPIX coordinate
+	void SET_MAXMIN_LOCAL_G();//setting maximum position in global coordinate
+	void SET_MAXMIN_CRPIX_G();//setting maximum position in global CRPIX coordinate
 	int  GET_ID_NEAR_CRVAL();//getting ID of reference which is nearest to CRVAL
 	int  GET_ID_NEAR_CRPIX();//getting ID of reference which is nearest to CRPIX
 //FUNCTIONS::FIT

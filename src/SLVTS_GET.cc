@@ -29,9 +29,6 @@ int GET_SUM_MODECCD(CL_SLVTS* SLVTS){
 int GET_SUM_NUMCCD(CL_SLVTS* SLVTS){
 	return SLVTS->APRM->NUM_CCD;
 }
-int GET_SUM_NUMREF(CL_SLVTS* SLVTS){
-	return SLVTS->APRM->NUM_REF;
-}
 int GET_SUM_NUMFIT(CL_SLVTS* SLVTS){
 	return SLVTS->APRM->NUM_FIT;
 }
@@ -66,7 +63,6 @@ double GET_SUM_ANGLE(CL_SLVTS* SLVTS){
 }
 std::vector< double > GET_SUM_MAX_CRPIX_G(CL_SLVTS* SLVTS){
 	std::vector< double > MAX_CRPIX_G;
-	MAX_CRPIX_G.push_back(SLVTS->CCDs->MAX_CRPIX_G_R);
 	MAX_CRPIX_G.push_back(SLVTS->CCDs->MAX_CRPIX_G[0]);
 	MAX_CRPIX_G.push_back(SLVTS->CCDs->MAX_CRPIX_G[1]);
 	MAX_CRPIX_G.push_back(SLVTS->CCDs->MIN_CRPIX_G[0]);
@@ -340,470 +336,149 @@ std::vector< std::vector< double > > GET_CCD_COEFPSIPB(CL_SLVTS* SLVTS){
 //-----------------------------------------------------------------
 //Getting Functions : REF Info
 //-----------------------------------------------------------------
-std::vector< long long int > GET_REF_ID(CL_SLVTS* SLVTS){
-    long long int ID;
-    std::vector< long long int > RID;
-    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++)
-    RID.push_back(SLVTS->REFs->REF[ID].ID_OBJ);
-
-    return RID;
-}
 std::vector< int > GET_REF_CID(CL_SLVTS* SLVTS){
-    int ID;
     std::vector< int > CID;
-    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++)
-    CID.push_back(SLVTS->REFs->REF[ID].ID_CCD);
-
+    for(std::vector<CL_REF>::const_iterator r = SLVTS->REFs->REF.begin();
+        r != SLVTS->REFs->REF.end(); ++r
+    ){
+        CID.push_back(r->ID_CCD);
+    }
     return CID;
 }
 std::vector< int > GET_REF_FLAG(CL_SLVTS* SLVTS){
-    int ID;
     std::vector< int > FLAG;
-    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++)
-    FLAG.push_back(SLVTS->REFs->REF[ID].FLAG_OBJ);
-
+    for(std::vector<CL_REF>::const_iterator r = SLVTS->REFs->REF.begin();
+        r != SLVTS->REFs->REF.end(); ++r
+    ){
+        FLAG.push_back(r->FLAG_OBJ);
+    }
     return FLAG;
 }
+
+
+namespace {
+    template <class CL_REFMember>
+    std::vector< std::vector< double > >
+    GetRefPos(CL_SLVTS* SLVTS, CL_REFMember const& member)
+    {
+        std::vector< double > X,Y;
+        std::vector< std::vector< double > > XY;
+        for(std::vector<CL_REF>::const_iterator r = SLVTS->REFs->REF.begin();
+            r != SLVTS->REFs->REF.end(); ++r
+        ){
+            X.push_back(((*r).*member)[0]);
+            Y.push_back(((*r).*member)[1]);
+        }
+        XY.push_back(X);
+        XY.push_back(Y);
+
+        return XY;
+    }
+}
+
+
 //POS_CELESTIAL
 std::vector< std::vector< double > > GET_REF_POS_CELESTIAL_RADEC(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > X,Y;
-    std::vector< std::vector< double > > XY;
-    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++){
-        X.push_back(SLVTS->REFs->REF[ID].POS_CELESTIAL_RADEC[0]);
-        Y.push_back(SLVTS->REFs->REF[ID].POS_CELESTIAL_RADEC[1]);
-    }
-    XY.push_back(X);
-    XY.push_back(Y);
-
-    return XY;
+    return GetRefPos(SLVTS, &CL_REF::POS_CELESTIAL_RADEC);
 }
 std::vector< std::vector< double > > GET_REF_POS_CELESTIAL_IMWLD(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > X,Y;
-    std::vector< std::vector< double > > XY;
-    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++){
-        X.push_back(SLVTS->REFs->REF[ID].POS_CELESTIAL_IMWLD[0]);
-        Y.push_back(SLVTS->REFs->REF[ID].POS_CELESTIAL_IMWLD[1]);
-    }
-    XY.push_back(X);
-    XY.push_back(Y);
-
-    return XY;
+    return GetRefPos(SLVTS, &CL_REF::POS_CELESTIAL_IMWLD);
 }
 std::vector< std::vector< double > > GET_REF_POS_CELESTIAL_IMPIX_L(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > X,Y;
-    std::vector< std::vector< double > > XY;
-    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++){
-        X.push_back(SLVTS->REFs->REF[ID].POS_CELESTIAL_IMPIX_L[0]);
-        Y.push_back(SLVTS->REFs->REF[ID].POS_CELESTIAL_IMPIX_L[1]);
-    }
-    XY.push_back(X);
-    XY.push_back(Y);
-
-    return XY;
+    return GetRefPos(SLVTS, &CL_REF::POS_CELESTIAL_IMPIX_L);
 }
 std::vector< std::vector< double > > GET_REF_POS_CELESTIAL_IMPIX_G(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > X,Y;
-    std::vector< std::vector< double > > XY;
-    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++){
-        X.push_back(SLVTS->REFs->REF[ID].POS_CELESTIAL_IMPIX_G[0]);
-        Y.push_back(SLVTS->REFs->REF[ID].POS_CELESTIAL_IMPIX_G[1]);
-    }
-    XY.push_back(X);
-    XY.push_back(Y);
-
-    return XY;
+    return GetRefPos(SLVTS, &CL_REF::POS_CELESTIAL_IMPIX_G);
 }
 std::vector< std::vector< double > > GET_REF_POS_CELESTIAL_CRPIX_L(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > X,Y;
-    std::vector< std::vector< double > > XY;
-    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++){
-        X.push_back(SLVTS->REFs->REF[ID].POS_CELESTIAL_CRPIX_L[0]);
-        Y.push_back(SLVTS->REFs->REF[ID].POS_CELESTIAL_CRPIX_L[1]);
-    }
-    XY.push_back(X);
-    XY.push_back(Y);
-
-    return XY;
+    return GetRefPos(SLVTS, &CL_REF::POS_CELESTIAL_CRPIX_L);
 }
 std::vector< std::vector< double > > GET_REF_POS_CELESTIAL_CRPIX_G(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > X,Y;
-    std::vector< std::vector< double > > XY;
-    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++){
-        X.push_back(SLVTS->REFs->REF[ID].POS_CELESTIAL_CRPIX_G[0]);
-        Y.push_back(SLVTS->REFs->REF[ID].POS_CELESTIAL_CRPIX_G[1]);
-    }
-    XY.push_back(X);
-    XY.push_back(Y);
-
-    return XY;
+    return GetRefPos(SLVTS, &CL_REF::POS_CELESTIAL_CRPIX_G);
 }
 std::vector< std::vector< double > > GET_REF_POS_CELESTIAL_LOCAL_L(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > X,Y;
-    std::vector< std::vector< double > > XY;
-    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++){
-        X.push_back(SLVTS->REFs->REF[ID].POS_CELESTIAL_LOCAL_L[0]);
-        Y.push_back(SLVTS->REFs->REF[ID].POS_CELESTIAL_LOCAL_L[1]);
-    }
-    XY.push_back(X);
-    XY.push_back(Y);
-
-    return XY;
+    return GetRefPos(SLVTS, &CL_REF::POS_CELESTIAL_LOCAL_L);
 }
 std::vector< std::vector< double > > GET_REF_POS_CELESTIAL_LOCAL_G(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > X,Y;
-    std::vector< std::vector< double > > XY;
-    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++){
-        X.push_back(SLVTS->REFs->REF[ID].POS_CELESTIAL_LOCAL_G[0]);
-        Y.push_back(SLVTS->REFs->REF[ID].POS_CELESTIAL_LOCAL_G[1]);
-    }
-    XY.push_back(X);
-    XY.push_back(Y);
-
-    return XY;
-}
-std::vector< std::vector< double > > GET_REF_POS_CELESTIAL_LOCAL_C(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > X,Y;
-    std::vector< std::vector< double > > XY;
-    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++){
-        X.push_back(SLVTS->REFs->REF[ID].POS_CELESTIAL_LOCAL_C[0]);
-        Y.push_back(SLVTS->REFs->REF[ID].POS_CELESTIAL_LOCAL_C[1]);
-    }
-    XY.push_back(X);
-    XY.push_back(Y);
-
-    return XY;
+    return GetRefPos(SLVTS, &CL_REF::POS_CELESTIAL_LOCAL_G);
 }
 std::vector< std::vector< double > > GET_REF_POS_CELESTIAL_PSIP_CRPIX_L(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > X,Y;
-    std::vector< std::vector< double > > XY;
-    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++){
-        X.push_back(SLVTS->REFs->REF[ID].POS_CELESTIAL_PSIP_CRPIX_L[0]);
-        Y.push_back(SLVTS->REFs->REF[ID].POS_CELESTIAL_PSIP_CRPIX_L[1]);
-    }
-    XY.push_back(X);
-    XY.push_back(Y);
-
-    return XY;
+    return GetRefPos(SLVTS, &CL_REF::POS_CELESTIAL_PSIP_CRPIX_L);
 }
 std::vector< std::vector< double > > GET_REF_POS_CELESTIAL_PSIP_CRPIX_G(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > X,Y;
-    std::vector< std::vector< double > > XY;
-    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++){
-        X.push_back(SLVTS->REFs->REF[ID].POS_CELESTIAL_PSIP_CRPIX_G[0]);
-        Y.push_back(SLVTS->REFs->REF[ID].POS_CELESTIAL_PSIP_CRPIX_G[1]);
-    }
-    XY.push_back(X);
-    XY.push_back(Y);
-
-    return XY;
+    return GetRefPos(SLVTS, &CL_REF::POS_CELESTIAL_PSIP_CRPIX_G);
 }
 std::vector< std::vector< double > > GET_REF_POS_CELESTIAL_PSIP_LOCAL_L(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > X,Y;
-    std::vector< std::vector< double > > XY;
-    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++){
-        X.push_back(SLVTS->REFs->REF[ID].POS_CELESTIAL_PSIP_LOCAL_L[0]);
-        Y.push_back(SLVTS->REFs->REF[ID].POS_CELESTIAL_PSIP_LOCAL_L[1]);
-    }
-    XY.push_back(X);
-    XY.push_back(Y);
-
-    return XY;
+    return GetRefPos(SLVTS, &CL_REF::POS_CELESTIAL_PSIP_LOCAL_L);
 }
 std::vector< std::vector< double > > GET_REF_POS_CELESTIAL_PSIP_LOCAL_G(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > X,Y;
-    std::vector< std::vector< double > > XY;
-    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++){
-        X.push_back(SLVTS->REFs->REF[ID].POS_CELESTIAL_PSIP_LOCAL_G[0]);
-        Y.push_back(SLVTS->REFs->REF[ID].POS_CELESTIAL_PSIP_LOCAL_G[1]);
-    }
-    XY.push_back(X);
-    XY.push_back(Y);
-
-    return XY;
-}
-std::vector< std::vector< double > > GET_REF_POS_CELESTIAL_PSIP_LOCAL_C(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > X,Y;
-    std::vector< std::vector< double > > XY;
-    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++){
-        X.push_back(SLVTS->REFs->REF[ID].POS_CELESTIAL_PSIP_LOCAL_C[0]);
-        Y.push_back(SLVTS->REFs->REF[ID].POS_CELESTIAL_PSIP_LOCAL_C[1]);
-    }
-    XY.push_back(X);
-    XY.push_back(Y);
-
-    return XY;
+    return GetRefPos(SLVTS, &CL_REF::POS_CELESTIAL_PSIP_LOCAL_G);
 }
 //POS_DETECTED
 std::vector< std::vector< double > > GET_REF_POS_DETECTED_LOCAL_L(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > X,Y;
-    std::vector< std::vector< double > > XY;
-    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++){
-        X.push_back(SLVTS->REFs->REF[ID].POS_DETECTED_LOCAL_L[0]);
-        Y.push_back(SLVTS->REFs->REF[ID].POS_DETECTED_LOCAL_L[1]);
-    }
-    XY.push_back(X);
-    XY.push_back(Y);
-
-    return XY;
+    return GetRefPos(SLVTS, &CL_REF::POS_DETECTED_LOCAL_L);
 }
 std::vector< std::vector< double > > GET_REF_POS_DETECTED_LOCAL_G(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > X,Y;
-    std::vector< std::vector< double > > XY;
-    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++){
-        X.push_back(SLVTS->REFs->REF[ID].POS_DETECTED_LOCAL_G[0]);
-        Y.push_back(SLVTS->REFs->REF[ID].POS_DETECTED_LOCAL_G[1]);
-    }
-    XY.push_back(X);
-    XY.push_back(Y);
-
-    return XY;
-}
-std::vector< std::vector< double > > GET_REF_POS_DETECTED_LOCAL_C(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > X,Y;
-    std::vector< std::vector< double > > XY;
-    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++){
-        X.push_back(SLVTS->REFs->REF[ID].POS_DETECTED_LOCAL_C[0]);
-        Y.push_back(SLVTS->REFs->REF[ID].POS_DETECTED_LOCAL_C[1]);
-    }
-    XY.push_back(X);
-    XY.push_back(Y);
-
-    return XY;
+    return GetRefPos(SLVTS, &CL_REF::POS_DETECTED_LOCAL_G);
 }
 std::vector< std::vector< double > > GET_REF_POS_DETECTED_CRPIX_L(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > X,Y;
-    std::vector< std::vector< double > > XY;
-    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++){
-        X.push_back(SLVTS->REFs->REF[ID].POS_DETECTED_CRPIX_L[0]);
-        Y.push_back(SLVTS->REFs->REF[ID].POS_DETECTED_CRPIX_L[1]);
-    }
-    XY.push_back(X);
-    XY.push_back(Y);
-
-    return XY;
+    return GetRefPos(SLVTS, &CL_REF::POS_DETECTED_CRPIX_L);
 }
 std::vector< std::vector< double > > GET_REF_POS_DETECTED_CRPIX_G(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > X,Y;
-    std::vector< std::vector< double > > XY;
-    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++){
-        X.push_back(SLVTS->REFs->REF[ID].POS_DETECTED_CRPIX_G[0]);
-        Y.push_back(SLVTS->REFs->REF[ID].POS_DETECTED_CRPIX_G[1]);
-    }
-    XY.push_back(X);
-    XY.push_back(Y);
-
-    return XY;
+    return GetRefPos(SLVTS, &CL_REF::POS_DETECTED_CRPIX_G);
 }
 std::vector< std::vector< double > > GET_REF_POS_DETECTED_IMPIX_L(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > X,Y;
-    std::vector< std::vector< double > > XY;
-    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++){
-        X.push_back(SLVTS->REFs->REF[ID].POS_DETECTED_IMPIX_L[0]);
-        Y.push_back(SLVTS->REFs->REF[ID].POS_DETECTED_IMPIX_L[1]);
-    }
-    XY.push_back(X);
-    XY.push_back(Y);
-
-    return XY;
+    return GetRefPos(SLVTS, &CL_REF::POS_DETECTED_IMPIX_L);
 }
 std::vector< std::vector< double > > GET_REF_POS_DETECTED_IMPIX_G(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > X,Y;
-    std::vector< std::vector< double > > XY;
-    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++){
-        X.push_back(SLVTS->REFs->REF[ID].POS_DETECTED_IMPIX_G[0]);
-        Y.push_back(SLVTS->REFs->REF[ID].POS_DETECTED_IMPIX_G[1]);
-    }
-    XY.push_back(X);
-    XY.push_back(Y);
-
-    return XY;
+    return GetRefPos(SLVTS, &CL_REF::POS_DETECTED_IMPIX_G);
 }
 std::vector< std::vector< double > > GET_REF_POS_DETECTED_IMWLD_L(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > X,Y;
-    std::vector< std::vector< double > > XY;
-    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++){
-        X.push_back(SLVTS->REFs->REF[ID].POS_DETECTED_IMWLD_L[0]);
-        Y.push_back(SLVTS->REFs->REF[ID].POS_DETECTED_IMWLD_L[1]);
-    }
-    XY.push_back(X);
-    XY.push_back(Y);
-
-    return XY;
+    return GetRefPos(SLVTS, &CL_REF::POS_DETECTED_IMWLD_L);
 }
 std::vector< std::vector< double > > GET_REF_POS_DETECTED_IMWLD_G(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > X,Y;
-    std::vector< std::vector< double > > XY;
-    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++){
-        X.push_back(SLVTS->REFs->REF[ID].POS_DETECTED_IMWLD_G[0]);
-        Y.push_back(SLVTS->REFs->REF[ID].POS_DETECTED_IMWLD_G[1]);
-    }
-    XY.push_back(X);
-    XY.push_back(Y);
-
-    return XY;
+    return GetRefPos(SLVTS, &CL_REF::POS_DETECTED_IMWLD_G);
 }
 std::vector< std::vector< double > > GET_REF_POS_DETECTED_RADEC_L(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > X,Y;
-    std::vector< std::vector< double > > XY;
-    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++){
-        X.push_back(SLVTS->REFs->REF[ID].POS_DETECTED_RADEC_L[0]);
-        Y.push_back(SLVTS->REFs->REF[ID].POS_DETECTED_RADEC_L[1]);
-    }
-    XY.push_back(X);
-    XY.push_back(Y);
-
-    return XY;
+    return GetRefPos(SLVTS, &CL_REF::POS_DETECTED_RADEC_L);
 }
 std::vector< std::vector< double > > GET_REF_POS_DETECTED_RADEC_G(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > X,Y;
-    std::vector< std::vector< double > > XY;
-    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++){
-        X.push_back(SLVTS->REFs->REF[ID].POS_DETECTED_RADEC_G[0]);
-        Y.push_back(SLVTS->REFs->REF[ID].POS_DETECTED_RADEC_G[1]);
-    }
-    XY.push_back(X);
-    XY.push_back(Y);
-
-    return XY;
+    return GetRefPos(SLVTS, &CL_REF::POS_DETECTED_RADEC_G);
 }
 std::vector< std::vector< double > > GET_REF_POS_DETECTED_ASIP_CRPIX_L(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > X,Y;
-    std::vector< std::vector< double > > XY;
-    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++){
-        X.push_back(SLVTS->REFs->REF[ID].POS_DETECTED_ASIP_CRPIX_L[0]);
-        Y.push_back(SLVTS->REFs->REF[ID].POS_DETECTED_ASIP_CRPIX_L[1]);
-    }
-    XY.push_back(X);
-    XY.push_back(Y);
-
-    return XY;
+    return GetRefPos(SLVTS, &CL_REF::POS_DETECTED_ASIP_CRPIX_L);
 }
 std::vector< std::vector< double > > GET_REF_POS_DETECTED_ASIP_CRPIX_G(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > X,Y;
-    std::vector< std::vector< double > > XY;
-    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++){
-        X.push_back(SLVTS->REFs->REF[ID].POS_DETECTED_ASIP_CRPIX_G[0]);
-        Y.push_back(SLVTS->REFs->REF[ID].POS_DETECTED_ASIP_CRPIX_G[1]);
-    }
-    XY.push_back(X);
-    XY.push_back(Y);
-
-    return XY;
+    return GetRefPos(SLVTS, &CL_REF::POS_DETECTED_ASIP_CRPIX_G);
 }
 std::vector< std::vector< double > > GET_REF_POS_DETECTED_ASIP_IMPIX_L(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > X,Y;
-    std::vector< std::vector< double > > XY;
-    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++){
-        X.push_back(SLVTS->REFs->REF[ID].POS_DETECTED_ASIP_IMPIX_L[0]);
-        Y.push_back(SLVTS->REFs->REF[ID].POS_DETECTED_ASIP_IMPIX_L[1]);
-    }
-    XY.push_back(X);
-    XY.push_back(Y);
-
-    return XY;
+    return GetRefPos(SLVTS, &CL_REF::POS_DETECTED_ASIP_IMPIX_L);
 }
 std::vector< std::vector< double > > GET_REF_POS_DETECTED_ASIP_IMPIX_G(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > X,Y;
-    std::vector< std::vector< double > > XY;
-    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++){
-        X.push_back(SLVTS->REFs->REF[ID].POS_DETECTED_ASIP_IMPIX_G[0]);
-        Y.push_back(SLVTS->REFs->REF[ID].POS_DETECTED_ASIP_IMPIX_G[1]);
-    }
-    XY.push_back(X);
-    XY.push_back(Y);
-
-    return XY;
+    return GetRefPos(SLVTS, &CL_REF::POS_DETECTED_ASIP_IMPIX_G);
 }
 std::vector< std::vector< double > > GET_REF_POS_DETECTED_ASIP_IMWLD_L(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > X,Y;
-    std::vector< std::vector< double > > XY;
-    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++){
-        X.push_back(SLVTS->REFs->REF[ID].POS_DETECTED_ASIP_IMWLD_L[0]);
-        Y.push_back(SLVTS->REFs->REF[ID].POS_DETECTED_ASIP_IMWLD_L[1]);
-    }
-    XY.push_back(X);
-    XY.push_back(Y);
-
-    return XY;
+    return GetRefPos(SLVTS, &CL_REF::POS_DETECTED_ASIP_IMWLD_L);
 }
 std::vector< std::vector< double > > GET_REF_POS_DETECTED_ASIP_IMWLD_G(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > X,Y;
-    std::vector< std::vector< double > > XY;
-    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++){
-        X.push_back(SLVTS->REFs->REF[ID].POS_DETECTED_ASIP_IMWLD_G[0]);
-        Y.push_back(SLVTS->REFs->REF[ID].POS_DETECTED_ASIP_IMWLD_G[1]);
-    }
-    XY.push_back(X);
-    XY.push_back(Y);
-
-    return XY;
+    return GetRefPos(SLVTS, &CL_REF::POS_DETECTED_ASIP_IMWLD_G);
 }
 std::vector< std::vector< double > > GET_REF_POS_DETECTED_ASIP_RADEC_L(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > X,Y;
-    std::vector< std::vector< double > > XY;
-    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++){
-        X.push_back(SLVTS->REFs->REF[ID].POS_DETECTED_ASIP_RADEC_L[0]);
-        Y.push_back(SLVTS->REFs->REF[ID].POS_DETECTED_ASIP_RADEC_L[1]);
-    }
-    XY.push_back(X);
-    XY.push_back(Y);
-
-    return XY;
+    return GetRefPos(SLVTS, &CL_REF::POS_DETECTED_ASIP_RADEC_L);
 }
 std::vector< std::vector< double > > GET_REF_POS_DETECTED_ASIP_RADEC_G(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > X,Y;
-    std::vector< std::vector< double > > XY;
-    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++){
-        X.push_back(SLVTS->REFs->REF[ID].POS_DETECTED_ASIP_RADEC_G[0]);
-        Y.push_back(SLVTS->REFs->REF[ID].POS_DETECTED_ASIP_RADEC_G[1]);
-    }
-    XY.push_back(X);
-    XY.push_back(Y);
-
-    return XY;
+    return GetRefPos(SLVTS, &CL_REF::POS_DETECTED_ASIP_RADEC_G);
 }
 std::vector< std::vector< double > > GET_REF_DIFF(CL_SLVTS* SLVTS){
-    int ID;
     std::vector< double > DIFFAX,DIFFAY,DIFFPX,DIFFPY;
     std::vector< std::vector< double > > DIFF;
-    for(ID=0;ID<SLVTS->APRM->NUM_REF;ID++){
-        DIFFAX.push_back(SLVTS->REFs->REF[ID].DIFF_ASIP[0]);
-        DIFFAY.push_back(SLVTS->REFs->REF[ID].DIFF_ASIP[1]);
-        DIFFPX.push_back(SLVTS->REFs->REF[ID].DIFF_PSIP[0]);
-        DIFFPY.push_back(SLVTS->REFs->REF[ID].DIFF_PSIP[1]);
+    for(std::vector<CL_REF>::const_iterator r = SLVTS->REFs->REF.begin();
+        r != SLVTS->REFs->REF.end(); ++r
+    ){
+        DIFFAX.push_back(r->DIFF_ASIP[0]);
+        DIFFAY.push_back(r->DIFF_ASIP[1]);
+        DIFFPX.push_back(r->DIFF_PSIP[0]);
+        DIFFPY.push_back(r->DIFF_PSIP[1]);
     }
     DIFF.push_back(DIFFAX);
     DIFF.push_back(DIFFAY);
@@ -814,8 +489,10 @@ std::vector< std::vector< double > > GET_REF_DIFF(CL_SLVTS* SLVTS){
 }
 std::vector< double > GET_REF_CAMERAJACOPSIP(CL_SLVTS* SLVTS){
     std::vector< double > JACO;
-    for(int ID = 0; ID < SLVTS->APRM->NUM_REF; ++ID){
-         JACO.push_back(SLVTS->REFs->REF[ID].CAMERA_JACO);
+    for(std::vector<CL_REF>::const_iterator r = SLVTS->REFs->REF.begin();
+        r != SLVTS->REFs->REF.end(); ++r
+    ){
+         JACO.push_back(r->CAMERA_JACO);
     }
 
     return JACO;

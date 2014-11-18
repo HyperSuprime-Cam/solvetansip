@@ -17,7 +17,7 @@ boost::shared_ptr<CL_SLVTS>
 SOLVETANSIP(
 	std::vector< std::vector< std::string > > const& APRM,
 	std::vector< std::vector< std::string > > const& CCD,
-	std::vector< std::vector< std::string > > const& REF
+	std::vector<ReferenceMatch>               const& matchList
 ){
 	my::clock_t TS,TE;
 	my::clock_t T1,T2;
@@ -26,7 +26,7 @@ SOLVETANSIP(
 
 	T1=my::clock();
 	SLVTS->SET_INIT();
-	SLVTS->SET_INPUT(APRM, CCD, REF);
+	SLVTS->SET_INPUT(APRM, CCD, matchList);
 	if(!SLVTS->CHECK_INPUT()){
 		std::cout << "Error : in checking Input Values" << std::endl;
 		return boost::shared_ptr<CL_SLVTS>();
@@ -36,8 +36,6 @@ SOLVETANSIP(
 
 	SLVTS->CALC_WCS();
 
-//	SLVTS->END()
-
 	TE=my::clock();
 	if(SLVTS->APRM->FLAG_STD >= 1) std::cout << "TIME SOLVETANSIP TOTAL : "<<(TE-TS) << " (sec)" << std::endl;
 
@@ -46,21 +44,21 @@ SOLVETANSIP(
 void CL_SLVTS::SET_END(){
 	APRM->SET_END();
 	CCDs->SET_END();
-	REFs->SET_END();
 }
 void CL_SLVTS::SET_INIT(){
-	APRM = boost::make_shared<CL_APRM>();
-	CCDs = boost::make_shared<CL_CCDs>();
-	REFs = boost::make_shared<CL_REFs>();
 }
 void CL_SLVTS::SET_INPUT(
 	std::vector< std::vector< std::string > > const& APRM_,
 	std::vector< std::vector< std::string > > const& CCD_,
-	std::vector< std::vector< std::string > > const& REF_
+	std::vector<ReferenceMatch>               const& matchList
 ){
+	APRM = boost::make_shared<CL_APRM>();
 	APRM->SET_INPUT(APRM_);
+
+	CCDs = boost::make_shared<CL_CCDs>();
 	CCDs->SET_INPUT(CCD_, APRM.get());
-	REFs->SET_INPUT(REF_, APRM.get(), CCDs.get());
+
+	REFs = boost::make_shared<CL_REFs>(matchList, APRM.get(), CCDs.get());
 	if(APRM->FLAG_STD >= 2) APRM->SHOW();
 	if(APRM->FLAG_STD >= 2) CCDs->SHOW();
 	if(APRM->FLAG_STD >= 2) REFs->SHOW();

@@ -49,7 +49,6 @@ void SET_METADATA(CL_SLVTS* SLVTS, dafbase::PropertySet::Ptr &meta){
 	meta->add("ST_A_MODE_REJ"   ,SLVTS->APRM->MODE_REJ);
 	meta->add("ST_A_MODE_CCDPOS",SLVTS->APRM->MODE_CCDPOS);
 	meta->add("ST_A_NUM_CCD"    ,SLVTS->APRM->NUM_CCD);
-	meta->add("ST_A_NUM_REF"    ,SLVTS->APRM->NUM_REF);
 	meta->add("ST_A_NUM_FIT"    ,SLVTS->APRM->NUM_FIT);
 	meta->add("ST_A_NUM_REJ"    ,SLVTS->APRM->NUM_REJ);
 	meta->add("ST_A_CRPIX1"     ,SLVTS->APRM->CRPIX[0]);
@@ -57,7 +56,6 @@ void SET_METADATA(CL_SLVTS* SLVTS, dafbase::PropertySet::Ptr &meta){
 	meta->add("ST_A_CRVAL1"     ,SLVTS->APRM->CRVAL[0]);
 	meta->add("ST_A_CRVAL2"     ,SLVTS->APRM->CRVAL[1]);
 	meta->add("ST_A_SIGMA_CLIP" ,SLVTS->APRM->SIGMA_CLIP);
- 	meta->add("ST_G_MAX_CRPIX_G_R",SLVTS->CCDs->MAX_CRPIX_G_R);
 
 /*
 double VALUE;
@@ -142,7 +140,6 @@ cout<<scientific<<setprecision(6)<<"R : "<<SLVTS->CCDs->MAX_CRPIX_G_R<<"	"<<VALU
 	meta->add("psip_residuals_ave_y", SLVTS->CCDs->CCD[SLVTS->APRM->NUM_CCD].DIF_AVE_PSIP[1]);
 	meta->add("psip_residuals_rms_x", SLVTS->CCDs->CCD[SLVTS->APRM->NUM_CCD].DIF_RMS_PSIP[0]);
 	meta->add("psip_residuals_rms_y", SLVTS->CCDs->CCD[SLVTS->APRM->NUM_CCD].DIF_RMS_PSIP[1]);
-	meta->add("nref_all"            , SLVTS->APRM->NUM_REF);
 	meta->add("nref_fitting"        , SLVTS->APRM->NUM_FIT);
 }
 
@@ -156,7 +153,6 @@ void CHECK_METADATA(CL_SLVTS* SLVTS,dafbase::PropertySet::Ptr &meta){
 		std::cout << "--- CHECK metadata ---" << std::endl;
 		SHOW(String, "ST_A_MODE_CR"                    );
 		SHOW(Int   , "ST_A_NUM_CCD"                    );
-		SHOW(Int   , "nref_all"                        );
 		SHOW(Int   , "nref_fitting"                    );
 		SHOW(Double, fmt("ST_C%03d_PSIP_DIF_AVE_X", GL));
 		SHOW(Double, fmt("ST_C%03d_PSIP_DIF_AVE_Y", GL));

@@ -19,6 +19,9 @@ def doTansipQa(matchListAllCcd, policy=None, camera=None, rerun=None):
     return SLVTSresult,metaTANSIP
 
 def SOLVETANSIP(matchListAllCcd, metaTANSIP, policy=None, camera=None, rerun=None):
+    """
+    @param matchListAllCcd: an instance of tansip.ReferenceMatchVector
+    """
     print '--- doTansip : start ---'
 
     print '--- doTansip : get APRM ---'
@@ -27,15 +30,8 @@ def SOLVETANSIP(matchListAllCcd, metaTANSIP, policy=None, camera=None, rerun=Non
     print '--- doTansip : get CCD ---'
     CCD=SLVTS_CCD(int(APRM[-1][1]),camera)
 
-    print '--- doTansip : get REF ---'
-    REF=SLVTS_REF(matchListAllCcd)
-    KV=SLVTS.VS([])
-    KV.append('NUM_REF')
-    KV.append(str(len(REF)))
-    APRM.append(KV)
-
     print '--- doTansip : SOLVE TANSIP ---'
-    SLVTSRESULT=SLVTS.SOLVETANSIP(APRM, CCD, REF)
+    SLVTSRESULT=SLVTS.SOLVETANSIP(APRM, CCD, matchListAllCcd)
     SLVTS.SET_METADATA(SLVTSRESULT, metaTANSIP)
     SLVTS.CHECK_METADATA(SLVTSRESULT,metaTANSIP)
     TANWCS=SLVTS.SET_TANWCS(SLVTSRESULT)
@@ -75,28 +71,6 @@ def SLVTS_APRM(policy):
 
     return KVs
 
-def SLVTS_REF(matchListAllCcd):
-    REFs=SLVTS.VVS([])
-    CID=0
-    for matchList in matchListAllCcd:
-        if (matchList):
-            for m in matchList:
-                REF=SLVTS.VS([])
-                REF.append(str(m.getId()))
-                REF.append(str(CID))
-                REF.append(str(m.getX()))
-                REF.append(str(m.getY()))
-                REF.append(str(m.getRa()))
-                REF.append(str(m.getDec()))
-                REFs.append(REF)
-        CID+=1
-
-#    OUTNAME="./REF.dat"
-#    FOUT=open(OUTNAME,"w")
-#    for i in range(len(REFs)):
- #       print>>FOUT ,REFs[i][0] ,REFs[i][1] ,REFs[i][2] ,REFs[i][3] ,REFs[i][4] ,REFs[i][5]
-
-    return REFs
 
 def SLVTS_CCD(NUMCCD,camera):
     CCDs=SLVTS.VVS([])
@@ -134,7 +108,6 @@ def OUTPUT_SUMMARY(V_S_RESULT,DIR_OUT):
     MODE_REJ  =SLVTS.GET_SUM_MODEREJ(S_RESULT)
     MODE_CCD  =SLVTS.GET_SUM_MODECCD(S_RESULT)
     NUM_CCD   =SLVTS.GET_SUM_NUMCCD(S_RESULT)
-    NUM_REF   =SLVTS.GET_SUM_NUMREF(S_RESULT)
     NUM_FIT   =SLVTS.GET_SUM_NUMFIT(S_RESULT)
     CRPIX     =SLVTS.GET_SUM_CRPIX(S_RESULT)
     CRVAL     =SLVTS.GET_SUM_CRVAL(S_RESULT)
@@ -151,7 +124,6 @@ def OUTPUT_SUMMARY(V_S_RESULT,DIR_OUT):
     SUMhdr.update("MODE_CR" ,MODE_CR ,"CR MODE")
     SUMhdr.update("MODE_REJ",MODE_CCD,"REJECTION MODE(1=REJECTION)")
     SUMhdr.update("MODE_CCD",MODE_REJ,"CCD POSITION MODE(i=DETERMINING CCD POSITIONs)")
-    SUMhdr.update("NUM_REF",NUM_REF ,"Number of References")
     SUMhdr.update("NUM_FIT",NUM_FIT ,"Number of References fot fitting")
     SUMhdr.update("CRVAL_1",CRVAL[0],"CRVAL 1")
     SUMhdr.update("CRVAL_2",CRVAL[1],"CRVAL 2")
@@ -168,13 +140,12 @@ def OUTPUT_SUMMARY(V_S_RESULT,DIR_OUT):
     SUMhdr.update("CDCA1_2",CD_COR[1],"CD Matrix of Corrected Angle")
     SUMhdr.update("CDCA2_1",CD_COR[2],"CD Matrix of Corrected Angle")
     SUMhdr.update("CDCA2_2",CD_COR[3],"CD Matrix of Corrected Angle")
-    SUMhdr.update("MAX_R"  ,ST_CRPIX_G[0],"MAXIMUM Radius from CRPIX")
-    SUMhdr.update("MAX_X"  ,ST_CRPIX_G[1],"MAXIMUM X position from CRPIX")
-    SUMhdr.update("MAX_Y"  ,ST_CRPIX_G[2],"MAXIMUM Y position from CRPIX")
-    SUMhdr.update("MIN_X"  ,ST_CRPIX_G[3],"MINIMUM X position from CRPIX")
-    SUMhdr.update("MIN_Y"  ,ST_CRPIX_G[4],"MINIMUM Y position from CRPIX")
-    SUMhdr.update("AVE_X"  ,ST_CRPIX_G[5],"AVERAGE X position from CRPIX")
-    SUMhdr.update("AVE_Y"  ,ST_CRPIX_G[6],"AVERAGE Y position from CRPIX")
+    SUMhdr.update("MAX_X"  ,ST_CRPIX_G[0],"MAXIMUM X position from CRPIX")
+    SUMhdr.update("MAX_Y"  ,ST_CRPIX_G[1],"MAXIMUM Y position from CRPIX")
+    SUMhdr.update("MIN_X"  ,ST_CRPIX_G[2],"MINIMUM X position from CRPIX")
+    SUMhdr.update("MIN_Y"  ,ST_CRPIX_G[3],"MINIMUM Y position from CRPIX")
+    SUMhdr.update("AVE_X"  ,ST_CRPIX_G[4],"AVERAGE X position from CRPIX")
+    SUMhdr.update("AVE_Y"  ,ST_CRPIX_G[5],"AVERAGE Y position from CRPIX")
     SUMhdr.update("RMSSIPX",RMS_SIP[0],"RMS X of  SIP fitting Error")
     SUMhdr.update("RMSSIPY",RMS_SIP[1],"RMS Y of  SIP fitting Error")
     SUMhdr.update("RMSPSIPX",RMS_PSIP[0],"RMS X of PSIP fitting Error")
@@ -266,7 +237,6 @@ def OUTPUT_BTBL(V_S_RESULT,DIR_OUT):
 #REF-----
 
     REFNAME =DIR_OUT+"/solvetansipresult_REFs.fits"
-    REFID   =SLVTS.GET_REF_ID(S_RESULT)
     REFCID  =SLVTS.GET_REF_CID(S_RESULT)
     REFFLAG =SLVTS.GET_REF_FLAG(S_RESULT);
     REFPOS_C_RADEC =SLVTS.GET_REF_POS_CELESTIAL_RADEC(S_RESULT);
@@ -277,15 +247,12 @@ def OUTPUT_BTBL(V_S_RESULT,DIR_OUT):
     REFPOS_C_CRPIXG=SLVTS.GET_REF_POS_CELESTIAL_CRPIX_G(S_RESULT);
     REFPOS_C_LOCALL=SLVTS.GET_REF_POS_CELESTIAL_LOCAL_L(S_RESULT);
     REFPOS_C_LOCALG=SLVTS.GET_REF_POS_CELESTIAL_LOCAL_G(S_RESULT);
-    REFPOS_C_LOCALC=SLVTS.GET_REF_POS_CELESTIAL_LOCAL_C(S_RESULT);
     REFPOS_CPSIP_CRPIXL=SLVTS.GET_REF_POS_CELESTIAL_PSIP_CRPIX_L(S_RESULT);
     REFPOS_CPSIP_CRPIXG=SLVTS.GET_REF_POS_CELESTIAL_PSIP_CRPIX_G(S_RESULT);
     REFPOS_CPSIP_LOCALL=SLVTS.GET_REF_POS_CELESTIAL_PSIP_LOCAL_L(S_RESULT);
     REFPOS_CPSIP_LOCALG=SLVTS.GET_REF_POS_CELESTIAL_PSIP_LOCAL_G(S_RESULT);
-    REFPOS_CPSIP_LOCALC=SLVTS.GET_REF_POS_CELESTIAL_PSIP_LOCAL_C(S_RESULT);
     REFPOS_D_LOCALL=SLVTS.GET_REF_POS_DETECTED_LOCAL_L(S_RESULT);
     REFPOS_D_LOCALG=SLVTS.GET_REF_POS_DETECTED_LOCAL_G(S_RESULT);
-    REFPOS_D_LOCALC=SLVTS.GET_REF_POS_DETECTED_LOCAL_C(S_RESULT);
     REFPOS_D_CRPIXL=SLVTS.GET_REF_POS_DETECTED_CRPIX_L(S_RESULT);
     REFPOS_D_CRPIXG=SLVTS.GET_REF_POS_DETECTED_CRPIX_G(S_RESULT);
     REFPOS_D_IMPIXL=SLVTS.GET_REF_POS_DETECTED_IMPIX_L(S_RESULT);
@@ -306,7 +273,6 @@ def OUTPUT_BTBL(V_S_RESULT,DIR_OUT):
     REFJACO=SLVTS.GET_REF_CAMERAJACOPSIP(S_RESULT);
 
     REFCOL=[]
-    REFCOL.append(Column(name="ID_OBJ"                           ,format="K",array=REFID))
     REFCOL.append(Column(name="ID_CCD"                           ,format="J",array=REFCID))
     REFCOL.append(Column(name="FLAG_OBJ"                         ,format="J",array=REFFLAG))
     REFCOL.append(Column(name="POSITION_CELESTIAL_RA"            ,format="D",unit="degree",array=REFPOS_C_RADEC[0]))
@@ -325,8 +291,6 @@ def OUTPUT_BTBL(V_S_RESULT,DIR_OUT):
     REFCOL.append(Column(name="POSITION_CELESTIAL_LOCAL_L_Y"     ,format="D",unit="pixel" ,array=REFPOS_C_LOCALL[1]))
     REFCOL.append(Column(name="POSITION_CELESTIAL_LOCAL_G_X"     ,format="D",unit="pixel" ,array=REFPOS_C_LOCALG[0]))
     REFCOL.append(Column(name="POSITION_CELESTIAL_LOCAL_G_Y"     ,format="D",unit="pixel" ,array=REFPOS_C_LOCALG[1]))
-    REFCOL.append(Column(name="POSITION_CELESTIAL_LOCAL_C_X"     ,format="D",unit="pixel" ,array=REFPOS_C_LOCALC[0]))
-    REFCOL.append(Column(name="POSITION_CELESTIAL_LOCAL_C_Y"     ,format="D",unit="pixel" ,array=REFPOS_C_LOCALC[1]))
     REFCOL.append(Column(name="POSITION_CELESTIAL_PSIP_CRPIX_L_X",format="D",unit="pixel" ,array=REFPOS_CPSIP_CRPIXL[0]))
     REFCOL.append(Column(name="POSITION_CELESTIAL_PSIP_CRPIX_L_Y",format="D",unit="pixel" ,array=REFPOS_CPSIP_CRPIXL[1]))
     REFCOL.append(Column(name="POSITION_CELESTIAL_PSIP_CRPIX_G_X",format="D",unit="pixel" ,array=REFPOS_CPSIP_CRPIXG[0]))
@@ -335,14 +299,10 @@ def OUTPUT_BTBL(V_S_RESULT,DIR_OUT):
     REFCOL.append(Column(name="POSITION_CELESTIAL_PSIP_LOCAL_L_Y",format="D",unit="pixel" ,array=REFPOS_CPSIP_LOCALL[1]))
     REFCOL.append(Column(name="POSITION_CELESTIAL_PSIP_LOCAL_G_X",format="D",unit="pixel" ,array=REFPOS_CPSIP_LOCALG[0]))
     REFCOL.append(Column(name="POSITION_CELESTIAL_PSIP_LOCAL_G_Y",format="D",unit="pixel" ,array=REFPOS_CPSIP_LOCALG[1]))
-    REFCOL.append(Column(name="POSITION_CELESTIAL_PSIP_LOCAL_C_X",format="D",unit="pixel" ,array=REFPOS_CPSIP_LOCALC[0]))
-    REFCOL.append(Column(name="POSITION_CELESTIAL_PSIP_LOCAL_C_Y",format="D",unit="pixel" ,array=REFPOS_CPSIP_LOCALC[1]))
     REFCOL.append(Column(name="POSITION_DETECTED_LOCAL_L_X"      ,format="D",unit="pixel" ,array=REFPOS_D_LOCALL[0]))
     REFCOL.append(Column(name="POSITION_DETECTED_LOCAL_L_Y"      ,format="D",unit="pixel" ,array=REFPOS_D_LOCALL[1]))
     REFCOL.append(Column(name="POSITION_DETECTED_LOCAL_G_X"      ,format="D",unit="pixel" ,array=REFPOS_D_LOCALG[0]))
     REFCOL.append(Column(name="POSITION_DETECTED_LOCAL_G_Y"      ,format="D",unit="pixel" ,array=REFPOS_D_LOCALG[1]))
-    REFCOL.append(Column(name="POSITION_DETECTED_LOCAL_C_X"      ,format="D",unit="pixel" ,array=REFPOS_D_LOCALC[0]))
-    REFCOL.append(Column(name="POSITION_DETECTED_LOCAL_C_Y"      ,format="D",unit="pixel" ,array=REFPOS_D_LOCALC[1]))
     REFCOL.append(Column(name="POSITION_DETECTED_CRPIX_L_X"      ,format="D",unit="pixel" ,array=REFPOS_D_CRPIXL[0]))
     REFCOL.append(Column(name="POSITION_DETECTED_CRPIX_L_Y"      ,format="D",unit="pixel" ,array=REFPOS_D_CRPIXL[1]))
     REFCOL.append(Column(name="POSITION_DETECTED_CRPIX_G_X"      ,format="D",unit="pixel" ,array=REFPOS_D_CRPIXG[0]))

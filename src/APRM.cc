@@ -13,7 +13,6 @@ void CL_APRM::SET_INIT(){
 	MODE_CR       = "PIX";
 	NUM_CCD       = 0;
 	MODE_CCDPOS   = 0;
-	NUM_REF       = 0;
 	NUM_FIT       = 0;
 	NUM_REJ       = 0;
 	CRPIX[0]      = 0.0;
@@ -60,9 +59,7 @@ void CL_APRM::SET_INPUT(std::vector< std::vector< std::string > > APRM_Argvs){
 		FLAG_STD      = atoi(VAL.c_str());
 		if(KEY=="NUM_CCD")
 		NUM_CCD       = atoi(VAL.c_str());
-		if(KEY=="NUM_REF")
-		NUM_REF       = atoi(VAL.c_str());
-		NUM_FIT       = NUM_REF;
+		NUM_FIT       = 0;
 	}
 	if(FLAG_STD >= 1) std::cout <<"-- SET APRM --"<< std::endl;
 
@@ -125,7 +122,6 @@ void CL_APRM::SHOW(){
 	std::cout << "MODE_CCDPOS : " << MODE_CCDPOS  << std::endl;
 	std::cout << "MODE_REJ    : " << MODE_REJ     << std::endl;
 	std::cout << "NUM_CCD     : " << NUM_CCD      << std::endl;
-	std::cout << "NUM_REF     : " << NUM_REF      << std::endl;
 	std::cout << "NUM_FIT     : " << NUM_FIT      << std::endl;
 	std::cout << "CRPIX1      : " << CRPIX[0]     << std::endl;
 	std::cout << "CRPIX2      : " << CRPIX[1]     << std::endl;

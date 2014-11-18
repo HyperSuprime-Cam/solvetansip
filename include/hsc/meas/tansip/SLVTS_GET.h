@@ -19,7 +19,6 @@ std::string GET_SUM_MODECR(CL_SLVTS* SLVTS);//getting MODECR from APROP
 int GET_SUM_MODEREJ(CL_SLVTS* SLVTS);//getting MODEREJ from APROP
 int GET_SUM_MODECCD(CL_SLVTS* SLVTS);//getting MODECCDPOS from APROP
 int GET_SUM_NUMCCD(CL_SLVTS* SLVTS);//getting number of CCD
-int GET_SUM_NUMREF(CL_SLVTS* SLVTS);//getting number of references of input
 int GET_SUM_NUMFIT(CL_SLVTS* SLVTS);//getting number of references for fitting
 std::vector< double > GET_SUM_CRPIX(CL_SLVTS* SLVTS);//getting CRPIX in global coordinate
 std::vector< double > GET_SUM_CRVAL(CL_SLVTS* SLVTS);//getting CRVAL
@@ -52,7 +51,6 @@ std::vector< std::vector< double > > GET_CCD_COEFPSIPB(CL_SLVTS* SLVTS);//gettin
 //-----------------------------------------------------------------
 //Getting Functions : REF Info
 //-----------------------------------------------------------------
-std::vector< long long int > GET_REF_ID(CL_SLVTS* SLVTS);//getting ID of all references
 std::vector< int > GET_REF_CID(CL_SLVTS* SLVTS);//getting CCD ID of all references
 std::vector< int > GET_REF_FLAG(CL_SLVTS* SLVTS);//getting FLAG of all references
 std::vector< std::vector< double > > GET_REF_POS_CELESTIAL_RADEC(CL_SLVTS* SLVTS);//getting RADEC from CELESTIAL of all references
@@ -63,15 +61,12 @@ std::vector< std::vector< double > > GET_REF_POS_CELESTIAL_CRPIX_L(CL_SLVTS* SLV
 std::vector< std::vector< double > > GET_REF_POS_CELESTIAL_CRPIX_G(CL_SLVTS* SLVTS);//getting CRPIX_G from CELESTIAL of all references
 std::vector< std::vector< double > > GET_REF_POS_CELESTIAL_LOCAL_L(CL_SLVTS* SLVTS);//getting LOCAL_L from CELESTIAL of all references
 std::vector< std::vector< double > > GET_REF_POS_CELESTIAL_LOCAL_G(CL_SLVTS* SLVTS);//getting LOCAL_G from CELESTIAL of all references
-std::vector< std::vector< double > > GET_REF_POS_CELESTIAL_LOCAL_C(CL_SLVTS* SLVTS);//getting LOCAL_C from CELESTIAL of all references
 std::vector< std::vector< double > > GET_REF_POS_CELESTIAL_PSIP_CRPIX_L(CL_SLVTS* SLVTS);//getting CRPIX_L from CELESTIAL of all references
 std::vector< std::vector< double > > GET_REF_POS_CELESTIAL_PSIP_CRPIX_G(CL_SLVTS* SLVTS);//getting CRPIX_G from CELESTIAL of all references
 std::vector< std::vector< double > > GET_REF_POS_CELESTIAL_PSIP_LOCAL_L(CL_SLVTS* SLVTS);//getting LOCAL_L from CELESTIAL of all references
 std::vector< std::vector< double > > GET_REF_POS_CELESTIAL_PSIP_LOCAL_G(CL_SLVTS* SLVTS);//getting LOCAL_G from CELESTIAL of all references
-std::vector< std::vector< double > > GET_REF_POS_CELESTIAL_PSIP_LOCAL_C(CL_SLVTS* SLVTS);//getting LOCAL_C from CELESTIAL of all references
 std::vector< std::vector< double > > GET_REF_POS_DETECTED_LOCAL_L(CL_SLVTS* SLVTS);//getting LOCAL_L from DETECTED of all references
 std::vector< std::vector< double > > GET_REF_POS_DETECTED_LOCAL_G(CL_SLVTS* SLVTS);//getting LOCAL_G from DETECTED of all references
-std::vector< std::vector< double > > GET_REF_POS_DETECTED_LOCAL_C(CL_SLVTS* SLVTS);//getting LOCAL_C from DETECTED of all references
 std::vector< std::vector< double > > GET_REF_POS_DETECTED_CRPIX_L(CL_SLVTS* SLVTS);//getting CRPIX_L from DETECTED of all references
 std::vector< std::vector< double > > GET_REF_POS_DETECTED_CRPIX_G(CL_SLVTS* SLVTS);//getting CRPIX_G from DETECTED of all references
 std::vector< std::vector< double > > GET_REF_POS_DETECTED_IMPIX_L(CL_SLVTS* SLVTS);//getting IMPIX_L from DETECTED of all references

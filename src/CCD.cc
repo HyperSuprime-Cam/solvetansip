@@ -42,7 +42,6 @@ void CL_CCDs::SET_INPUT(std::vector< std::vector< std::string > > CCD_Argvs,CL_A
 	SET_INIT(APRM);
 	int const NUM_CCD = APRM->NUM_CCD;
 
-	MAX_CRPIX_G_R =0;
 	MAX_CRPIX_G[0]=0;
 	MAX_CRPIX_G[1]=0;
 	MIN_CRPIX_G[0]=0;
@@ -257,7 +256,6 @@ void CL_CCDs::SHOW(){
 	cout << "BASISPOSY   (Center): " ;cout.width(10);cout<< GPOS_C_BASIS[1]<< endl;
 	cout << "BASISPOSTrad(Center): " ;cout.width(10);cout<< GPOS_C_BASIS[2]<< endl;
 	cout << "BASISPOSTdeg(Center): " ;cout.width(10);cout<< GPOS_C_BASIS[3]<< endl;
-	cout << "MAX_CRPIX_G_R       : " ;cout.width(10);cout<< MAX_CRPIX_G_R    << endl;
 	cout << "MAX_CRPIX_G_X       : " ;cout.width(10);cout<< MAX_CRPIX_G[0]   << endl;
 	cout << "MAX_CRPIX_G_Y       : " ;cout.width(10);cout<< MAX_CRPIX_G[1]   << endl;
 	cout << "MIN_CRPIX_G_X       : " ;cout.width(10);cout<< MIN_CRPIX_G[0]   << endl;

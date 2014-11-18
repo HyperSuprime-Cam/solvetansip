@@ -30,7 +30,7 @@ public:
 	void SET_INPUT(
 		std::vector< std::vector< std::string > > const& APRM,
 		std::vector< std::vector< std::string > > const& CCD,
-		std::vector< std::vector< std::string > > const& REF
+		std::vector<ReferenceMatch>               const& matchList
 	);//setting input information
 	void SET_END();//deleting memories
 	bool CHECK_INPUT();//checking input values
@@ -40,7 +40,7 @@ public:
 boost::shared_ptr<CL_SLVTS> SOLVETANSIP(
 	std::vector< std::vector< std::string > > const& APRM,
 	std::vector< std::vector< std::string > > const& CCD,
-	std::vector< std::vector< std::string > > const& REF
+	std::vector<ReferenceMatch>               const& matchList
 );//called by lsst for calculating solvetansip
 
 } // namespace tansip

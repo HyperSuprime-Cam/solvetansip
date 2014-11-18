@@ -10,17 +10,18 @@ Python interface to hsc::meas::tansip
 
 %{
 #include "lsst/afw/image.h"
+#include "hsc/meas/tansip/ReferenceMatch.h"
+#include "hsc/meas/tansip/ReferenceMatchLSST.h"
 %}
 
 %include <std_vector.i>
 %include <std_string.i>
 %include <boost_shared_ptr.i>
 
-%shared_ptr(hsc::meas::tansip::CL_SLVTS);
-%shared_ptr(hsc::meas::tansip::SourceMatch);
-
-// begin: These definitions must be before typemaps are smirched
+// [begin: These definitions must be before typemaps are smirched
 // by the labyrinthian swig libraries that'll be included later.
+
+%shared_ptr(hsc::meas::tansip::CL_SLVTS);
 
 %template(VS)   std::vector<std::string>;
 %template(VVS)  std::vector< std::vector<std::string> >;
@@ -31,16 +32,10 @@ Python interface to hsc::meas::tansip
 %template(VI) std::vector<int>;
 %template(VQ) std::vector<long long int>;
 
-namespace hsc { namespace meas { namespace tansip
-{
-    struct CL_SLVTS{};
-    boost::shared_ptr<CL_SLVTS> SOLVETANSIP(
-        std::vector< std::vector< std::string > > const& APRM,
-        std::vector< std::vector< std::string > > const& CCD,
-        std::vector< std::vector< std::string > > const& REF
-    );
-}}} // hsc::meas::tansip
-// end
+%template(ReferenceMatchVector) std::vector<hsc::meas::tansip::ReferenceMatch>;
+
+
+// :end]
 
 %include "lsst/p_lsstSwig.i"
 

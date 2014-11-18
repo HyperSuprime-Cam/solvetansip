@@ -12,90 +12,86 @@ namespace tansip {
 
 using namespace std;
 //REFs
-void CL_REFs::SET_INIT(CL_APRM *APRM_IN,CL_CCDs* CCDs_IN){
-	APRM=APRM_IN;
-	CCDs=CCDs_IN;
+CL_REFs::CL_REFs(
+	std::vector<ReferenceMatch> const& matchList,
+	CL_APRM                          * APRM_IN,
+	CL_CCDs                          * CCDs_IN
+){
+	APRM = APRM_IN;
+	CCDs = CCDs_IN;
 
-	int const NUM_REF    = APRM->NUM_REF;
-	REF.resize(NUM_REF);
-
-	for(int i = 0; i < NUM_REF; ++i){
-		REF[i].APRM = APRM;
-		REF[i].REFs = this;
-	}
-}
-void CL_REFs::SET_INPUT(std::vector< std::vector< std::string > > REF_Argvs,CL_APRM* APRM,CL_CCDs* CCDs){
-	SET_INIT(APRM,CCDs);
-
-	int const NUM_REF    = APRM->NUM_REF;
+	REF.reserve(matchList.size());
 
 	if(APRM->FLAG_STD >= 1)cout<<"-- SET REFs --"<<endl;
-	for(int i = 0; i < NUM_REF; ++i){
-		long long IDOBJ = atoll(REF_Argvs[i][0].c_str());
-		int       IDCCD = atoi (REF_Argvs[i][1].c_str());
 
-		double POS_L[2],RADEC[2];
-		POS_L[0]=atof(REF_Argvs[i][2].c_str());
-		POS_L[1]=atof(REF_Argvs[i][3].c_str());
-		RADEC[0]=atof(REF_Argvs[i][4].c_str());
-		RADEC[1]=atof(REF_Argvs[i][5].c_str());
-//cout << i << "	" << IDOBJ << "  " << IDCCD << "  " << POS_L[0] << "  " << POS_L[1] << "  " << RADEC[0] << "  " << RADEC[1]<<endl;
-		if(isfinite(IDOBJ)   &&isfinite(IDCCD)   &&
-		   isfinite(POS_L[0])&&isfinite(POS_L[1])&&
-		   isfinite(RADEC[0])&&isfinite(RADEC[1])){
-			REF[i].ID_OBJ        =IDOBJ;
-			REF[i].ID_CCD        =IDCCD;
-			REF[i].POS_DETECTED_LOCAL_L[0]=POS_L[0];
-			REF[i].POS_DETECTED_LOCAL_L[1]=POS_L[1];
-			REF[i].POS_CELESTIAL_RADEC[0] =RADEC[0];
-			REF[i].POS_CELESTIAL_RADEC[1] =RADEC[1];
-			REF[i].FLAG_OBJ	     =1;
-		}else{
-			REF[i].FLAG_OBJ	     =0;
+	for(std::vector<ReferenceMatch>::const_iterator match = matchList.begin();
+		match != matchList.end(); ++match
+	){
+		REF.resize(REF.size() + 1);
+		CL_REF& r = REF.back();
+		r.APRM = APRM;
+		r.REFs = this;
+		r.CCD  = &CCDs->CCD[match->ccdId];
+		r.GCD  = &CCDs->CCD[APRM->NUM_CCD];
+
+		r.ID_CCD = match->ccdId;
+
+		if(std::isfinite(match->x + match->y + match->ra + match->dec)){
+			r.FLAG_OBJ = 1;
 		}
+		else{
+			r.FLAG_OBJ = 0;
+		}
+
+		r.POS_DETECTED_LOCAL_L[0] = match->x  ;
+		r.POS_DETECTED_LOCAL_L[1] = match->y  ;
+		r.POS_CELESTIAL_RADEC [0] = match->ra ;
+		r.POS_CELESTIAL_RADEC [1] = match->dec;
 	}
 	SET_NUM();
-	SET_CCD(CCDs);
-	SET_POS_DETECTED_LOCAL_CfromLOCAL_L();
+
 	SET_POS_DETECTED_LOCAL_GfromLOCAL_L();
 	SET_MAXMIN_LOCAL_G();
 
 }
-void CL_REFs::SET_NUM(){
-	int const NUM_REF    = APRM->NUM_REF;
+
+
+void CL_REFs::SET_NUM() const
+{
 	int const NUM_CCD    = APRM->NUM_CCD;
 
 	for(int i = 0; i < NUM_CCD+1; ++i){
-		CCDs->CCD[i].NUM_REF=0;
-		CCDs->CCD[i].NUM_FIT=0;
-		CCDs->CCD[i].NUM_REJ=0;
+		CCDs->CCD[i].NUM_REF = 0;
+		CCDs->CCD[i].NUM_FIT = 0;
+		CCDs->CCD[i].NUM_REJ = 0;
 	}
 
-	for(int i = 0; i < NUM_REF; ++i){
-		CCDs->CCD[REF[i].ID_CCD].NUM_REF+=1;
-		CCDs->CCD[      NUM_CCD].NUM_REF+=1;
-		if(REF[i].FLAG_OBJ==1){
-			CCDs->CCD[REF[i].ID_CCD].NUM_FIT+=1;
-			CCDs->CCD[      NUM_CCD].NUM_FIT+=1;
-		}else{
-			CCDs->CCD[REF[i].ID_CCD].NUM_REJ+=1;
-			CCDs->CCD[      NUM_CCD].NUM_REJ+=1;
+	CL_CCD& GCD = CCDs->CCD[NUM_CCD];
+
+	for(std::vector<CL_REF>::const_iterator r = REF.begin();
+		r != REF.end(); ++r
+	){
+		CL_CCD& CCD = *r->CCD;
+
+		CCD.NUM_REF += 1;
+		GCD.NUM_REF += 1;
+
+		if(r->FLAG_OBJ == 1){
+			CCD.NUM_FIT += 1;
+			GCD.NUM_FIT += 1;
+		}
+		else{
+			CCD.NUM_REJ += 1;
+			GCD.NUM_REJ += 1;
 		}
 	}
 }
-void CL_REFs::SET_END(){
-}
-void CL_REFs::SET_CCD(CL_CCDs*  CCDs){
-	int const NUM_REF    = APRM->NUM_REF;
-	int const NUM_CCD    = APRM->NUM_CCD;
 
-	for(int i = 0; i < NUM_REF; ++i)
-	REF[i].SET_INIT(&CCDs->CCD[REF[i].ID_CCD],&CCDs->CCD[NUM_CCD]);
-}
+
 void CL_REFs::SHOW(){
 	cout << "-- SHOW REFs --" << endl;
 	cout << "MODE_CR        : " << APRM->MODE_CR << endl;
-	cout << "NUM_REF        : " << APRM->NUM_REF << endl;
+	cout << "NUM_REF        : " << REF.size()    << endl;
 	cout << "NUM_FIT        : " << APRM->NUM_FIT << endl;
 	cout << "AVE LOCAL_G X  : " ;cout.width(10);cout<< AVE_LOCAL_G[0] <<endl;
 	cout << "AVE LOCAL_G Y  : " ;cout.width(10);cout<< AVE_LOCAL_G[1] <<endl;
@@ -103,353 +99,270 @@ void CL_REFs::SHOW(){
 	cout << "MAX LOCAL_G Y  : " ;cout.width(10);cout<< MAX_LOCAL_G[1] <<endl;
 	cout << "MIN LOCAL_G X  : " ;cout.width(10);cout<< MIN_LOCAL_G[0] <<endl;
 	cout << "MIN LOCAL_G Y  : " ;cout.width(10);cout<< MIN_LOCAL_G[1] <<endl;
-	cout << "MAX LOCAL_G R  : " ;cout.width(10);cout<< MAX_LOCAL_G_R  <<endl;
 }
 //REFs::POS
-void CL_REFs::SET_POS_DETECTED_LOCAL_CfromLOCAL_L(){
-	int const NUM_REF    = APRM->NUM_REF;
-	for(int i = 0; i < NUM_REF; ++i)
-	REF[i].SET_POS_DETECTED_LOCAL_CfromLOCAL_L();
-}
 void CL_REFs::SET_POS_DETECTED_LOCAL_GfromLOCAL_L(){
-	int const NUM_REF    = APRM->NUM_REF;
-	for(int i = 0; i < NUM_REF; ++i)
-	REF[i].SET_POS_DETECTED_LOCAL_GfromLOCAL_L();
+	this->forAllRef(&CL_REF::SET_POS_DETECTED_LOCAL_GfromLOCAL_L);
 }
 void CL_REFs::SET_POS_DETECTED_CRPIX_LfromLOCAL_L(){
-	int const NUM_REF    = APRM->NUM_REF;
-	for(int i = 0; i < NUM_REF; ++i)
-	REF[i].SET_POS_DETECTED_CRPIX_LfromLOCAL_L();
+	this->forAllRef(&CL_REF::SET_POS_DETECTED_CRPIX_LfromLOCAL_L);
 }
 void CL_REFs::SET_POS_DETECTED_CRPIX_GfromLOCAL_G(){
-	int const NUM_REF    = APRM->NUM_REF;
-	for(int i = 0; i < NUM_REF; ++i)
-	REF[i].SET_POS_DETECTED_CRPIX_GfromLOCAL_G();
+	this->forAllRef(&CL_REF::SET_POS_DETECTED_CRPIX_GfromLOCAL_G);
 }
 void CL_REFs::SET_POS_DETECTED_IMPIX_LfromCRPIX_L(){
-	int const NUM_REF    = APRM->NUM_REF;
-	for(int i = 0; i < NUM_REF; ++i)
-	REF[i].SET_POS_DETECTED_IMPIX_LfromCRPIX_L();
+	this->forAllRef(&CL_REF::SET_POS_DETECTED_IMPIX_LfromCRPIX_L);
 }
 void CL_REFs::SET_POS_DETECTED_IMPIX_GfromCRPIX_G(){
-	int const NUM_REF    = APRM->NUM_REF;
-	for(int i = 0; i < NUM_REF; ++i)
-	REF[i].SET_POS_DETECTED_IMPIX_GfromCRPIX_G();
+	this->forAllRef(&CL_REF::SET_POS_DETECTED_IMPIX_GfromCRPIX_G);
 }
 void CL_REFs::SET_POS_DETECTED_IMWLD_LfromIMPIX_L(){
-	int const NUM_REF    = APRM->NUM_REF;
-	for(int i = 0; i < NUM_REF; ++i)
-	REF[i].SET_POS_DETECTED_IMWLD_LfromIMPIX_L();
+	this->forAllRef(&CL_REF::SET_POS_DETECTED_IMWLD_LfromIMPIX_L);
 }
 void CL_REFs::SET_POS_DETECTED_IMWLD_GfromIMPIX_G(){
-	int const NUM_REF    = APRM->NUM_REF;
-	for(int i = 0; i < NUM_REF; ++i)
-	REF[i].SET_POS_DETECTED_IMWLD_GfromIMPIX_G();
+	this->forAllRef(&CL_REF::SET_POS_DETECTED_IMWLD_GfromIMPIX_G);
 }
 void CL_REFs::SET_POS_DETECTED_RADEC_LfromIMWLD_L(){
-	int const NUM_REF    = APRM->NUM_REF;
-	for(int i = 0; i < NUM_REF; ++i)
-	REF[i].SET_POS_DETECTED_RADEC_LfromIMWLD_L();
+	this->forAllRef(&CL_REF::SET_POS_DETECTED_RADEC_LfromIMWLD_L);
 }
 void CL_REFs::SET_POS_DETECTED_RADEC_GfromIMWLD_G(){
-	int const NUM_REF    = APRM->NUM_REF;
-	for(int i = 0; i < NUM_REF; ++i)
-	REF[i].SET_POS_DETECTED_RADEC_GfromIMWLD_G();
+	this->forAllRef(&CL_REF::SET_POS_DETECTED_RADEC_GfromIMWLD_G);
 }
 void CL_REFs::SET_POS_DETECTED_ASIP_IMPIX_LfromCRPIX_L(){
-	int const NUM_REF    = APRM->NUM_REF;
-	for(int i = 0; i < NUM_REF; ++i)
-	REF[i].SET_POS_DETECTED_ASIP_IMPIX_LfromCRPIX_L();
+	this->forAllRef(&CL_REF::SET_POS_DETECTED_ASIP_IMPIX_LfromCRPIX_L);
 }
 void CL_REFs::SET_POS_DETECTED_ASIP_IMPIX_GfromCRPIX_G(){
-	int const NUM_REF    = APRM->NUM_REF;
-	for(int i = 0; i < NUM_REF; ++i)
-	REF[i].SET_POS_DETECTED_ASIP_IMPIX_GfromCRPIX_G();
+	this->forAllRef(&CL_REF::SET_POS_DETECTED_ASIP_IMPIX_GfromCRPIX_G);
 }
 void CL_REFs::SET_POS_DETECTED_ASIP_IMWLD_LfromASIP_IMPIX_L(){
-	int const NUM_REF    = APRM->NUM_REF;
-	for(int i = 0; i < NUM_REF; ++i)
-	REF[i].SET_POS_DETECTED_ASIP_IMWLD_LfromASIP_IMPIX_L();
+	this->forAllRef(&CL_REF::SET_POS_DETECTED_ASIP_IMWLD_LfromASIP_IMPIX_L);
 }
 void CL_REFs::SET_POS_DETECTED_ASIP_IMWLD_GfromASIP_IMPIX_G(){
-	int const NUM_REF    = APRM->NUM_REF;
-	for(int i = 0; i < NUM_REF; ++i)
-	REF[i].SET_POS_DETECTED_ASIP_IMWLD_GfromASIP_IMPIX_G();
+	this->forAllRef(&CL_REF::SET_POS_DETECTED_ASIP_IMWLD_GfromASIP_IMPIX_G);
 }
 void CL_REFs::SET_POS_DETECTED_ASIP_RADEC_LfromASIP_IMWLD_L(){
-	int const NUM_REF    = APRM->NUM_REF;
-	for(int i = 0; i < NUM_REF; ++i)
-	REF[i].SET_POS_DETECTED_ASIP_RADEC_LfromASIP_IMWLD_L();
+	this->forAllRef(&CL_REF::SET_POS_DETECTED_ASIP_RADEC_LfromASIP_IMWLD_L);
 }
 void CL_REFs::SET_POS_DETECTED_ASIP_RADEC_GfromASIP_IMWLD_G(){
-	int const NUM_REF    = APRM->NUM_REF;
-	for(int i = 0; i < NUM_REF; ++i)
-	REF[i].SET_POS_DETECTED_ASIP_RADEC_GfromASIP_IMWLD_G();
+	this->forAllRef(&CL_REF::SET_POS_DETECTED_ASIP_RADEC_GfromASIP_IMWLD_G);
 }
 void CL_REFs::SET_POS_DETECTED_ALL(){
-	int const NUM_REF    = APRM->NUM_REF;
-	for(int i = 0; i < NUM_REF; ++i){
-		REF[i].SET_POS_DETECTED_LOCAL_GfromLOCAL_L();
-		REF[i].SET_POS_DETECTED_CRPIX_LfromLOCAL_L();
-		REF[i].SET_POS_DETECTED_CRPIX_GfromLOCAL_G();
-		REF[i].SET_POS_DETECTED_IMPIX_LfromCRPIX_L();
-		REF[i].SET_POS_DETECTED_IMPIX_GfromCRPIX_G();
-		REF[i].SET_POS_DETECTED_IMWLD_LfromIMPIX_L();
-		REF[i].SET_POS_DETECTED_IMWLD_GfromIMPIX_G();
-		REF[i].SET_POS_DETECTED_RADEC_LfromIMWLD_L();
-		REF[i].SET_POS_DETECTED_RADEC_GfromIMWLD_G();
-		REF[i].SET_POS_DETECTED_ASIP_IMPIX_LfromCRPIX_L();
-		REF[i].SET_POS_DETECTED_ASIP_IMPIX_GfromCRPIX_G();
-		REF[i].SET_POS_DETECTED_ASIP_IMWLD_LfromASIP_IMPIX_L();
-		REF[i].SET_POS_DETECTED_ASIP_IMWLD_GfromASIP_IMPIX_G();
-		REF[i].SET_POS_DETECTED_ASIP_RADEC_LfromASIP_IMWLD_L();
-		REF[i].SET_POS_DETECTED_ASIP_RADEC_GfromASIP_IMWLD_G();
+	for(std::vector<CL_REF>::iterator r = REF.begin();
+		r != REF.end(); ++r
+	){
+		r->SET_POS_DETECTED_LOCAL_GfromLOCAL_L();
+		r->SET_POS_DETECTED_CRPIX_LfromLOCAL_L();
+		r->SET_POS_DETECTED_CRPIX_GfromLOCAL_G();
+		r->SET_POS_DETECTED_IMPIX_LfromCRPIX_L();
+		r->SET_POS_DETECTED_IMPIX_GfromCRPIX_G();
+		r->SET_POS_DETECTED_IMWLD_LfromIMPIX_L();
+		r->SET_POS_DETECTED_IMWLD_GfromIMPIX_G();
+		r->SET_POS_DETECTED_RADEC_LfromIMWLD_L();
+		r->SET_POS_DETECTED_RADEC_GfromIMWLD_G();
+		r->SET_POS_DETECTED_ASIP_IMPIX_LfromCRPIX_L();
+		r->SET_POS_DETECTED_ASIP_IMPIX_GfromCRPIX_G();
+		r->SET_POS_DETECTED_ASIP_IMWLD_LfromASIP_IMPIX_L();
+		r->SET_POS_DETECTED_ASIP_IMWLD_GfromASIP_IMPIX_G();
+		r->SET_POS_DETECTED_ASIP_RADEC_LfromASIP_IMWLD_L();
+		r->SET_POS_DETECTED_ASIP_RADEC_GfromASIP_IMWLD_G();
 	}
 }
 void CL_REFs::SET_POS_CELESTIAL_IMWLDfromRADEC(){
-	int const NUM_REF    = APRM->NUM_REF;
-	for(int i = 0; i < NUM_REF; ++i)
-	REF[i].SET_POS_CELESTIAL_IMWLDfromRADEC();
+	this->forAllRef(&CL_REF::SET_POS_CELESTIAL_IMWLDfromRADEC);
 }
 void CL_REFs::SET_POS_CELESTIAL_IMPIX_GfromIMWLD(){
-	int const NUM_REF    = APRM->NUM_REF;
-	for(int i = 0; i < NUM_REF; ++i)
-	REF[i].SET_POS_CELESTIAL_IMPIX_GfromIMWLD();
+	this->forAllRef(&CL_REF::SET_POS_CELESTIAL_IMPIX_GfromIMWLD);
 }
 void CL_REFs::SET_POS_CELESTIAL_IMPIX_LfromIMWLD(){
-	int const NUM_REF    = APRM->NUM_REF;
-	for(int i = 0; i < NUM_REF; ++i)
-	REF[i].SET_POS_CELESTIAL_IMPIX_LfromIMWLD();
+	this->forAllRef(&CL_REF::SET_POS_CELESTIAL_IMPIX_LfromIMWLD);
 }
 void CL_REFs::SET_POS_CELESTIAL_CRPIX_GfromIMPIX_G(){
-	int const NUM_REF    = APRM->NUM_REF;
-	for(int i = 0; i < NUM_REF; ++i)
-	REF[i].SET_POS_CELESTIAL_CRPIX_GfromIMPIX_G();
+	this->forAllRef(&CL_REF::SET_POS_CELESTIAL_CRPIX_GfromIMPIX_G);
 }
 void CL_REFs::SET_POS_CELESTIAL_CRPIX_LfromIMPIX_L(){
-	int const NUM_REF    = APRM->NUM_REF;
-	for(int i = 0; i < NUM_REF; ++i)
-	REF[i].SET_POS_CELESTIAL_CRPIX_LfromIMPIX_L();
+	this->forAllRef(&CL_REF::SET_POS_CELESTIAL_CRPIX_LfromIMPIX_L);
 }
 void CL_REFs::SET_POS_CELESTIAL_LOCAL_GfromCRPIX_G(){
-	int const NUM_REF    = APRM->NUM_REF;
-	for(int i = 0; i < NUM_REF; ++i)
-	REF[i].SET_POS_CELESTIAL_LOCAL_GfromCRPIX_G();
+	this->forAllRef(&CL_REF::SET_POS_CELESTIAL_LOCAL_GfromCRPIX_G);
 }
 void CL_REFs::SET_POS_CELESTIAL_LOCAL_LfromCRPIX_L(){
-	int const NUM_REF    = APRM->NUM_REF;
-	for(int i = 0; i < NUM_REF; ++i)
-	REF[i].SET_POS_CELESTIAL_LOCAL_LfromCRPIX_L();
+	this->forAllRef(&CL_REF::SET_POS_CELESTIAL_LOCAL_LfromCRPIX_L);
 }
 void CL_REFs::SET_POS_CELESTIAL_PSIP_LOCAL_GfromIMWLD(){
-	int const NUM_REF    = APRM->NUM_REF;
-	for(int i = 0; i < NUM_REF; ++i)
-	REF[i].SET_POS_CELESTIAL_PSIP_LOCAL_GfromIMWLD();
+	this->forAllRef(&CL_REF::SET_POS_CELESTIAL_PSIP_LOCAL_GfromIMWLD);
 }
 void CL_REFs::SET_POS_CELESTIAL_PSIP_CRPIX_GfromIMPIX_G(){
-	int const NUM_REF    = APRM->NUM_REF;
-	for(int i = 0; i < NUM_REF; ++i)
-	REF[i].SET_POS_CELESTIAL_PSIP_CRPIX_GfromIMPIX_G();
+	this->forAllRef(&CL_REF::SET_POS_CELESTIAL_PSIP_CRPIX_GfromIMPIX_G);
 }
 void CL_REFs::SET_POS_CELESTIAL_PSIP_CRPIX_LfromIMPIX_L(){
-	int const NUM_REF    = APRM->NUM_REF;
-	for(int i = 0; i < NUM_REF; ++i)
-	REF[i].SET_POS_CELESTIAL_PSIP_CRPIX_LfromIMPIX_L();
+	this->forAllRef(&CL_REF::SET_POS_CELESTIAL_PSIP_CRPIX_LfromIMPIX_L);
 }
 void CL_REFs::SET_POS_CELESTIAL_PSIP_LOCAL_GfromPSIP_CRPIX_G(){
-	int const NUM_REF    = APRM->NUM_REF;
-	for(int i = 0; i < NUM_REF; ++i)
-	REF[i].SET_POS_CELESTIAL_PSIP_LOCAL_GfromPSIP_CRPIX_G();
+	this->forAllRef(&CL_REF::SET_POS_CELESTIAL_PSIP_LOCAL_GfromPSIP_CRPIX_G);
 }
 void CL_REFs::SET_POS_CELESTIAL_PSIP_LOCAL_LfromPSIP_CRPIX_L(){
-	int const NUM_REF    = APRM->NUM_REF;
-	for(int i = 0; i < NUM_REF; ++i)
-	REF[i].SET_POS_CELESTIAL_PSIP_LOCAL_LfromPSIP_CRPIX_L();
+	this->forAllRef(&CL_REF::SET_POS_CELESTIAL_PSIP_LOCAL_LfromPSIP_CRPIX_L);
 }
 void CL_REFs::SET_POS_CELESTIAL_ALL(){
-	int const NUM_REF    = APRM->NUM_REF;
-	for(int i = 0; i < NUM_REF; ++i){
-		REF[i].SET_POS_CELESTIAL_IMWLDfromRADEC();
-		REF[i].SET_POS_CELESTIAL_IMPIX_GfromIMWLD();
-		REF[i].SET_POS_CELESTIAL_IMPIX_LfromIMWLD();
-		REF[i].SET_POS_CELESTIAL_CRPIX_GfromIMPIX_G();
-		REF[i].SET_POS_CELESTIAL_CRPIX_LfromIMPIX_L();
-		REF[i].SET_POS_CELESTIAL_LOCAL_GfromCRPIX_G();
-		REF[i].SET_POS_CELESTIAL_LOCAL_LfromCRPIX_L();
-		REF[i].SET_POS_CELESTIAL_PSIP_CRPIX_GfromIMPIX_G();
-		REF[i].SET_POS_CELESTIAL_PSIP_CRPIX_LfromIMPIX_L();
-		REF[i].SET_POS_CELESTIAL_PSIP_LOCAL_GfromPSIP_CRPIX_G();
-		REF[i].SET_POS_CELESTIAL_PSIP_LOCAL_LfromPSIP_CRPIX_L();
+	for(std::vector<CL_REF>::iterator r = REF.begin();
+		r != REF.end(); ++r
+	){
+		r->SET_POS_CELESTIAL_IMWLDfromRADEC();
+		r->SET_POS_CELESTIAL_IMPIX_GfromIMWLD();
+		r->SET_POS_CELESTIAL_IMPIX_LfromIMWLD();
+		r->SET_POS_CELESTIAL_CRPIX_GfromIMPIX_G();
+		r->SET_POS_CELESTIAL_CRPIX_LfromIMPIX_L();
+		r->SET_POS_CELESTIAL_LOCAL_GfromCRPIX_G();
+		r->SET_POS_CELESTIAL_LOCAL_LfromCRPIX_L();
+		r->SET_POS_CELESTIAL_PSIP_CRPIX_GfromIMPIX_G();
+		r->SET_POS_CELESTIAL_PSIP_CRPIX_LfromIMPIX_L();
+		r->SET_POS_CELESTIAL_PSIP_LOCAL_GfromPSIP_CRPIX_G();
+		r->SET_POS_CELESTIAL_PSIP_LOCAL_LfromPSIP_CRPIX_L();
 	}
 }
 void CL_REFs::SET_DIFF(){
-	int const NUM_REF    = APRM->NUM_REF;
-	for(int i = 0; i < NUM_REF; ++i)
-	REF[i].SET_DIFF();
+	this->forAllRef(&CL_REF::SET_DIFF);
 }
 void CL_REFs::SET_OPTICAL_DISTORTIONbyPSIP(){
-	int const NUM_REF    = APRM->NUM_REF;
-	for(int i = 0; i < NUM_REF; ++i)
-	REF[i].SET_OPTICAL_DISTORTIONbyPSIP();
+	this->forAllRef(&CL_REF::SET_OPTICAL_DISTORTIONbyPSIP);
 }
-void CL_REFs::SET_MAXMIN_LOCAL_G(){
-	int const NUM_REF    = APRM->NUM_REF;
 
-	AVE_LOCAL_G[0]=AVE_LOCAL_G[1]=0;
-	APRM->NUM_FIT=0;
-	for(int i = 0; i < NUM_REF; ++i)
-	if(REF[i].FLAG_OBJ==1){
-		AVE_LOCAL_G[0]+=REF[i].POS_DETECTED_LOCAL_G[0];
-		AVE_LOCAL_G[1]+=REF[i].POS_DETECTED_LOCAL_G[1];
-		APRM->NUM_FIT+=1;
+
+void CL_REFs::SET_MAXMIN_LOCAL_G(){
+	AVE_LOCAL_G[0] = 0;
+	AVE_LOCAL_G[1] = 0;
+	APRM->NUM_FIT = 0;
+
+	for(std::vector<CL_REF>::iterator r = REF.begin();
+		r != REF.end(); ++r
+	){
+		if(r->FLAG_OBJ != 1) continue;
+		AVE_LOCAL_G[0] += r->POS_DETECTED_LOCAL_G[0];
+		AVE_LOCAL_G[1] += r->POS_DETECTED_LOCAL_G[1];
+		APRM->NUM_FIT += 1;
 	}
+
 	AVE_LOCAL_G[0]/=APRM->NUM_FIT;
 	AVE_LOCAL_G[1]/=APRM->NUM_FIT;
 
-	MAX_LOCAL_G_R =0;
 	MAX_LOCAL_G[0]=MIN_LOCAL_G[0]=AVE_LOCAL_G[0];
 	MAX_LOCAL_G[1]=MIN_LOCAL_G[1]=AVE_LOCAL_G[1];
-	for(int i = 0; i < NUM_REF; ++i)
-	if(REF[i].FLAG_OBJ==1){
-		if(REF[i].POS_DETECTED_LOCAL_G[0]>MAX_LOCAL_G[0])
-		MAX_LOCAL_G[0]=REF[i].POS_DETECTED_LOCAL_G[0];
-		if(REF[i].POS_DETECTED_LOCAL_G[0]<MIN_LOCAL_G[0])
-		MIN_LOCAL_G[0]=REF[i].POS_DETECTED_LOCAL_G[0];
-		if(REF[i].POS_DETECTED_LOCAL_G[1]>MAX_LOCAL_G[1])
-		MAX_LOCAL_G[1]=REF[i].POS_DETECTED_LOCAL_G[1];
-		if(REF[i].POS_DETECTED_LOCAL_G[1]<MIN_LOCAL_G[1])
-		MIN_LOCAL_G[1]=REF[i].POS_DETECTED_LOCAL_G[1];
-		double R=hypot(REF[i].POS_DETECTED_LOCAL_G[0],REF[i].POS_DETECTED_LOCAL_G[1]);
-		if(R>MAX_LOCAL_G_R)
-		MAX_LOCAL_G_R=R;
+
+	for(std::vector<CL_REF>::iterator r = REF.begin();
+		r != REF.end(); ++r
+	){
+		if(r->FLAG_OBJ != 1) continue;
+		if(r->POS_DETECTED_LOCAL_G[0] > MAX_LOCAL_G[0]){
+			MAX_LOCAL_G[0] = r->POS_DETECTED_LOCAL_G[0];
+		}
+		else if(r->POS_DETECTED_LOCAL_G[0] < MIN_LOCAL_G[0]){
+			MIN_LOCAL_G[0] = r->POS_DETECTED_LOCAL_G[0];
+		}
+
+		if(r->POS_DETECTED_LOCAL_G[1] > MAX_LOCAL_G[1]){
+			MAX_LOCAL_G[1] = r->POS_DETECTED_LOCAL_G[1];
+		}
+		else if(r->POS_DETECTED_LOCAL_G[1] < MIN_LOCAL_G[1]){
+			MIN_LOCAL_G[1] = r->POS_DETECTED_LOCAL_G[1];
+		}
 	}
 }
-void CL_REFs::SET_MAXMIN_CRPIX_G(){
-	int const NUM_REF    = APRM->NUM_REF;
 
-	double  &MAX_CRPIX_G_R   = CCDs->MAX_CRPIX_G_R;
+
+void CL_REFs::SET_MAXMIN_CRPIX_G(){
 	double (&MAX_CRPIX_G)[2] = CCDs->MAX_CRPIX_G;
 	double (&MIN_CRPIX_G)[2] = CCDs->MIN_CRPIX_G;
 	double (&AVE_CRPIX_G)[2] = CCDs->AVE_CRPIX_G;
 
 	AVE_CRPIX_G[0]=AVE_CRPIX_G[1]=0;
 	APRM->NUM_FIT=0;
-	for(int i = 0; i < NUM_REF; ++i)
-	if(REF[i].FLAG_OBJ==1){
-		AVE_CRPIX_G[0]+=REF[i].POS_DETECTED_CRPIX_G[0];
-		AVE_CRPIX_G[1]+=REF[i].POS_DETECTED_CRPIX_G[1];
-		APRM->NUM_FIT+=1;
+	for(std::vector<CL_REF>::iterator r = REF.begin();
+		r != REF.end(); ++r
+	){
+		if(r->FLAG_OBJ != 1) continue;
+		AVE_CRPIX_G[0] += r->POS_DETECTED_CRPIX_G[0];
+		AVE_CRPIX_G[1] += r->POS_DETECTED_CRPIX_G[1];
+		APRM->NUM_FIT += 1;
 	}
 	AVE_CRPIX_G[0]/=APRM->NUM_FIT;
 	AVE_CRPIX_G[1]/=APRM->NUM_FIT;
 
-	MAX_CRPIX_G_R =0;
 	MAX_CRPIX_G[0]=MIN_CRPIX_G[0]=AVE_CRPIX_G[0];
 	MAX_CRPIX_G[1]=MIN_CRPIX_G[1]=AVE_CRPIX_G[1];
-	for(int i = 0; i < NUM_REF; ++i)
-	if(REF[i].FLAG_OBJ==1){
-		if(REF[i].POS_DETECTED_CRPIX_G[0]>MAX_CRPIX_G[0])
-		MAX_CRPIX_G[0]=REF[i].POS_DETECTED_CRPIX_G[0];
-		if(REF[i].POS_DETECTED_CRPIX_G[0]<MIN_CRPIX_G[0])
-		MIN_CRPIX_G[0]=REF[i].POS_DETECTED_CRPIX_G[0];
-		if(REF[i].POS_DETECTED_CRPIX_G[1]>MAX_CRPIX_G[1])
-		MAX_CRPIX_G[1]=REF[i].POS_DETECTED_CRPIX_G[1];
-		if(REF[i].POS_DETECTED_CRPIX_G[1]<MIN_CRPIX_G[1])
-		MIN_CRPIX_G[1]=REF[i].POS_DETECTED_CRPIX_G[1];
-		double R=hypot(REF[i].POS_DETECTED_CRPIX_G[0],REF[i].POS_DETECTED_CRPIX_G[1]);
-		if(R>MAX_CRPIX_G_R)
-		MAX_CRPIX_G_R=R;
+
+	for(std::vector<CL_REF>::iterator r = REF.begin();
+		r != REF.end(); ++r
+	){
+		if(r->FLAG_OBJ != 1) continue;
+		if(r->POS_DETECTED_CRPIX_G[0] > MAX_CRPIX_G[0]){
+			MAX_CRPIX_G[0] = r->POS_DETECTED_CRPIX_G[0];
+		}
+		else if(r->POS_DETECTED_CRPIX_G[0] < MIN_CRPIX_G[0]){
+			MIN_CRPIX_G[0] = r->POS_DETECTED_CRPIX_G[0];
+		}
+
+		if(r->POS_DETECTED_CRPIX_G[1] > MAX_CRPIX_G[1]){
+			MAX_CRPIX_G[1] = r->POS_DETECTED_CRPIX_G[1];
+		}
+		else if(r->POS_DETECTED_CRPIX_G[1] < MIN_CRPIX_G[1]){
+			MIN_CRPIX_G[1] = r->POS_DETECTED_CRPIX_G[1];
+		}
 	}
 }
-int  CL_REFs::GET_ID_NEAR_CRVAL(){
-	int const NUM_REF    = APRM->NUM_REF;
 
-	int ID_MIN=0;
-	double MIN_CRVAL=INFINITY;
-	for(int i = 0; i < NUM_REF; ++i)
-	if(REF[i].FLAG_OBJ==1){
-		double R_CRVAL=hypot(REF[i].POS_CELESTIAL_RADEC[0]-APRM->CRVAL[0],REF[i].POS_CELESTIAL_RADEC[1]-APRM->CRVAL[1]);
-		if(R_CRVAL<MIN_CRVAL){
-			MIN_CRVAL=R_CRVAL;
-			ID_MIN=i;
+
+int  CL_REFs::GET_ID_NEAR_CRVAL()
+{
+	std::vector<CL_REF>::iterator pMin = REF.end();
+	double MIN_CRVAL = INFINITY;
+
+	for(std::vector<CL_REF>::iterator r = REF.begin();
+		r != REF.end(); ++r
+	){
+		if(r->FLAG_OBJ != 1) continue;
+		double R_CRVAL=hypot(r->POS_CELESTIAL_RADEC[0]-APRM->CRVAL[0],r->POS_CELESTIAL_RADEC[1]-APRM->CRVAL[1]);
+		if(R_CRVAL < MIN_CRVAL){
+			MIN_CRVAL = R_CRVAL;
+			pMin = r;
 		}
 	}
 
-	return ID_MIN;
+	return pMin - REF.begin();
 }
-int  CL_REFs::GET_ID_NEAR_CRPIX(){
-	int const NUM_REF    = APRM->NUM_REF;
 
-	int ID_MIN=0;
-	double MIN_CRPIX=INFINITY;
-	for(int i = 0; i < NUM_REF; ++i)
-	if(REF[i].FLAG_OBJ==1){
-		double R_CRPIX=hypot(REF[i].POS_DETECTED_LOCAL_G[0]-APRM->CRPIX[0],REF[i].POS_DETECTED_LOCAL_G[1]-APRM->CRPIX[1]);
-		if(R_CRPIX<MIN_CRPIX){
-			MIN_CRPIX=R_CRPIX;
-			ID_MIN=i;
+
+int  CL_REFs::GET_ID_NEAR_CRPIX()
+{
+	std::vector<CL_REF>::iterator pMin = REF.end();
+	double MIN_CRPIX = INFINITY;
+
+	for(std::vector<CL_REF>::iterator r = REF.begin();
+		r != REF.end(); ++r
+	){
+		if(r->FLAG_OBJ != 1) continue;
+		double R_CRPIX=hypot(r->POS_DETECTED_LOCAL_G[0]-APRM->CRPIX[0],r->POS_DETECTED_LOCAL_G[1]-APRM->CRPIX[1]);
+		if(R_CRPIX < MIN_CRPIX){
+			MIN_CRPIX = R_CRPIX;
+			pMin = r;
 		}
 	}
 
-	return ID_MIN;
+	return pMin - REF.begin();
 }
 
 //REFS::FIT
 void CL_REFs::FIT_CbyD(EPosCelestial ID_C, EPosDetected ID_D){
-	int const NUM_REF    = APRM->NUM_REF;
-
-	ndarray::Array<double, 2, 2> dx = ndarray::allocate(NUM_REF,3);
-	ndarray::Array<double, 2, 2> dy = ndarray::allocate(NUM_REF,3);
+	ndarray::Array<double, 2, 2> dx = ndarray::allocate(REF.size(),3);
+	ndarray::Array<double, 2, 2> dy = ndarray::allocate(REF.size(),3);
 
 	APRM->NUM_FIT=0;
-	for(int i = 0 ; i < NUM_REF; ++i)
-	if(REF[i].FLAG_OBJ==1){
-		double D[2] = {}, C[2] = {};
+	for(std::vector<CL_REF>::iterator r = REF.begin();
+		r != REF.end(); ++r
+	){
+		if(r->FLAG_OBJ != 1) continue;
+		double (&D)[2] = r->POS(ID_D);
+		double (&C)[2] = r->POS(ID_C);
 
-		switch(ID_D){
-		case DETECTED_LOCAL_G:
-			D[0]=REF[i].POS_DETECTED_LOCAL_G[0];
-			D[1]=REF[i].POS_DETECTED_LOCAL_G[1];
-			break;
-		case DETECTED_CRPIX_G:
-			D[0]=REF[i].POS_DETECTED_CRPIX_G[0];
-			D[1]=REF[i].POS_DETECTED_CRPIX_G[1];
-			break;
-		case DETECTED_IMPIX_G:
-			D[0]=REF[i].POS_DETECTED_IMPIX_G[0];
-			D[1]=REF[i].POS_DETECTED_IMPIX_G[1];
-			break;
-		case DETECTED_IMWLD_G:
-			D[0]=REF[i].POS_DETECTED_IMWLD_G[0];
-			D[1]=REF[i].POS_DETECTED_IMWLD_G[1];
-			break;
-		case DETECTED_RADEC_G:
-			D[0]=REF[i].POS_DETECTED_RADEC_G[0];
-			D[1]=REF[i].POS_DETECTED_RADEC_G[1];
-			break;
-		}
-		switch(ID_C){
-		case CELESTIAL_RADEC:
-			C[0]=REF[i].POS_CELESTIAL_RADEC[0];
-			C[1]=REF[i].POS_CELESTIAL_RADEC[1];
-			break;
-		case CELESTIAL_IMWLD:
-			C[0]=REF[i].POS_CELESTIAL_IMWLD[0];
-			C[1]=REF[i].POS_CELESTIAL_IMWLD[1];
-			break;
-		case CELESTIAL_IMPIX_G:
-			C[0]=REF[i].POS_CELESTIAL_IMPIX_G[0];
-			C[1]=REF[i].POS_CELESTIAL_IMPIX_G[1];
-			break;
-		case CELESTIAL_CRPIX_G:
-			C[0]=REF[i].POS_CELESTIAL_CRPIX_G[0];
-			C[1]=REF[i].POS_CELESTIAL_CRPIX_G[1];
-			break;
-		case CELESTIAL_LOCAL_G:
-			C[0]=REF[i].POS_CELESTIAL_LOCAL_G[0];
-			C[1]=REF[i].POS_CELESTIAL_LOCAL_G[1];
-			break;
-		}
 		if(isfinite(D[0]) && isfinite(D[1])
 		&& isfinite(C[0]) && isfinite(C[1])
 		){
@@ -465,61 +378,21 @@ void CL_REFs::FIT_CbyD(EPosCelestial ID_C, EPosDetected ID_D){
 	ASIP[0] = CALC_FIT_LS2(APRM->NUM_FIT,APRM->ORDER_ASIP,dx);
 	ASIP[1] = CALC_FIT_LS2(APRM->NUM_FIT,APRM->ORDER_ASIP,dy);
 }
-void CL_REFs::FIT_DbyC(EPosDetected ID_D, EPosCelestial ID_C){
-	int const NUM_REF    = APRM->NUM_REF;
 
-	ndarray::Array<double, 2, 2> dx = ndarray::allocate(NUM_REF,3);
-	ndarray::Array<double, 2, 2> dy = ndarray::allocate(NUM_REF,3);
+
+void CL_REFs::FIT_DbyC(EPosDetected ID_D, EPosCelestial ID_C)
+{
+	ndarray::Array<double, 2, 2> dx = ndarray::allocate(REF.size(), 3);
+	ndarray::Array<double, 2, 2> dy = ndarray::allocate(REF.size(), 3);
 
 	APRM->NUM_FIT=0;
-	for(int i = 0; i < NUM_REF; ++i)
-	if(REF[i].FLAG_OBJ==1){
-		double D[2] = {}, C[2] = {};
+	for(std::vector<CL_REF>::iterator r = REF.begin();
+		r != REF.end(); ++r
+	){
+		if(r->FLAG_OBJ != 1) continue;
+		double (&D)[2] = r->POS(ID_D);
+		double (&C)[2] = r->POS(ID_C);
 
-		switch(ID_D){
-		case DETECTED_LOCAL_G:
-			D[0]=REF[i].POS_DETECTED_LOCAL_G[0];
-			D[1]=REF[i].POS_DETECTED_LOCAL_G[1];
-			break;
-		case DETECTED_CRPIX_G:
-			D[0]=REF[i].POS_DETECTED_CRPIX_G[0];
-			D[1]=REF[i].POS_DETECTED_CRPIX_G[1];
-			break;
-		case DETECTED_IMPIX_G:
-			D[0]=REF[i].POS_DETECTED_IMPIX_G[0];
-			D[1]=REF[i].POS_DETECTED_IMPIX_G[1];
-			break;
-		case DETECTED_IMWLD_G:
-			D[0]=REF[i].POS_DETECTED_IMWLD_G[0];
-			D[1]=REF[i].POS_DETECTED_IMWLD_G[1];
-			break;
-		case DETECTED_RADEC_G:
-			D[0]=REF[i].POS_DETECTED_RADEC_G[0];
-			D[1]=REF[i].POS_DETECTED_RADEC_G[1];
-			break;
-		}
-		switch(ID_C){
-		case CELESTIAL_RADEC:
-			C[0]=REF[i].POS_CELESTIAL_RADEC[0];
-			C[1]=REF[i].POS_CELESTIAL_RADEC[1];
-			break;
-		case CELESTIAL_IMWLD:
-			C[0]=REF[i].POS_CELESTIAL_IMWLD[0];
-			C[1]=REF[i].POS_CELESTIAL_IMWLD[1];
-			break;
-		case CELESTIAL_IMPIX_G:
-			C[0]=REF[i].POS_CELESTIAL_IMPIX_G[0];
-			C[1]=REF[i].POS_CELESTIAL_IMPIX_G[1];
-			break;
-		case CELESTIAL_CRPIX_G:
-			C[0]=REF[i].POS_CELESTIAL_CRPIX_G[0];
-			C[1]=REF[i].POS_CELESTIAL_CRPIX_G[1];
-			break;
-		case CELESTIAL_LOCAL_G:
-			C[0]=REF[i].POS_CELESTIAL_LOCAL_G[0];
-			C[1]=REF[i].POS_CELESTIAL_LOCAL_G[1];
-			break;
-		}
 		if(isfinite(D[0]) && isfinite(D[1])
 		&& isfinite(C[0]) && isfinite(C[1])
 		){
@@ -535,36 +408,40 @@ void CL_REFs::FIT_DbyC(EPosDetected ID_D, EPosCelestial ID_C){
 	PSIP[0] = CALC_FIT_LS2(APRM->NUM_FIT,APRM->ORDER_PSIP,dx);
 	PSIP[1] = CALC_FIT_LS2(APRM->NUM_FIT,APRM->ORDER_PSIP,dy);
 }
-void CL_REFs::CALC_STAT_ASIP(){
-	int const NUM_REF    = APRM->NUM_REF;
+
+
+void CL_REFs::CALC_STAT_ASIP()
+{
 	int const NUM_CCD    = APRM->NUM_CCD;
 
 	ndarray::Array<double, 1, 1> DIFF[2];
-	DIFF[0]= ndarray::allocate(NUM_REF);
-	DIFF[1]= ndarray::allocate(NUM_REF);
+	DIFF[0] = ndarray::allocate(REF.size());
+	DIFF[1] = ndarray::allocate(REF.size());
 
 	APRM->NUM_FIT=0;
-	for(int i = 0; i < NUM_REF; ++i)
-	if(REF[i].FLAG_OBJ==1){
-		DIFF[0][APRM->NUM_FIT]=REF[i].POS_DETECTED_ASIP_IMPIX_G[0]-REF[i].POS_CELESTIAL_IMPIX_G[0];
-		DIFF[1][APRM->NUM_FIT]=REF[i].POS_DETECTED_ASIP_IMPIX_G[1]-REF[i].POS_CELESTIAL_IMPIX_G[1];
-		APRM->NUM_FIT+=1;
+	for(std::vector<CL_REF>::iterator r = REF.begin();
+		r != REF.end(); ++r
+	){
+		if(r->FLAG_OBJ != 1) continue;
+		DIFF[0][APRM->NUM_FIT] = r->POS_DETECTED_ASIP_IMPIX_G[0] - r->POS_CELESTIAL_IMPIX_G[0];
+		DIFF[1][APRM->NUM_FIT] = r->POS_DETECTED_ASIP_IMPIX_G[1] - r->POS_CELESTIAL_IMPIX_G[1];
+		APRM->NUM_FIT += 1;
 	}
 
 	double STAT[2][4];
-	CALC_STAT_RMSMAX(APRM->NUM_FIT,DIFF[0].getData(),STAT[0]);
-	CALC_STAT_RMSMAX(APRM->NUM_FIT,DIFF[1].getData(),STAT[1]);
+	CALC_STAT_RMSMAX(APRM->NUM_FIT,DIFF[0].getData(), STAT[0]);
+	CALC_STAT_RMSMAX(APRM->NUM_FIT,DIFF[1].getData(), STAT[1]);
 
 	double (&DIF_AVE_ASIP)[2] = CCDs->CCD[NUM_CCD].DIF_AVE_ASIP;
 	double (&DIF_RMS_ASIP)[2] = CCDs->CCD[NUM_CCD].DIF_RMS_ASIP;
 	double (&DIF_MAX_ASIP)[2] = CCDs->CCD[NUM_CCD].DIF_MAX_ASIP;
 
-	DIF_AVE_ASIP[0]=STAT[0][1];
-	DIF_AVE_ASIP[1]=STAT[1][1];
-	DIF_RMS_ASIP[0]=STAT[0][2];
-	DIF_RMS_ASIP[1]=STAT[1][2];
-	DIF_MAX_ASIP[0]=STAT[0][3];
-	DIF_MAX_ASIP[1]=STAT[1][3];
+	DIF_AVE_ASIP[0] = STAT[0][1];
+	DIF_AVE_ASIP[1] = STAT[1][1];
+	DIF_RMS_ASIP[0] = STAT[0][2];
+	DIF_RMS_ASIP[1] = STAT[1][2];
+	DIF_MAX_ASIP[0] = STAT[0][3];
+	DIF_MAX_ASIP[1] = STAT[1][3];
 
 	if(APRM->FLAG_STD >= 2){
 		cout<<"-- STAT ASIP DIFF --"<<endl;
@@ -591,19 +468,22 @@ void CL_REFs::CALC_STAT_ASIP(){
 		cout<<scientific<<setprecision(3)<<DIF_MAX_ASIP[1]<<endl;
 	}
 }
+
+
 void CL_REFs::CALC_STAT_PSIP(){
-	int const NUM_REF    = APRM->NUM_REF;
 	int const NUM_CCD    = APRM->NUM_CCD;
 
 	ndarray::Array<double, 1, 1> DIFF[2];
-	DIFF[0]= ndarray::allocate(NUM_REF);
-	DIFF[1]= ndarray::allocate(NUM_REF);
+	DIFF[0] = ndarray::allocate(REF.size());
+	DIFF[1] = ndarray::allocate(REF.size());
 
 	APRM->NUM_FIT=0;
-	for(int i = 0; i < NUM_REF; ++i)
-	if(REF[i].FLAG_OBJ==1){
-		DIFF[0][APRM->NUM_FIT]=REF[i].POS_CELESTIAL_PSIP_CRPIX_G[0]-REF[i].POS_DETECTED_CRPIX_G[0];
-		DIFF[1][APRM->NUM_FIT]=REF[i].POS_CELESTIAL_PSIP_CRPIX_G[1]-REF[i].POS_DETECTED_CRPIX_G[1];
+	for(std::vector<CL_REF>::iterator r = REF.begin();
+		r != REF.end(); ++r
+	){
+		if(r->FLAG_OBJ != 1) continue;
+		DIFF[0][APRM->NUM_FIT] = r->POS_CELESTIAL_PSIP_CRPIX_G[0] - r->POS_DETECTED_CRPIX_G[0];
+		DIFF[1][APRM->NUM_FIT] = r->POS_CELESTIAL_PSIP_CRPIX_G[1] - r->POS_DETECTED_CRPIX_G[1];
 		APRM->NUM_FIT+=1;
 	}
 
@@ -615,12 +495,12 @@ void CL_REFs::CALC_STAT_PSIP(){
 	double (&DIF_RMS_PSIP)[2] = CCDs->CCD[NUM_CCD].DIF_RMS_PSIP;
 	double (&DIF_MAX_PSIP)[2] = CCDs->CCD[NUM_CCD].DIF_MAX_PSIP;
 
-	DIF_AVE_PSIP[0]=STAT[0][1];
-	DIF_AVE_PSIP[1]=STAT[1][1];
-	DIF_RMS_PSIP[0]=STAT[0][2];
-	DIF_RMS_PSIP[1]=STAT[1][2];
-	DIF_MAX_PSIP[0]=STAT[0][3];
-	DIF_MAX_PSIP[1]=STAT[1][3];
+	DIF_AVE_PSIP[0] = STAT[0][1];
+	DIF_AVE_PSIP[1] = STAT[1][1];
+	DIF_RMS_PSIP[0] = STAT[0][2];
+	DIF_RMS_PSIP[1] = STAT[1][2];
+	DIF_MAX_PSIP[0] = STAT[0][3];
+	DIF_MAX_PSIP[1] = STAT[1][3];
 
 	if(APRM->FLAG_STD >= 2){
 		cout<<"-- STAT PSIP DIFF --"<<endl;
@@ -647,45 +527,53 @@ void CL_REFs::CALC_STAT_PSIP(){
 		cout<<scientific<<setprecision(3)<<DIF_MAX_PSIP[1]<<endl;
 	}
 }
-void CL_REFs::CALC_STAT_SIP_LOCAL(){
-	int const NUM_REF    = APRM->NUM_REF;
+
+
+void CL_REFs::CALC_STAT_SIP_LOCAL()
+{
 	int const NUM_CCD    = APRM->NUM_CCD;
 
 	ndarray::Array<int   , 1, 1> NUM = ndarray::allocate(NUM_CCD);
-	ndarray::Array<double, 3, 3> DIFF= ndarray::allocate(NUM_CCD,4,NUM_REF);
-	ndarray::Array<double, 3, 3> STAT= ndarray::allocate(NUM_CCD,4,4);
+	ndarray::Array<double, 3, 3> DIFF= ndarray::allocate(NUM_CCD, 4, REF.size());
 
 	NUM.deep() = 0;
 
 	APRM->NUM_FIT=0;
-	for(int i = 0; i < NUM_REF; ++i)
-	if(REF[i].FLAG_OBJ==1){
-		DIFF[REF[i].ID_CCD][0][NUM[REF[i].ID_CCD]]=REF[i].POS_DETECTED_ASIP_IMPIX_L[0]-REF[i].POS_CELESTIAL_IMPIX_L[0];
-		DIFF[REF[i].ID_CCD][1][NUM[REF[i].ID_CCD]]=REF[i].POS_DETECTED_ASIP_IMPIX_L[1]-REF[i].POS_CELESTIAL_IMPIX_L[1];
-		DIFF[REF[i].ID_CCD][2][NUM[REF[i].ID_CCD]]=REF[i].POS_CELESTIAL_PSIP_CRPIX_L[0]-REF[i].POS_DETECTED_CRPIX_L[0];
-		DIFF[REF[i].ID_CCD][3][NUM[REF[i].ID_CCD]]=REF[i].POS_CELESTIAL_PSIP_CRPIX_L[1]-REF[i].POS_DETECTED_CRPIX_L[1];
-		 NUM[REF[i].ID_CCD]+=1;
+	for(std::vector<CL_REF>::iterator r = REF.begin();
+		r != REF.end(); ++r
+	){
+		if(r->FLAG_OBJ != 1) continue;
+		DIFF[r->ID_CCD][0][NUM[r->ID_CCD]] = r->POS_DETECTED_ASIP_IMPIX_L [0] - r->POS_CELESTIAL_IMPIX_L[0];
+		DIFF[r->ID_CCD][1][NUM[r->ID_CCD]] = r->POS_DETECTED_ASIP_IMPIX_L [1] - r->POS_CELESTIAL_IMPIX_L[1];
+		DIFF[r->ID_CCD][2][NUM[r->ID_CCD]] = r->POS_CELESTIAL_PSIP_CRPIX_L[0] - r->POS_DETECTED_CRPIX_L [0];
+		DIFF[r->ID_CCD][3][NUM[r->ID_CCD]] = r->POS_CELESTIAL_PSIP_CRPIX_L[1] - r->POS_DETECTED_CRPIX_L [1];
+		NUM [r->ID_CCD] += 1;
 		APRM->NUM_FIT+=1;
 	}
+
 	for(int i = 0; i < NUM_CCD; ++i){
-		CALC_STAT_RMSMAX(NUM[i],DIFF[i][0].getData(),STAT[i][0].getData());
-		CALC_STAT_RMSMAX(NUM[i],DIFF[i][1].getData(),STAT[i][1].getData());
-		CALC_STAT_RMSMAX(NUM[i],DIFF[i][2].getData(),STAT[i][2].getData());
-		CALC_STAT_RMSMAX(NUM[i],DIFF[i][3].getData(),STAT[i][3].getData());
-		CCDs->CCD[i].DIF_AVE_ASIP[0]=STAT[i][0][1];
-		CCDs->CCD[i].DIF_AVE_ASIP[1]=STAT[i][1][1];
-		CCDs->CCD[i].DIF_AVE_PSIP[0]=STAT[i][2][1];
-		CCDs->CCD[i].DIF_AVE_PSIP[1]=STAT[i][3][1];
-		CCDs->CCD[i].DIF_RMS_ASIP[0]=STAT[i][0][2];
-		CCDs->CCD[i].DIF_RMS_ASIP[1]=STAT[i][1][2];
-		CCDs->CCD[i].DIF_RMS_PSIP[0]=STAT[i][2][2];
-		CCDs->CCD[i].DIF_RMS_PSIP[1]=STAT[i][3][2];
-		CCDs->CCD[i].DIF_MAX_ASIP[0]=STAT[i][0][3];
-		CCDs->CCD[i].DIF_MAX_ASIP[1]=STAT[i][1][3];
-		CCDs->CCD[i].DIF_MAX_PSIP[0]=STAT[i][2][3];
-		CCDs->CCD[i].DIF_MAX_PSIP[1]=STAT[i][3][3];
+		double STAT[4][4];
+
+		CALC_STAT_RMSMAX(NUM[i],DIFF[i][0].getData(),STAT[0]);
+		CALC_STAT_RMSMAX(NUM[i],DIFF[i][1].getData(),STAT[1]);
+		CALC_STAT_RMSMAX(NUM[i],DIFF[i][2].getData(),STAT[2]);
+		CALC_STAT_RMSMAX(NUM[i],DIFF[i][3].getData(),STAT[3]);
+		CCDs->CCD[i].DIF_AVE_ASIP[0] = STAT[0][1];
+		CCDs->CCD[i].DIF_AVE_ASIP[1] = STAT[1][1];
+		CCDs->CCD[i].DIF_AVE_PSIP[0] = STAT[2][1];
+		CCDs->CCD[i].DIF_AVE_PSIP[1] = STAT[3][1];
+		CCDs->CCD[i].DIF_RMS_ASIP[0] = STAT[0][2];
+		CCDs->CCD[i].DIF_RMS_ASIP[1] = STAT[1][2];
+		CCDs->CCD[i].DIF_RMS_PSIP[0] = STAT[2][2];
+		CCDs->CCD[i].DIF_RMS_PSIP[1] = STAT[3][2];
+		CCDs->CCD[i].DIF_MAX_ASIP[0] = STAT[0][3];
+		CCDs->CCD[i].DIF_MAX_ASIP[1] = STAT[1][3];
+		CCDs->CCD[i].DIF_MAX_PSIP[0] = STAT[2][3];
+		CCDs->CCD[i].DIF_MAX_PSIP[1] = STAT[3][3];
 	}
 }
+
+
 void CL_REFs::CALC_CRPIXatCRVAL(){
 	int const NUM_CCD    = APRM->NUM_CCD;
 	Polynomial2D (&PSIP)[2] = CCDs->CCD[NUM_CCD].PSIP;
@@ -828,39 +716,51 @@ void CL_REFs::REJECT_BADREF(){
 
 }
 void CL_REFs::REJECT_BADREF_ASIP(){
-	int    const NUM_REF    = APRM->NUM_REF;
 	double const SIGMA_CLIP = APRM->SIGMA_CLIP;
 	double (&DIF_RMS_ASIP)[2] = CCDs->CCD[APRM->NUM_CCD].DIF_RMS_ASIP;
 
-	for(int i = 0; i < NUM_REF; ++i){
+	for(std::vector<CL_REF>::iterator r = REF.begin();
+		r != REF.end(); ++r
+	){
 		double DIFF[2];
-		DIFF[0]=REF[i].POS_DETECTED_ASIP_IMPIX_G[0]-REF[i].POS_CELESTIAL_IMPIX_G[0];
-		DIFF[1]=REF[i].POS_DETECTED_ASIP_IMPIX_G[1]-REF[i].POS_CELESTIAL_IMPIX_G[1];
+		DIFF[0] = r->POS_DETECTED_ASIP_IMPIX_G[0] - r->POS_CELESTIAL_IMPIX_G[0];
+		DIFF[1] = r->POS_DETECTED_ASIP_IMPIX_G[1] - r->POS_CELESTIAL_IMPIX_G[1];
 
-		if(fabs(DIFF[0])>SIGMA_CLIP*DIF_RMS_ASIP[0]||fabs(DIFF[1])>SIGMA_CLIP*DIF_RMS_ASIP[1]){
-			REF[i].FLAG_OBJ=0;
-		}else{
-			REF[i].FLAG_OBJ=1;
+		if(fabs(DIFF[0]) > SIGMA_CLIP*DIF_RMS_ASIP[0]
+		|| fabs(DIFF[1]) > SIGMA_CLIP*DIF_RMS_ASIP[1]
+		){
+			r->FLAG_OBJ = 0;
+		}
+		else{
+			r->FLAG_OBJ = 1;
 		}
 	}
 
 }
+
+
 void CL_REFs::REJECT_BADREF_PSIP(){
-	int    const NUM_REF    = APRM->NUM_REF;
 	double const SIGMA_CLIP = APRM->SIGMA_CLIP;
 	double (&DIF_RMS_PSIP)[2] = CCDs->CCD[APRM->NUM_CCD].DIF_RMS_PSIP;
 
-	for(int i = 0; i < NUM_REF; ++i){
+	for(std::vector<CL_REF>::iterator r = REF.begin();
+		r != REF.end(); ++r
+	){
 		double DIFF[2];
-		DIFF[0]=REF[i].POS_CELESTIAL_PSIP_CRPIX_G[0]-REF[i].POS_DETECTED_CRPIX_G[0];
-		DIFF[1]=REF[i].POS_CELESTIAL_PSIP_CRPIX_G[1]-REF[i].POS_DETECTED_CRPIX_G[1];
-		if(fabs(DIFF[0])>SIGMA_CLIP*DIF_RMS_PSIP[0]||fabs(DIFF[1])>SIGMA_CLIP*DIF_RMS_PSIP[1]){
-			REF[i].FLAG_OBJ=0;
-		}else{
-			REF[i].FLAG_OBJ=1;
+		DIFF[0] = r->POS_CELESTIAL_PSIP_CRPIX_G[0] - r->POS_DETECTED_CRPIX_G[0];
+		DIFF[1] = r->POS_CELESTIAL_PSIP_CRPIX_G[1] - r->POS_DETECTED_CRPIX_G[1];
+		if(fabs(DIFF[0]) > SIGMA_CLIP*DIF_RMS_PSIP[0]
+		|| fabs(DIFF[1]) > SIGMA_CLIP*DIF_RMS_PSIP[1]
+		){
+			r->FLAG_OBJ = 0;
+		}
+		else{
+			r->FLAG_OBJ = 1;
 		}
 	}
 }
+
+
 //CCD POSITION
 void CL_REFs::DETERMINE_CCDPOSITION(){
 	if(APRM->FLAG_STD >= 1)cout<<"-- DETERMINE CCD POSITIONS --"<<endl;
@@ -868,7 +768,6 @@ void CL_REFs::DETERMINE_CCDPOSITION(){
 	// See doc/determine_ccdposition.tex for a mathematical description
 	// of this function
 
-	int const NUM_REF    = APRM->NUM_REF;
 	int const NUM_CCD    = APRM->NUM_CCD;
 	int const ORDER_PSIP = APRM->ORDER_PSIP;
 
@@ -896,9 +795,9 @@ void CL_REFs::DETERMINE_CCDPOSITION(){
 	ndarray::Array<double, 2, 2> COEF     = ndarray::allocate(2, NUM_COEF);
 	ndarray::Array<double, 1, 1> MAXYT    = ndarray::allocate(3*nValidCcd+2*(NUM_COEF-1)+1);
 	ndarray::Array<double, 2, 2> MBXYT    = ndarray::allocate(3*nValidCcd+2*(NUM_COEF-1)+1, 3*nValidCcd+2*(NUM_COEF-1)+1);
-	ndarray::Array<double, 3, 3> XY       = ndarray::allocate(NUM_REF, 2*ORDER_PSIP+1, 2*ORDER_PSIP+1);
-	ndarray::Array<double, 1, 1> XLsYLc   = ndarray::allocate(NUM_REF);
-	ndarray::Array<double, 1, 1> YLsXLc   = ndarray::allocate(NUM_REF);
+	ndarray::Array<double, 3, 3> XY       = ndarray::allocate(REF.size(), 2*ORDER_PSIP+1, 2*ORDER_PSIP+1);
+	ndarray::Array<double, 1, 1> XLsYLc   = ndarray::allocate(REF.size());
+	ndarray::Array<double, 1, 1> YLsXLc   = ndarray::allocate(REF.size());
 	ndarray::Array<double, 2, 2> XYINIT   = ndarray::allocate(nValidCcd, 3);
 	ndarray::Array<double, 1, 1> XN       = ndarray::allocate(2*ORDER_PSIP+1);
 	ndarray::Array<double, 1, 1> YN       = ndarray::allocate(2*ORDER_PSIP+1);
@@ -926,25 +825,29 @@ void CL_REFs::DETERMINE_CCDPOSITION(){
 		SET_POS_CELESTIAL_PSIP_LOCAL_GfromIMWLD();
 //--------------------------------------------------
 //XY
-		for(int NUM = 0; NUM < NUM_REF; ++NUM){
+		for(std::size_t NUM = 0; NUM < REF.size(); ++NUM){
+			if(REF[NUM].FLAG_OBJ != 1) continue;
+
 			XN[0]=1;
 			YN[0]=1;
 			for(int i = 1; i <= 2*ORDER_PSIP; ++i){
-				XN[i]=XN[i-1]*REF[NUM].POS_CELESTIAL_IMWLD[0];
-				YN[i]=YN[i-1]*REF[NUM].POS_CELESTIAL_IMWLD[1];
+				XN[i] = XN[i-1]*REF[NUM].POS_CELESTIAL_IMWLD[0];
+				YN[i] = YN[i-1]*REF[NUM].POS_CELESTIAL_IMWLD[1];
 			}
 			for(int i = 0; i <= 2*ORDER_PSIP; ++i)
 			for(int j = 0; j <= 2*ORDER_PSIP; ++j)
 				XY[NUM][i][j] = XN[i]*YN[j];
 		}
-		for(int NUM = 0; NUM < NUM_REF; ++NUM){
+		for(std::size_t NUM = 0; NUM < REF.size(); ++NUM){
+			if(REF[NUM].FLAG_OBJ != 1) continue;
+
 			int ID_CCD = REF[NUM].ID_CCD;
 			if(ccdIdToValidId[ID_CCD] < 0) continue;
 
-			XLsYLc[NUM]=REF[NUM].POS_DETECTED_LOCAL_L[0]*sin(CCDs->CCD[ID_CCD].GPOS_L[2])+
-				    REF[NUM].POS_DETECTED_LOCAL_L[1]*cos(CCDs->CCD[ID_CCD].GPOS_L[2]);
-			YLsXLc[NUM]=REF[NUM].POS_DETECTED_LOCAL_L[1]*sin(CCDs->CCD[ID_CCD].GPOS_L[2])-
-				    REF[NUM].POS_DETECTED_LOCAL_L[0]*cos(CCDs->CCD[ID_CCD].GPOS_L[2]);
+			XLsYLc[NUM]=REF[NUM].POS_DETECTED_LOCAL_L[0]*sin(REF[NUM].CCD->GPOS_L[2])+
+				    REF[NUM].POS_DETECTED_LOCAL_L[1]*cos(REF[NUM].CCD->GPOS_L[2]);
+			YLsXLc[NUM]=REF[NUM].POS_DETECTED_LOCAL_L[1]*sin(REF[NUM].CCD->GPOS_L[2])-
+				    REF[NUM].POS_DETECTED_LOCAL_L[0]*cos(REF[NUM].CCD->GPOS_L[2]);
 		}
 
 //--------------------------------------------------
@@ -954,8 +857,9 @@ void CL_REFs::DETERMINE_CCDPOSITION(){
 
 //--------------------------------------------------
 // CCD positions (\delta X, \delta Y, \delta \Theta)
-		for(int NUM = 0; NUM < NUM_REF; ++NUM)
-		if(REF[NUM].FLAG_OBJ==1){
+		for(std::size_t NUM = 0; NUM < REF.size(); ++NUM){
+			if(REF[NUM].FLAG_OBJ != 1) continue;
+
 			int validCcdId = ccdIdToValidId[REF[NUM].ID_CCD];
 			if(validCcdId < 0) continue;
 
@@ -969,8 +873,8 @@ void CL_REFs::DETERMINE_CCDPOSITION(){
 		for(int i=0;i<ORDER_PSIP+1  ;i++)
 		for(int j=0;j<ORDER_PSIP+1-i;j++)
 		if(i+j!=0){
-			for(int NUM = 0; NUM < NUM_REF; ++NUM)
-			if(REF[NUM].FLAG_OBJ==1){
+			for(std::size_t NUM = 0; NUM < REF.size(); ++NUM){
+				if(REF[NUM].FLAG_OBJ != 1) continue;
 				MAXYT[3*nValidCcd+0*(NUM_COEF-1)+ij]-=-(REF[NUM].POS_DETECTED_LOCAL_G[0]-REF[NUM].POS_CELESTIAL_PSIP_LOCAL_G[0])*XY[NUM][i][j];
 				MAXYT[3*nValidCcd+1*(NUM_COEF-1)+ij]-=-(REF[NUM].POS_DETECTED_LOCAL_G[1]-REF[NUM].POS_CELESTIAL_PSIP_LOCAL_G[1])*XY[NUM][i][j];
 			}
@@ -978,8 +882,9 @@ void CL_REFs::DETERMINE_CCDPOSITION(){
 		}
 //--------------------------------------------------
 // CCD positions \times CCD positions
-		for(int NUM = 0; NUM < NUM_REF; ++NUM)
-		if(REF[NUM].FLAG_OBJ==1){
+		for(std::size_t NUM = 0; NUM < REF.size(); ++NUM){
+			if(REF[NUM].FLAG_OBJ != 1) continue;
+
 			int validCcdId = ccdIdToValidId[REF[NUM].ID_CCD];
 			if(validCcdId < 0) continue;
 
@@ -999,16 +904,16 @@ void CL_REFs::DETERMINE_CCDPOSITION(){
 		for(int i=0;i<ORDER_PSIP+1  ;i++)
 		for(int j=0;j<ORDER_PSIP+1-i;j++)
 		if(i+j!=0){
-			for(int NUM = 0; NUM < NUM_REF; ++NUM){
-				if(REF[NUM].FLAG_OBJ==1){
-					int validCcdId = ccdIdToValidId[REF[NUM].ID_CCD];
-					if(validCcdId < 0) continue;
+			for(std::size_t NUM = 0; NUM < REF.size(); ++NUM){
+				if(REF[NUM].FLAG_OBJ != 1) continue;
 
-					MBXYT[0*nValidCcd+validCcdId][3*nValidCcd+0*(NUM_COEF-1)+ij]+=-XY[NUM][i][j];
-					MBXYT[1*nValidCcd+validCcdId][3*nValidCcd+1*(NUM_COEF-1)+ij]+=-XY[NUM][i][j];
-					MBXYT[2*nValidCcd+validCcdId][3*nValidCcd+0*(NUM_COEF-1)+ij]+=-XY[NUM][i][j]*(-XLsYLc[NUM]);
-					MBXYT[2*nValidCcd+validCcdId][3*nValidCcd+1*(NUM_COEF-1)+ij]+=-XY[NUM][i][j]*(-YLsXLc[NUM]);
-				}
+				int validCcdId = ccdIdToValidId[REF[NUM].ID_CCD];
+				if(validCcdId < 0) continue;
+
+				MBXYT[0*nValidCcd+validCcdId][3*nValidCcd+0*(NUM_COEF-1)+ij]+=-XY[NUM][i][j];
+				MBXYT[1*nValidCcd+validCcdId][3*nValidCcd+1*(NUM_COEF-1)+ij]+=-XY[NUM][i][j];
+				MBXYT[2*nValidCcd+validCcdId][3*nValidCcd+0*(NUM_COEF-1)+ij]+=-XY[NUM][i][j]*(-XLsYLc[NUM]);
+				MBXYT[2*nValidCcd+validCcdId][3*nValidCcd+1*(NUM_COEF-1)+ij]+=-XY[NUM][i][j]*(-YLsXLc[NUM]);
 			}
 			ij++;
 		}
@@ -1018,16 +923,16 @@ void CL_REFs::DETERMINE_CCDPOSITION(){
 		for(int i=0;i<ORDER_PSIP+1  ;i++)
 		for(int j=0;j<ORDER_PSIP+1-i;j++)
 		if(i+j!=0){
-			for(int NUM = 0; NUM < NUM_REF; ++NUM) {
-				if(REF[NUM].FLAG_OBJ==1){
-					int validCcdId = ccdIdToValidId[REF[NUM].ID_CCD];
-					if(validCcdId < 0) continue;
+			for(std::size_t NUM = 0; NUM < REF.size(); ++NUM){
+				if(REF[NUM].FLAG_OBJ != 1) continue;
 
-					MBXYT[3*nValidCcd+0*(NUM_COEF-1)+ij][0*nValidCcd+validCcdId]+=-XY[NUM][i][j];
-					MBXYT[3*nValidCcd+1*(NUM_COEF-1)+ij][1*nValidCcd+validCcdId]+=-XY[NUM][i][j];
-					MBXYT[3*nValidCcd+0*(NUM_COEF-1)+ij][2*nValidCcd+validCcdId]+=-XY[NUM][i][j]*(-XLsYLc[NUM]);
-					MBXYT[3*nValidCcd+1*(NUM_COEF-1)+ij][2*nValidCcd+validCcdId]+=-XY[NUM][i][j]*(-YLsXLc[NUM]);
-				}
+				int validCcdId = ccdIdToValidId[REF[NUM].ID_CCD];
+				if(validCcdId < 0) continue;
+
+				MBXYT[3*nValidCcd+0*(NUM_COEF-1)+ij][0*nValidCcd+validCcdId]+=-XY[NUM][i][j];
+				MBXYT[3*nValidCcd+1*(NUM_COEF-1)+ij][1*nValidCcd+validCcdId]+=-XY[NUM][i][j];
+				MBXYT[3*nValidCcd+0*(NUM_COEF-1)+ij][2*nValidCcd+validCcdId]+=-XY[NUM][i][j]*(-XLsYLc[NUM]);
+				MBXYT[3*nValidCcd+1*(NUM_COEF-1)+ij][2*nValidCcd+validCcdId]+=-XY[NUM][i][j]*(-YLsXLc[NUM]);
 			}
 			ij++;
 		}
@@ -1041,8 +946,8 @@ void CL_REFs::DETERMINE_CCDPOSITION(){
 			for(int k=0;k<ORDER_PSIP+1  ;k++)
 			for(int l=0;l<ORDER_PSIP+1-k;l++)
 			if(k+l!=0){
-				for(int NUM = 0; NUM < NUM_REF; ++NUM)
-				if(REF[NUM].FLAG_OBJ==1){
+				for(std::size_t NUM = 0; NUM < REF.size(); ++NUM){
+					if(REF[NUM].FLAG_OBJ != 1) continue;
 					MBXYT[3*nValidCcd+0*(NUM_COEF-1)+ij][3*nValidCcd+0*(NUM_COEF-1)+kl]+=XY[NUM][i+k][j+l];
 
 //					MBXYT[3*nValidCcd+0*(NUM_COEF-1)+ij][3*nValidCcd+1*(NUM_COEF-1)+kl]+=0;
@@ -1223,18 +1128,19 @@ void CL_REFs::CALC_OPTICAL_DISTORTION(){
 	CALC_OPTICAL_AXIS();
 }
 Polynomial2D CL_REFs::FIT_PSIP_JACO(){
-	int const NUM_REF    = APRM->NUM_REF;
 	int const ORDER_PSIP = APRM->ORDER_PSIP;
 
-	ndarray::Array<double, 2, 2> dJ = ndarray::allocate(NUM_REF,3);
+	ndarray::Array<double, 2, 2> dJ = ndarray::allocate(REF.size(),3);
 
-	APRM->NUM_FIT=0;
-	for(int i = 0; i < NUM_REF; ++i)
-	if(REF[i].FLAG_OBJ==1){
-		dJ[APRM->NUM_FIT][0] = REF[i].POS_CELESTIAL_IMPIX_G[0];
-		dJ[APRM->NUM_FIT][1] = REF[i].POS_CELESTIAL_IMPIX_G[1];
-		dJ[APRM->NUM_FIT][2] = REF[i].CAMERA_JACO;
-		APRM->NUM_FIT+=1;
+	APRM->NUM_FIT = 0;
+	for(std::vector<CL_REF>::iterator r = REF.begin();
+		r != REF.end(); ++r
+	){
+		if(r->FLAG_OBJ != 1) continue;
+		dJ[APRM->NUM_FIT][0] = r->POS_CELESTIAL_IMPIX_G[0];
+		dJ[APRM->NUM_FIT][1] = r->POS_CELESTIAL_IMPIX_G[1];
+		dJ[APRM->NUM_FIT][2] = r->CAMERA_JACO;
+		APRM->NUM_FIT += 1;
 	}
 
 	return CALC_FIT_LS2(APRM->NUM_FIT,ORDER_PSIP-1,dJ );
@@ -1274,16 +1180,7 @@ void CL_REFs::CALC_OPTICAL_AXIS(){
 	CCDs->CCD[APRM->NUM_CCD].OAPIX[1]=PY;
 }
 
-//REF
-void CL_REF::SET_INIT(CL_CCD*  CCD_IN,CL_CCD*  GCD_IN){
-	CCD=CCD_IN;
-	GCD=GCD_IN;
-}
 //REF::POS
-void CL_REF::SET_POS_DETECTED_LOCAL_CfromLOCAL_L(){
-	POS_DETECTED_LOCAL_C[0]=POS_DETECTED_LOCAL_L[0]-0.5*(CCD->LENGTH[0]);
-	POS_DETECTED_LOCAL_C[1]=POS_DETECTED_LOCAL_L[1]-0.5*(CCD->LENGTH[1]);
-}
 void CL_REF::SET_POS_DETECTED_LOCAL_GfromLOCAL_L(){
 	POS_DETECTED_LOCAL_G[0]=POS_DETECTED_LOCAL_L[0]*cos(CCD->GPOS_L[2])-POS_DETECTED_LOCAL_L[1]*sin(CCD->GPOS_L[2])+CCD->GPOS_L[0];
 	POS_DETECTED_LOCAL_G[1]=POS_DETECTED_LOCAL_L[1]*cos(CCD->GPOS_L[2])+POS_DETECTED_LOCAL_L[0]*sin(CCD->GPOS_L[2])+CCD->GPOS_L[1];
