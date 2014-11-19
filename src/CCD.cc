@@ -20,7 +20,7 @@ CL_CCDs::CL_CCDs(
 	CCD.resize(NUM_CCD);
 
 	for(int i = 0; i < NUM_CCD; ++i){
-		CCD[i].APRM	 = APRM;
+		CCD[i].CCDs          = this;
 		CCD[i].ID            = i;
 		CCD[i].NUM_REF		 = 0;
 		CCD[i].NUM_FIT		 = 0;
@@ -33,7 +33,7 @@ CL_CCDs::CL_CCDs(
 		CCD[i].PSIP[1]		 = Polynomial2D(APRM->ORDER_PSIP);
 	}
 
-	GCD.APRM	 = APRM;
+	GCD.CCDs         = this;
 	GCD.ID           = 999;
 	GCD.NUM_REF		 = 0;
 	GCD.NUM_FIT		 = 0;
@@ -44,6 +44,8 @@ CL_CCDs::CL_CCDs(
 	GCD.ASIP[1]		 = Polynomial2D(APRM->ORDER_ASIP);
 	GCD.PSIP[0]		 = Polynomial2D(APRM->ORDER_PSIP);
 	GCD.PSIP[1]		 = Polynomial2D(APRM->ORDER_PSIP);
+	GCD.CRVAL[0]     = APRM->CRVAL_IN[0];
+	GCD.CRVAL[1]     = APRM->CRVAL_IN[1];
 
 	SET_CRPIX();
 
@@ -129,20 +131,20 @@ bool CL_CCDs::CHECK_NUMFITALL(){
 	int       ORDER_ASIP = APRM->ORDER_ASIP;
 	int const ORDER_PSIP = APRM->ORDER_PSIP;
 
-	if(APRM->NUM_FIT <= 0){
+	if(GCD.NUM_FIT <= 0){
 		cout << "---------------------------------------------" << endl;
-		cout << "Input 'NUM_FIT' is '" << APRM->NUM_FIT << "'"<< endl;
+		cout << "Input 'NUM_FIT' is '" << GCD.NUM_FIT << "'"<< endl;
 		cout << "Error : NUM_FIT(Number of references for fitting) must be larger than 0" << endl;
 		cout << "---------------------------------------------" << endl;
 		return false;
-	}else if(APRM->NUM_FIT <= (ORDER_ASIP+1)*(ORDER_ASIP+2)/2 ||
-		APRM->NUM_FIT <= (ORDER_PSIP+1)*(ORDER_PSIP+2)/2 ){
+	}else if(GCD.NUM_FIT <= (ORDER_ASIP+1)*(ORDER_ASIP+2)/2 ||
+		GCD.NUM_FIT <= (ORDER_PSIP+1)*(ORDER_PSIP+2)/2 ){
 			cout << "---------------------------------------------" << endl;
 			cout << "Warning : NUM_FIT : CCD : ALL : ";
 			cout.width(5);
-			cout << APRM->NUM_FIT << endl;
+			cout << GCD.NUM_FIT << endl;
 			for(ORDER_ASIP = 0; ORDER_ASIP < 10; ++ORDER_ASIP){
-				if((ORDER_ASIP+1+1)*(ORDER_ASIP+2+1)/2 > APRM->NUM_FIT){
+				if((ORDER_ASIP+1+1)*(ORDER_ASIP+2+1)/2 > GCD.NUM_FIT){
 					break;
 				}
 			}
@@ -156,7 +158,7 @@ bool CL_CCDs::CHECK_NUMFITALL(){
 		if(APRM->FLAG_STD >= 2){
 			cout << "OK : NUM_FIT : CCD : ALL : " ;
 			cout.width(5);
-			cout << APRM->NUM_FIT << endl;
+			cout << GCD.NUM_FIT << endl;
 		}
 		return true;
 	}
@@ -216,7 +218,7 @@ void CL_CCDs::SET_CCDs(){
 
 	Polynomial2D::CoeffVector coeff_0 = G_ASIP_0.getCoeffVector();
 	Polynomial2D::CoeffVector coeff_1 = G_ASIP_1.getCoeffVector();
-	for(unsigned ij = 0; ij < coeff_0.length; ++ij){
+	for(unsigned ij = 0; ij < coeff_0.size(); ++ij){
 		double x = GCD.CD[0][0]*coeff_0[ij] + GCD.CD[0][1]*coeff_1[ij];
 		double y = GCD.CD[1][0]*coeff_0[ij] + GCD.CD[1][1]*coeff_1[ij];
 		coeff_0[ij] = x;
@@ -245,7 +247,7 @@ void CL_CCDs::SET_CCDs(){
 
 		coeff_0 = ccd->PSIP[0].getCoeffVector();
 		coeff_1 = ccd->PSIP[1].getCoeffVector();
-		for(unsigned ij = 0; ij < coeff_0.length; ++ij){
+		for(unsigned ij = 0; ij < coeff_0.size(); ++ij){
 			double x = GCD.CD[0][0]*coeff_0[ij]+GCD.CD[0][1]*coeff_1[ij];
 			double y = GCD.CD[1][0]*coeff_0[ij]+GCD.CD[1][1]*coeff_1[ij];
 			coeff_0[ij]=ccd->InvCD[0][0]*x+ccd->InvCD[0][1]*y;
@@ -343,7 +345,7 @@ void CCDBase::SET_CDASIP(){
 
 	Polynomial2D::CoeffVector coeff_0 = ASIP[0].getCoeffVector();
 	Polynomial2D::CoeffVector coeff_1 = ASIP[1].getCoeffVector();
-	for(unsigned ij = 0; ij < coeff_0.length; ++ij){
+	for(unsigned ij = 0; ij < coeff_0.size(); ++ij){
 		double TSIP[2];
 		TSIP[0] = coeff_0[ij];
 		TSIP[1] = coeff_1[ij];
@@ -569,8 +571,8 @@ Polynomial2D CCDBase::SET_SIPROT(Polynomial2D const& POLY){
 }
 
 void CCDBase::SHOW(){
-	int const ORDER_ASIP = APRM->ORDER_ASIP;
-	int const ORDER_PSIP = APRM->ORDER_PSIP;
+	int const ORDER_ASIP = CCDs->APRM->ORDER_ASIP;
+	int const ORDER_PSIP = CCDs->APRM->ORDER_PSIP;
 
 	cout << setprecision(3);
 	cout << scientific;
@@ -592,8 +594,8 @@ void CCDBase::SHOW(){
 	cout << "ANGLE         : " ;cout.width(10);cout<< ANGLE << endl;
 	cout << "CRPIX 1       : " ;cout.width(10);cout<< CRPIX[0] << endl;
 	cout << "CRPIX 2       : " ;cout.width(10);cout<< CRPIX[1] << endl;
-	cout << "CRVAL Ra      : " ;cout.width(10);cout<< APRM->CRVAL[0] <<" (degree) " << endl;
-	cout << "CRVAL Dec     : " ;cout.width(10);cout<< APRM->CRVAL[1] <<" (degree) " << endl;
+	cout << "CRVAL Ra      : " ;cout.width(10);cout<< CCDs->GCD.CRVAL[0] <<" (degree) " << endl;
+	cout << "CRVAL Dec     : " ;cout.width(10);cout<< CCDs->GCD.CRVAL[1] <<" (degree) " << endl;
 	cout << "OAPIX 1       : " ;cout.width(10);cout<<  OAPIX[0] << endl;
 	cout << "OAPIX 2       : " ;cout.width(10);cout<<  OAPIX[1] << endl;
 	cout << "CD1_1         : " ;cout.width(10);cout<< CD[0][0] <<" (degree) " << endl;
@@ -607,23 +609,23 @@ void CCDBase::SHOW(){
 
 	cout << "ORDER  SIP_A  : " << ORDER_ASIP<< endl;
 	Polynomial2D::CoeffVector coeff = ASIP[0].getCoeffVector();
-	for(unsigned i = 0; i < coeff.length; ++i){
+	for(unsigned i = 0; i < coeff.size(); ++i){
 		cout<< " SIP_A ";cout.width(3);cout<<i<<"    : ";cout.width(10);cout<< coeff[i]<<endl;
 	}
 
 	cout << "ORDER  SIP_B  : " << ORDER_ASIP<< endl;
 	coeff = ASIP[1].getCoeffVector();
-	for(unsigned i = 0; i < coeff.length; ++i){
+	for(unsigned i = 0; i < coeff.size(); ++i){
 		cout<< " SIP_B ";cout.width(3);cout<<i<<"    : ";cout.width(10);cout<< coeff[i]<<endl;
 	}
 	cout << "ORDER PSIP_A  : " << ORDER_PSIP<< endl;
 	coeff = PSIP[0].getCoeffVector();
-	for(unsigned i = 0; i < coeff.length; ++i){
+	for(unsigned i = 0; i < coeff.size(); ++i){
 		cout<< "PSIP_A ";cout.width(3);cout<<i<<"    : ";cout.width(10);cout<< coeff[i]<<endl;
 	}
 	cout << "ORDER PSIP_B  : " << ORDER_PSIP<< endl;
 	coeff = PSIP[1].getCoeffVector();
-	for(unsigned i = 0; i < coeff.length; ++i){
+	for(unsigned i = 0; i < coeff.size(); ++i){
 		cout<< "PSIP_B ";cout.width(3);cout<<i<<"    : ";cout.width(10);cout<< coeff[i]<<endl;
 	}
 	cout << "DIF AVE  SIPX : " ;cout.width(10);cout<< DIF_AVE_ASIP[0] <<" (pixel) " << endl;

@@ -29,8 +29,11 @@ int GET_SUM_MODECCD(CL_SLVTS* SLVTS){
 int GET_SUM_NUMCCD(CL_SLVTS* SLVTS){
 	return SLVTS->CCDs->CCD.size();
 }
+int GET_SUM_NUMREF(CL_SLVTS* SLVTS){
+	return SLVTS->REFs->REF.size();
+}
 int GET_SUM_NUMFIT(CL_SLVTS* SLVTS){
-	return SLVTS->APRM->NUM_FIT;
+	return SLVTS->CCDs->GCD.NUM_FIT;
 }
 std::vector< double > GET_SUM_CRPIX(CL_SLVTS* SLVTS){
 	std::vector< double > CRPIX;
@@ -40,8 +43,8 @@ std::vector< double > GET_SUM_CRPIX(CL_SLVTS* SLVTS){
 }
 std::vector< double > GET_SUM_CRVAL(CL_SLVTS* SLVTS){
 	std::vector< double > CRVAL;
-	CRVAL.push_back(SLVTS->APRM->CRVAL[0]);
-	CRVAL.push_back(SLVTS->APRM->CRVAL[1]);
+	CRVAL.push_back(SLVTS->CCDs->GCD.CRVAL[0]);
+	CRVAL.push_back(SLVTS->CCDs->GCD.CRVAL[1]);
 	return CRVAL;
 }
 std::vector< double > GET_SUM_OAPIX(CL_SLVTS* SLVTS){
@@ -183,8 +186,8 @@ std::vector< std::vector< double > > GET_CCD_CR(CL_SLVTS* SLVTS){
     std::vector< std::vector< double > > CCDCR(4);
     CCDCR[0] = GetCCDField<double>(*SLVTS->CCDs, &CCDBase::CRPIX, 0);
     CCDCR[1] = GetCCDField<double>(*SLVTS->CCDs, &CCDBase::CRPIX, 1);
-    CCDCR[2].assign(CCDCR[0].size(), SLVTS->APRM->CRVAL[0]);
-    CCDCR[3].assign(CCDCR[0].size(), SLVTS->APRM->CRVAL[1]);
+    CCDCR[2].assign(CCDCR[0].size(), SLVTS->CCDs->GCD.CRVAL[0]);
+    CCDCR[3].assign(CCDCR[0].size(), SLVTS->CCDs->GCD.CRVAL[1]);
 
     return CCDCR;
 }
@@ -243,7 +246,7 @@ std::vector< std::vector< double > > GET_CCD_COEFSIPA(CL_SLVTS* SLVTS){
 
     // transpose coeffs to make CCDCOEF
 
-    std::vector< std::vector< double > >  CCDCOEF(coeffs.front().length);
+    std::vector< std::vector< double > >  CCDCOEF(coeffs.front().size());
     for(std::size_t ORDER = 0; ORDER < CCDCOEF.size(); ++ORDER){
         std::vector< double >& COEF = CCDCOEF[ORDER];
         for(std::size_t ID = 0; ID < coeffs.size(); ++ID){
@@ -263,7 +266,7 @@ std::vector< std::vector< double > > GET_CCD_COEFSIPB(CL_SLVTS* SLVTS){
 
     // transpose coeffs to make CCDCOEF
 
-    std::vector< std::vector< double > >  CCDCOEF(coeffs.front().length);
+    std::vector< std::vector< double > >  CCDCOEF(coeffs.front().size());
     for(std::size_t ORDER = 0; ORDER < CCDCOEF.size(); ++ORDER){
         std::vector< double >& COEF = CCDCOEF[ORDER];
         for(std::size_t ID = 0; ID < coeffs.size(); ++ID){
@@ -283,7 +286,7 @@ std::vector< std::vector< double > > GET_CCD_COEFPSIPA(CL_SLVTS* SLVTS){
 
     // transpose coeffs to make CCDCOEF
 
-    std::vector< std::vector< double > >  CCDCOEF(coeffs.front().length);
+    std::vector< std::vector< double > >  CCDCOEF(coeffs.front().size());
     for(std::size_t ORDER = 0; ORDER < CCDCOEF.size(); ++ORDER){
         std::vector< double >& COEF = CCDCOEF[ORDER];
         for(std::size_t ID = 0; ID < coeffs.size(); ++ID){
@@ -303,7 +306,7 @@ std::vector< std::vector< double > > GET_CCD_COEFPSIPB(CL_SLVTS* SLVTS){
 
     // transpose coeffs to make CCDCOEF
 
-    std::vector< std::vector< double > >  CCDCOEF(coeffs.front().length);
+    std::vector< std::vector< double > >  CCDCOEF(coeffs.front().size());
     for(std::size_t ORDER = 0; ORDER < CCDCOEF.size(); ++ORDER){
         std::vector< double >& COEF = CCDCOEF[ORDER];
         for(std::size_t ID = 0; ID < coeffs.size(); ++ID){

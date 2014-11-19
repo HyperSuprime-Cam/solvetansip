@@ -21,8 +21,11 @@
 namespace hsc { namespace meas {
 namespace tansip {
 
-struct CCDBase {
-	CL_APRM *APRM;//=SLVTS->APRM
+struct CL_CCDs;
+
+struct CCDBase
+{
+	CL_CCDs *CCDs; // the parent object that possesses me
 
 	int  ID; // the index of the self in the vector CL_CCDs::CCD
 
@@ -69,12 +72,12 @@ struct CL_CCD // The class of each chip
 struct CL_GCD // The hypothetical large chip that covers all the chips
 	: public CCDBase
 {
+	double CRVAL[2];
 };
 
 
-class CL_CCDs{
-private:
-public:
+struct CL_CCDs
+{
 	CL_APRM *APRM;//=SLVTS->APRM
 	std::vector<CL_CCD>  CCD;
 	CL_GCD               GCD;

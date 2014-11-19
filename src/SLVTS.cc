@@ -40,6 +40,8 @@ SOLVETANSIP(
 
 	return SLVTS;
 }
+
+
 void CL_SLVTS::SET_INPUT(
 	std::vector< std::vector< std::string > > const& APRM_,
 	std::vector<CCDPosition   >               const& ccdPosition,
@@ -56,6 +58,8 @@ void CL_SLVTS::SET_INPUT(
 	if(APRM->FLAG_STD >= 2) REFs->SHOW();
 
 }
+
+
 bool CL_SLVTS::CHECK_INPUT(){
 	if(APRM->FLAG_STD >= 1) std::cout << "-- CHECK INPUT --" << std::endl;
 	return APRM->CHECK()

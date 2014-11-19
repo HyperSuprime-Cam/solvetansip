@@ -43,7 +43,8 @@ namespace {
 namespace {
 	void SetMetadataOfCCD(
 		dafbase::PropertySet::Ptr const& meta,
-		CL_APRM                        * APRM,
+		CL_APRM                   const* APRM,
+		CL_GCD                    const& global,
 		CCDBase                   const& CCD,
 		int                              cid)
 	{
@@ -60,8 +61,8 @@ namespace {
 		meta->add(fmt("ST_C%03d_GPOS_CTD"   , cid), CCD.GPOS_C[3]);
 		meta->add(fmt("ST_C%03d_CRPIX1"     , cid), CCD.CRPIX[0]);
 		meta->add(fmt("ST_C%03d_CRPIX2"     , cid), CCD.CRPIX[1]);
-		meta->add(fmt("ST_C%03d_CRVAL1"     , cid), APRM->CRVAL[0]);
-		meta->add(fmt("ST_C%03d_CRVAL2"     , cid), APRM->CRVAL[1]);
+		meta->add(fmt("ST_C%03d_CRVAL1"     , cid), global.CRVAL[0]);
+		meta->add(fmt("ST_C%03d_CRVAL2"     , cid), global.CRVAL[1]);
 		meta->add(fmt("ST_C%03d_CD1_1"      , cid), CCD.CD[0][0]);
 		meta->add(fmt("ST_C%03d_CD1_2"      , cid), CCD.CD[0][1]);
 		meta->add(fmt("ST_C%03d_CD2_1"      , cid), CCD.CD[1][0]);
@@ -131,8 +132,8 @@ GET_METADATA(CL_SLVTS* SLVTS, dafbase::PropertySet::Ptr const& meta_in)
 	meta->add("ST_A_NUM_REJ"    , SLVTS->CCDs->GCD.NUM_REJ);
 	meta->add("ST_A_CRPIX1"     , SLVTS->CCDs->GCD.CRPIX[0]);
 	meta->add("ST_A_CRPIX2"     , SLVTS->CCDs->GCD.CRPIX[1]);
-	meta->add("ST_A_CRVAL1"     , SLVTS->APRM->CRVAL[0]);
-	meta->add("ST_A_CRVAL2"     , SLVTS->APRM->CRVAL[1]);
+	meta->add("ST_A_CRVAL1"     , SLVTS->CCDs->GCD.CRVAL[0]);
+	meta->add("ST_A_CRVAL2"     , SLVTS->CCDs->GCD.CRVAL[1]);
 	meta->add("ST_A_SIGMA_CLIP" , SLVTS->APRM->SIGMA_CLIP);
 
 /*
@@ -141,9 +142,13 @@ VALUE=meta->getAsDouble("ST_G_MAX_CRPIX_G_R");
 cout<<scientific<<setprecision(6)<<"R : "<<SLVTS->CCDs->MAX_CRPIX_G_R<<"	"<<VALUE<<endl;
 */
 	for(int CID = 0; CID < (int)SLVTS->CCDs->CCD.size(); ++CID){
-		SetMetadataOfCCD(meta, SLVTS->APRM.get(), SLVTS->CCDs->CCD[CID], CID);
+		SetMetadataOfCCD(
+			meta, SLVTS->APRM.get(), SLVTS->CCDs->GCD, SLVTS->CCDs->CCD[CID], CID
+		);
 	}
-	SetMetadataOfCCD(meta, SLVTS->APRM.get(), SLVTS->CCDs->GCD, SLVTS->CCDs->CCD.size());
+	SetMetadataOfCCD(
+		meta, SLVTS->APRM.get(), SLVTS->CCDs->GCD, SLVTS->CCDs->GCD, SLVTS->CCDs->CCD.size()
+	);
 
 //Summary
 	meta->add("sip_residuals_ave_x" , SLVTS->CCDs->GCD.DIF_AVE_ASIP[0]);
@@ -154,7 +159,6 @@ cout<<scientific<<setprecision(6)<<"R : "<<SLVTS->CCDs->MAX_CRPIX_G_R<<"	"<<VALU
 	meta->add("psip_residuals_ave_y", SLVTS->CCDs->GCD.DIF_AVE_PSIP[1]);
 	meta->add("psip_residuals_rms_x", SLVTS->CCDs->GCD.DIF_RMS_PSIP[0]);
 	meta->add("psip_residuals_rms_y", SLVTS->CCDs->GCD.DIF_RMS_PSIP[1]);
-	meta->add("nref_fitting"        , SLVTS->APRM->NUM_FIT);
 
 	return meta;
 }
@@ -169,7 +173,6 @@ void SHOW_METADATA(CL_SLVTS* SLVTS,dafbase::PropertySet::Ptr const& meta){
 		std::cout << "--- SHOW metadata ---" << std::endl;
 		SHOW(String, "ST_A_MODE_CR"                    );
 		SHOW(Int   , "ST_A_NUM_CCD"                    );
-		SHOW(Int   , "nref_fitting"                    );
 		SHOW(Double, fmt("ST_C%03d_PSIP_DIF_AVE_X", GL));
 		SHOW(Double, fmt("ST_C%03d_PSIP_DIF_AVE_Y", GL));
 		SHOW(Double, fmt("ST_C%03d_PSIP_DIF_RMS_X", GL));
@@ -192,16 +195,16 @@ void SHOW_METADATA(CL_SLVTS* SLVTS,dafbase::PropertySet::Ptr const& meta){
 namespace {
 	lsst::afw::image::TanWcs::Ptr toTanWcs(
 		CCDBase             const& CCD,
-		CL_APRM                  * APRM
+		CL_GCD              const& global
 	){
-		afwGeom::PointD crpix = afwGeom::PointD(CCD.CRPIX  [0],CCD.CRPIX  [1]);
-		afwGeom::PointD crval = afwGeom::PointD(APRM->CRVAL[0],APRM->CRVAL[1]);
+		afwGeom::PointD crpix = afwGeom::PointD(CCD   .CRPIX[0], CCD   .CRPIX[1]);
+		afwGeom::PointD crval = afwGeom::PointD(global.CRVAL[0], global.CRVAL[1]);
 
 		Eigen::Matrix2d cdMatrix;
 		cdMatrix << CCD.CD[0][0],CCD.CD[0][1],CCD.CD[1][0],CCD.CD[1][1];
 
-		int const OAS = APRM->ORDER_ASIP;
-		int const OPS = APRM->ORDER_PSIP;
+		int const OAS = CCD.ASIP[0].getDegree();
+		int const OPS = CCD.PSIP[0].getDegree();
 		Eigen::MatrixXd sipA  = Eigen::MatrixXd::Zero(OAS+1,OAS+1);
 		Eigen::MatrixXd sipB  = Eigen::MatrixXd::Zero(OAS+1,OAS+1);
 		Eigen::MatrixXd sipAp = Eigen::MatrixXd::Zero(OPS+1,OPS+1);
@@ -216,9 +219,9 @@ namespace {
 			sipA(i,j)=0.0;
 			sipB(i,j)=0.0;
 		}
-		for(int i = 0; i < OAS+1; ++i)
-		for(int j = 0; j < OAS+1; ++j)
-		if(i+j<OAS+1){
+		for(int i = 0; i < OPS+1; ++i)
+		for(int j = 0; j < OPS+1; ++j)
+		if(i+j<OPS+1){
 			sipAp(i,j)=CCD.PSIP[0].coeff(i,j);
 			sipBp(i,j)=CCD.PSIP[1].coeff(i,j);
 		}else{
@@ -238,9 +241,9 @@ std::vector <lsst::afw::image::TanWcs::Ptr> GET_TANWCS(CL_SLVTS* SLVTS)
 	for(std::vector<CL_CCD>::iterator ccd = SLVTS->CCDs->CCD.begin();
 		ccd != SLVTS->CCDs->CCD.end(); ++ccd
 	){
-		V_TanWcs.push_back(toTanWcs(*ccd, SLVTS->APRM.get()));
+		V_TanWcs.push_back(toTanWcs(*ccd, SLVTS->CCDs->GCD));
 	}
-	V_TanWcs.push_back(toTanWcs(SLVTS->CCDs->GCD, SLVTS->APRM.get()));
+	V_TanWcs.push_back(toTanWcs(SLVTS->CCDs->GCD, SLVTS->CCDs->GCD));
 
 	return V_TanWcs;
 }

@@ -18,13 +18,22 @@ public:
     struct CoeffVector
     {
         double   value[maxCoeffVectorLength];
-        unsigned length;
 
         typedef double (&reference)[maxCoeffVectorLength];
         typedef double const (&const_reference)[maxCoeffVectorLength];
 
         operator reference () { return value; }
         operator const_reference () const { return value; }
+
+        unsigned size()   const { return length_; }
+        unsigned getDegree() const { return degree_; }
+
+    private:
+        friend class Polynomial2D;
+        CoeffVector(){}
+
+        unsigned length_;
+        unsigned degree_;
     };
 
     Polynomial2D()
@@ -78,12 +87,18 @@ public:
 
     /** coeff vector
     */
-    void setCoeffVector(double const vector[]){
-        for(unsigned i = 0; i <= degree_; ++i){
-            for(unsigned j = 0; j <= degree_ - i; ++j){
+    void setCoeffVector(unsigned degree, double const vector[]){
+        this->degree_ = degree;
+
+        for(unsigned i = 0; i <= degree; ++i){
+            for(unsigned j = 0; j <= degree - i; ++j){
                 coeff_[i][j] = *(vector++);
             }
         }
+    }
+
+    void setCoeffVector(CoeffVector const& coeff){
+        this->setCoeffVector(coeff.getDegree(), coeff.value);
     }
 
     void getCoeffVector(double vector[]) const {
@@ -97,7 +112,8 @@ public:
     CoeffVector getCoeffVector() const {
         CoeffVector vec;
         this->getCoeffVector(vec);
-        vec.length = this->getCoeffVectorLength();
+        vec.length_ = this->getCoeffVectorLength();
+        vec.degree_ = this->getDegree();
         return vec;
     }
 

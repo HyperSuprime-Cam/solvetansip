@@ -8,24 +8,29 @@
 namespace hsc { namespace meas {
 namespace tansip {
 
-void CL_APRM::SET_INIT(){
-	INSTR         = "HSC";
-	MODE_CR       = "PIX";
-	MODE_CCDPOS   = 0;
-	NUM_FIT       = 0;
+CL_APRM::CL_APRM()
+	: INSTR         ( "HSC")
+	, MODE_CR       ( "PIX")
+
+	, MODE_CCDPOS   ( 0    )
+	, PRECISION_CCD ( 0.1  )
+
+	, ORDER_ASIP    ( 0    )
+	, ORDER_PSIP    ( 0    )
+	, MODE_REJ      ( 0    )
+	, SIGMA_CLIP    ( 10.0 )
+
+	, FLAG_STD      ( 1    )
+{
 	CRPIX_IN[0]   = 0.0;
 	CRPIX_IN[1]   = 0.0;
-	CRVAL[0]      = 0.0;
-	CRVAL[1]      = 0.0;
-	ORDER_ASIP    = 0;
-	ORDER_PSIP    = 0;
-	MODE_REJ      = 0;
-	SIGMA_CLIP    = 10.0;
-	PRECISION_CCD = 0.1;
-	FLAG_STD      = 1;
+	CRVAL_IN[0]      = 0.0;
+	CRVAL_IN[1]      = 0.0;
 }
-void CL_APRM::SET_INPUT(std::vector< std::vector< std::string > > APRM_Argvs){
-	SET_INIT();
+
+
+void CL_APRM::SET_INPUT(std::vector< std::vector< std::string > > APRM_Argvs)
+{
 	for(std::size_t i = 0; i < APRM_Argvs.size(); ++i){
 		std::string const& KEY=APRM_Argvs[i][0];
 		std::string const& VAL=APRM_Argvs[i][1];
@@ -50,12 +55,11 @@ void CL_APRM::SET_INPUT(std::vector< std::vector< std::string > > APRM_Argvs){
 		if(KEY=="CRPIX2")
 		CRPIX_IN[1]      = atof(VAL.c_str());
 		if(KEY=="CRVAL1")
-		CRVAL[0]      = atof(VAL.c_str());
+		CRVAL_IN[0]      = atof(VAL.c_str());
 		if(KEY=="CRVAL2")
-		CRVAL[1]      = atof(VAL.c_str());
+		CRVAL_IN[1]      = atof(VAL.c_str());
 		if(KEY=="FLAG_STD")
 		FLAG_STD      = atoi(VAL.c_str());
-		NUM_FIT       = 0;
 	}
 	if(FLAG_STD >= 1) std::cout <<"-- SET APRM --"<< std::endl;
 
@@ -117,11 +121,10 @@ void CL_APRM::SHOW(){
 	std::cout << "MODE_CR     : " << MODE_CR      << std::endl;
 	std::cout << "MODE_CCDPOS : " << MODE_CCDPOS  << std::endl;
 	std::cout << "MODE_REJ    : " << MODE_REJ     << std::endl;
-	std::cout << "NUM_FIT     : " << NUM_FIT      << std::endl;
 	std::cout << "CRPIX1      : " << CRPIX_IN[0]  << std::endl;
 	std::cout << "CRPIX2      : " << CRPIX_IN[1]  << std::endl;
-	std::cout << "CRVAL1      : " << CRVAL[0]     << std::endl;
-	std::cout << "CRVAL2      : " << CRVAL[1]     << std::endl;
+	std::cout << "CRVAL1      : " << CRVAL_IN[0]     << std::endl;
+	std::cout << "CRVAL2      : " << CRVAL_IN[1]     << std::endl;
 	std::cout << "SIPORDER    : " << ORDER_ASIP   << std::endl;
 	std::cout << "SIPPORDER   : " << ORDER_PSIP   << std::endl;
 	std::cout << "CRIP_SIGMA  : " << SIGMA_CLIP   << std::endl;
