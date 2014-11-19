@@ -16,7 +16,7 @@ namespace tansip {
 boost::shared_ptr<CL_SLVTS>
 SOLVETANSIP(
 	std::vector< std::vector< std::string > > const& APRM,
-	std::vector< std::vector< std::string > > const& CCD,
+	std::vector<CCDPosition   >               const& ccdPosition,
 	std::vector<ReferenceMatch>               const& matchList
 ){
 	my::clock_t TS,TE;
@@ -25,8 +25,7 @@ SOLVETANSIP(
 	boost::shared_ptr<CL_SLVTS> SLVTS = boost::make_shared<CL_SLVTS>();
 
 	T1=my::clock();
-	SLVTS->SET_INIT();
-	SLVTS->SET_INPUT(APRM, CCD, matchList);
+	SLVTS->SET_INPUT(APRM, ccdPosition, matchList);
 	if(!SLVTS->CHECK_INPUT()){
 		std::cout << "Error : in checking Input Values" << std::endl;
 		return boost::shared_ptr<CL_SLVTS>();
@@ -41,24 +40,17 @@ SOLVETANSIP(
 
 	return SLVTS;
 }
-void CL_SLVTS::SET_END(){
-	APRM->SET_END();
-	CCDs->SET_END();
-}
-void CL_SLVTS::SET_INIT(){
-}
 void CL_SLVTS::SET_INPUT(
 	std::vector< std::vector< std::string > > const& APRM_,
-	std::vector< std::vector< std::string > > const& CCD_,
+	std::vector<CCDPosition   >               const& ccdPosition,
 	std::vector<ReferenceMatch>               const& matchList
 ){
 	APRM = boost::make_shared<CL_APRM>();
 	APRM->SET_INPUT(APRM_);
 
-	CCDs = boost::make_shared<CL_CCDs>();
-	CCDs->SET_INPUT(CCD_, APRM.get());
-
+	CCDs = boost::make_shared<CL_CCDs>(ccdPosition, APRM.get());
 	REFs = boost::make_shared<CL_REFs>(matchList, APRM.get(), CCDs.get());
+
 	if(APRM->FLAG_STD >= 2) APRM->SHOW();
 	if(APRM->FLAG_STD >= 2) CCDs->SHOW();
 	if(APRM->FLAG_STD >= 2) REFs->SHOW();

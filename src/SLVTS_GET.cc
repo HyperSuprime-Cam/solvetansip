@@ -27,15 +27,15 @@ int GET_SUM_MODECCD(CL_SLVTS* SLVTS){
 	return SLVTS->APRM->MODE_CCDPOS;
 }
 int GET_SUM_NUMCCD(CL_SLVTS* SLVTS){
-	return SLVTS->APRM->NUM_CCD;
+	return SLVTS->CCDs->CCD.size();
 }
 int GET_SUM_NUMFIT(CL_SLVTS* SLVTS){
 	return SLVTS->APRM->NUM_FIT;
 }
 std::vector< double > GET_SUM_CRPIX(CL_SLVTS* SLVTS){
 	std::vector< double > CRPIX;
-	CRPIX.push_back(SLVTS->APRM->CRPIX[0]);
-	CRPIX.push_back(SLVTS->APRM->CRPIX[1]);
+	CRPIX.push_back(SLVTS->CCDs->GCD.CRPIX[0]);
+	CRPIX.push_back(SLVTS->CCDs->GCD.CRPIX[1]);
 	return CRPIX;
 }
 std::vector< double > GET_SUM_CRVAL(CL_SLVTS* SLVTS){
@@ -46,20 +46,20 @@ std::vector< double > GET_SUM_CRVAL(CL_SLVTS* SLVTS){
 }
 std::vector< double > GET_SUM_OAPIX(CL_SLVTS* SLVTS){
 	std::vector< double > OAPIX;
-	OAPIX.push_back(SLVTS->CCDs->CCD[SLVTS->APRM->NUM_CCD].OAPIX[0]);
-	OAPIX.push_back(SLVTS->CCDs->CCD[SLVTS->APRM->NUM_CCD].OAPIX[1]);
+	OAPIX.push_back(SLVTS->CCDs->GCD.OAPIX[0]);
+	OAPIX.push_back(SLVTS->CCDs->GCD.OAPIX[1]);
 	return OAPIX;
 }
 std::vector< double > GET_SUM_CD(CL_SLVTS* SLVTS){
 	std::vector< double > CD;
-	CD.push_back(SLVTS->CCDs->CCD[SLVTS->APRM->NUM_CCD].CD[0][0]);
-	CD.push_back(SLVTS->CCDs->CCD[SLVTS->APRM->NUM_CCD].CD[0][1]);
-	CD.push_back(SLVTS->CCDs->CCD[SLVTS->APRM->NUM_CCD].CD[1][0]);
-	CD.push_back(SLVTS->CCDs->CCD[SLVTS->APRM->NUM_CCD].CD[1][1]);
+	CD.push_back(SLVTS->CCDs->GCD.CD[0][0]);
+	CD.push_back(SLVTS->CCDs->GCD.CD[0][1]);
+	CD.push_back(SLVTS->CCDs->GCD.CD[1][0]);
+	CD.push_back(SLVTS->CCDs->GCD.CD[1][1]);
 	return CD;
 }
 double GET_SUM_ANGLE(CL_SLVTS* SLVTS){
-	return SLVTS->CCDs->CCD[SLVTS->APRM->NUM_CCD].ANGLE;
+	return SLVTS->CCDs->GCD.ANGLE;
 }
 std::vector< double > GET_SUM_MAX_CRPIX_G(CL_SLVTS* SLVTS){
 	std::vector< double > MAX_CRPIX_G;
@@ -74,11 +74,11 @@ std::vector< double > GET_SUM_MAX_CRPIX_G(CL_SLVTS* SLVTS){
 std::vector< double > GET_SUM_CD_CORANGLE(CL_SLVTS* SLVTS){
 	double GCD[4],GANG;
 	std::vector< double > CD_COR;
-	GCD[0]=SLVTS->CCDs->CCD[SLVTS->APRM->NUM_CCD].CD[0][0];
-	GCD[1]=SLVTS->CCDs->CCD[SLVTS->APRM->NUM_CCD].CD[0][1];
-	GCD[2]=SLVTS->CCDs->CCD[SLVTS->APRM->NUM_CCD].CD[1][0];
-	GCD[3]=SLVTS->CCDs->CCD[SLVTS->APRM->NUM_CCD].CD[1][1];
-	GANG  =SLVTS->CCDs->CCD[SLVTS->APRM->NUM_CCD].ANGLE;
+	GCD[0]=SLVTS->CCDs->GCD.CD[0][0];
+	GCD[1]=SLVTS->CCDs->GCD.CD[0][1];
+	GCD[2]=SLVTS->CCDs->GCD.CD[1][0];
+	GCD[3]=SLVTS->CCDs->GCD.CD[1][1];
+	GANG  =SLVTS->CCDs->GCD.ANGLE;
 
 	CD_COR.push_back(cos(-GANG)*GCD[0]-sin(-GANG)*GCD[2]);
 	CD_COR.push_back(cos(-GANG)*GCD[1]-sin(-GANG)*GCD[3]);
@@ -88,189 +88,160 @@ std::vector< double > GET_SUM_CD_CORANGLE(CL_SLVTS* SLVTS){
 }
 std::vector< double > GET_SUM_RMSASIP(CL_SLVTS* SLVTS){
 	std::vector< double > RMSASIP;
-	RMSASIP.push_back(SLVTS->CCDs->CCD[SLVTS->APRM->NUM_CCD].DIF_RMS_ASIP[0]);
-	RMSASIP.push_back(SLVTS->CCDs->CCD[SLVTS->APRM->NUM_CCD].DIF_RMS_ASIP[1]);
+	RMSASIP.push_back(SLVTS->CCDs->GCD.DIF_RMS_ASIP[0]);
+	RMSASIP.push_back(SLVTS->CCDs->GCD.DIF_RMS_ASIP[1]);
 	return RMSASIP;
 }
 std::vector< double > GET_SUM_RMSPSIP(CL_SLVTS* SLVTS){
 	std::vector< double > RMSPSIP;
-	RMSPSIP.push_back(SLVTS->CCDs->CCD[SLVTS->APRM->NUM_CCD].DIF_RMS_PSIP[0]);
-	RMSPSIP.push_back(SLVTS->CCDs->CCD[SLVTS->APRM->NUM_CCD].DIF_RMS_PSIP[1]);
+	RMSPSIP.push_back(SLVTS->CCDs->GCD.DIF_RMS_PSIP[0]);
+	RMSPSIP.push_back(SLVTS->CCDs->GCD.DIF_RMS_PSIP[1]);
 	return RMSPSIP;
 }
 //-----------------------------------------------------------------
 //Getting Functions : CCD Info
 //-----------------------------------------------------------------
-std::vector< int > GET_CCD_ID(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< int > CID;
-    for(ID=0;ID<SLVTS->APRM->NUM_CCD+1;ID++)
-    CID.push_back(SLVTS->CCDs->CCD[ID].ID);
 
-    return CID;
+namespace {
+    template <class Elem, class Member>
+    std::vector<Elem> GetCCDField(
+        CL_CCDs const& CCDs, Member const& member
+    ){
+        std::vector<Elem> slice;
+        slice.reserve(CCDs.CCD.size() + 1);
+
+        for(std::vector<CL_CCD>::const_iterator ccd = CCDs.CCD.begin();
+            ccd != CCDs.CCD.end(); ++ccd
+        ){
+            slice.push_back((*ccd).*member);
+        }
+        slice.push_back(CCDs.GCD.*member);
+
+        return slice;
+    }
+
+    template <class Elem, class Member>
+    std::vector<Elem> GetCCDField(
+        CL_CCDs const& CCDs, Member const& member, std::size_t i
+    ){
+        std::vector<Elem> slice;
+        slice.reserve(CCDs.CCD.size() + 1);
+
+        for(std::vector<CL_CCD>::const_iterator ccd = CCDs.CCD.begin();
+            ccd != CCDs.CCD.end(); ++ccd
+        ){
+            slice.push_back(((*ccd).*member)[i]);
+        }
+        slice.push_back((CCDs.GCD.*member)[i]);
+
+        return slice;
+    }
+
+    template <class Elem, class Member>
+    std::vector<Elem> GetCCDField(
+        CL_CCDs const& CCDs, Member const& member, std::size_t i, std::size_t j
+    ){
+        std::vector<Elem> slice;
+        slice.reserve(CCDs.CCD.size() + 1);
+
+        for(std::vector<CL_CCD>::const_iterator ccd = CCDs.CCD.begin();
+            ccd != CCDs.CCD.end(); ++ccd
+        ){
+            slice.push_back(((*ccd).*member)[i][j]);
+        }
+        slice.push_back((CCDs.GCD.*member)[i][j]);
+
+        return slice;
+    }
 }
-std::vector< int > GET_CCD_NUMREF(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< int > RNUM;
-    for(ID=0;ID<SLVTS->APRM->NUM_CCD+1;ID++)
-    RNUM.push_back(SLVTS->CCDs->CCD[ID].NUM_REF);
 
-    return RNUM;
+std::vector< int > GET_CCD_NUMREF(CL_SLVTS* SLVTS){
+	return GetCCDField<int>(*SLVTS->CCDs, &CCDBase::NUM_REF);
 }
 std::vector< int > GET_CCD_NUMFIT(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< int > FNUM;
-    for(ID=0;ID<SLVTS->APRM->NUM_CCD+1;ID++)
-    FNUM.push_back(SLVTS->CCDs->CCD[ID].NUM_FIT);
-
-    return FNUM;
+    return GetCCDField<int>(*SLVTS->CCDs, &CCDBase::NUM_FIT);
 }
 std::vector< std::vector< double > > GET_CCD_GPOS_L(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > POSX,POSY,POST,POSD;
-    std::vector< std::vector< double > > CCDPOS;
-    for(ID=0;ID<SLVTS->APRM->NUM_CCD+1;ID++){
-	POSX.push_back(SLVTS->CCDs->CCD[ID].GPOS_L[0]);
-	POSY.push_back(SLVTS->CCDs->CCD[ID].GPOS_L[1]);
-	POST.push_back(SLVTS->CCDs->CCD[ID].GPOS_L[2]);
-	POSD.push_back(SLVTS->CCDs->CCD[ID].GPOS_L[3]);
-    }
-    CCDPOS.push_back(POSX);
-    CCDPOS.push_back(POSY);
-    CCDPOS.push_back(POST);
-    CCDPOS.push_back(POSD);
+    std::vector< std::vector< double > > CCDPOS(4);
+    CCDPOS[0] = GetCCDField<double>(*SLVTS->CCDs, &CCDBase::GPOS_L, 0);
+    CCDPOS[1] = GetCCDField<double>(*SLVTS->CCDs, &CCDBase::GPOS_L, 1);
+    CCDPOS[2] = GetCCDField<double>(*SLVTS->CCDs, &CCDBase::GPOS_L, 2);
+    CCDPOS[3] = GetCCDField<double>(*SLVTS->CCDs, &CCDBase::GPOS_L, 3);
 
     return CCDPOS;
 }
 std::vector< std::vector< double > > GET_CCD_GPOS_C(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > POSX,POSY,POST,POSD;
-    std::vector< std::vector< double > > CCDPOS;
-    for(ID=0;ID<SLVTS->APRM->NUM_CCD+1;ID++){
-	POSX.push_back(SLVTS->CCDs->CCD[ID].GPOS_C[0]);
-	POSY.push_back(SLVTS->CCDs->CCD[ID].GPOS_C[1]);
-	POST.push_back(SLVTS->CCDs->CCD[ID].GPOS_C[2]);
-	POSD.push_back(SLVTS->CCDs->CCD[ID].GPOS_C[3]);
-    }
-    CCDPOS.push_back(POSX);
-    CCDPOS.push_back(POSY);
-    CCDPOS.push_back(POST);
-    CCDPOS.push_back(POSD);
+    std::vector< std::vector< double > > CCDPOS(4);
+    CCDPOS[0] = GetCCDField<double>(*SLVTS->CCDs, &CCDBase::GPOS_C, 0);
+    CCDPOS[1] = GetCCDField<double>(*SLVTS->CCDs, &CCDBase::GPOS_C, 1);
+    CCDPOS[2] = GetCCDField<double>(*SLVTS->CCDs, &CCDBase::GPOS_C, 2);
+    CCDPOS[3] = GetCCDField<double>(*SLVTS->CCDs, &CCDBase::GPOS_C, 3);
 
     return CCDPOS;
 }
 std::vector< std::vector< double > > GET_CCD_CR(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > CRP1,CRP2,CRV1,CRV2;
-    std::vector< std::vector< double > > CCDCR;
-    for(ID=0;ID<SLVTS->APRM->NUM_CCD+1;ID++){
-	CRP1.push_back(*SLVTS->CCDs->CCD[ID].CRPIX[0]);
-	CRP2.push_back(*SLVTS->CCDs->CCD[ID].CRPIX[1]);
-	CRV1.push_back(SLVTS->APRM->CRVAL[0]);
-	CRV2.push_back(SLVTS->APRM->CRVAL[1]);
-    }
-	CCDCR.push_back(CRP1);
-	CCDCR.push_back(CRP2);
-	CCDCR.push_back(CRV1);
-	CCDCR.push_back(CRV2);
+    std::vector< std::vector< double > > CCDCR(4);
+    CCDCR[0] = GetCCDField<double>(*SLVTS->CCDs, &CCDBase::CRPIX, 0);
+    CCDCR[1] = GetCCDField<double>(*SLVTS->CCDs, &CCDBase::CRPIX, 1);
+    CCDCR[2].assign(CCDCR[0].size(), SLVTS->APRM->CRVAL[0]);
+    CCDCR[3].assign(CCDCR[0].size(), SLVTS->APRM->CRVAL[1]);
 
     return CCDCR;
 }
 std::vector< std::vector< double > > GET_CCD_OA(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > OAP1,OAP2;
-    std::vector< std::vector< double > > CCDOA;
-    for(ID=0;ID<SLVTS->APRM->NUM_CCD+1;ID++){
-	OAP1.push_back(SLVTS->CCDs->CCD[ID].OAPIX[0]);
-	OAP2.push_back(SLVTS->CCDs->CCD[ID].OAPIX[1]);
-    }
-	CCDOA.push_back(OAP1);
-	CCDOA.push_back(OAP2);
+    std::vector< std::vector< double > > CCDOA(2);
+    CCDOA[0] = GetCCDField<double>(*SLVTS->CCDs, &CCDBase::OAPIX, 0);
+    CCDOA[1] = GetCCDField<double>(*SLVTS->CCDs, &CCDBase::OAPIX, 1);
 
     return CCDOA;
 }
 std::vector< std::vector< double > > GET_CCD_CD(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > CD11,CD12,CD21,CD22;
-    std::vector< std::vector< double > > CCDCD;
-    for(ID=0;ID<SLVTS->APRM->NUM_CCD+1;ID++){
-	CD11.push_back(SLVTS->CCDs->CCD[ID].CD[0][0]);
-	CD12.push_back(SLVTS->CCDs->CCD[ID].CD[0][1]);
-	CD21.push_back(SLVTS->CCDs->CCD[ID].CD[1][0]);
-	CD22.push_back(SLVTS->CCDs->CCD[ID].CD[1][1]);
-    }
-	CCDCD.push_back(CD11);
-	CCDCD.push_back(CD12);
-	CCDCD.push_back(CD21);
-	CCDCD.push_back(CD22);
+    std::vector< std::vector< double > > CCDCD(4);
+    CCDCD[0] = GetCCDField<double>(*SLVTS->CCDs, &CCDBase::CD, 0, 0);
+    CCDCD[1] = GetCCDField<double>(*SLVTS->CCDs, &CCDBase::CD, 0, 1);
+    CCDCD[2] = GetCCDField<double>(*SLVTS->CCDs, &CCDBase::CD, 1, 0);
+    CCDCD[3] = GetCCDField<double>(*SLVTS->CCDs, &CCDBase::CD, 1, 1);
 
     return CCDCD;
 }
 std::vector< std::vector< double > > GET_CCD_ERRSIP(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > ERRXA,ERRXB,ERRXC,ERRYA,ERRYB,ERRYC;
-    std::vector< std::vector< double > >  CCDERR;
-    for(ID=0;ID<SLVTS->APRM->NUM_CCD+1;ID++){
-	ERRXA.push_back(SLVTS->CCDs->CCD[ID].DIF_AVE_ASIP[0]);
-	ERRXB.push_back(SLVTS->CCDs->CCD[ID].DIF_RMS_ASIP[0]);
-	ERRXC.push_back(SLVTS->CCDs->CCD[ID].DIF_MAX_ASIP[0]);
-	ERRYA.push_back(SLVTS->CCDs->CCD[ID].DIF_AVE_ASIP[1]);
-	ERRYB.push_back(SLVTS->CCDs->CCD[ID].DIF_RMS_ASIP[1]);
-	ERRYC.push_back(SLVTS->CCDs->CCD[ID].DIF_MAX_ASIP[1]);
-    }
-	CCDERR.push_back(ERRXA);
-	CCDERR.push_back(ERRXB);
-	CCDERR.push_back(ERRXC);
-	CCDERR.push_back(ERRYA);
-	CCDERR.push_back(ERRYB);
-	CCDERR.push_back(ERRYC);
+    std::vector< std::vector< double > >  CCDERR(6);
+    CCDERR[0] = GetCCDField<double>(*SLVTS->CCDs, &CCDBase::DIF_AVE_ASIP, 0);
+    CCDERR[1] = GetCCDField<double>(*SLVTS->CCDs, &CCDBase::DIF_RMS_ASIP, 0);
+    CCDERR[2] = GetCCDField<double>(*SLVTS->CCDs, &CCDBase::DIF_MAX_ASIP, 0);
+    CCDERR[3] = GetCCDField<double>(*SLVTS->CCDs, &CCDBase::DIF_AVE_ASIP, 1);
+    CCDERR[4] = GetCCDField<double>(*SLVTS->CCDs, &CCDBase::DIF_RMS_ASIP, 1);
+    CCDERR[5] = GetCCDField<double>(*SLVTS->CCDs, &CCDBase::DIF_MAX_ASIP, 1);
 
     return CCDERR;
 }
 std::vector< std::vector< double > > GET_CCD_ERRPSIP(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< double > ERRXA,ERRXB,ERRXC,ERRYA,ERRYB,ERRYC;
-    std::vector< std::vector< double > >  CCDERR;
-    for(ID=0;ID<SLVTS->APRM->NUM_CCD+1;ID++){
-	ERRXA.push_back(SLVTS->CCDs->CCD[ID].DIF_AVE_PSIP[0]);
-	ERRXB.push_back(SLVTS->CCDs->CCD[ID].DIF_RMS_PSIP[0]);
-	ERRXC.push_back(SLVTS->CCDs->CCD[ID].DIF_MAX_PSIP[0]);
-	ERRYA.push_back(SLVTS->CCDs->CCD[ID].DIF_AVE_PSIP[1]);
-	ERRYB.push_back(SLVTS->CCDs->CCD[ID].DIF_RMS_PSIP[1]);
-	ERRYC.push_back(SLVTS->CCDs->CCD[ID].DIF_MAX_PSIP[1]);
-    }
-	CCDERR.push_back(ERRXA);
-	CCDERR.push_back(ERRXB);
-	CCDERR.push_back(ERRXC);
-	CCDERR.push_back(ERRYA);
-	CCDERR.push_back(ERRYB);
-	CCDERR.push_back(ERRYC);
+    std::vector< std::vector< double > >  CCDERR(6);
+	CCDERR[0] = GetCCDField<double>(*SLVTS->CCDs, &CCDBase::DIF_AVE_PSIP, 0);
+	CCDERR[1] = GetCCDField<double>(*SLVTS->CCDs, &CCDBase::DIF_RMS_PSIP, 0);
+	CCDERR[2] = GetCCDField<double>(*SLVTS->CCDs, &CCDBase::DIF_MAX_PSIP, 0);
+	CCDERR[3] = GetCCDField<double>(*SLVTS->CCDs, &CCDBase::DIF_AVE_PSIP, 1);
+	CCDERR[4] = GetCCDField<double>(*SLVTS->CCDs, &CCDBase::DIF_RMS_PSIP, 1);
+	CCDERR[5] = GetCCDField<double>(*SLVTS->CCDs, &CCDBase::DIF_MAX_PSIP, 1);
 
     return CCDERR;
 }
 std::vector< int > GET_CCD_ORDERSIP(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< int > SORD;
-    for(ID=0;ID<SLVTS->APRM->NUM_CCD+1;ID++)
-    SORD.push_back(SLVTS->APRM->ORDER_ASIP);
-
-    return SORD;
+    return std::vector<int>(SLVTS->CCDs->CCD.size() + 1, SLVTS->APRM->ORDER_ASIP);
 }
 std::vector< int > GET_CCD_ORDERPSIP(CL_SLVTS* SLVTS){
-    int ID;
-    std::vector< int > PORD;
-    for(ID=0;ID<SLVTS->APRM->NUM_CCD+1;ID++)
-    PORD.push_back(SLVTS->APRM->ORDER_PSIP);
-
-    return PORD;
+    return std::vector<int>(SLVTS->CCDs->CCD.size() + 1, SLVTS->APRM->ORDER_PSIP);
 }
 std::vector< std::vector< double > > GET_CCD_COEFSIPA(CL_SLVTS* SLVTS){
-    std::vector< Polynomial2D::CoeffVector > coeffs(SLVTS->APRM->NUM_CCD + 1);
-    for(std::size_t ID = 0; ID < coeffs.size(); ++ID){
-        coeffs[ID] = SLVTS->CCDs->CCD[ID].ASIP[0].getCoeffVector();
+    std::vector< Polynomial2D::CoeffVector > coeffs;
+    for(std::vector<CL_CCD>::iterator ccd = SLVTS->CCDs->CCD.begin();
+        ccd != SLVTS->CCDs->CCD.end(); ++ccd
+    ){
+        coeffs.push_back(ccd->ASIP[0].getCoeffVector());
     }
+    coeffs.push_back(SLVTS->CCDs->GCD.ASIP[0].getCoeffVector());
 
-    // transpose coeffs => CCDCOEF
+    // transpose coeffs to make CCDCOEF
 
     std::vector< std::vector< double > >  CCDCOEF(coeffs.front().length);
     for(std::size_t ORDER = 0; ORDER < CCDCOEF.size(); ++ORDER){
@@ -282,12 +253,15 @@ std::vector< std::vector< double > > GET_CCD_COEFSIPA(CL_SLVTS* SLVTS){
     return CCDCOEF;
 }
 std::vector< std::vector< double > > GET_CCD_COEFSIPB(CL_SLVTS* SLVTS){
-    std::vector< Polynomial2D::CoeffVector > coeffs(SLVTS->APRM->NUM_CCD + 1);
-    for(std::size_t ID = 0; ID < coeffs.size(); ++ID){
-        coeffs[ID] = SLVTS->CCDs->CCD[ID].ASIP[1].getCoeffVector();
+    std::vector< Polynomial2D::CoeffVector > coeffs;
+    for(std::vector<CL_CCD>::iterator ccd = SLVTS->CCDs->CCD.begin();
+        ccd != SLVTS->CCDs->CCD.end(); ++ccd
+    ){
+        coeffs.push_back(ccd->ASIP[1].getCoeffVector());
     }
+    coeffs.push_back(SLVTS->CCDs->GCD.ASIP[1].getCoeffVector());
 
-    // transpose coeffs => CCDCOEF
+    // transpose coeffs to make CCDCOEF
 
     std::vector< std::vector< double > >  CCDCOEF(coeffs.front().length);
     for(std::size_t ORDER = 0; ORDER < CCDCOEF.size(); ++ORDER){
@@ -299,12 +273,15 @@ std::vector< std::vector< double > > GET_CCD_COEFSIPB(CL_SLVTS* SLVTS){
     return CCDCOEF;
 }
 std::vector< std::vector< double > > GET_CCD_COEFPSIPA(CL_SLVTS* SLVTS){
-    std::vector< Polynomial2D::CoeffVector > coeffs(SLVTS->APRM->NUM_CCD + 1);
-    for(std::size_t ID = 0; ID < coeffs.size(); ++ID){
-        coeffs[ID] = SLVTS->CCDs->CCD[ID].PSIP[0].getCoeffVector();
+    std::vector< Polynomial2D::CoeffVector > coeffs;
+    for(std::vector<CL_CCD>::iterator ccd = SLVTS->CCDs->CCD.begin();
+        ccd != SLVTS->CCDs->CCD.end(); ++ccd
+    ){
+        coeffs.push_back(ccd->PSIP[0].getCoeffVector());
     }
+    coeffs.push_back(SLVTS->CCDs->GCD.PSIP[0].getCoeffVector());
 
-    // transpose coeffs => CCDCOEF
+    // transpose coeffs to make CCDCOEF
 
     std::vector< std::vector< double > >  CCDCOEF(coeffs.front().length);
     for(std::size_t ORDER = 0; ORDER < CCDCOEF.size(); ++ORDER){
@@ -316,12 +293,15 @@ std::vector< std::vector< double > > GET_CCD_COEFPSIPA(CL_SLVTS* SLVTS){
     return CCDCOEF;
 }
 std::vector< std::vector< double > > GET_CCD_COEFPSIPB(CL_SLVTS* SLVTS){
-    std::vector< Polynomial2D::CoeffVector > coeffs(SLVTS->APRM->NUM_CCD + 1);
-    for(std::size_t ID = 0; ID < coeffs.size(); ++ID){
-        coeffs[ID] = SLVTS->CCDs->CCD[ID].PSIP[1].getCoeffVector();
+    std::vector< Polynomial2D::CoeffVector > coeffs;
+    for(std::vector<CL_CCD>::iterator ccd = SLVTS->CCDs->CCD.begin();
+        ccd != SLVTS->CCDs->CCD.end(); ++ccd
+    ){
+        coeffs.push_back(ccd->PSIP[1].getCoeffVector());
     }
+    coeffs.push_back(SLVTS->CCDs->GCD.PSIP[1].getCoeffVector());
 
-    // transpose coeffs => CCDCOEF
+    // transpose coeffs to make CCDCOEF
 
     std::vector< std::vector< double > >  CCDCOEF(coeffs.front().length);
     for(std::size_t ORDER = 0; ORDER < CCDCOEF.size(); ++ORDER){

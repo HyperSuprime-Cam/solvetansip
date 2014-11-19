@@ -32,7 +32,6 @@ std::vector< double > GET_SUM_RMSPSIP(CL_SLVTS* SLVTS);//getting RMS of PSIP in 
 //-----------------------------------------------------------------
 //Getting Functions : CCD Info
 //-----------------------------------------------------------------
-std::vector< int > GET_CCD_ID(CL_SLVTS* SLVTS);//getting ID of all CCD
 std::vector< int > GET_CCD_NUMREF(CL_SLVTS* SLVTS);//getting number of reference of input all CCD having
 std::vector< int > GET_CCD_NUMFIT(CL_SLVTS* SLVTS);//getting number of reference for fitting all CCD having
 std::vector< int > GET_CCD_ORDERSIP(CL_SLVTS* SLVTS);//getting oreder of SIP fitting all CCD having

@@ -26,20 +26,18 @@ public:
 	boost::shared_ptr<CL_REFs> REFs;//class references
 
 //FUNCTIONs
-	void SET_INIT();//setting initial values
 	void SET_INPUT(
 		std::vector< std::vector< std::string > > const& APRM,
-		std::vector< std::vector< std::string > > const& CCD,
+		std::vector<CCDPosition   >               const& ccdPosition,
 		std::vector<ReferenceMatch>               const& matchList
 	);//setting input information
-	void SET_END();//deleting memories
 	bool CHECK_INPUT();//checking input values
 	void CALC_WCS();//main calculation of solvetansip
 };
 
 boost::shared_ptr<CL_SLVTS> SOLVETANSIP(
 	std::vector< std::vector< std::string > > const& APRM,
-	std::vector< std::vector< std::string > > const& CCD,
+	std::vector<CCDPosition   >               const& ccdPosition,
 	std::vector<ReferenceMatch>               const& matchList
 );//called by lsst for calculating solvetansip
 

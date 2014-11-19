@@ -73,20 +73,22 @@ def SLVTS_APRM(policy):
 
 
 def SLVTS_CCD(NUMCCD,camera):
-    CCDs=SLVTS.VVS([])
+    ccds = SLVTS.CCDPositionVector(NUMCCD)
 
     for CID in range(NUMCCD):
-        DID=cameraGeom.Id(CID)
-        CGeom=cameraGeomUtils.findCcd(camera,DID)
+        DID = cameraGeom.Id(CID)
+        CGeom = cameraGeomUtils.findCcd(camera,DID)
         PS = CGeom.getPixelSize()
-        CCD=SLVTS.VS([])
-        CCD.append(str(DID.getSerial()))
-        CCD.append(str(CGeom.getCenter().getPixels(PS)[0]))
-        CCD.append(str(CGeom.getCenter().getPixels(PS)[1]))
-        CCD.append(str(CGeom.getOrientation().getYaw().asRadians()))
-        CCD.append(str(CGeom.getSize().getPixels(PS)[0]))
-        CCD.append(str(CGeom.getSize().getPixels(PS)[1]))
-        CCDs.append(CCD)
+
+        center = CGeom.getCenter().getPixels(PS)
+        size   = CGeom.getSize().getPixels(PS)
+
+        ccd = ccds[CID]
+        ccd.centerX = center[0]
+        ccd.centerY = center[1]
+        ccd.angle   = CGeom.getOrientation().getYaw().asRadians()
+        ccd.width   = int(size[0] + 0.5)
+        ccd.height  = int(size[1] + 0.5)
 
 #    OUTNAME="./CCD.dat"
 #    FOUT=open(OUTNAME,"w")
@@ -159,7 +161,6 @@ def OUTPUT_BTBL(V_S_RESULT,DIR_OUT):
 
 #CCD-----
     CCDNAME=DIR_OUT+"/solvetansipresult_CCDs.fits"
-    CCDID  =SLVTS.GET_CCD_ID(S_RESULT)
     CCDRNUM=SLVTS.GET_CCD_NUMREF(S_RESULT)
     CCDFNUM=SLVTS.GET_CCD_NUMFIT(S_RESULT)
     CCDPOSL=SLVTS.GET_CCD_GPOS_L(S_RESULT)
@@ -177,7 +178,6 @@ def OUTPUT_BTBL(V_S_RESULT,DIR_OUT):
     CCDPCOB=SLVTS.GET_CCD_COEFPSIPB(S_RESULT)
 
     CCDCOL=[]
-    CCDCOL.append(Column(name="ID_CCD"        ,format="J",array=CCDID))
     CCDCOL.append(Column(name="NUM_REF"       ,format="J",array=CCDRNUM))
     CCDCOL.append(Column(name="NUM_FIT"       ,format="J",array=CCDFNUM))
     CCDCOL.append(Column(name="GPOS_L_X"      ,format="D",unit="pixel",array=CCDPOSL[0]))

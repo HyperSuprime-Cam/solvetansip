@@ -10,37 +10,43 @@ namespace tansip {
 
 using namespace std;
 //CCDs
-void CL_CCDs::SET_INIT(CL_APRM *APRM_IN){
+CL_CCDs::CL_CCDs(
+	std::vector<CCDPosition> const& ccdPosition,
+	CL_APRM                       * APRM_IN
+){
 	APRM        = APRM_IN;
 
-	int const NUM_CCD = APRM->NUM_CCD;
-	CCD.resize(NUM_CCD+1);
+	int const NUM_CCD = ccdPosition.size();
+	CCD.resize(NUM_CCD);
 
-	HOLDER_OF_CRPIX_OF_CCDS = ndarray::allocate(2 * NUM_CCD);
-	double* ptr = HOLDER_OF_CRPIX_OF_CCDS.getData();
 	for(int i = 0; i < NUM_CCD; ++i){
-		CCD[i].CRPIX[0] = ptr++;
-		CCD[i].CRPIX[1] = ptr++;
-	}
-	CCD[NUM_CCD].CRPIX[0] = &APRM->CRPIX[0];
-	CCD[NUM_CCD].CRPIX[1] = &APRM->CRPIX[1];
-
-	for(int i = 0; i < NUM_CCD+1; ++i){
-		CCD[i].SET_INIT();
 		CCD[i].APRM	 = APRM;
-		CCD[i].NUM_REF		 =0;
-		CCD[i].NUM_FIT		 =0;
-		CCD[i].NUM_REJ		 =0;
+		CCD[i].ID            = i;
+		CCD[i].NUM_REF		 = 0;
+		CCD[i].NUM_FIT		 = 0;
+		CCD[i].NUM_REJ		 = 0;
+		CCD[i].CRPIX[0]      = 0;
+		CCD[i].CRPIX[1]      = 0;
 		CCD[i].ASIP[0]		 = Polynomial2D(APRM->ORDER_ASIP);
 		CCD[i].ASIP[1]		 = Polynomial2D(APRM->ORDER_ASIP);
 		CCD[i].PSIP[0]		 = Polynomial2D(APRM->ORDER_PSIP);
 		CCD[i].PSIP[1]		 = Polynomial2D(APRM->ORDER_PSIP);
 	}
+
+	GCD.APRM	 = APRM;
+	GCD.ID           = 999;
+	GCD.NUM_REF		 = 0;
+	GCD.NUM_FIT		 = 0;
+	GCD.NUM_REJ		 = 0;
+	GCD.CRPIX[0]     = APRM->CRPIX_IN[0];
+	GCD.CRPIX[1]     = APRM->CRPIX_IN[1];
+	GCD.ASIP[0]		 = Polynomial2D(APRM->ORDER_ASIP);
+	GCD.ASIP[1]		 = Polynomial2D(APRM->ORDER_ASIP);
+	GCD.PSIP[0]		 = Polynomial2D(APRM->ORDER_PSIP);
+	GCD.PSIP[1]		 = Polynomial2D(APRM->ORDER_PSIP);
+
 	SET_CRPIX();
-}
-void CL_CCDs::SET_INPUT(std::vector< std::vector< std::string > > CCD_Argvs,CL_APRM *APRM){
-	SET_INIT(APRM);
-	int const NUM_CCD = APRM->NUM_CCD;
+
 
 	MAX_CRPIX_G[0]=0;
 	MAX_CRPIX_G[1]=0;
@@ -53,33 +59,32 @@ void CL_CCDs::SET_INPUT(std::vector< std::vector< std::string > > CCD_Argvs,CL_A
 	GPOS_C_BASIS[2]=0;
 	if(APRM->FLAG_STD >= 1)cout<<"-- SET CCDs --"<<endl;
 	for(int i = 0; i < NUM_CCD; ++i){
-		CCD[i].ID       =atoi(CCD_Argvs[i][0].c_str());
-		CCD[i].GPOS_C[0]=atof(CCD_Argvs[i][1].c_str());
-		CCD[i].GPOS_C[1]=atof(CCD_Argvs[i][2].c_str());
-		CCD[i].GPOS_C[2]=atof(CCD_Argvs[i][3].c_str());
-		CCD[i].GPOS_C[3]=atof(CCD_Argvs[i][3].c_str())*(180.0/M_PI);
-		CCD[i].LENGTH[0]=atoi(CCD_Argvs[i][4].c_str());
-		CCD[i].LENGTH[1]=atoi(CCD_Argvs[i][5].c_str());
-		GPOS_C_BASIS[0]+=CCD[i].GPOS_C[0];
-		GPOS_C_BASIS[1]+=CCD[i].GPOS_C[1];
-		GPOS_C_BASIS[2]+=CCD[i].GPOS_C[2];
+		CCD[i].GPOS_C[0] = ccdPosition[i].centerX;
+		CCD[i].GPOS_C[1] = ccdPosition[i].centerY;
+		CCD[i].GPOS_C[2] = ccdPosition[i].angle;
+		CCD[i].GPOS_C[3] = ccdPosition[i].angle*(180.0/M_PI);
+		CCD[i].LENGTH[0] = ccdPosition[i].width;
+		CCD[i].LENGTH[1] = ccdPosition[i].height;
+		GPOS_C_BASIS[0] += CCD[i].GPOS_C[0];
+		GPOS_C_BASIS[1] += CCD[i].GPOS_C[1];
+		GPOS_C_BASIS[2] += CCD[i].GPOS_C[2];
 	}
 	GPOS_C_BASIS[0] /= NUM_CCD;
 	GPOS_C_BASIS[1] /= NUM_CCD;
 	GPOS_C_BASIS[2] /= NUM_CCD;
 	GPOS_C_BASIS[3]=GPOS_C_BASIS[2]*(180.0/M_PI);
-	CCD[NUM_CCD].ID       =999;
-	CCD[NUM_CCD].GPOS_C[0]=0;
-	CCD[NUM_CCD].GPOS_C[1]=0;
-	CCD[NUM_CCD].GPOS_C[2]=0;
-	CCD[NUM_CCD].GPOS_C[3]=0;
-	CCD[NUM_CCD].LENGTH[0]=0;
-	CCD[NUM_CCD].LENGTH[1]=0;
+
+	GCD.GPOS_C[0]=0;
+	GCD.GPOS_C[1]=0;
+	GCD.GPOS_C[2]=0;
+	GCD.GPOS_C[3]=0;
+	GCD.LENGTH[0]=0;
+	GCD.LENGTH[1]=0;
 
 	GET_GPOS_LfromGPOS_C();
 }
-void CL_CCDs::SET_END(){
-}
+
+
 bool CL_CCDs::CHECK(){
 	return CHECK_NUMCCD   ()
 		&& CHECK_NUMFIT   ()
@@ -87,21 +92,19 @@ bool CL_CCDs::CHECK(){
 	;
 }
 bool CL_CCDs::CHECK_NUMCCD(){
-	if(APRM->NUM_CCD > 0){
-		if(APRM->FLAG_STD >= 2)cout << "OK : NUM_CCD : " << APRM->NUM_CCD << endl;
+	if(!CCD.empty()){
+		if(APRM->FLAG_STD >= 2)cout << "OK : NUM_CCD : " << CCD.size() << endl;
 		return true;
 	}else{
 		cout << "---------------------------------------------" << endl;
-		cout << "Input 'NUM_CCD' is '" << APRM->NUM_CCD << "'"<< endl;
+		cout << "Input 'NUM_CCD' is '" << CCD.size() << "'"<< endl;
 		cout << "Error : NUM_CCD(Number of CCDs) must be larger than 0" << endl;
 		cout << "---------------------------------------------" << endl;
 		return false;
 	}
 }
 bool CL_CCDs::CHECK_NUMFIT(){
-	int const NUM_CCD = APRM->NUM_CCD;
-
-	for(int i = 0; i < NUM_CCD; ++i){
+	for(std::size_t i = 0; i < CCD.size(); ++i){
 		if(CCD[i].areReferencesSufficient()){
 			if(APRM->FLAG_STD >= 2){
 				cout << "OK : NUM_FIT : CCD : ";
@@ -123,24 +126,23 @@ bool CL_CCDs::CHECK_NUMFIT(){
 	return true;
 }
 bool CL_CCDs::CHECK_NUMFITALL(){
-	int const NUM_CCD    = APRM->NUM_CCD   ;
 	int       ORDER_ASIP = APRM->ORDER_ASIP;
 	int const ORDER_PSIP = APRM->ORDER_PSIP;
 
-	if(CCD[NUM_CCD].NUM_FIT <= 0){
+	if(APRM->NUM_FIT <= 0){
 		cout << "---------------------------------------------" << endl;
-		cout << "Input 'NUM_FIT' is '" << CCD[NUM_CCD].NUM_FIT << "'"<< endl;
+		cout << "Input 'NUM_FIT' is '" << APRM->NUM_FIT << "'"<< endl;
 		cout << "Error : NUM_FIT(Number of references for fitting) must be larger than 0" << endl;
 		cout << "---------------------------------------------" << endl;
 		return false;
-	}else if(CCD[NUM_CCD].NUM_FIT <= (ORDER_ASIP+1)*(ORDER_ASIP+2)/2 ||
-		CCD[NUM_CCD].NUM_FIT <= (ORDER_PSIP+1)*(ORDER_PSIP+2)/2 ){
+	}else if(APRM->NUM_FIT <= (ORDER_ASIP+1)*(ORDER_ASIP+2)/2 ||
+		APRM->NUM_FIT <= (ORDER_PSIP+1)*(ORDER_PSIP+2)/2 ){
 			cout << "---------------------------------------------" << endl;
 			cout << "Warning : NUM_FIT : CCD : ALL : ";
 			cout.width(5);
-			cout << CCD[NUM_CCD].NUM_FIT << endl;
+			cout << APRM->NUM_FIT << endl;
 			for(ORDER_ASIP = 0; ORDER_ASIP < 10; ++ORDER_ASIP){
-				if((ORDER_ASIP+1+1)*(ORDER_ASIP+2+1)/2 > CCD[NUM_CCD].NUM_FIT){
+				if((ORDER_ASIP+1+1)*(ORDER_ASIP+2+1)/2 > APRM->NUM_FIT){
 					break;
 				}
 			}
@@ -154,41 +156,51 @@ bool CL_CCDs::CHECK_NUMFITALL(){
 		if(APRM->FLAG_STD >= 2){
 			cout << "OK : NUM_FIT : CCD : ALL : " ;
 			cout.width(5);
-			cout << CCD[NUM_CCD].NUM_FIT << endl;
+			cout << APRM->NUM_FIT << endl;
 		}
 		return true;
 	}
 }
 void CL_CCDs::GET_GPOS_LfromGPOS_C(){
-	int const NUM_CCD = APRM->NUM_CCD;
-
-	for(int i = 0; i< NUM_CCD+1; ++i)
-	CCD[i].GET_GPOS_LfromGPOS_C();
+	for(std::vector<CL_CCD>::iterator ccd = CCD.begin();
+		ccd != CCD.end(); ++ccd
+	){
+		ccd->GET_GPOS_LfromGPOS_C();
+	}
+	GCD.GET_GPOS_LfromGPOS_C();
 }
 void CL_CCDs::GET_GPOS_CfromGPOS_L(){
-	int const NUM_CCD = APRM->NUM_CCD;
+	for(std::vector<CL_CCD>::iterator ccd = CCD.begin();
+		ccd != CCD.end(); ++ccd
+	){
+		ccd->GET_GPOS_CfromGPOS_L();
+	}
 
-	for(int i = 0; i< NUM_CCD; ++i)
-	CCD[i].GET_GPOS_CfromGPOS_L();
+	// mineo: Is this not necessary??
+	// GCD.GET_GPOS_CfromGPOS_L();
 }
 void CL_CCDs::SET_CRPIX(){
-	int const NUM_CCD = APRM->NUM_CCD;
-
-	for(int i = 0; i < NUM_CCD; ++i){
-		*CCD[i].CRPIX[0]=-(CCD[i].GPOS_L[0]-*CCD[NUM_CCD].CRPIX[0])*cos(CCD[i].GPOS_L[2])
-				 -(CCD[i].GPOS_L[1]-*CCD[NUM_CCD].CRPIX[1])*sin(CCD[i].GPOS_L[2]);
-		*CCD[i].CRPIX[1]=-(CCD[i].GPOS_L[1]-*CCD[NUM_CCD].CRPIX[1])*cos(CCD[i].GPOS_L[2])
-			         +(CCD[i].GPOS_L[0]-*CCD[NUM_CCD].CRPIX[0])*sin(CCD[i].GPOS_L[2]);
+	for(std::vector<CL_CCD>::iterator ccd = CCD.begin();
+		ccd != CCD.end(); ++ccd
+	){
+		ccd->CRPIX[0] =
+			-(ccd->GPOS_L[0] - GCD.CRPIX[0])*cos(ccd->GPOS_L[2])
+			-(ccd->GPOS_L[1] - GCD.CRPIX[1])*sin(ccd->GPOS_L[2]);
+		ccd->CRPIX[1] =
+			-(ccd->GPOS_L[1] - GCD.CRPIX[1])*cos(ccd->GPOS_L[2])
+			+(ccd->GPOS_L[0] - GCD.CRPIX[0])*sin(ccd->GPOS_L[2]);
 	}
 }
 void CL_CCDs::SET_OAPIX(){
-	int const NUM_CCD = APRM->NUM_CCD;
-
-	for(int i = 0; i < NUM_CCD; ++i){
-		 CCD[i].OAPIX[0]=-(CCD[i].GPOS_L[0]-CCD[NUM_CCD].OAPIX[0])*cos(CCD[i].GPOS_L[2])
-				 -(CCD[i].GPOS_L[1]-CCD[NUM_CCD].OAPIX[1])*sin(CCD[i].GPOS_L[2]);
-		 CCD[i].OAPIX[1]=-(CCD[i].GPOS_L[1]-CCD[NUM_CCD].OAPIX[1])*cos(CCD[i].GPOS_L[2])
-			         +(CCD[i].GPOS_L[0]-CCD[NUM_CCD].OAPIX[0])*sin(CCD[i].GPOS_L[2]);
+	for(std::vector<CL_CCD>::iterator ccd = CCD.begin();
+		ccd != CCD.end(); ++ccd
+	){
+		 ccd->OAPIX[0] =
+			-(ccd->GPOS_L[0] - GCD.OAPIX[0])*cos(ccd->GPOS_L[2])
+			-(ccd->GPOS_L[1] - GCD.OAPIX[1])*sin(ccd->GPOS_L[2]);
+		 ccd->OAPIX[1] =
+			-(ccd->GPOS_L[1] - GCD.OAPIX[1])*cos(ccd->GPOS_L[2])
+			+(ccd->GPOS_L[0] - GCD.OAPIX[0])*sin(ccd->GPOS_L[2]);
 	}
 }
 void CL_CCDs::SET_CCDs(){
@@ -196,57 +208,57 @@ void CL_CCDs::SET_CCDs(){
 	SET_CRPIX();
 	SET_OAPIX();
 
-	int const NUM_CCD    = APRM->NUM_CCD   ;
-
 //CD SIP DIST FUNCTIONS
-	Polynomial2D G_ASIP_0 = CCD[NUM_CCD].ASIP[0]; // deep copy
-	Polynomial2D G_ASIP_1 = CCD[NUM_CCD].ASIP[1]; // deep copy
-	Polynomial2D G_PSIP_0 = CCD[NUM_CCD].PSIP[0]; // deep copy
-	Polynomial2D G_PSIP_1 = CCD[NUM_CCD].PSIP[1]; // deep copy
+	Polynomial2D G_ASIP_0 = GCD.ASIP[0]; // deep copy
+	Polynomial2D G_ASIP_1 = GCD.ASIP[1]; // deep copy
+	Polynomial2D G_PSIP_0 = GCD.PSIP[0]; // deep copy
+	Polynomial2D G_PSIP_1 = GCD.PSIP[1]; // deep copy
 
 	Polynomial2D::CoeffVector coeff_0 = G_ASIP_0.getCoeffVector();
 	Polynomial2D::CoeffVector coeff_1 = G_ASIP_1.getCoeffVector();
 	for(unsigned ij = 0; ij < coeff_0.length; ++ij){
-		double x = CCD[NUM_CCD].CD[0][0]*coeff_0[ij] + CCD[NUM_CCD].CD[0][1]*coeff_1[ij];
-		double y = CCD[NUM_CCD].CD[1][0]*coeff_0[ij] + CCD[NUM_CCD].CD[1][1]*coeff_1[ij];
+		double x = GCD.CD[0][0]*coeff_0[ij] + GCD.CD[0][1]*coeff_1[ij];
+		double y = GCD.CD[1][0]*coeff_0[ij] + GCD.CD[1][1]*coeff_1[ij];
 		coeff_0[ij] = x;
 		coeff_1[ij] = y;
 	}
 	G_ASIP_0.setCoeffVector(coeff_0);
 	G_ASIP_1.setCoeffVector(coeff_1);
 
-	G_ASIP_0.coeff(1,0) += CCD[NUM_CCD].CD[0][0];
-	G_ASIP_0.coeff(0,1) += CCD[NUM_CCD].CD[0][1];
-	G_ASIP_1.coeff(1,0) += CCD[NUM_CCD].CD[1][0];
-	G_ASIP_1.coeff(0,1) += CCD[NUM_CCD].CD[1][1];
+	G_ASIP_0.coeff(1,0) += GCD.CD[0][0];
+	G_ASIP_0.coeff(0,1) += GCD.CD[0][1];
+	G_ASIP_1.coeff(1,0) += GCD.CD[1][0];
+	G_ASIP_1.coeff(0,1) += GCD.CD[1][1];
 	G_PSIP_0.coeff(1,0) += 1.0;
 	G_PSIP_0.coeff(0,1) += 0.0;
 	G_PSIP_1.coeff(1,0) += 0.0;
 	G_PSIP_1.coeff(0,1) += 1.0;
 
-	for(int CID = 0; CID < NUM_CCD; ++CID){
-		CCD[CID].ASIP[0] = CCD[CID].SET_SIPROT(G_ASIP_0);
-		CCD[CID].ASIP[1] = CCD[CID].SET_SIPROT(G_ASIP_1);
-		CCD[CID].PSIP[0] = CCD[CID].SET_SIPROT(G_PSIP_0);
-		CCD[CID].PSIP[1] = CCD[CID].SET_SIPROT(G_PSIP_1);
-		CCD[CID].SET_CDASIP();
+	for(std::vector<CL_CCD>::iterator ccd = CCD.begin();
+		ccd != CCD.end(); ++ccd
+	){
+		ccd->ASIP[0] = ccd->SET_SIPROT(G_ASIP_0);
+		ccd->ASIP[1] = ccd->SET_SIPROT(G_ASIP_1);
+		ccd->PSIP[0] = ccd->SET_SIPROT(G_PSIP_0);
+		ccd->PSIP[1] = ccd->SET_SIPROT(G_PSIP_1);
+		ccd->SET_CDASIP();
 
-		coeff_0 = CCD[CID].PSIP[0].getCoeffVector();
-		coeff_1 = CCD[CID].PSIP[1].getCoeffVector();
+		coeff_0 = ccd->PSIP[0].getCoeffVector();
+		coeff_1 = ccd->PSIP[1].getCoeffVector();
 		for(unsigned ij = 0; ij < coeff_0.length; ++ij){
-			double x = CCD[NUM_CCD].CD[0][0]*coeff_0[ij]+CCD[NUM_CCD].CD[0][1]*coeff_1[ij];
-			double y = CCD[NUM_CCD].CD[1][0]*coeff_0[ij]+CCD[NUM_CCD].CD[1][1]*coeff_1[ij];
-			coeff_0[ij]=CCD[CID].InvCD[0][0]*x+CCD[CID].InvCD[0][1]*y;
-			coeff_1[ij]=CCD[CID].InvCD[1][0]*x+CCD[CID].InvCD[1][1]*y;
+			double x = GCD.CD[0][0]*coeff_0[ij]+GCD.CD[0][1]*coeff_1[ij];
+			double y = GCD.CD[1][0]*coeff_0[ij]+GCD.CD[1][1]*coeff_1[ij];
+			coeff_0[ij]=ccd->InvCD[0][0]*x+ccd->InvCD[0][1]*y;
+			coeff_1[ij]=ccd->InvCD[1][0]*x+ccd->InvCD[1][1]*y;
 		}
-		CCD[CID].PSIP[0].setCoeffVector(coeff_0);
-		CCD[CID].PSIP[1].setCoeffVector(coeff_1);
+		ccd->PSIP[0].setCoeffVector(coeff_0);
+		ccd->PSIP[1].setCoeffVector(coeff_1);
 
-		CCD[CID].SET_CDPSIP();
+		ccd->SET_CDPSIP();
 	}
 }
 void CL_CCDs::SHOW(){
-	int const NUM_CCD    = APRM->NUM_CCD   ;
+	int const NUM_CCD    = CCD.size();
 
 	cout << setprecision(3);
 	cout << scientific;
@@ -264,9 +276,9 @@ void CL_CCDs::SHOW(){
 	cout << "AVE_CRPIX_G_Y       : " ;cout.width(10);cout<< AVE_CRPIX_G[1]   << endl;
 	cout << "-- SHOW CCD --" << endl;
 	cout << " ID :        X_C        Y_C        T_C       L1       L2 NUM_REF NUM_FIT NUM_REJ" << endl;
-	for(int i = 0; i < NUM_CCD+1; ++i){
+	for(int i = 0; i < NUM_CCD; ++i){
 		cout.width( 3);
-		cout<<CCD[i].ID <<" : ";
+		cout<< i <<" : ";
 		cout.width(10);
 		cout<<fixed<<setprecision(3)<<CCD[i].GPOS_C[0] <<" ";
 		cout.width(10);
@@ -285,25 +297,41 @@ void CL_CCDs::SHOW(){
 		cout<<CCD[i].NUM_REJ << endl;
 	}
 
+	cout.width( 3);
+	cout<< "GCD" <<" : ";
+	cout.width(10);
+	cout<<fixed<<setprecision(3)<<GCD.GPOS_C[0] <<" ";
+	cout.width(10);
+	cout<<fixed<<setprecision(3)<<GCD.GPOS_C[1] <<" ";
+	cout.width(10);
+	cout<<fixed<<setprecision(3)<<scientific<<GCD.GPOS_C[2] <<" ";
+	cout.width(8);
+	cout<<fixed<<setprecision(3)<<GCD.LENGTH[0] <<" ";
+	cout.width(8);
+	cout<<fixed<<setprecision(3)<<GCD.LENGTH[1] <<" ";
+	cout.width(7);
+	cout<<GCD.NUM_REF << " ";
+	cout.width(7);
+	cout<<GCD.NUM_FIT << " ";
+	cout.width(7);
+	cout<<GCD.NUM_REJ << endl;
 }
+
+
 //CCD
-void CL_CCD::SET_INIT(){
-}
-void CL_CCD::SET_END(){
-}
-void CL_CCD::GET_GPOS_LfromGPOS_C(){
+void CCDBase::GET_GPOS_LfromGPOS_C(){
 	GPOS_L[0]=GPOS_C[0]-0.5*(LENGTH[0]*cos(GPOS_C[2])-LENGTH[1]*sin(GPOS_C[2]));
 	GPOS_L[1]=GPOS_C[1]-0.5*(LENGTH[1]*cos(GPOS_C[2])+LENGTH[0]*sin(GPOS_C[2]));
 	GPOS_L[2]=GPOS_C[2];
 	GPOS_L[3]=GPOS_C[3];
 }
-void CL_CCD::GET_GPOS_CfromGPOS_L(){
+void CCDBase::GET_GPOS_CfromGPOS_L(){
 	GPOS_C[0]=GPOS_L[0]+0.5*(LENGTH[0]*cos(GPOS_L[2])-LENGTH[1]*sin(GPOS_L[2]));
 	GPOS_C[1]=GPOS_L[1]+0.5*(LENGTH[1]*cos(GPOS_L[2])+LENGTH[0]*sin(GPOS_L[2]));
 	GPOS_C[2]=GPOS_L[2];
 	GPOS_C[3]=GPOS_L[3];
 }
-void CL_CCD::SET_CDASIP(){
+void CCDBase::SET_CDASIP(){
 	CD[0][0]=ASIP[0].coeff(1,0);
 	CD[0][1]=ASIP[0].coeff(0,1);
 	CD[1][0]=ASIP[1].coeff(1,0);
@@ -330,11 +358,11 @@ void CL_CCD::SET_CDASIP(){
 
 	ANGLE=atan2(CD[0][0]-CD[1][1],-CD[1][0]-CD[0][1]);
 }
-void CL_CCD::SET_CDPSIP(){
+void CCDBase::SET_CDPSIP(){
 	PSIP[0].coeff(1,0) -= 1;
 	PSIP[1].coeff(0,1) -= 1;
 }
-Polynomial2D CL_CCD::SET_SIPROT(Polynomial2D const& POLY){
+Polynomial2D CCDBase::SET_SIPROT(Polynomial2D const& POLY){
 	double const THETA = GPOS_L[2];
 
 	Polynomial2D POLY_OUT(POLY.getDegree());
@@ -540,14 +568,14 @@ Polynomial2D CL_CCD::SET_SIPROT(Polynomial2D const& POLY){
 	return POLY_OUT;
 }
 
-void CL_CCD::SHOW(){
+void CCDBase::SHOW(){
 	int const ORDER_ASIP = APRM->ORDER_ASIP;
 	int const ORDER_PSIP = APRM->ORDER_PSIP;
 
 	cout << setprecision(3);
 	cout << scientific;
 	cout << "-- SHOW CCD --" << endl;
-	cout << "ID            : " << ID      <<endl;
+	cout << "ID            : " << ID      << endl;
 	cout << "NUM_REF       : " << NUM_REF << endl;
 	cout << "NUM_FIT       : " << NUM_FIT << endl;
 	cout << "NUM_REJ       : " << NUM_REJ << endl;
@@ -562,8 +590,8 @@ void CL_CCD::SHOW(){
 	cout << "LENGTH X      : " << LENGTH[0] << endl;
 	cout << "LENGTH Y      : " << LENGTH[1] << endl;
 	cout << "ANGLE         : " ;cout.width(10);cout<< ANGLE << endl;
-	cout << "CRPIX 1       : " ;cout.width(10);cout<< *CRPIX[0] << endl;
-	cout << "CRPIX 2       : " ;cout.width(10);cout<< *CRPIX[1] << endl;
+	cout << "CRPIX 1       : " ;cout.width(10);cout<< CRPIX[0] << endl;
+	cout << "CRPIX 2       : " ;cout.width(10);cout<< CRPIX[1] << endl;
 	cout << "CRVAL Ra      : " ;cout.width(10);cout<< APRM->CRVAL[0] <<" (degree) " << endl;
 	cout << "CRVAL Dec     : " ;cout.width(10);cout<< APRM->CRVAL[1] <<" (degree) " << endl;
 	cout << "OAPIX 1       : " ;cout.width(10);cout<<  OAPIX[0] << endl;

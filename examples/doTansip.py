@@ -13,10 +13,6 @@ def doTansip(APRM, CCD, REF):
 	APRM=GET_APRM_A(APRM)
 	print '--- doTansip : get CCD  ---'
 	CCD =GET_CCD_A(CCD)
-	KV=SLVTS.VS([])
-	KV.append('NUM_CCD')
-	KV.append(str(len(CCD)))
-	APRM.append(KV)
 	print '--- doTansip : get REF ---'
 	REF =GET_REF_A(REF)
 
@@ -54,21 +50,22 @@ def GET_APRM_A(APRM):
 
 
 def GET_CCD_A(CCD):
-	KVs=SLVTS.VVS([])
+	ccds = SLVTS.CCDPositionVector()
 
 	FIN=open(CCD, 'r')
 	for line in FIN:
-		itemList = line[:-1].split()
-		KV=SLVTS.VS([])
-		KV.append(str(itemList[0]))
-		KV.append(str(itemList[1]))
-		KV.append(str(itemList[2]))
-		KV.append(str(itemList[3]))
-		KV.append(str(itemList[4]))
-		KV.append(str(itemList[5]))
-		KVs.append(KV)
+		itemList = line.split()
 
-	return KVs
+		ccds.resize(ccds.size() + 1)
+		ccd = ccds.back()
+
+		ccd.centerX = float(itemList[1])
+		ccd.centerY = float(itemList[2])
+		ccd.angle   = float(itemList[3])
+		ccd.width   = int(float(itemList[4]))
+		ccd.height  = int(float(itemList[5]))
+
+	return ccds
 
 
 def GET_REF_A(REF):
@@ -76,7 +73,7 @@ def GET_REF_A(REF):
 
 	FIN=open(REF, 'r')
 	for line in FIN:
-		itemList = line[:-1].split()
+		itemList = line.split()
 
 		matchList.resize(matchList.size() + 1)
 		match = matchList.back()
@@ -152,7 +149,6 @@ def OUTPUT_BTBL(S_RESULT,DIR_OUT):
 
 #CCD-----
 	CCDNAME=DIR_OUT+"/solvetansipresult_CCDs.fits"
-	CCDID  =SLVTS.GET_CCD_ID(S_RESULT)
 	CCDRNUM=SLVTS.GET_CCD_NUMREF(S_RESULT)
 	CCDFNUM=SLVTS.GET_CCD_NUMFIT(S_RESULT)
 	CCDPOSL=SLVTS.GET_CCD_GPOS_L(S_RESULT)
@@ -170,7 +166,6 @@ def OUTPUT_BTBL(S_RESULT,DIR_OUT):
 	CCDPCOB=SLVTS.GET_CCD_COEFPSIPB(S_RESULT)
 
 	CCDCOL=[]
-	CCDCOL.append(Column(name="ID_CCD"        ,format="J",array=CCDID))
 	CCDCOL.append(Column(name="NUM_REF"       ,format="J",array=CCDRNUM))
 	CCDCOL.append(Column(name="NUM_FIT"       ,format="J",array=CCDFNUM))
 	CCDCOL.append(Column(name="GPOS_L_X"      ,format="D",unit="pixel",array=CCDPOSL[0]))

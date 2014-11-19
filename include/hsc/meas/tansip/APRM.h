@@ -20,13 +20,11 @@ public:
 	std::string  INSTR;//HSC or SC
 	std::string	 MODE_CR;
 //CCD
-	int	NUM_CCD;
 	int	MODE_CCDPOS;
 	double  PRECISION_CCD;//pixel
 //REF
 	int	NUM_FIT;
-	int	NUM_REJ;
-	double	CRPIX[2];
+	double	CRPIX_IN[2];
 	double	CRVAL[2];
 	int	ORDER_ASIP;
 	int	ORDER_PSIP;
@@ -44,7 +42,6 @@ public:
 	bool  CHECK_MODECR();//checking current MODECR
 	bool  CHECK_ORDERASIP();//checking current SIP oreder
 	bool  CHECK_ORDERPSIP();//checking current PSIP order
-	void SET_END();//destructor
 };
 
 } // namespace tansip

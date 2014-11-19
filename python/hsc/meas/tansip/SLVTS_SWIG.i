@@ -16,6 +16,7 @@
 %}
 
 %include "lsst/daf/base/PropertySet.h"
+%include "hsc/meas/tansip/CCDPosition.h"
 %include "hsc/meas/tansip/ReferenceMatch.h"
 %include "hsc/meas/tansip/ReferenceMatchLSST.h"
 
@@ -24,7 +25,7 @@ namespace hsc { namespace meas { namespace tansip
     struct CL_SLVTS{};
     boost::shared_ptr<CL_SLVTS> SOLVETANSIP(
         std::vector< std::vector< std::string > > const& APRM,
-        std::vector< std::vector< std::string > > const& CCD,
+        std::vector<CCDPosition   >               const& CCD,
         std::vector<ReferenceMatch>               const& matchList
     );
 

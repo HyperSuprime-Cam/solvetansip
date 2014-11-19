@@ -10,6 +10,7 @@ Python interface to hsc::meas::tansip
 
 %{
 #include "lsst/afw/image.h"
+#include "hsc/meas/tansip/CCDPosition.h"
 #include "hsc/meas/tansip/ReferenceMatch.h"
 #include "hsc/meas/tansip/ReferenceMatchLSST.h"
 %}
@@ -33,7 +34,7 @@ Python interface to hsc::meas::tansip
 %template(VQ) std::vector<long long int>;
 
 %template(ReferenceMatchVector) std::vector<hsc::meas::tansip::ReferenceMatch>;
-
+%template(CCDPositionVector   ) std::vector<hsc::meas::tansip::CCDPosition   >;
 
 // :end]
 
