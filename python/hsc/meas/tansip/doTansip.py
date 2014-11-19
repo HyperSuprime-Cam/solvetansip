@@ -4,17 +4,15 @@ from pyfits import Column
 import hsc.meas.tansip.SLVTS_SWIGLib     as SLVTS
 import lsst.afw.cameraGeom.utils      as cameraGeomUtils
 import lsst.afw.cameraGeom            as cameraGeom
-#import lsst.daf.base                     as dafBase
+import lsst.daf.base                     as dafBase
 
 def doTansip(matchListAllCcd, policy=None, camera=None, rerun=None):
-    metaTANSIP = SLVTS.SET_EMPTYMETADATA()
-    print "meta:",metaTANSIP
+    metaTANSIP = dafBase.PropertySet()
     SLVTSresult=SOLVETANSIP(matchListAllCcd, metaTANSIP, policy=policy, camera=camera, rerun=rerun)
     return SLVTSresult
 
 def doTansipQa(matchListAllCcd, policy=None, camera=None, rerun=None):
-    metaTANSIP = SLVTS.SET_EMPTYMETADATA()
-    print "metaQa:",metaTANSIP
+    metaTANSIP = dafBase.PropertySet()
     SLVTSresult=SOLVETANSIP(matchListAllCcd, metaTANSIP, policy=policy, camera=camera, rerun=rerun)
     return SLVTSresult,metaTANSIP
 
@@ -32,9 +30,9 @@ def SOLVETANSIP(matchListAllCcd, metaTANSIP, policy=None, camera=None, rerun=Non
 
     print '--- doTansip : SOLVE TANSIP ---'
     SLVTSRESULT=SLVTS.SOLVETANSIP(APRM, CCD, matchListAllCcd)
-    SLVTS.SET_METADATA(SLVTSRESULT, metaTANSIP)
-    SLVTS.CHECK_METADATA(SLVTSRESULT,metaTANSIP)
-    TANWCS=SLVTS.SET_TANWCS(SLVTSRESULT)
+    SLVTS.GET_METADATA(SLVTSRESULT, metaTANSIP)
+    SLVTS.SHOW_METADATA(SLVTSRESULT,metaTANSIP)
+    TANWCS=SLVTS.GET_TANWCS(SLVTSRESULT)
 
     FLAG_OUT=policy.get('FLAG_OUT')
     if FLAG_OUT==1:

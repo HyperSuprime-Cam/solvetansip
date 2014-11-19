@@ -39,17 +39,13 @@ namespace {
 	}
 }
 
-dafbase::PropertySet::Ptr SET_EMPTYMETADATA(){
-	return boost::make_shared<dafbase::PropertySet>();
-}
-
 
 namespace {
 	void SetMetadataOfCCD(
-		dafbase::PropertySet::Ptr& meta,
-		CL_APRM                  * APRM,
-		CCDBase             const& CCD,
-		int                        cid)
+		dafbase::PropertySet::Ptr const& meta,
+		CL_APRM                        * APRM,
+		CCDBase                   const& CCD,
+		int                              cid)
 	{
 		meta->add(fmt("ST_C%03d_NUM_REF"    , cid), CCD.NUM_REF);
 		meta->add(fmt("ST_C%03d_NUM_FIT"    , cid), CCD.NUM_FIT);
@@ -119,7 +115,13 @@ namespace {
 }
 
 
-void SET_METADATA(CL_SLVTS* SLVTS, dafbase::PropertySet::Ptr &meta){
+lsst::daf::base::PropertySet::Ptr
+GET_METADATA(CL_SLVTS* SLVTS, dafbase::PropertySet::Ptr const& meta_in)
+{
+	dafbase::PropertySet::Ptr meta = meta_in;
+	if(!meta){
+		meta = boost::make_shared<dafbase::PropertySet>();
+	}
 
 	meta->add("ST_A_MODE_CR"    , SLVTS->APRM->MODE_CR);
 	meta->add("ST_A_MODE_REJ"   , SLVTS->APRM->MODE_REJ);
@@ -153,16 +155,18 @@ cout<<scientific<<setprecision(6)<<"R : "<<SLVTS->CCDs->MAX_CRPIX_G_R<<"	"<<VALU
 	meta->add("psip_residuals_rms_x", SLVTS->CCDs->GCD.DIF_RMS_PSIP[0]);
 	meta->add("psip_residuals_rms_y", SLVTS->CCDs->GCD.DIF_RMS_PSIP[1]);
 	meta->add("nref_fitting"        , SLVTS->APRM->NUM_FIT);
+
+	return meta;
 }
 
 
-void CHECK_METADATA(CL_SLVTS* SLVTS,dafbase::PropertySet::Ptr &meta){
+void SHOW_METADATA(CL_SLVTS* SLVTS,dafbase::PropertySet::Ptr const& meta){
 	int const GL = (int)SLVTS->CCDs->CCD.size();
 
 	if(SLVTS->APRM->FLAG_STD >= 1){
 		#define SHOW(Type, key) \
 			std::cout << key << " : " << meta->getAs##Type(key) << std::endl
-		std::cout << "--- CHECK metadata ---" << std::endl;
+		std::cout << "--- SHOW metadata ---" << std::endl;
 		SHOW(String, "ST_A_MODE_CR"                    );
 		SHOW(Int   , "ST_A_NUM_CCD"                    );
 		SHOW(Int   , "nref_fitting"                    );
@@ -190,8 +194,8 @@ namespace {
 		CCDBase             const& CCD,
 		CL_APRM                  * APRM
 	){
-		afwGeom::PointD crpix = afwGeom::PointD(CCD.CRPIX[0],CCD.CRPIX[1]);
-		afwGeom::PointD crval = afwGeom::PointD(APRM->CRVAL[0]          ,APRM->CRVAL[1]          );
+		afwGeom::PointD crpix = afwGeom::PointD(CCD.CRPIX  [0],CCD.CRPIX  [1]);
+		afwGeom::PointD crval = afwGeom::PointD(APRM->CRVAL[0],APRM->CRVAL[1]);
 
 		Eigen::Matrix2d cdMatrix;
 		cdMatrix << CCD.CD[0][0],CCD.CD[0][1],CCD.CD[1][0],CCD.CD[1][1];
@@ -227,7 +231,8 @@ namespace {
 }
 
 
-std::vector <lsst::afw::image::TanWcs::Ptr> SET_TANWCS(CL_SLVTS* SLVTS){
+std::vector <lsst::afw::image::TanWcs::Ptr> GET_TANWCS(CL_SLVTS* SLVTS)
+{
 	std::vector <lsst::afw::image::TanWcs::Ptr> V_TanWcs;
 
 	for(std::vector<CL_CCD>::iterator ccd = SLVTS->CCDs->CCD.begin();

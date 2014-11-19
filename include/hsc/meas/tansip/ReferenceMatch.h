@@ -4,14 +4,16 @@
 namespace hsc { namespace meas {
 namespace tansip {
 
-// match of a source on a detector and a celestial object
+/** Match of a source on a detector and a celestial object.
+	A vector of this structure is employed as a container of user input.
+*/
 struct ReferenceMatch
 {
-	int    ccdId; // ccd id
-	double x    ; // LOCAL_L coord
-	double y    ; // LOCAL_L coord
-	double ra   ; // in degrees
-	double dec  ; // in degrees
+	int    ccdId; /// on which CCD this object is
+	double x    ; /// LOCAL_L coord
+	double y    ; /// LOCAL_L coord
+	double ra   ; /// in degrees
+	double dec  ; /// in degrees
 };
 
 } // namespace tansip

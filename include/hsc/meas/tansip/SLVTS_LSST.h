@@ -15,10 +15,23 @@
 namespace hsc { namespace meas {
 namespace tansip {
 
-lsst::daf::base::PropertySet::Ptr SET_EMPTYMETADATA();//making empty metadata
-void SET_METADATA(CL_SLVTS* SLVTS, lsst::daf::base::PropertySet::Ptr &meta);//setting solvetansip result to metadata
-void CHECK_METADATA(CL_SLVTS* SLVTS, lsst::daf::base::PropertySet::Ptr &meta);//checking values in metadata
-std::vector <lsst::afw::image::TanWcs::Ptr> SET_TANWCS(CL_SLVTS* SLVTS);//setting solvetansip result to lsst WCS type
+/** Add solvetansip result to metadata
+    @param meta
+        A PropertySet to which to add new properties.
+        If this parameter is nullptr, a new PropertySet is created.
+
+    @return meta if present, otherwise a new PropertySet.
+*/
+lsst::daf::base::PropertySet::Ptr
+GET_METADATA(CL_SLVTS* SLVTS, lsst::daf::base::PropertySet::Ptr const& meta = lsst::daf::base::PropertySet::Ptr());
+
+/** Show (a summary of) metadata that's been added by GET_METADATA()
+*/
+void SHOW_METADATA(CL_SLVTS* SLVTS, lsst::daf::base::PropertySet::Ptr const& meta);
+
+/** Create TanWcs objects for all CCDs
+*/
+std::vector <lsst::afw::image::TanWcs::Ptr> GET_TANWCS(CL_SLVTS* SLVTS);
 
 } // namespace tansip
 }} // namespace hsc::meas
