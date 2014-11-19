@@ -90,12 +90,7 @@ def SLVTS_CCD(NUMCCD,camera):
         ccd.width   = int(size[0] + 0.5)
         ccd.height  = int(size[1] + 0.5)
 
-#    OUTNAME="./CCD.dat"
-#    FOUT=open(OUTNAME,"w")
-#    for CID in range(NUMCCD):
-#        print>>FOUT ,CCDs[CID][0] ,CCDs[CID][1] ,CCDs[CID][2] ,CCDs[CID][3] ,CCDs[CID][4] ,CCDs[CID][5]
-
-    return CCDs
+    return ccds
 #-----------------------------------------------------------------
 #Output bianry table : S_RESULT
 #-----------------------------------------------------------------

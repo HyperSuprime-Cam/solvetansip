@@ -64,5 +64,6 @@ def version(HeadURL = r"$HeadURL: ssh://hsc-gw2.mtk.nao.ac.jp/ana/hgrepo/hscAstr
 
 %import "lsst/afw/image/imageLib.i"
 %import "lsst/afw/geom/geomLib.i"
+%import "lsst/afw/table/tableLib.i"
 
 %include "SLVTS_SWIG.i"

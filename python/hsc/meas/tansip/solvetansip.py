@@ -66,10 +66,12 @@ class SolveTansipTask(CmdLineTask):
             matchList = matchLists[ccdId]
             if matchList is None: continue
 
-            refMatchLists[len(refMatchLists):] = (
+            refMatchLists[len(refMatchLists):] = [
                 tansip.toReferenceMatch(m, ccdId)
-                for m in matchList if (m.first and m.second)] # both ref and src to have valid values
-            )
+                for m in matchList if (m.first and m.second) # both ref and src to have valid values
+            ]
+
+        return refMatchLists
 
     def read(self, butler, dataRefList, nCcd = None):
         """
