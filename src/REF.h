@@ -17,9 +17,8 @@
 
 #include "hsc/meas/tansip/ReferenceMatch.h"
 #include "hsc/meas/tansip/APRM.h"
-#include "hsc/meas/tansip/CCD.h"
-#include "hsc/meas/tansip/CALC.h"
-#include "hsc/meas/tansip/Polynomial.h"
+#include "CCD.h"
+#include "Polynomial.h"
 
 namespace hsc { namespace meas {
 namespace tansip {
@@ -47,10 +46,10 @@ struct CL_REFs;
 
 struct CL_REF
 {
-	CL_APRM *APRM;//=SLVTS->APRM
-	CL_REFs *REFs;
-	CL_CCD  *CCD;//=SLVTS->CCDs->CCD[ID_CCD]
-	CL_GCD  *GCD;//=SLVTS->CCDs->CCD[NUMCCD]
+	AnaParam * APRM;//=SLVTS->APRM
+	CL_REFs  * REFs;
+	CL_CCD   * CCD;//=SLVTS->CCDs->CCD[ID_CCD]
+	CL_GCD   * GCD;//=SLVTS->CCDs->CCD[NUMCCD]
 
 	int	ID_CCD;
 	int	FLAG_OBJ;
@@ -203,8 +202,8 @@ inline double (&CL_REF::POS(EPosCelestial c))[2]
 
 struct CL_REFs{
 public:
-	CL_APRM *APRM;//SLVTS->APRM
-	CL_CCDs *CCDs;//SLVTS->CCDs
+	AnaParam * APRM;//SLVTS->APRM
+	CL_CCDs  * CCDs;//SLVTS->CCDs
 	std::vector<CL_REF>  REF;
 	Polynomial2D PSIP_DX[2];
 	Polynomial2D PSIP_DY[2];
@@ -215,7 +214,7 @@ public:
 //FUNCTIONS
 	CL_REFs(
 		std::vector<ReferenceMatch> const& matchList,
-		CL_APRM                          * APRM_IN,
+		AnaParam                         * APRM_IN,
 		CL_CCDs                          * CCDs_IN
 	);
 

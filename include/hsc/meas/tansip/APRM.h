@@ -1,7 +1,5 @@
 //-----------------------------------------------------------
 //APRM.h
-//
-//Last modification : 2014/01/01
 //------------------------------------------------------------
 #ifndef  gd3b2467b_f431_4fa4_94cb_a1f35bb9e186
 #define  gd3b2467b_f431_4fa4_94cb_a1f35bb9e186
@@ -14,33 +12,52 @@
 namespace hsc { namespace meas {
 namespace tansip {
 
-struct CL_APRM
+/** Analysis parameter
+*/
+struct AnaParam
 {
-	std::string  INSTR;//HSC or SC
+	std::string  INSTR  ; /// Instrument. "HSC" or "SC".
+
+	/** Mode of CRPIX/VAL.
+		-- "AUTO":
+			CRPIX is set automatically at the center of all detected objects,
+			and CRVAL is determined with reference to this CRPIX.
+		-- "PIX:
+			CRPIX is given by the user,
+			and CRVAL is determined with reference to this CRPIX.
+		-- "VAL":
+			CRVAL is given by the user,
+			and CRPIX is determined with reference to this CRVAL.
+	*/
 	std::string	 MODE_CR;
+
 //CCD
-	int	MODE_CCDPOS;
-	double  PRECISION_CCD;//pixel
+	bool    MODE_CCDPOS;   /// Whether to compute CCDs' positions.
+	double  PRECISION_CCD; /// Precision, in pixels, of computed CCDs' positions.
+
 //REF
-	double	CRPIX_IN[2];
-	double	CRVAL_IN[2];
-	int	ORDER_ASIP;
-	int	ORDER_PSIP;
-	int	MODE_REJ;
-	double	SIGMA_CLIP;
+	double  CRPIX[2];  /// User-given CRPIX (valid only if MODE_CR == PIX)
+	double  CRVAL[2];  /// User-given CRVAL (valid only if MODE_CR == VAL)
+	// Internal NOTE: CRPIX/VAL of AnaParam is used for input only.
+	// *DO*NOT* use them in program codes: they're probably out of date.
+	// Use CL_GCD::CRPIX/VAL instead.
+
+	int     ORDER_ASIP; /// The degree of SIP
+	int     ORDER_PSIP; /// The degree of PSIP
+	bool    MODE_REJ  ; /// Whether to reject bad references
+	double	SIGMA_CLIP; /// Reference are rejected when |dx| > SIGMA_CLIP * sigma
 
 //OUTPUT
-	int	FLAG_STD;
+	int	VERBOSITY; /// Verbosity: 0, 1, or 2
 
 //FUNCTIONs
-	CL_APRM();
+	AnaParam();
 
-	void SET_INPUT(std::vector< std::vector< std::string > > APRM_Argvs);//setting input values
-	void SHOW();//showing curret values
-	bool CHECK();//checking current values
-	bool CHECK_MODECR();//checking current MODECR
-	bool CHECK_ORDERASIP();//checking current SIP oreder
-	bool CHECK_ORDERPSIP();//checking current PSIP order
+	void SHOW();            /// showing curret values
+	bool CHECK();           /// checking current values
+	bool CHECK_MODECR();    /// checking current MODECR
+	bool CHECK_ORDERASIP(); /// checking current SIP oreder
+	bool CHECK_ORDERPSIP(); /// checking current PSIP order
 };
 
 } // namespace tansip

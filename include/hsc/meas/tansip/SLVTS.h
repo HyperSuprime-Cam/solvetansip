@@ -8,37 +8,34 @@
 #define  g99cf6978_db6c_4a74_9c0b_2cf5231f0aab
 
 #include <vector>
-#include <string>
 #include <boost/shared_ptr.hpp>
 
 #include "hsc/meas/tansip/APRM.h"
-#include "hsc/meas/tansip/CCD.h"
-#include "hsc/meas/tansip/REF.h"
+#include "hsc/meas/tansip/CCDPosition.h"
+#include "hsc/meas/tansip/ReferenceMatch.h"
 
 namespace hsc { namespace meas {
 namespace tansip {
 
-class CL_SLVTS{
-private:
-public:
-	boost::shared_ptr<CL_APRM> APRM;//class anaysis parameters
-	boost::shared_ptr<CL_CCDs> CCDs;//class CCDs
-	boost::shared_ptr<CL_REFs> REFs;//class references
-
-//FUNCTIONs
-	void SET_INPUT(
-		std::vector< std::vector< std::string > > const& APRM,
-		std::vector<CCDPosition   >               const& ccdPosition,
-		std::vector<ReferenceMatch>               const& matchList
-	);//setting input information
-	bool CHECK_INPUT();//checking input values
-	void CALC_WCS();//main calculation of solvetansip
+/** The handle of solved data
+	To read from it, use SLVTS_GET.h and SLVTS_LSST.h
+*/
+struct SLVTSState
+{
+#ifdef SWIG
+private: // SWIG should not see the members
+#endif
+	boost::shared_ptr<void> APRM; /// pointer to AnaParam
+	boost::shared_ptr<void> CCDs; /// pointer to CL_CCDs
+	boost::shared_ptr<void> REFs; /// pointer to CL_REFs
 };
 
-boost::shared_ptr<CL_SLVTS> SOLVETANSIP(
-	std::vector< std::vector< std::string > > const& APRM,
-	std::vector<CCDPosition   >               const& ccdPosition,
-	std::vector<ReferenceMatch>               const& matchList
+/**
+*/
+SLVTSState SOLVETANSIP(
+	AnaParam                    const& param,
+	std::vector<CCDPosition   > const& ccdPosition,
+	std::vector<ReferenceMatch> const& matchList
 );//called by lsst for calculating solvetansip
 
 } // namespace tansip

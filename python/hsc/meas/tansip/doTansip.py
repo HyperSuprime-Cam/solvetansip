@@ -23,10 +23,11 @@ def SOLVETANSIP(matchListAllCcd, metaTANSIP, policy=None, camera=None, rerun=Non
     print '--- doTansip : start ---'
 
     print '--- doTansip : get APRM ---'
-    APRM=SLVTS_APRM(policy)
+    APRM = SLVTS.toAnaParam(policy)
 
     print '--- doTansip : get CCD ---'
-    CCD=SLVTS_CCD(int(APRM[-1][1]),camera)
+    numCcd = {"SC": 10, "HSC": 104, }
+    CCD=SLVTS_CCD(numCcd[APRM.INSTR], camera)
 
     print '--- doTansip : SOLVE TANSIP ---'
     SLVTSRESULT=SLVTS.SOLVETANSIP(APRM, CCD, matchListAllCcd)
@@ -48,26 +49,6 @@ def SOLVETANSIP(matchListAllCcd, metaTANSIP, policy=None, camera=None, rerun=Non
 def getwcsList(TANWCS):
     print '--- getWCSlist ---'
     return TANWCS
-def SLVTS_APRM(policy):
-    KVs=SLVTS.VVS([])
-
-    for K in ['INSTR','MODE_CR','MODE_CCDPOS','PRECISION_POS','ORDER_ASIP','ORDER_PSIP','MODE_REJ','CLIPSIGMA','CRPIX1','CRPIX2','CRVAL1','CRVAL2','FLAG_STD','FLAG_OUT','DIR_OUT']:
-        KV=SLVTS.VS([])
-        KV.append(K)
-        KV.append(str(policy.get(K)))
-        KVs.append(KV)
-
-    KV=SLVTS.VS([])
-    KV.append('NUM_CCD')
-    if KVs[0][1] == 'SC':
-        KV.append('10')
-    elif KVs[0][1] == 'HSC':
-        KV.append('104')
-    else:
-        sys.exit('policy "INSTR" must be "SC" or "HSC"')
-    KVs.append(KV)
-
-    return KVs
 
 
 def SLVTS_CCD(NUMCCD,camera):

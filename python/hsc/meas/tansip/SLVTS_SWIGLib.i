@@ -12,26 +12,18 @@ Python interface to hsc::meas::tansip
 #include "lsst/afw/image.h"
 #include "hsc/meas/tansip/CCDPosition.h"
 #include "hsc/meas/tansip/ReferenceMatch.h"
-#include "hsc/meas/tansip/ReferenceMatchLSST.h"
 %}
 
 %include <std_vector.i>
 %include <std_string.i>
-%include <boost_shared_ptr.i>
 
 // [begin: These definitions must be before typemaps are smirched
 // by the labyrinthian swig libraries that'll be included later.
-
-%shared_ptr(hsc::meas::tansip::CL_SLVTS);
-
-%template(VS)   std::vector<std::string>;
-%template(VVS)  std::vector< std::vector<std::string> >;
 
 %template(VD)  std::vector<double>;
 %template(VVD) std::vector< std::vector<double> >;
 
 %template(VI) std::vector<int>;
-%template(VQ) std::vector<long long int>;
 
 %template(ReferenceMatchVector) std::vector<hsc::meas::tansip::ReferenceMatch>;
 %template(CCDPositionVector   ) std::vector<hsc::meas::tansip::CCDPosition   >;
@@ -65,5 +57,6 @@ def version(HeadURL = r"$HeadURL: ssh://hsc-gw2.mtk.nao.ac.jp/ana/hgrepo/hscAstr
 %import "lsst/afw/image/imageLib.i"
 %import "lsst/afw/geom/geomLib.i"
 %import "lsst/afw/table/tableLib.i"
+%import "lsst/pex/policy/policyLib.i"
 
 %include "SLVTS_SWIG.i"

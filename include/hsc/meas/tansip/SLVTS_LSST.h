@@ -10,7 +10,6 @@
 #include "lsst/daf/base/PropertySet.h"
 #include "lsst/afw/image/TanWcs.h"
 #include"hsc/meas/tansip/SLVTS.h"
-#include"hsc/meas/tansip/SLVTS_GET.h"
 
 namespace hsc { namespace meas {
 namespace tansip {
@@ -23,15 +22,15 @@ namespace tansip {
     @return meta if present, otherwise a new PropertySet.
 */
 lsst::daf::base::PropertySet::Ptr
-GET_METADATA(CL_SLVTS* SLVTS, lsst::daf::base::PropertySet::Ptr const& meta = lsst::daf::base::PropertySet::Ptr());
+GET_METADATA(SLVTSState const& handle, lsst::daf::base::PropertySet::Ptr const& meta = lsst::daf::base::PropertySet::Ptr());
 
 /** Show (a summary of) metadata that's been added by GET_METADATA()
 */
-void SHOW_METADATA(CL_SLVTS* SLVTS, lsst::daf::base::PropertySet::Ptr const& meta);
+void SHOW_METADATA(SLVTSState const& handle, lsst::daf::base::PropertySet::Ptr const& meta);
 
 /** Create TanWcs objects for all CCDs
 */
-std::vector <lsst::afw::image::TanWcs::Ptr> GET_TANWCS(CL_SLVTS* SLVTS);
+std::vector <lsst::afw::image::TanWcs::Ptr> GET_TANWCS(SLVTSState const& handle);
 
 } // namespace tansip
 }} // namespace hsc::meas

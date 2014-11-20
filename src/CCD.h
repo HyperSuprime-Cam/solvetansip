@@ -16,7 +16,7 @@
 
 #include "hsc/meas/tansip/APRM.h"
 #include "hsc/meas/tansip/CCDPosition.h"
-#include "hsc/meas/tansip/Polynomial.h"
+#include "Polynomial.h"
 
 namespace hsc { namespace meas {
 namespace tansip {
@@ -78,7 +78,7 @@ struct CL_GCD // The hypothetical large chip that covers all the chips
 
 struct CL_CCDs
 {
-	CL_APRM *APRM;//=SLVTS->APRM
+	AnaParam *APRM;//=SLVTS->APRM
 	std::vector<CL_CCD>  CCD;
 	CL_GCD               GCD;
 
@@ -89,7 +89,7 @@ struct CL_CCDs
 
 	CL_CCDs(
 		std::vector<CCDPosition> const& ccdPosition,
-		CL_APRM                       * APRM_IN
+		AnaParam                      * APRM_IN
 	);
 
 	bool CHECK();//checking current values

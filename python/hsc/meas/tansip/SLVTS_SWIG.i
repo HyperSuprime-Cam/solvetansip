@@ -10,26 +10,17 @@
     #include "lsst/afw/cameraGeom/Camera.h"
     #include "lsst/afw/image/TanWcs.h"
     #include "lsst/daf/base/PropertySet.h"
+    #include "hsc/meas/tansip/LSSTInterface.h"
     #include "hsc/meas/tansip/SLVTS_GET.h"
     #include "hsc/meas/tansip/SLVTS_LSST.h"
-    #include "hsc/meas/tansip/SLVTS.h"
 %}
 
-%include "lsst/daf/base/PropertySet.h"
+%import "lsst/daf/base/baseLib.i"
+%include "hsc/meas/tansip/APRM.h"
 %include "hsc/meas/tansip/CCDPosition.h"
 %include "hsc/meas/tansip/ReferenceMatch.h"
-%include "hsc/meas/tansip/ReferenceMatchLSST.h"
-
-namespace hsc { namespace meas { namespace tansip
-{
-    struct CL_SLVTS{};
-    boost::shared_ptr<CL_SLVTS> SOLVETANSIP(
-        std::vector< std::vector< std::string > > const& APRM,
-        std::vector<CCDPosition   >               const& CCD,
-        std::vector<ReferenceMatch>               const& matchList
-    );
-
-}}} // hsc::meas::tansip
+%include "hsc/meas/tansip/LSSTInterface.h"
+%include "hsc/meas/tansip/SLVTS.h"
 
 %include"hsc/meas/tansip/SLVTS_GET.h"
 %include "hsc/meas/tansip/SLVTS_LSST.h"

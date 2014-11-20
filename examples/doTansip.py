@@ -4,7 +4,7 @@ import pyfits
 from pyfits import Column
 
 import hsc.meas.tansip as SLVTS
-
+import lsst.pex.policy as pexPolicy
 
 def doTansip(APRM, CCD, REF):
 	print '--- doTansip : start ---'
@@ -22,9 +22,6 @@ def doTansip(APRM, CCD, REF):
 	FLAG_OUT=1
 	if FLAG_OUT==1:
 		DIR_OUT ='./TEMP'
-		for KEY in APRM:
-			if KEY[0]=="DIR_OUT":
-				DIR_OUT=KEY[1]
 		print "OUTPUT SUMMARY in "+DIR_OUT
 		OUTPUT_SUMMARY(SLVTSRESULT,DIR_OUT)
 		print "OUTPUT FITS BINARY TABLE in "+DIR_OUT
@@ -34,19 +31,8 @@ def doTansip(APRM, CCD, REF):
 
 
 def GET_APRM_A(APRM):
-	KVs=SLVTS.VVS([])
-
-	FIN=open(APRM, 'r')
-	for line in FIN:
-		itemList = line[:-1].split()
-		for K in ['INSTR','MODE_CR','MODE_CCDPOS','PRECISION_POS','ORDER_ASIP','ORDER_PSIP','MODE_REJ','CRPIX1','CRPIX2','CRVAL1','CRVAL2','BASISPOSX','BASISPOSY','BASISPOST','CLIPSIGMA','FLAG_STD','FLAG_OUT','DIR_OUT']:
-			if(itemList[0][:-1]==K):
-#				print itemList[0][:-1],K,str(itemList[1])
-				KV=SLVTS.VS([])
-				KV.append(str(itemList[0][:-1]))
-				KV.append(str(itemList[1]))
-				KVs.append(KV)
-	return KVs
+	policy = pexPolicy.Policy(APRM)
+	return SLVTS.toAnaParam(policy)
 
 
 def GET_CCD_A(CCD):

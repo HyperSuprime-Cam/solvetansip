@@ -3,7 +3,7 @@
 //
 //Last modification : 2014/01/01
 //------------------------------------------------------------
-#include "hsc/meas/tansip/CCD.h"
+#include "CCD.h"
 
 namespace hsc { namespace meas {
 namespace tansip {
@@ -12,7 +12,7 @@ using namespace std;
 //CCDs
 CL_CCDs::CL_CCDs(
 	std::vector<CCDPosition> const& ccdPosition,
-	CL_APRM                       * APRM_IN
+	AnaParam                      * APRM_IN
 ){
 	APRM        = APRM_IN;
 
@@ -38,14 +38,14 @@ CL_CCDs::CL_CCDs(
 	GCD.NUM_REF		 = 0;
 	GCD.NUM_FIT		 = 0;
 	GCD.NUM_REJ		 = 0;
-	GCD.CRPIX[0]     = APRM->CRPIX_IN[0];
-	GCD.CRPIX[1]     = APRM->CRPIX_IN[1];
+	GCD.CRPIX[0]     = APRM->CRPIX[0];
+	GCD.CRPIX[1]     = APRM->CRPIX[1];
 	GCD.ASIP[0]		 = Polynomial2D(APRM->ORDER_ASIP);
 	GCD.ASIP[1]		 = Polynomial2D(APRM->ORDER_ASIP);
 	GCD.PSIP[0]		 = Polynomial2D(APRM->ORDER_PSIP);
 	GCD.PSIP[1]		 = Polynomial2D(APRM->ORDER_PSIP);
-	GCD.CRVAL[0]     = APRM->CRVAL_IN[0];
-	GCD.CRVAL[1]     = APRM->CRVAL_IN[1];
+	GCD.CRVAL[0]     = APRM->CRVAL[0];
+	GCD.CRVAL[1]     = APRM->CRVAL[1];
 
 	SET_CRPIX();
 
@@ -59,7 +59,7 @@ CL_CCDs::CL_CCDs(
 	GPOS_C_BASIS[0]=0;
 	GPOS_C_BASIS[1]=0;
 	GPOS_C_BASIS[2]=0;
-	if(APRM->FLAG_STD >= 1)cout<<"-- SET CCDs --"<<endl;
+	if(APRM->VERBOSITY >= 1)cout<<"-- SET CCDs --"<<endl;
 	for(int i = 0; i < NUM_CCD; ++i){
 		CCD[i].GPOS_C[0] = ccdPosition[i].centerX;
 		CCD[i].GPOS_C[1] = ccdPosition[i].centerY;
@@ -95,7 +95,7 @@ bool CL_CCDs::CHECK(){
 }
 bool CL_CCDs::CHECK_NUMCCD(){
 	if(!CCD.empty()){
-		if(APRM->FLAG_STD >= 2)cout << "OK : NUM_CCD : " << CCD.size() << endl;
+		if(APRM->VERBOSITY >= 2)cout << "OK : NUM_CCD : " << CCD.size() << endl;
 		return true;
 	}else{
 		cout << "---------------------------------------------" << endl;
@@ -108,7 +108,7 @@ bool CL_CCDs::CHECK_NUMCCD(){
 bool CL_CCDs::CHECK_NUMFIT(){
 	for(std::size_t i = 0; i < CCD.size(); ++i){
 		if(CCD[i].areReferencesSufficient()){
-			if(APRM->FLAG_STD >= 2){
+			if(APRM->VERBOSITY >= 2){
 				cout << "OK : NUM_FIT : CCD : ";
 				cout.width(3);
 				cout << i << " : " ;
@@ -155,7 +155,7 @@ bool CL_CCDs::CHECK_NUMFITALL(){
 			cout << "---------------------------------------------" << endl;
 		return true;
 	}else{
-		if(APRM->FLAG_STD >= 2){
+		if(APRM->VERBOSITY >= 2){
 			cout << "OK : NUM_FIT : CCD : ALL : " ;
 			cout.width(5);
 			cout << GCD.NUM_FIT << endl;

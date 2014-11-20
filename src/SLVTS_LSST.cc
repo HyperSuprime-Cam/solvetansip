@@ -3,6 +3,8 @@
 //
 //Last modification : 2014/01/01
 //------------------------------------------------------------
+#include "hsc/meas/tansip/SLVTS_LSST.h"
+#include "SLVTSStateImpl.h"
 #include <vector>
 #include <iostream>
 #include <string>
@@ -10,7 +12,6 @@
 
 #include <boost/make_shared.hpp>
 
-#include "hsc/meas/tansip/SLVTS_LSST.h"
 
 namespace hsc { namespace meas {
 namespace tansip {
@@ -43,7 +44,7 @@ namespace {
 namespace {
 	void SetMetadataOfCCD(
 		dafbase::PropertySet::Ptr const& meta,
-		CL_APRM                   const* APRM,
+		AnaParam                  const* APRM,
 		CL_GCD                    const& global,
 		CCDBase                   const& CCD,
 		int                              cid)
@@ -117,57 +118,60 @@ namespace {
 
 
 lsst::daf::base::PropertySet::Ptr
-GET_METADATA(CL_SLVTS* SLVTS, dafbase::PropertySet::Ptr const& meta_in)
+GET_METADATA(SLVTSState const& handle, dafbase::PropertySet::Ptr const& meta_in)
 {
+	SLVTSStateImpl SLVTS(handle);
+
 	dafbase::PropertySet::Ptr meta = meta_in;
 	if(!meta){
 		meta = boost::make_shared<dafbase::PropertySet>();
 	}
 
-	meta->add("ST_A_MODE_CR"    , SLVTS->APRM->MODE_CR);
-	meta->add("ST_A_MODE_REJ"   , SLVTS->APRM->MODE_REJ);
-	meta->add("ST_A_MODE_CCDPOS", SLVTS->APRM->MODE_CCDPOS);
-	meta->add("ST_A_NUM_CCD"    , (int)SLVTS->CCDs->CCD.size());
-	meta->add("ST_A_NUM_FIT"    , SLVTS->CCDs->GCD.NUM_FIT);
-	meta->add("ST_A_NUM_REJ"    , SLVTS->CCDs->GCD.NUM_REJ);
-	meta->add("ST_A_CRPIX1"     , SLVTS->CCDs->GCD.CRPIX[0]);
-	meta->add("ST_A_CRPIX2"     , SLVTS->CCDs->GCD.CRPIX[1]);
-	meta->add("ST_A_CRVAL1"     , SLVTS->CCDs->GCD.CRVAL[0]);
-	meta->add("ST_A_CRVAL2"     , SLVTS->CCDs->GCD.CRVAL[1]);
-	meta->add("ST_A_SIGMA_CLIP" , SLVTS->APRM->SIGMA_CLIP);
+	meta->add("ST_A_MODE_CR"    , SLVTS.APRM->MODE_CR);
+	meta->add("ST_A_MODE_REJ"   , SLVTS.APRM->MODE_REJ);
+	meta->add("ST_A_MODE_CCDPOS", SLVTS.APRM->MODE_CCDPOS);
+	meta->add("ST_A_NUM_CCD"    , (int)SLVTS.CCDs->CCD.size());
+	meta->add("ST_A_NUM_FIT"    , SLVTS.CCDs->GCD.NUM_FIT);
+	meta->add("ST_A_NUM_REJ"    , SLVTS.CCDs->GCD.NUM_REJ);
+	meta->add("ST_A_CRPIX1"     , SLVTS.CCDs->GCD.CRPIX[0]);
+	meta->add("ST_A_CRPIX2"     , SLVTS.CCDs->GCD.CRPIX[1]);
+	meta->add("ST_A_CRVAL1"     , SLVTS.CCDs->GCD.CRVAL[0]);
+	meta->add("ST_A_CRVAL2"     , SLVTS.CCDs->GCD.CRVAL[1]);
+	meta->add("ST_A_SIGMA_CLIP" , SLVTS.APRM->SIGMA_CLIP);
 
 /*
 double VALUE;
 VALUE=meta->getAsDouble("ST_G_MAX_CRPIX_G_R");
-cout<<scientific<<setprecision(6)<<"R : "<<SLVTS->CCDs->MAX_CRPIX_G_R<<"	"<<VALUE<<endl;
+cout<<scientific<<setprecision(6)<<"R : "<<SLVTS.CCDs->MAX_CRPIX_G_R<<"	"<<VALUE<<endl;
 */
-	for(int CID = 0; CID < (int)SLVTS->CCDs->CCD.size(); ++CID){
+	for(int CID = 0; CID < (int)SLVTS.CCDs->CCD.size(); ++CID){
 		SetMetadataOfCCD(
-			meta, SLVTS->APRM.get(), SLVTS->CCDs->GCD, SLVTS->CCDs->CCD[CID], CID
+			meta, SLVTS.APRM, SLVTS.CCDs->GCD, SLVTS.CCDs->CCD[CID], CID
 		);
 	}
 	SetMetadataOfCCD(
-		meta, SLVTS->APRM.get(), SLVTS->CCDs->GCD, SLVTS->CCDs->GCD, SLVTS->CCDs->CCD.size()
+		meta, SLVTS.APRM, SLVTS.CCDs->GCD, SLVTS.CCDs->GCD, SLVTS.CCDs->CCD.size()
 	);
 
 //Summary
-	meta->add("sip_residuals_ave_x" , SLVTS->CCDs->GCD.DIF_AVE_ASIP[0]);
-	meta->add("sip_residuals_ave_y" , SLVTS->CCDs->GCD.DIF_AVE_ASIP[1]);
-	meta->add("sip_residuals_rms_x" , SLVTS->CCDs->GCD.DIF_RMS_ASIP[0]);
-	meta->add("sip_residuals_rms_y" , SLVTS->CCDs->GCD.DIF_RMS_ASIP[1]);
-	meta->add("psip_residuals_ave_x", SLVTS->CCDs->GCD.DIF_AVE_PSIP[0]);
-	meta->add("psip_residuals_ave_y", SLVTS->CCDs->GCD.DIF_AVE_PSIP[1]);
-	meta->add("psip_residuals_rms_x", SLVTS->CCDs->GCD.DIF_RMS_PSIP[0]);
-	meta->add("psip_residuals_rms_y", SLVTS->CCDs->GCD.DIF_RMS_PSIP[1]);
+	meta->add("sip_residuals_ave_x" , SLVTS.CCDs->GCD.DIF_AVE_ASIP[0]);
+	meta->add("sip_residuals_ave_y" , SLVTS.CCDs->GCD.DIF_AVE_ASIP[1]);
+	meta->add("sip_residuals_rms_x" , SLVTS.CCDs->GCD.DIF_RMS_ASIP[0]);
+	meta->add("sip_residuals_rms_y" , SLVTS.CCDs->GCD.DIF_RMS_ASIP[1]);
+	meta->add("psip_residuals_ave_x", SLVTS.CCDs->GCD.DIF_AVE_PSIP[0]);
+	meta->add("psip_residuals_ave_y", SLVTS.CCDs->GCD.DIF_AVE_PSIP[1]);
+	meta->add("psip_residuals_rms_x", SLVTS.CCDs->GCD.DIF_RMS_PSIP[0]);
+	meta->add("psip_residuals_rms_y", SLVTS.CCDs->GCD.DIF_RMS_PSIP[1]);
 
 	return meta;
 }
 
 
-void SHOW_METADATA(CL_SLVTS* SLVTS,dafbase::PropertySet::Ptr const& meta){
-	int const GL = (int)SLVTS->CCDs->CCD.size();
+void SHOW_METADATA(SLVTSState const& handle, dafbase::PropertySet::Ptr const& meta){
+	SLVTSStateImpl SLVTS(handle);
+	int const GL = (int)SLVTS.CCDs->CCD.size();
 
-	if(SLVTS->APRM->FLAG_STD >= 1){
+	if(SLVTS.APRM->VERBOSITY >= 1){
 		#define SHOW(Type, key) \
 			std::cout << key << " : " << meta->getAs##Type(key) << std::endl
 		std::cout << "--- SHOW metadata ---" << std::endl;
@@ -234,16 +238,17 @@ namespace {
 }
 
 
-std::vector <lsst::afw::image::TanWcs::Ptr> GET_TANWCS(CL_SLVTS* SLVTS)
+std::vector <lsst::afw::image::TanWcs::Ptr> GET_TANWCS(SLVTSState const& handle)
 {
+	SLVTSStateImpl SLVTS(handle);
 	std::vector <lsst::afw::image::TanWcs::Ptr> V_TanWcs;
 
-	for(std::vector<CL_CCD>::iterator ccd = SLVTS->CCDs->CCD.begin();
-		ccd != SLVTS->CCDs->CCD.end(); ++ccd
+	for(std::vector<CL_CCD>::iterator ccd = SLVTS.CCDs->CCD.begin();
+		ccd != SLVTS.CCDs->CCD.end(); ++ccd
 	){
-		V_TanWcs.push_back(toTanWcs(*ccd, SLVTS->CCDs->GCD));
+		V_TanWcs.push_back(toTanWcs(*ccd, SLVTS.CCDs->GCD));
 	}
-	V_TanWcs.push_back(toTanWcs(SLVTS->CCDs->GCD, SLVTS->CCDs->GCD));
+	V_TanWcs.push_back(toTanWcs(SLVTS.CCDs->GCD, SLVTS.CCDs->GCD));
 
 	return V_TanWcs;
 }

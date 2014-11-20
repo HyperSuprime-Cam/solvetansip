@@ -34,8 +34,8 @@ definitions: {
         maxOccurs: 1
     }
     MODE_CCDPOS: {
-        type: int
-        default: 0
+        type: bool
+        default: false
         description: Whether the CCD position should be determined
         minOccurs: 0
         maxOccurs: 1
@@ -57,8 +57,8 @@ definitions: {
     }
 
     MODE_REJ: {
-        type: int
-        default: 1
+        type: bool
+        default: true
         description: reject bad references
         minOccurs: 0
         maxOccurs: 1
@@ -74,7 +74,7 @@ definitions: {
     ORDER_ASIP: {
         type: int
         default: 5
-        description: SIP ORDER of A and B 
+        description: SIP ORDER of A and B
         minOccurs: 0
         maxOccurs: 1
     }
