@@ -27,7 +27,7 @@ def SOLVETANSIP(matchListAllCcd, metaTANSIP, policy=None, camera=None, rerun=Non
 
     print '--- doTansip : get CCD ---'
     numCcd = {"SC": 10, "HSC": 104, }
-    CCD=SLVTS_CCD(numCcd[APRM.INSTR], camera)
+    CCD=SLVTS.getCCDPositionList(camera, numCcd[APRM.INSTR])
 
     print '--- doTansip : SOLVE TANSIP ---'
     SLVTSRESULT=SLVTS.SOLVETANSIP(APRM, CCD, matchListAllCcd)
@@ -50,26 +50,6 @@ def getwcsList(TANWCS):
     print '--- getWCSlist ---'
     return TANWCS
 
-
-def SLVTS_CCD(NUMCCD,camera):
-    ccds = SLVTS.CCDPositionVector(NUMCCD)
-
-    for CID in range(NUMCCD):
-        DID = cameraGeom.Id(CID)
-        CGeom = cameraGeomUtils.findCcd(camera,DID)
-        PS = CGeom.getPixelSize()
-
-        center = CGeom.getCenter().getPixels(PS)
-        size   = CGeom.getSize().getPixels(PS)
-
-        ccd = ccds[CID]
-        ccd.centerX = center[0]
-        ccd.centerY = center[1]
-        ccd.angle   = CGeom.getOrientation().getYaw().asRadians()
-        ccd.width   = int(size[0] + 0.5)
-        ccd.height  = int(size[1] + 0.5)
-
-    return ccds
 #-----------------------------------------------------------------
 #Output bianry table : S_RESULT
 #-----------------------------------------------------------------

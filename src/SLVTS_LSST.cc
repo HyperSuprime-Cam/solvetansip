@@ -5,10 +5,10 @@
 //------------------------------------------------------------
 #include "hsc/meas/tansip/SLVTS_LSST.h"
 #include "SLVTSStateImpl.h"
+#include "Utility.h"
+
 #include <vector>
 #include <iostream>
-#include <string>
-#include <cstdarg>
 
 #include <boost/make_shared.hpp>
 
@@ -19,27 +19,6 @@ namespace tansip {
 namespace dafbase  = lsst::daf::base;
 namespace afwGeom  = lsst::afw::geom;
 namespace afwImage = lsst::afw::image;
-
-namespace {
-	std::string vfmt(char const* format, std::va_list va){
-		char str[128];
-		std::vsnprintf(str, sizeof(str)/sizeof(str[0]) - 1, format, va);
-		str[sizeof(str)/sizeof(str[0]) - 1] = char();
-
-		return std::string(str);
-	}
-
-	std::string fmt(char const* format, ...){
-		std::va_list va;
-		va_start(va, format);
-
-		std::string s = vfmt(format, va);
-
-		va_end(va);
-		return s;
-	}
-}
-
 
 namespace {
 	void SetMetadataOfCCD(

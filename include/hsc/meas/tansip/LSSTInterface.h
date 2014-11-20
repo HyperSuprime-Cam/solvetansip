@@ -2,14 +2,17 @@
 #define  g756b9590_676d_43ae_8c81_f578a39c2f87
 
 #include "lsst/pex/policy.h"
-#include "lsst/afw/coord/Coord.h"
-#include "lsst/afw/geom/Point.h"
-#include "lsst/afw/table/Match.h"
+
+#include "lsst/afw/coord.h"
+#include "lsst/afw/geom.h"
+#include "lsst/afw/table.h"
+
+#include "lsst/afw/cameraGeom.h"
 
 #include "APRM.h"
+#include "CCDPosition.h"
 #include "ReferenceMatch.h"
 
-#include <iostream>
 
 namespace hsc { namespace meas {
 namespace tansip {
@@ -18,49 +21,43 @@ namespace tansip {
 // AnaParam converters
 //
 
-inline AnaParam
+/** Create AnaParam by reading Policy
+*/
+AnaParam
 toAnaParam(
     lsst::pex::policy::Policy const& policy
-){
-    AnaParam param;
+);
 
-    lsst::pex::policy::Policy::StringArray names = policy.paramNames(true);
-    for(lsst::pex::policy::Policy::StringArray::iterator it = names.begin();
-        it != names.end(); ++it
-    ){
-        #define CONDITIONAL_COPY(type, internal, external) \
-            if(*it == external){ \
-                param.internal = policy.get##type(external); \
-                continue; \
-            }
-        CONDITIONAL_COPY(String, INSTR        , "INSTR"        );
-        CONDITIONAL_COPY(String, MODE_CR      , "MODE_CR"      );
-        CONDITIONAL_COPY(Bool  , MODE_CCDPOS  , "MODE_CCDPOS"  );
-        CONDITIONAL_COPY(Double, PRECISION_CCD, "PRECISION_POS");
-        CONDITIONAL_COPY(Double, CRPIX[0]     , "CRPIX1"       );
-        CONDITIONAL_COPY(Double, CRPIX[1]     , "CRPIX2"       );
-        CONDITIONAL_COPY(Double, CRVAL[0]     , "CRVAL1"       );
-        CONDITIONAL_COPY(Double, CRVAL[1]     , "CRVAL2"       );
-        CONDITIONAL_COPY(Int   , ORDER_ASIP   , "ORDER_ASIP"   );
-        CONDITIONAL_COPY(Int   , ORDER_PSIP   , "ORDER_PSIP"   );
-        CONDITIONAL_COPY(Bool  , MODE_REJ     , "MODE_REJ"     );
-        CONDITIONAL_COPY(Double, SIGMA_CLIP   , "CLIPSIGMA"    );
-        CONDITIONAL_COPY(Int   , VERBOSITY    ,  "FLAG_STD"    );
-        #undef CONDITIONAL_COPY
 
-        std::cout
-            << "Warning: toAnaParam: Invalid parameter ignored: "
-            << *it << std::endl
-        ;
-    }
+//
+// CCDPosition converters
+//
 
-    return param;
-}
+/** Get CCDPosition of a specific CCD
+*/
+CCDPosition
+getCCDPosition(
+    lsst::afw::cameraGeom::DetectorMosaic const& camera,
+    int                                          ccdId
+);
+
+/** Get CCDPositions of all CCDs whose ccdId is in [0, numCcd)
+*/
+std::vector<CCDPosition>
+getCCDPositionList(
+    lsst::afw::cameraGeom::DetectorMosaic const& camera,
+    int                                          numCcd
+);
 
 //
 // ReferenceMatch converters
 //
 
+/** Create a single ReferenceMatch from afw coord objects.
+    @param sky    The position of a reference object
+    @param pixels The position of a detected object
+    @param ccdId  The ID of the CCD on which the object is detected
+*/
 inline ReferenceMatch
 toReferenceMatch(
     lsst::afw::coord::Coord  const& sky,
@@ -80,6 +77,10 @@ toReferenceMatch(
 }
 
 
+/**  Create a single ReferenceMatch from afw::ReferenceMatch.
+    @param match  Match.
+    @param ccdId  The ID of the CCD on which the object is detected
+*/
 inline ReferenceMatch
 toReferenceMatch(
     lsst::afw::table::ReferenceMatch const& match,
