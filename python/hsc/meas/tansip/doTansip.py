@@ -18,7 +18,7 @@ def doTansipQa(matchListAllCcd, policy=None, camera=None, rerun=None):
 
 def SOLVETANSIP(matchListAllCcd, metaTANSIP, policy=None, camera=None, rerun=None):
     """
-    @param matchListAllCcd: an instance of tansip.ReferenceMatchVector
+    @param matchListAllCcd: an instance of tansip.ReferenceMatchList
     """
     print '--- doTansip : start ---'
 

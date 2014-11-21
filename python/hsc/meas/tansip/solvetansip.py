@@ -60,7 +60,7 @@ class SolveTansipTask(CmdLineTask):
         return wcsList
 
     def convert(self, matchLists):
-        refMatchLists = tansip.ReferenceMatchVector()
+        refMatchLists = tansip.ReferenceMatchList()
 
         for ccdId in range(len(matchLists)):
             matchList = matchLists[ccdId]

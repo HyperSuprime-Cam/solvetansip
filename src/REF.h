@@ -144,6 +144,7 @@ inline double const (&(CL_REF::POS(EPosDetected  d) const))[2]
 	case DETECTED_IMWLD_G:
 		return POS_DETECTED_IMWLD_G;
 	case DETECTED_RADEC_G:
+	default:
 		return POS_DETECTED_RADEC_G;
 	}
 }
@@ -161,6 +162,7 @@ inline double (&CL_REF::POS(EPosDetected  d))[2]
 	case DETECTED_IMWLD_G:
 		return POS_DETECTED_IMWLD_G;
 	case DETECTED_RADEC_G:
+	default:
 		return POS_DETECTED_RADEC_G;
 	}
 }
@@ -178,6 +180,7 @@ inline double const (&(CL_REF::POS(EPosCelestial c) const))[2]
 	case CELESTIAL_CRPIX_G:
 		return POS_CELESTIAL_CRPIX_G;
 	case CELESTIAL_LOCAL_G:
+	default:
 		return POS_CELESTIAL_LOCAL_G;
 	}
 }
@@ -195,6 +198,7 @@ inline double (&CL_REF::POS(EPosCelestial c))[2]
 	case CELESTIAL_CRPIX_G:
 		return POS_CELESTIAL_CRPIX_G;
 	case CELESTIAL_LOCAL_G:
+	default:
 		return POS_CELESTIAL_LOCAL_G;
 	}
 }

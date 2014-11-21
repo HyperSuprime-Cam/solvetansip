@@ -36,7 +36,7 @@ def GET_APRM_A(APRM):
 
 
 def GET_CCD_A(CCD):
-	ccds = SLVTS.CCDPositionVector()
+	ccds = SLVTS.CCDPositionList()
 
 	FIN=open(CCD, 'r')
 	for line in FIN:
@@ -55,7 +55,7 @@ def GET_CCD_A(CCD):
 
 
 def GET_REF_A(REF):
-	matchList = SLVTS.ReferenceMatchVector()
+	matchList = SLVTS.ReferenceMatchList()
 
 	FIN=open(REF, 'r')
 	for line in FIN:

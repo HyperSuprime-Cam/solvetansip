@@ -25,4 +25,4 @@
 %include"hsc/meas/tansip/SLVTS_GET.h"
 %include "hsc/meas/tansip/SLVTS_LSST.h"
 
-%template(resultWcs_V) std::vector<lsst::afw::image::TanWcs::Ptr>;
+%template(TanWcsList) std::vector<lsst::afw::image::TanWcs::Ptr>;

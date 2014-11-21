@@ -25,8 +25,8 @@ Python interface to hsc::meas::tansip
 
 %template(VI) std::vector<int>;
 
-%template(ReferenceMatchVector) std::vector<hsc::meas::tansip::ReferenceMatch>;
-%template(CCDPositionVector   ) std::vector<hsc::meas::tansip::CCDPosition   >;
+%template(ReferenceMatchList) std::vector<hsc::meas::tansip::ReferenceMatch>;
+%template(CCDPositionList   ) std::vector<hsc::meas::tansip::CCDPosition   >;
 
 // :end]
 
