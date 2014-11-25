@@ -52,26 +52,11 @@ class SolveTansipTask(CmdLineTask):
         defaults = pexPolicy.Policy.createPolicy(os.path.join(os.environ["SOLVETANSIP_DIR"],
                                                               "policy", "WCS_MAKEAPROP.paf"))
         policy.mergeDefaults(defaults)
-        policy.set('NUM_CCD', len(matchLists))
 
         self.log.info("Processing with solvetansip")
         wcs = doTansip.doTansip(matchLists, policy=policy, camera=cameraGeom)
         wcsList = doTansip.getwcsList(wcs)
         return wcsList
-
-    def convert(self, matchLists):
-        refMatchLists = tansip.ReferenceMatchList()
-
-        for ccdId in range(len(matchLists)):
-            matchList = matchLists[ccdId]
-            if matchList is None: continue
-
-            refMatchLists[len(refMatchLists):] = [
-                tansip.toReferenceMatch(m, ccdId)
-                for m in matchList if (m.first and m.second) # both ref and src to have valid values
-            ]
-
-        return refMatchLists
 
     def read(self, butler, dataRefList, nCcd = None):
         """
@@ -89,6 +74,7 @@ class SolveTansipTask(CmdLineTask):
             self.log.info("number of matches to read is set by camera name to: %d" % nCcd)
 
         matchLists = [ None for i in range(nCcd) ]
+
         if True: # FH: this routine is much faster than the below
             astrom = measAst.Astrometry(measAst.MeasAstromConfig())
             for dataRef in dataRefList:
@@ -126,7 +112,6 @@ class SolveTansipTask(CmdLineTask):
 
     def run(self, camera, butler, dataRefList):
         matchLists = self.read(butler, dataRefList)
-        matchLists = self.convert(matchLists)
         return self.solve(camera, butler.mapper.camera, matchLists)
 
 
@@ -158,7 +143,6 @@ class SolveTansipQaTask(SolveTansipTask):
         defaults = pexPolicy.Policy.createPolicy(os.path.join(os.environ["SOLVETANSIP_DIR"],
                                                               "policy", "WCS_MAKEAPROP.paf"))
         policy.mergeDefaults(defaults)
-        policy.set('NUM_CCD', len(matchLists)) # num of detectors should work since None is padded for CCDs in failure
 
         self.log.info("Processing with solvetansip")
         resSolveTansip, metaTansip = doTansip.doTansipQa(matchLists, policy=policy, camera=cameraGeom)
@@ -169,13 +153,10 @@ class SolveTansipQaTask(SolveTansipTask):
 
     def run(self, camera, butler, dataRefList, policy=None):
         matchLists = self.read(butler, dataRefList)
-        matchListsForSolveTansip = self.convert(matchLists)
-
-        dataTansip = self.solve(camera, butler.mapper.camera, matchListsForSolveTansip, policy=policy)
+        dataTansip = self.solve(camera, butler.mapper.camera, matchLists, policy=policy)
 
         dataTansip.wcsList = list(doTansip.getwcsList(dataTansip.resSolveTansip))
         dataTansip.matchLists = matchLists
-        dataTansip.matchListsForSolveTansip = matchListsForSolveTansip
 
         if self.config.doWriteNewFits:
             visit = dataRefList[0].dataId['visit']

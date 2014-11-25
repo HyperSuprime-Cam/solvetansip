@@ -32,31 +32,37 @@ Python interface to hsc::meas::tansip
 
 %include "lsst/p_lsstSwig.i"
 
-%pythoncode %{
-import lsst.utils
-
-def version(HeadURL = r"$HeadURL: ssh://hsc-gw2.mtk.nao.ac.jp/ana/hgrepo/hscAstrom/python/hsc/meas/read/okura_read.i $"):
-    version_svn = lsst.utils.guessSvnVersion(HeadURL)
-
-    try:
-        import eups
-    except ImportError:
-        return version_svn
-    else:
-        try:
-            version_eups = eups.setup("solvetansip")
-        except AttributeError:
-            return version_svn
-
-    if version_eups == version_svn:
-        return version_svn
-    else:
-        return "%s (setup: %s)" % (version_svn, version_eups)
-%}
-
 %import "lsst/afw/image/imageLib.i"
 %import "lsst/afw/geom/geomLib.i"
 %import "lsst/afw/table/tableLib.i"
 %import "lsst/pex/policy/policyLib.i"
 
 %include "SLVTS_SWIG.i"
+
+%pythoncode %{
+def toReferenceMatchList(matchLists):
+    """
+    Convert matchLists expressed in LSST objects to a list that can be passed
+    into solvetansip.
+
+    @param matchLists
+        A list of lists of lsst.afw.table.ReferenceMatch.
+        For a ccdId, matchLists[ccdId] is a list of
+        lsst.afw.table.ReferenceMatch in the CCD ccdId.
+        matchLists[ccdId] can be either None or [] if no match in it.
+
+    @return ReferenceMatchList
+    """
+
+    refMatchLists = ReferenceMatchList()
+
+    for ccdId, matchList in enumerate(matchLists):
+        if matchList is None: continue
+
+        refMatchLists[len(refMatchLists):] = [
+            toReferenceMatch(m, ccdId)
+            for m in matchList if (m.first and m.second) # both ref and src to have valid values
+        ]
+
+    return refMatchLists
+%}

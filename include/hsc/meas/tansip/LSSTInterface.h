@@ -89,6 +89,11 @@ toReferenceMatch(
     return toReferenceMatch(match.first->getCoord(), match.second->getCentroid(), ccdId);
 }
 
+
+/** toReferenceMatchList(matchLists) is not defined here
+    but in the python wrapper layer.
+*/
+
 } // namespace tansip
 }} // namespace hsc::meas
 #endif //g756b9590_676d_43ae_8c81_f578a39c2f87

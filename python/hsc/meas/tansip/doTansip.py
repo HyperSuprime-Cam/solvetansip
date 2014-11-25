@@ -6,31 +6,38 @@ import lsst.afw.cameraGeom.utils      as cameraGeomUtils
 import lsst.afw.cameraGeom            as cameraGeom
 import lsst.daf.base                     as dafBase
 
-def doTansip(matchListAllCcd, policy=None, camera=None, rerun=None):
+def doTansip(matchLists, policy, camera, rerun=None):
     metaTANSIP = dafBase.PropertySet()
-    SLVTSresult=SOLVETANSIP(matchListAllCcd, metaTANSIP, policy=policy, camera=camera, rerun=rerun)
+    SLVTSresult=SOLVETANSIP(matchLists, metaTANSIP, policy=policy, camera=camera, rerun=rerun)
     return SLVTSresult
 
-def doTansipQa(matchListAllCcd, policy=None, camera=None, rerun=None):
+def doTansipQa(matchLists, policy, camera, rerun=None):
     metaTANSIP = dafBase.PropertySet()
-    SLVTSresult=SOLVETANSIP(matchListAllCcd, metaTANSIP, policy=policy, camera=camera, rerun=rerun)
+    SLVTSresult=SOLVETANSIP(matchLists, metaTANSIP, policy=policy, camera=camera, rerun=rerun)
     return SLVTSresult,metaTANSIP
 
-def SOLVETANSIP(matchListAllCcd, metaTANSIP, policy=None, camera=None, rerun=None):
+def SOLVETANSIP(matchLists, metaTANSIP, policy, camera, rerun=None):
     """
-    @param matchListAllCcd: an instance of tansip.ReferenceMatchList
+    @param matchLists:
+        A list of lists of lsst.afw.table.ReferenceMatch.
+        For a ccdId, matchLists[ccdId] is a list of
+        lsst.afw.table.ReferenceMatch in the CCD ccdId.
+        matchLists[ccdId] can be either None or [] if no match in it.
+    @param metaTANSIP: An instance of dafBase.PropertySet() to which to add
+        properties that express the state of solvetansip at the end of its
+        process.
+    @param policy: An instance of pexPolicy.Policy, expressing analysis
+        parameters.
+    @param camera: An instance of afw.cameraGeom.DetectorMosaic.
     """
     print '--- doTansip : start ---'
 
-    print '--- doTansip : get APRM ---'
     APRM = SLVTS.toAnaParam(policy)
-
-    print '--- doTansip : get CCD ---'
-    numCcd = {"SC": 10, "HSC": 104, }
-    CCD=SLVTS.getCCDPositionList(camera, numCcd[APRM.INSTR])
+    CCD  = SLVTS.getCCDPositionList(camera, len(matchLists))
+    REF  = SLVTS.toReferenceMatchList(matchLists)
 
     print '--- doTansip : SOLVE TANSIP ---'
-    SLVTSRESULT=SLVTS.SOLVETANSIP(APRM, CCD, matchListAllCcd)
+    SLVTSRESULT=SLVTS.SOLVETANSIP(APRM, CCD, REF)
     SLVTS.GET_METADATA(SLVTSRESULT, metaTANSIP)
     SLVTS.SHOW_METADATA(SLVTSRESULT,metaTANSIP)
     TANWCS=SLVTS.GET_TANWCS(SLVTSRESULT)
