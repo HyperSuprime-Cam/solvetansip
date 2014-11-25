@@ -30,13 +30,13 @@ private: // SWIG should not see the members
 	boost::shared_ptr<void> REFs; /// pointer to CL_REFs
 };
 
-/**
+/** Solve TANSIP (The main routine)
 */
 SLVTSState SOLVETANSIP(
 	AnaParam                    const& param,
 	std::vector<CCDPosition   > const& ccdPosition,
 	std::vector<ReferenceMatch> const& matchList
-);//called by lsst for calculating solvetansip
+);
 
 } // namespace tansip
 }} // namespace hsc::meas

@@ -1,34 +1,22 @@
 // -*- lsst-c++ -*-
 %define tansip_DOCSTRING
 "
-Python interface to hsc::meas::tansip
+Python interface to solvetansip
 "
 %enddef
 
 %feature("autodoc", "1");
-%module(package="hsc.meas.tansip", docstring=tansip_DOCSTRING) SLVTS_SWIGLib
+%module(package="hsc.meas.tansip", docstring=tansip_DOCSTRING) tansipLib
+
+%include "SLVTS.i"
 
 %{
-#include "lsst/afw/image.h"
-#include "hsc/meas/tansip/CCDPosition.h"
-#include "hsc/meas/tansip/ReferenceMatch.h"
+#include "hsc/meas/tansip/LSSTInterface.h"
+#include "hsc/meas/tansip/SLVTS_LSST.h"
+#include "lsst/pex/logging.h"
+#include "lsst/afw.h"
 %}
 
-%include <std_vector.i>
-%include <std_string.i>
-
-// [begin: These definitions must be before typemaps are smirched
-// by the labyrinthian swig libraries that'll be included later.
-
-%template(VD)  std::vector<double>;
-%template(VVD) std::vector< std::vector<double> >;
-
-%template(VI) std::vector<int>;
-
-%template(ReferenceMatchList) std::vector<hsc::meas::tansip::ReferenceMatch>;
-%template(CCDPositionList   ) std::vector<hsc::meas::tansip::CCDPosition   >;
-
-// :end]
 
 %include "lsst/p_lsstSwig.i"
 
@@ -36,8 +24,12 @@ Python interface to hsc::meas::tansip
 %import "lsst/afw/geom/geomLib.i"
 %import "lsst/afw/table/tableLib.i"
 %import "lsst/pex/policy/policyLib.i"
+%import "lsst/daf/base/baseLib.i"
 
-%include "SLVTS_SWIG.i"
+%include "hsc/meas/tansip/LSSTInterface.h"
+%include "hsc/meas/tansip/SLVTS_LSST.h"
+
+%template(TanWcsList) std::vector<lsst::afw::image::TanWcs::Ptr>;
 
 %pythoncode %{
 def toReferenceMatchList(matchLists):
