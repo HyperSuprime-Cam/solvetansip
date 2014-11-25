@@ -36,8 +36,10 @@ struct AnaParam
 	double  PRECISION_CCD; /// Precision, in pixels, of computed CCDs' positions.
 
 //REF
-	double  CRPIX[2];  /// User-given CRPIX (valid only if MODE_CR == PIX)
-	double  CRVAL[2];  /// User-given CRVAL (valid only if MODE_CR == VAL)
+	double  CRPIX1;  /// User-given CRPIX (valid only if MODE_CR == PIX)
+	double  CRPIX2;  /// User-given CRPIX (valid only if MODE_CR == PIX)
+	double  CRVAL1;  /// User-given CRVAL (valid only if MODE_CR == VAL)
+	double  CRVAL2;  /// User-given CRVAL (valid only if MODE_CR == VAL)
 	// Internal NOTE: CRPIX/VAL of AnaParam is used for input only.
 	// *DO*NOT* use them in program codes: they're probably out of date.
 	// Use CL_GCD::CRPIX/VAL instead.

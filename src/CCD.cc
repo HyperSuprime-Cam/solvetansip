@@ -38,14 +38,14 @@ CL_CCDs::CL_CCDs(
 	GCD.NUM_REF		 = 0;
 	GCD.NUM_FIT		 = 0;
 	GCD.NUM_REJ		 = 0;
-	GCD.CRPIX[0]     = APRM->CRPIX[0];
-	GCD.CRPIX[1]     = APRM->CRPIX[1];
+	GCD.CRPIX[0]     = APRM->CRPIX1;
+	GCD.CRPIX[1]     = APRM->CRPIX2;
 	GCD.ASIP[0]		 = Polynomial2D(APRM->ORDER_ASIP);
 	GCD.ASIP[1]		 = Polynomial2D(APRM->ORDER_ASIP);
 	GCD.PSIP[0]		 = Polynomial2D(APRM->ORDER_PSIP);
 	GCD.PSIP[1]		 = Polynomial2D(APRM->ORDER_PSIP);
-	GCD.CRVAL[0]     = APRM->CRVAL[0];
-	GCD.CRVAL[1]     = APRM->CRVAL[1];
+	GCD.CRVAL[0]     = APRM->CRVAL1;
+	GCD.CRVAL[1]     = APRM->CRVAL2;
 
 	SET_CRPIX();
 

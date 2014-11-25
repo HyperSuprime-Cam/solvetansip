@@ -7,6 +7,7 @@
 
 %{
     #include "hsc/meas/tansip/SLVTS_GET.h"
+    #include <stdexcept>
 %}
 
 %include <std_vector.i>
@@ -20,6 +21,14 @@
 %template(ReferenceMatchList) std::vector<hsc::meas::tansip::ReferenceMatch>;
 %template(CCDPositionList   ) std::vector<hsc::meas::tansip::CCDPosition   >;
 
+%include <exception.i>
+%exception {
+    try {
+        $action
+    } catch (std::exception& e) {
+        SWIG_exception(SWIG_RuntimeError, const_cast<char*>(e.what()));
+    }
+}
 
 %include "hsc/meas/tansip/APRM.h"
 %include "hsc/meas/tansip/CCDPosition.h"

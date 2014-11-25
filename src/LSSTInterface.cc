@@ -27,10 +27,10 @@ toAnaParam(
         CONDITIONAL_COPY(String, MODE_CR      , "MODE_CR"      );
         CONDITIONAL_COPY(Bool  , MODE_CCDPOS  , "MODE_CCDPOS"  );
         CONDITIONAL_COPY(Double, PRECISION_CCD, "PRECISION_POS");
-        CONDITIONAL_COPY(Double, CRPIX[0]     , "CRPIX1"       );
-        CONDITIONAL_COPY(Double, CRPIX[1]     , "CRPIX2"       );
-        CONDITIONAL_COPY(Double, CRVAL[0]     , "CRVAL1"       );
-        CONDITIONAL_COPY(Double, CRVAL[1]     , "CRVAL2"       );
+        CONDITIONAL_COPY(Double, CRPIX1       , "CRPIX1"       );
+        CONDITIONAL_COPY(Double, CRPIX2       , "CRPIX2"       );
+        CONDITIONAL_COPY(Double, CRVAL1       , "CRVAL1"       );
+        CONDITIONAL_COPY(Double, CRVAL2       , "CRVAL2"       );
         CONDITIONAL_COPY(Int   , ORDER_ASIP   , "ORDER_ASIP"   );
         CONDITIONAL_COPY(Int   , ORDER_PSIP   , "ORDER_PSIP"   );
         CONDITIONAL_COPY(Bool  , MODE_REJ     , "MODE_REJ"     );

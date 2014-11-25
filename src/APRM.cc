@@ -15,18 +15,18 @@ AnaParam::AnaParam()
 	, MODE_CCDPOS   ( false )
 	, PRECISION_CCD ( 0.1   )
 
+	, CRPIX1        (       )
+	, CRPIX2        (       )
+	, CRVAL1        (       )
+	, CRVAL2        (       )
+
 	, ORDER_ASIP    ( 0     )
 	, ORDER_PSIP    ( 0     )
 	, MODE_REJ      ( false )
 	, SIGMA_CLIP    ( 10.0  )
 
 	, VERBOSITY     ( 1     )
-{
-	CRPIX[0]   = 0.0;
-	CRPIX[1]   = 0.0;
-	CRVAL[0]   = 0.0;
-	CRVAL[1]   = 0.0;
-}
+{}
 
 
 bool  AnaParam::CHECK(){
@@ -90,10 +90,10 @@ void AnaParam::SHOW(){
 	std::cout << "MODE_CR     : " << MODE_CR      << std::endl;
 	std::cout << "MODE_CCDPOS : " << MODE_CCDPOS  << std::endl;
 	std::cout << "MODE_REJ    : " << MODE_REJ     << std::endl;
-	std::cout << "CRPIX1      : " << CRPIX[0]     << std::endl;
-	std::cout << "CRPIX2      : " << CRPIX[1]     << std::endl;
-	std::cout << "CRVAL1      : " << CRVAL[0]     << std::endl;
-	std::cout << "CRVAL2      : " << CRVAL[1]     << std::endl;
+	std::cout << "CRPIX1      : " << CRPIX1       << std::endl;
+	std::cout << "CRPIX2      : " << CRPIX2       << std::endl;
+	std::cout << "CRVAL1      : " << CRVAL1       << std::endl;
+	std::cout << "CRVAL2      : " << CRVAL2       << std::endl;
 	std::cout << "SIPORDER    : " << ORDER_ASIP   << std::endl;
 	std::cout << "SIPPORDER   : " << ORDER_PSIP   << std::endl;
 	std::cout << "CRIP_SIGMA  : " << SIGMA_CLIP   << std::endl;
