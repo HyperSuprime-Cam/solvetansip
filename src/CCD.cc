@@ -87,6 +87,22 @@ CL_CCDs::CL_CCDs(
 }
 
 
+std::vector<CCDPosition> CL_CCDs::getCCDPosition() const
+{
+	std::vector<CCDPosition> ccdPosition(CCD.size());
+
+	for(std::size_t i = 0; i < ccdPosition.size(); ++i){
+		ccdPosition[i].centerX = CCD[i].GPOS_C[0];
+		ccdPosition[i].centerY = CCD[i].GPOS_C[1];
+		ccdPosition[i].angle   = CCD[i].GPOS_C[2];
+		ccdPosition[i].width   = CCD[i].LENGTH[0];
+		ccdPosition[i].height  = CCD[i].LENGTH[1];
+	}
+
+	return ccdPosition;
+}
+
+
 bool CL_CCDs::CHECK(){
 	return CHECK_NUMCCD   ()
 		&& CHECK_NUMFIT   ()

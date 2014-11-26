@@ -48,6 +48,10 @@ std::vector< std::vector< double > > GET_CCD_COEFSIPA(SLVTSState const& handle);
 std::vector< std::vector< double > > GET_CCD_COEFSIPB(SLVTSState const& handle);//getting coefficients of SIPB fitting of all CCD
 std::vector< std::vector< double > > GET_CCD_COEFPSIPA(SLVTSState const& handle);//getting coefficients of PSIPA fitting of all CCD
 std::vector< std::vector< double > > GET_CCD_COEFPSIPB(SLVTSState const& handle);//getting coefficients of PSIPB fitting of all CCD
+
+/** Get a CCDPosition list that's been resulted from a fit */
+std::vector<CCDPosition> getCCDPositionList(SLVTSState const& handle);
+
 //-----------------------------------------------------------------
 //Getting Functions : REF Info
 //-----------------------------------------------------------------

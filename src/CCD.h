@@ -92,6 +92,8 @@ struct CL_CCDs
 		AnaParam                      * APRM_IN
 	);
 
+	std::vector<CCDPosition> getCCDPosition() const;
+
 	bool CHECK();//checking current values
 	bool CHECK_NUMCCD();//checking number of CCDs
 	bool CHECK_NUMFIT();//checking current number for fitting of each CCDs

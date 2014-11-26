@@ -349,6 +349,14 @@ std::vector< std::vector< double > > GET_CCD_COEFPSIPB(SLVTSState const& handle)
     return CCDCOEF;
 }
 
+
+/** Get a CCDPosition list that's been resulted from a fit */
+std::vector<CCDPosition> getCCDPositionList(SLVTSState const& handle)
+{
+    return SLVTSStateImpl(handle).CCDs->getCCDPosition();
+}
+
+
 //-----------------------------------------------------------------
 //Getting Functions : REF Info
 //-----------------------------------------------------------------
