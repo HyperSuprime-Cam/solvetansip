@@ -1,5 +1,4 @@
 import os
-import os.path
 
 import numpy
 
@@ -27,10 +26,81 @@ class SolveTansipTaskRunner(TaskRunner):
 
 
 class SolveTansipConfig(pexConfig.Config):
+    modeCR = pexConfig.Field(
+        dtype=str, default="PIX",
+        doc='"AUTO"|"PIX", When "Auto", CRPIX is auto-set. When "PIX" CRPIX is fixed.'
+        )
+    doComputeCCDPos = pexConfig.Field(
+        dtype=bool, default=True,
+        doc="Compute CCDs' positions?"
+        )
+    precPos = pexConfig.Field(
+        dtype=float, default=0.02,
+        doc="Precision, in pixels, of computed CCDs' positions."
+        )
+    degree = pexConfig.Field(
+        dtype=int, default=9,
+        doc="Degree of polynomials to use."
+        )
+    doReject = pexConfig.Field(
+        dtype=bool, default=True,
+        doc="Reject bad references?"
+        )
+    sigmaClip = pexConfig.Field(
+        dtype=float, default=2.5,
+        doc="Reference are rejected when |dx| > SIGMA_CLIP * sigma."
+        )
+    verbose = pexConfig.Field(
+        dtype=int, default=2,
+        doc="0|1|2, Verbosity."
+        )
+
     doWriteNewFits = pexConfig.Field(
         dtype=bool, default=False,
         doc="Write new Fits file (revexp) with re-determined Wcs?"
         )
+
+    # This field may have to be moved to mappers
+    geomPath = pexConfig.Field(
+        dtype=str, default="{pointing:05d}/{filter:s}/output/CAMERAGEOM-{visit:07d}.paf",
+        doc="If not empty, write camera geometry in the specified file."
+        )
+
+    dumpDir = pexConfig.Field(
+        dtype=str, default="",
+        doc="If not empty, dump internal states into the specified directory"
+        )
+
+    def getPolicy(self):
+        policy = pexPolicy.Policy()
+        #policy.set("INSTR"        , self.               )
+        policy.set("MODE_CR"      , self.modeCR         )
+        policy.set("MODE_CCDPOS"  , self.doComputeCCDPos)
+        policy.set("PRECISION_POS", self.precPos        )
+        policy.set("ORDER_ASIP"   , self.degree         )
+        policy.set("ORDER_PSIP"   , self.degree         )
+        policy.set("MODE_REJ"     , self.doReject       )
+        policy.set("CLIPSIGMA"    , self.sigmaClip      )
+        #policy.set("CRPIX1"       , self.               )
+        #policy.set("CRPIX2"       , self.               )
+        #policy.set("CRVAL1"       , self.               )
+        #policy.set("CRVAL2"       , self.               )
+        policy.set("FLAG_STD"     , self.verbose        )
+
+        return policy
+
+    def getDoTansipOptionalArgs(self, dataRef):
+        def expandPath(path):
+            return os.path.join(dataRef.getButler().mapper.root, path.format(**dataRef.dataId))
+
+        args = {}
+        if self.dumpDir:
+            args["dumpDir"] = expandPath(self.dumpDir)
+        if self.doComputeCCDPos and self.geomPath:
+            args["geomPath"] = expandPath(self.geomPath)
+
+        return args
+
 
 class SolveTansipTask(CmdLineTask):
     # XXX Implement proper configuration with pex_config
@@ -45,18 +115,21 @@ class SolveTansipTask(CmdLineTask):
                                help="data ID, e.g. --id visit=12345")
         return parser
 
-    def solve(self, camera, cameraGeom, matchLists):
+    def solve(self, camera, butler, dataRef, matchLists):
         policyPath = os.path.join(os.environ["SOLVETANSIP_DIR"], "policy", camera + ".paf")
         self.log.info("Solvetansip policy override: %s" % policyPath)
-        policy = pexPolicy.Policy.createPolicy(policyPath)
+        override = pexPolicy.Policy.createPolicy(policyPath)
         defaults = pexPolicy.Policy.createPolicy(os.path.join(os.environ["SOLVETANSIP_DIR"],
                                                               "policy", "WCS_MAKEAPROP.paf"))
+        policy = self.config.getPolicy()
+        policy.mergeDefaults(override)
         policy.mergeDefaults(defaults)
 
         self.log.info("Processing with solvetansip")
-        wcs = doTansip.doTansip(matchLists, policy=policy, camera=cameraGeom)
-        wcsList = doTansip.getwcsList(wcs)
-        return wcsList
+        return doTansip.doTansip(
+            matchLists, policy, butler.mapper.camera,
+            **self.config.getDoTansipOptionalArgs(dataRef)
+        )
 
     def read(self, butler, dataRefList, nCcd = None):
         """
@@ -112,7 +185,7 @@ class SolveTansipTask(CmdLineTask):
 
     def run(self, camera, butler, dataRefList):
         matchLists = self.read(butler, dataRefList)
-        return self.solve(camera, butler.mapper.camera, matchLists)
+        return self.solve(camera, butler, dataRefList[0], matchLists)
 
 
 class SolveTansipQaTask(SolveTansipTask):
@@ -133,19 +206,25 @@ class SolveTansipQaTask(SolveTansipTask):
             except Exception, e:
                 self.log.warn("failed to create new fits: %s" % (e))
 
-    def solve(self, camera, cameraGeom, matchLists, policy=None):
+    def solve(self, camera, butler, dataRef, matchLists, policy=None):
         if policy is not None:
             policyPath = policy
         else:
             policyPath = os.path.join(os.environ["SOLVETANSIP_DIR"], "policy", camera + ".paf")
         self.log.info("Solvetansip policy override: %s" % policyPath)
-        policy = pexPolicy.Policy.createPolicy(policyPath)
+        override = pexPolicy.Policy.createPolicy(policyPath)
         defaults = pexPolicy.Policy.createPolicy(os.path.join(os.environ["SOLVETANSIP_DIR"],
                                                               "policy", "WCS_MAKEAPROP.paf"))
+        policy = self.config.getPolicy()
+        policy.mergeDefaults(override)
         policy.mergeDefaults(defaults)
 
         self.log.info("Processing with solvetansip")
-        resSolveTansip, metaTansip = doTansip.doTansipQa(matchLists, policy=policy, camera=cameraGeom)
+        resSolveTansip, metaTansip = doTansip.doTansip(
+            matchLists, policy, butler.mapper.camera,
+            needMetadata = True,
+            **self.config.getDoTansipOptionalArgs(dataRef)
+        )
         return Struct(
             resSolveTansip = resSolveTansip,
             metaTansip = metaTansip,
@@ -153,9 +232,9 @@ class SolveTansipQaTask(SolveTansipTask):
 
     def run(self, camera, butler, dataRefList, policy=None):
         matchLists = self.read(butler, dataRefList)
-        dataTansip = self.solve(camera, butler.mapper.camera, matchLists, policy=policy)
+        dataTansip = self.solve(camera, butler, dataRefList[0], matchLists, policy=policy)
 
-        dataTansip.wcsList = list(doTansip.getwcsList(dataTansip.resSolveTansip))
+        dataTansip.wcsList = list(dataTansip.resSolveTansip)
         dataTansip.matchLists = matchLists
 
         if self.config.doWriteNewFits:

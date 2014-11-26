@@ -2,33 +2,40 @@ import sys, re, os, math
 import pyfits
 from pyfits import Column
 import hsc.meas.tansip.tansipLib      as tansipLib
+import hsc.meas.tansip.utils          as tansipUtils
 import lsst.afw.cameraGeom.utils      as cameraGeomUtils
 import lsst.afw.cameraGeom            as cameraGeom
-import lsst.daf.base                     as dafBase
+import lsst.daf.base                  as dafBase
 
-def doTansip(matchLists, policy, camera, rerun=None):
-    metaTANSIP = dafBase.PropertySet()
-    SLVTSresult=SOLVETANSIP(matchLists, metaTANSIP, policy=policy, camera=camera, rerun=rerun)
-    return SLVTSresult
 
-def doTansipQa(matchLists, policy, camera, rerun=None):
-    metaTANSIP = dafBase.PropertySet()
-    SLVTSresult=SOLVETANSIP(matchLists, metaTANSIP, policy=policy, camera=camera, rerun=rerun)
-    return SLVTSresult,metaTANSIP
-
-def SOLVETANSIP(matchLists, metaTANSIP, policy, camera, rerun=None):
+def doTansip(matchLists, policy, camera, **args):
     """
+    Determine TANSIP Wcs from matchLists.
+
     @param matchLists:
         A list of lists of lsst.afw.table.ReferenceMatch.
         For a ccdId, matchLists[ccdId] is a list of
         lsst.afw.table.ReferenceMatch in the CCD ccdId.
         matchLists[ccdId] can be either None or [] if no match in it.
-    @param metaTANSIP: An instance of dafBase.PropertySet() to which to add
-        properties that express the state of solvetansip at the end of its
-        process.
-    @param policy: An instance of pexPolicy.Policy, expressing analysis
-        parameters.
-    @param camera: An instance of afw.cameraGeom.DetectorMosaic.
+    @param policy:
+        An instance of pexPolicy.Policy, expressing analysis parameters.
+    @param camera:
+        An instance of afw.cameraGeom.DetectorMosaic.
+
+    @param **args: as follows:
+    @param needMetadata: (bool) If true, this function additionally returns a
+        dafBase.PropertySet() that expresses the state of solvetansip at the
+        end of its process.
+    @param geomPath: (str) If present, this function outputs camera geometry
+        in the specified path, in the .paf format. NEVER set this argument
+        the path of existing camera geometry files. The output .paf will only
+        contain a "Raft" field. Other fields would be lost if you let this
+        function overwrite existing camera geometry files.
+    @param dumpDir: (str) If present, this function dumps summary and
+        internal states as FITS bin tables into the specified directory.
+
+    @return TanWcsList
+        (If needMetadata = true, then (TanWcsList, dafBase.PropertySet)
     """
     print '--- doTansip : start ---'
 
@@ -37,51 +44,59 @@ def SOLVETANSIP(matchLists, metaTANSIP, policy, camera, rerun=None):
     REF  = tansipLib.toReferenceMatchList(matchLists)
 
     print '--- doTansip : SOLVE TANSIP ---'
-    SLVTSRESULT=tansipLib.SOLVETANSIP(APRM, CCD, REF)
-    tansipLib.GET_METADATA(SLVTSRESULT, metaTANSIP)
-    tansipLib.SHOW_METADATA(SLVTSRESULT,metaTANSIP)
-    TANWCS=tansipLib.GET_TANWCS(SLVTSRESULT)
+    SLVTSRESULT = tansipLib.SOLVETANSIP(APRM, CCD, REF)
 
-    FLAG_OUT=policy.get('FLAG_OUT')
-    if FLAG_OUT==1:
-        DIR_OUT =policy.get('DIR_OUT')
+    metaTANSIP  = tansipLib.GET_METADATA(SLVTSRESULT)
+    tansipLib.SHOW_METADATA(SLVTSRESULT, metaTANSIP)
+
+    if "geomPath" in args:
+        tansipUtils.writeCCDPositionAsPAF(
+            policy.get("INSTR"),
+            tansipLib.getCCDPositionList(SLVTSRESULT),
+            args["geomPath"]
+        )
+
+    if "dumpDir" in args:
+        DIR_OUT = args["dumpDir"]
         print "OUTPUT SUMMARY FITS in "+DIR_OUT
-        OUTPUT_SUMMARY(SLVTSRESULT,DIR_OUT)
+        _outputSummary(SLVTSRESULT,DIR_OUT)
         print "OUTPUT FITS BINARY TABLE in "+DIR_OUT
-        OUTPUT_BTBL(SLVTSRESULT,DIR_OUT)
+        _outputBinaryTable(SLVTSRESULT,DIR_OUT)
+
+    TANWCS = tansipLib.GET_TANWCS(SLVTSRESULT)
 
     print '--- doTansip : end   ---'
-    return TANWCS
 
-def getwcsList(TANWCS):
-    print '--- getWCSlist ---'
-    return TANWCS
+    if "needMetadata" in args and args["needMetadata"]:
+        return TANWCS, metaTANSIP
+    else:
+        return TANWCS
+
 
 #-----------------------------------------------------------------
-#Output bianry table : S_RESULT
+#Output bianry table : slvtsState
 #-----------------------------------------------------------------
-def OUTPUT_SUMMARY(V_S_RESULT,DIR_OUT):
-    S_RESULT=V_S_RESULT[0]
+def _outputSummary(slvtsState,DIR_OUT):
     if os.path.exists(DIR_OUT) == False:
         os.makedirs(DIR_OUT)
 
     SUMNAME=DIR_OUT+"/solvetansipresult_SUMMARY.fits"
 
-    MODE_CR   =tansipLib.GET_SUM_MODECR(S_RESULT)
-    MODE_REJ  =tansipLib.GET_SUM_MODEREJ(S_RESULT)
-    MODE_CCD  =tansipLib.GET_SUM_MODECCD(S_RESULT)
-    NUM_CCD   =tansipLib.GET_SUM_NUMCCD(S_RESULT)
-    NUM_REF   =tansipLib.GET_SUM_NUMREF(S_RESULT)
-    NUM_FIT   =tansipLib.GET_SUM_NUMFIT(S_RESULT)
-    CRPIX     =tansipLib.GET_SUM_CRPIX(S_RESULT)
-    CRVAL     =tansipLib.GET_SUM_CRVAL(S_RESULT)
-    OAPIX     =tansipLib.GET_SUM_OAPIX(S_RESULT)
-    CD        =tansipLib.GET_SUM_CD(S_RESULT)
-    ANGLE     =tansipLib.GET_SUM_ANGLE(S_RESULT)
-    ST_CRPIX_G=tansipLib.GET_SUM_MAX_CRPIX_G(S_RESULT)
-    CD_COR    =tansipLib.GET_SUM_CD_CORANGLE(S_RESULT)
-    RMS_SIP   =tansipLib.GET_SUM_RMSASIP(S_RESULT)
-    RMS_PSIP  =tansipLib.GET_SUM_RMSPSIP(S_RESULT)
+    MODE_CR   =tansipLib.GET_SUM_MODECR(slvtsState)
+    MODE_REJ  =tansipLib.GET_SUM_MODEREJ(slvtsState)
+    MODE_CCD  =tansipLib.GET_SUM_MODECCD(slvtsState)
+    NUM_CCD   =tansipLib.GET_SUM_NUMCCD(slvtsState)
+    NUM_REF   =tansipLib.GET_SUM_NUMREF(slvtsState)
+    NUM_FIT   =tansipLib.GET_SUM_NUMFIT(slvtsState)
+    CRPIX     =tansipLib.GET_SUM_CRPIX(slvtsState)
+    CRVAL     =tansipLib.GET_SUM_CRVAL(slvtsState)
+    OAPIX     =tansipLib.GET_SUM_OAPIX(slvtsState)
+    CD        =tansipLib.GET_SUM_CD(slvtsState)
+    ANGLE     =tansipLib.GET_SUM_ANGLE(slvtsState)
+    ST_CRPIX_G=tansipLib.GET_SUM_MAX_CRPIX_G(slvtsState)
+    CD_COR    =tansipLib.GET_SUM_CD_CORANGLE(slvtsState)
+    RMS_SIP   =tansipLib.GET_SUM_RMSASIP(slvtsState)
+    RMS_PSIP  =tansipLib.GET_SUM_RMSPSIP(slvtsState)
 
     SUMhdu = pyfits.PrimaryHDU()
     SUMhdr = SUMhdu.header
@@ -117,28 +132,28 @@ def OUTPUT_SUMMARY(V_S_RESULT,DIR_OUT):
     SUMhdr.update("RMSPSIPY",RMS_PSIP[1],"RMS Y of PSIP fitting Error")
     SUMhdu.writeto(SUMNAME,clobber=True)
 
-def OUTPUT_BTBL(V_S_RESULT,DIR_OUT):
-    S_RESULT=V_S_RESULT[0]
+
+def _outputBinaryTable(slvtsState, DIR_OUT):
     if os.path.exists(DIR_OUT) == False:
         os.makedirs(DIR_OUT)
 
 #CCD-----
     CCDNAME=DIR_OUT+"/solvetansipresult_CCDs.fits"
-    CCDRNUM=tansipLib.GET_CCD_NUMREF(S_RESULT)
-    CCDFNUM=tansipLib.GET_CCD_NUMFIT(S_RESULT)
-    CCDPOSL=tansipLib.GET_CCD_GPOS_L(S_RESULT)
-    CCDPOSC=tansipLib.GET_CCD_GPOS_C(S_RESULT)
-    CCDCR  =tansipLib.GET_CCD_CR(S_RESULT)
-    CCDOA  =tansipLib.GET_CCD_OA(S_RESULT)
-    CCDCD  =tansipLib.GET_CCD_CD(S_RESULT)
-    CCDSORD=tansipLib.GET_CCD_ORDERSIP(S_RESULT)
-    CCDPORD=tansipLib.GET_CCD_ORDERPSIP(S_RESULT)
-    CCDSERR=tansipLib.GET_CCD_ERRSIP(S_RESULT)
-    CCDPERR=tansipLib.GET_CCD_ERRPSIP(S_RESULT)
-    CCDSCOA=tansipLib.GET_CCD_COEFSIPA(S_RESULT)
-    CCDSCOB=tansipLib.GET_CCD_COEFSIPB(S_RESULT)
-    CCDPCOA=tansipLib.GET_CCD_COEFPSIPA(S_RESULT)
-    CCDPCOB=tansipLib.GET_CCD_COEFPSIPB(S_RESULT)
+    CCDRNUM=tansipLib.GET_CCD_NUMREF(slvtsState)
+    CCDFNUM=tansipLib.GET_CCD_NUMFIT(slvtsState)
+    CCDPOSL=tansipLib.GET_CCD_GPOS_L(slvtsState)
+    CCDPOSC=tansipLib.GET_CCD_GPOS_C(slvtsState)
+    CCDCR  =tansipLib.GET_CCD_CR(slvtsState)
+    CCDOA  =tansipLib.GET_CCD_OA(slvtsState)
+    CCDCD  =tansipLib.GET_CCD_CD(slvtsState)
+    CCDSORD=tansipLib.GET_CCD_ORDERSIP(slvtsState)
+    CCDPORD=tansipLib.GET_CCD_ORDERPSIP(slvtsState)
+    CCDSERR=tansipLib.GET_CCD_ERRSIP(slvtsState)
+    CCDPERR=tansipLib.GET_CCD_ERRPSIP(slvtsState)
+    CCDSCOA=tansipLib.GET_CCD_COEFSIPA(slvtsState)
+    CCDSCOB=tansipLib.GET_CCD_COEFSIPB(slvtsState)
+    CCDPCOA=tansipLib.GET_CCD_COEFPSIPA(slvtsState)
+    CCDPCOB=tansipLib.GET_CCD_COEFPSIPB(slvtsState)
 
     CCDCOL=[]
     CCDCOL.append(Column(name="NUM_REF"       ,format="J",array=CCDRNUM))
@@ -200,40 +215,40 @@ def OUTPUT_BTBL(V_S_RESULT,DIR_OUT):
 #REF-----
 
     REFNAME =DIR_OUT+"/solvetansipresult_REFs.fits"
-    REFCID  =tansipLib.GET_REF_CID(S_RESULT)
-    REFFLAG =tansipLib.GET_REF_FLAG(S_RESULT);
-    REFPOS_C_RADEC =tansipLib.GET_REF_POS_CELESTIAL_RADEC(S_RESULT);
-    REFPOS_C_IMWLD =tansipLib.GET_REF_POS_CELESTIAL_IMWLD(S_RESULT);
-    REFPOS_C_IMPIXL=tansipLib.GET_REF_POS_CELESTIAL_IMPIX_L(S_RESULT);
-    REFPOS_C_IMPIXG=tansipLib.GET_REF_POS_CELESTIAL_IMPIX_G(S_RESULT);
-    REFPOS_C_CRPIXL=tansipLib.GET_REF_POS_CELESTIAL_CRPIX_L(S_RESULT);
-    REFPOS_C_CRPIXG=tansipLib.GET_REF_POS_CELESTIAL_CRPIX_G(S_RESULT);
-    REFPOS_C_LOCALL=tansipLib.GET_REF_POS_CELESTIAL_LOCAL_L(S_RESULT);
-    REFPOS_C_LOCALG=tansipLib.GET_REF_POS_CELESTIAL_LOCAL_G(S_RESULT);
-    REFPOS_CPSIP_CRPIXL=tansipLib.GET_REF_POS_CELESTIAL_PSIP_CRPIX_L(S_RESULT);
-    REFPOS_CPSIP_CRPIXG=tansipLib.GET_REF_POS_CELESTIAL_PSIP_CRPIX_G(S_RESULT);
-    REFPOS_CPSIP_LOCALL=tansipLib.GET_REF_POS_CELESTIAL_PSIP_LOCAL_L(S_RESULT);
-    REFPOS_CPSIP_LOCALG=tansipLib.GET_REF_POS_CELESTIAL_PSIP_LOCAL_G(S_RESULT);
-    REFPOS_D_LOCALL=tansipLib.GET_REF_POS_DETECTED_LOCAL_L(S_RESULT);
-    REFPOS_D_LOCALG=tansipLib.GET_REF_POS_DETECTED_LOCAL_G(S_RESULT);
-    REFPOS_D_CRPIXL=tansipLib.GET_REF_POS_DETECTED_CRPIX_L(S_RESULT);
-    REFPOS_D_CRPIXG=tansipLib.GET_REF_POS_DETECTED_CRPIX_G(S_RESULT);
-    REFPOS_D_IMPIXL=tansipLib.GET_REF_POS_DETECTED_IMPIX_L(S_RESULT);
-    REFPOS_D_IMPIXG=tansipLib.GET_REF_POS_DETECTED_IMPIX_G(S_RESULT);
-    REFPOS_D_IMWLDL=tansipLib.GET_REF_POS_DETECTED_IMWLD_L(S_RESULT);
-    REFPOS_D_IMWLDG=tansipLib.GET_REF_POS_DETECTED_IMWLD_G(S_RESULT);
-    REFPOS_D_RADECL=tansipLib.GET_REF_POS_DETECTED_RADEC_L(S_RESULT);
-    REFPOS_D_RADECG=tansipLib.GET_REF_POS_DETECTED_RADEC_G(S_RESULT);
-    REFPOS_DASIP_CRPIXL=tansipLib.GET_REF_POS_DETECTED_ASIP_CRPIX_L(S_RESULT);
-    REFPOS_DASIP_CRPIXG=tansipLib.GET_REF_POS_DETECTED_ASIP_CRPIX_G(S_RESULT);
-    REFPOS_DASIP_IMPIXL=tansipLib.GET_REF_POS_DETECTED_ASIP_IMPIX_L(S_RESULT);
-    REFPOS_DASIP_IMPIXG=tansipLib.GET_REF_POS_DETECTED_ASIP_IMPIX_G(S_RESULT);
-    REFPOS_DASIP_IMWLDL=tansipLib.GET_REF_POS_DETECTED_ASIP_IMWLD_L(S_RESULT);
-    REFPOS_DASIP_IMWLDG=tansipLib.GET_REF_POS_DETECTED_ASIP_IMWLD_G(S_RESULT);
-    REFPOS_DASIP_RADECL=tansipLib.GET_REF_POS_DETECTED_ASIP_RADEC_L(S_RESULT);
-    REFPOS_DASIP_RADECG=tansipLib.GET_REF_POS_DETECTED_ASIP_RADEC_G(S_RESULT);
-    REFDIFF=tansipLib.GET_REF_DIFF(S_RESULT);
-    REFJACO=tansipLib.GET_REF_CAMERAJACOPSIP(S_RESULT);
+    REFCID  =tansipLib.GET_REF_CID(slvtsState)
+    REFFLAG =tansipLib.GET_REF_FLAG(slvtsState);
+    REFPOS_C_RADEC =tansipLib.GET_REF_POS_CELESTIAL_RADEC(slvtsState);
+    REFPOS_C_IMWLD =tansipLib.GET_REF_POS_CELESTIAL_IMWLD(slvtsState);
+    REFPOS_C_IMPIXL=tansipLib.GET_REF_POS_CELESTIAL_IMPIX_L(slvtsState);
+    REFPOS_C_IMPIXG=tansipLib.GET_REF_POS_CELESTIAL_IMPIX_G(slvtsState);
+    REFPOS_C_CRPIXL=tansipLib.GET_REF_POS_CELESTIAL_CRPIX_L(slvtsState);
+    REFPOS_C_CRPIXG=tansipLib.GET_REF_POS_CELESTIAL_CRPIX_G(slvtsState);
+    REFPOS_C_LOCALL=tansipLib.GET_REF_POS_CELESTIAL_LOCAL_L(slvtsState);
+    REFPOS_C_LOCALG=tansipLib.GET_REF_POS_CELESTIAL_LOCAL_G(slvtsState);
+    REFPOS_CPSIP_CRPIXL=tansipLib.GET_REF_POS_CELESTIAL_PSIP_CRPIX_L(slvtsState);
+    REFPOS_CPSIP_CRPIXG=tansipLib.GET_REF_POS_CELESTIAL_PSIP_CRPIX_G(slvtsState);
+    REFPOS_CPSIP_LOCALL=tansipLib.GET_REF_POS_CELESTIAL_PSIP_LOCAL_L(slvtsState);
+    REFPOS_CPSIP_LOCALG=tansipLib.GET_REF_POS_CELESTIAL_PSIP_LOCAL_G(slvtsState);
+    REFPOS_D_LOCALL=tansipLib.GET_REF_POS_DETECTED_LOCAL_L(slvtsState);
+    REFPOS_D_LOCALG=tansipLib.GET_REF_POS_DETECTED_LOCAL_G(slvtsState);
+    REFPOS_D_CRPIXL=tansipLib.GET_REF_POS_DETECTED_CRPIX_L(slvtsState);
+    REFPOS_D_CRPIXG=tansipLib.GET_REF_POS_DETECTED_CRPIX_G(slvtsState);
+    REFPOS_D_IMPIXL=tansipLib.GET_REF_POS_DETECTED_IMPIX_L(slvtsState);
+    REFPOS_D_IMPIXG=tansipLib.GET_REF_POS_DETECTED_IMPIX_G(slvtsState);
+    REFPOS_D_IMWLDL=tansipLib.GET_REF_POS_DETECTED_IMWLD_L(slvtsState);
+    REFPOS_D_IMWLDG=tansipLib.GET_REF_POS_DETECTED_IMWLD_G(slvtsState);
+    REFPOS_D_RADECL=tansipLib.GET_REF_POS_DETECTED_RADEC_L(slvtsState);
+    REFPOS_D_RADECG=tansipLib.GET_REF_POS_DETECTED_RADEC_G(slvtsState);
+    REFPOS_DASIP_CRPIXL=tansipLib.GET_REF_POS_DETECTED_ASIP_CRPIX_L(slvtsState);
+    REFPOS_DASIP_CRPIXG=tansipLib.GET_REF_POS_DETECTED_ASIP_CRPIX_G(slvtsState);
+    REFPOS_DASIP_IMPIXL=tansipLib.GET_REF_POS_DETECTED_ASIP_IMPIX_L(slvtsState);
+    REFPOS_DASIP_IMPIXG=tansipLib.GET_REF_POS_DETECTED_ASIP_IMPIX_G(slvtsState);
+    REFPOS_DASIP_IMWLDL=tansipLib.GET_REF_POS_DETECTED_ASIP_IMWLD_L(slvtsState);
+    REFPOS_DASIP_IMWLDG=tansipLib.GET_REF_POS_DETECTED_ASIP_IMWLD_G(slvtsState);
+    REFPOS_DASIP_RADECL=tansipLib.GET_REF_POS_DETECTED_ASIP_RADEC_L(slvtsState);
+    REFPOS_DASIP_RADECG=tansipLib.GET_REF_POS_DETECTED_ASIP_RADEC_G(slvtsState);
+    REFDIFF=tansipLib.GET_REF_DIFF(slvtsState);
+    REFJACO=tansipLib.GET_REF_CAMERAJACOPSIP(slvtsState);
 
     REFCOL=[]
     REFCOL.append(Column(name="ID_CCD"                           ,format="J",array=REFCID))
