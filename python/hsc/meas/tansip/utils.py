@@ -10,30 +10,42 @@ def writeCCDPositionAsPAF(camera, ccdPositionList, output):
     You can manually copy and paste this output into another file,
     but you must not let this function overwrite the file.
 
-    @param camera: "HSC" or "SC"
-    @param ccdPositionList: an instance of CCDPositionList
-    @param output: a file object or a path name
+    @param camera:
+        Specifies a exemplar for the output.
+        -- "HSC" or "SC", or
+        -- Path to a camera policy (which can be CameraMapper.cameraPolicyLocation)
+    @param ccdPositionList: An instance of CCDPositionList
+    @param output: A file object or a path name
     """
 
     #
     # Load camera geometry
     #
 
-    if camera == "HSC":
-        policyFile = pexPolicy.DefaultPolicyFile("obs_subaru", "HscMapper.paf", "policy")
-        policy = pexPolicy.Policy(policyFile)
-    elif camera == "SC":
-        policyFile = pexPolicy.DefaultPolicyFile("obs_subaru", "SuprimecamMapper.paf", "policy")
-        policy = pexPolicy.Policy(policyFile)
+    mapperFile = None
+    cameraFile = None
+
+    if camera.upper() == "HSC":
+        mapperFile = pexPolicy.DefaultPolicyFile("obs_subaru", "HscMapper.paf", "policy")
+    elif camera.upper() == "SC":
+        mapperFile = pexPolicy.DefaultPolicyFile("obs_subaru", "SuprimecamMapper.paf", "policy")
+    elif os.path.exists(camera):
+        cameraFile = camera
     else:
-        raise ValueError("camera is not supported: '%s'" % camera)
+        if camera.find("/") >= 0 or camera.find(".") >= 0:
+            #this is likely to be a file path
+            raise ValueError("camera policy not found: '%s'" % camera)
+        else:
+            raise ValueError("camera is not supported: '%s'" % camera)
 
-    cameraPath = os.path.join(
-        os.path.dirname(policyFile.getPath()),
-        policy.get("camera")
-    )
+    if not cameraFile:
+        policy = pexPolicy.Policy(mapperFile)
+        cameraFile = os.path.join(
+            os.path.dirname(mapperFile.getPath()),
+            policy.get("camera")
+        )
 
-    raft = pexPolicy.Policy(cameraPath).get("Raft")
+    raft = pexPolicy.Policy(cameraFile).get("Raft")
 
     #
     # Update the geometry with ccdPositionList

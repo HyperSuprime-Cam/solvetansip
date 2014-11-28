@@ -30,7 +30,11 @@ def doTansip(matchLists, policy, camera, **args):
         in the specified path, in the .paf format. NEVER set this argument
         the path of existing camera geometry files. The output .paf will only
         contain a "Raft" field. Other fields would be lost if you let this
-        function overwrite existing camera geometry files.
+        function overwrite existing camera geometry files. Also give in
+        geomInput.
+    @param geomInput: (str) Path to a camera geometry policy to be used as
+        an exemlar. This can also be "HSC" or "SC". Valid only if geomPath
+        is present.
     @param dumpDir: (str) If present, this function dumps summary and
         internal states as FITS bin tables into the specified directory.
 
@@ -51,7 +55,7 @@ def doTansip(matchLists, policy, camera, **args):
 
     if "geomPath" in args:
         tansipUtils.writeCCDPositionAsPAF(
-            policy.get("INSTR"),
+            args["geomInput"],
             tansipLib.getCCDPositionList(SLVTSRESULT),
             args["geomPath"]
         )

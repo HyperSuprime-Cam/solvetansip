@@ -62,7 +62,7 @@ class SolveTansipConfig(pexConfig.Config):
 
     # This field may have to be moved to mappers
     geomPath = pexConfig.Field(
-        dtype=str, default="{pointing:05d}/{filter:s}/output/CAMERAGEOM-{visit:07d}.paf",
+        dtype=str, default="%(pointing)05d/%(filter)s/output/CAMERAGEOM-%(visit)07d.paf",
         doc="If not empty, write camera geometry in the specified file."
         )
 
@@ -73,7 +73,6 @@ class SolveTansipConfig(pexConfig.Config):
 
     def getPolicy(self):
         policy = pexPolicy.Policy()
-        #policy.set("INSTR"        , self.               )
         policy.set("MODE_CR"      , self.modeCR         )
         policy.set("MODE_CCDPOS"  , self.doComputeCCDPos)
         policy.set("PRECISION_POS", self.precPos        )
@@ -91,13 +90,14 @@ class SolveTansipConfig(pexConfig.Config):
 
     def getDoTansipOptionalArgs(self, dataRef):
         def expandPath(path):
-            return os.path.join(dataRef.getButler().mapper.root, path.format(**dataRef.dataId))
+            return os.path.join(dataRef.getButler().mapper.root, path % dataRef.dataId)
 
         args = {}
         if self.dumpDir:
             args["dumpDir"] = expandPath(self.dumpDir)
         if self.doComputeCCDPos and self.geomPath:
             args["geomPath"] = expandPath(self.geomPath)
+            args["geomInput"] = dataRef.getButler().mapper.cameraPolicyLocation
 
         return args
 
@@ -116,6 +116,24 @@ class SolveTansipTask(CmdLineTask):
         return parser
 
     def solve(self, camera, butler, dataRef, matchLists):
+        """
+        Determine TANSIP Wcs from matchLists.
+
+        @param camera: (str) Camera's name. Used to load a default PAF
+            (= $SOLVETANSIP_DIR/policy/%(camera)s.paf).
+            Note the value in the default PAF file is overridden by
+            command line arguments.
+        @param butler: Butler.
+        @param dataRef: ButlerDataRef that specifies an exposure.
+            This is used to determine output file paths.
+        @param matchLists:
+            A list of lists of lsst.afw.table.ReferenceMatch.
+            For a ccdId, matchLists[ccdId] is a list of
+            lsst.afw.table.ReferenceMatch in the CCD ccdId.
+            matchLists[ccdId] can be either None or [] if no match in it.
+
+        @return TanWcsList
+        """
         policyPath = os.path.join(os.environ["SOLVETANSIP_DIR"], "policy", camera + ".paf")
         self.log.info("Solvetansip policy override: %s" % policyPath)
         override = pexPolicy.Policy.createPolicy(policyPath)
@@ -207,6 +225,28 @@ class SolveTansipQaTask(SolveTansipTask):
                 self.log.warn("failed to create new fits: %s" % (e))
 
     def solve(self, camera, butler, dataRef, matchLists, policy=None):
+        """
+        Determine TANSIP Wcs from matchLists.
+
+        @param camera: (str) Camera's name. Used to load a default PAF
+            (= $SOLVETANSIP_DIR/policy/%(camera)s.paf).
+            Note the value in the default PAF file is overridden by
+            command line arguments.
+        @param butler: Butler. Its mapper must be CameraMapper
+        @param dataRef: ButlerDataRef that specifies an exposure.
+            This is used to determine output file paths.
+        @param matchLists:
+            A list of lists of lsst.afw.table.ReferenceMatch.
+            For a ccdId, matchLists[ccdId] is a list of
+            lsst.afw.table.ReferenceMatch in the CCD ccdId.
+            matchLists[ccdId] can be either None or [] if no match in it.
+
+        @return Struct(
+            resSolveTansip: TanWcsList
+            metaTansip: dafBase.PropertySet
+            )
+        """
+
         if policy is not None:
             policyPath = policy
         else:
@@ -227,7 +267,7 @@ class SolveTansipQaTask(SolveTansipTask):
         )
         return Struct(
             resSolveTansip = resSolveTansip,
-            metaTansip = metaTansip,
+            metaTansip = metaTansip
             )
 
     def run(self, camera, butler, dataRefList, policy=None):

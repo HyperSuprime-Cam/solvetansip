@@ -23,7 +23,6 @@ toAnaParam(
                 param.internal = policy.get##type(external); \
                 continue; \
             }
-        CONDITIONAL_COPY(String, INSTR        , "INSTR"        );
         CONDITIONAL_COPY(String, MODE_CR      , "MODE_CR"      );
         CONDITIONAL_COPY(Bool  , MODE_CCDPOS  , "MODE_CCDPOS"  );
         CONDITIONAL_COPY(Double, PRECISION_CCD, "PRECISION_POS");

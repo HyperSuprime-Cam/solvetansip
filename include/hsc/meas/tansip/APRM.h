@@ -16,8 +16,6 @@ namespace tansip {
 */
 struct AnaParam
 {
-	std::string  INSTR  ; /// Instrument. "HSC" or "SC".
-
 	/** Mode of CRPIX/VAL.
 		-- "AUTO":
 			CRPIX is set automatically at the center of all detected objects,

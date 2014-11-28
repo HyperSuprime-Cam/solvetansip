@@ -9,8 +9,7 @@ namespace hsc { namespace meas {
 namespace tansip {
 
 AnaParam::AnaParam()
-	: INSTR         ( "HSC" )
-	, MODE_CR       ( "PIX" )
+	: MODE_CR       ( "PIX" )
 
 	, MODE_CCDPOS   ( false )
 	, PRECISION_CCD ( 0.1   )
@@ -86,7 +85,6 @@ bool  AnaParam::CHECK_ORDERPSIP(){
 }
 void AnaParam::SHOW(){
 	std::cout << "-- SHOW APROP --"               << std::endl;
-	std::cout << "INSTRUMENT  : " << INSTR        << std::endl;
 	std::cout << "MODE_CR     : " << MODE_CR      << std::endl;
 	std::cout << "MODE_CCDPOS : " << MODE_CCDPOS  << std::endl;
 	std::cout << "MODE_REJ    : " << MODE_REJ     << std::endl;
