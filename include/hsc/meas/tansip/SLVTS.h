@@ -18,24 +18,24 @@ namespace hsc { namespace meas {
 namespace tansip {
 
 /** The handle of solved data
-	To read from it, use SLVTS_GET.h and SLVTS_LSST.h
+    To read from it, use SLVTS_GET.h and SLVTS_LSST.h
 */
 struct SLVTSState
 {
 #ifdef SWIG
 private: // SWIG should not see the members
 #endif
-	boost::shared_ptr<void> APRM; ///< pointer to AnaParam
-	boost::shared_ptr<void> CCDs; ///< pointer to CL_CCDs
-	boost::shared_ptr<void> REFs; ///< pointer to CL_REFs
+    boost::shared_ptr<void> APRM; ///< pointer to AnaParam
+    boost::shared_ptr<void> CCDs; ///< pointer to CL_CCDs
+    boost::shared_ptr<void> REFs; ///< pointer to CL_REFs
 };
 
 /** Solve TANSIP (The main routine)
 */
 SLVTSState SOLVETANSIP(
-	AnaParam                    const& param,
-	std::vector<CCDPosition   > const& ccdPosition,
-	std::vector<ReferenceMatch> const& matchList
+    AnaParam                    const& param,
+    std::vector<CCDPosition   > const& ccdPosition,
+    std::vector<ReferenceMatch> const& matchList
 );
 
 } // namespace tansip

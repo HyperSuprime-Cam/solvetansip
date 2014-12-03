@@ -14,10 +14,10 @@ namespace hsc { namespace meas {
 namespace tansip {
 
 //CALC_STAT
-int	CALC_STAT_RMS(int NUM,double *data,double *STAT);
-int	CALC_STAT_RMS(int NUM,float  *data,double *STAT);
-double	CALC_MEDIAN(int NUM,double *data);
-int	CALC_STAT_RMSMAX(int NUM,double *data,double *STAT);
+int  CALC_STAT_RMS(int NUM,double *data,double *STAT);
+int  CALC_STAT_RMS(int NUM,float  *data,double *STAT);
+double  CALC_MEDIAN(int NUM,double *data);
+int  CALC_STAT_RMSMAX(int NUM,double *data,double *STAT);
 
 //CALC_FIT
 ndarray::Array<double, 1, 1>

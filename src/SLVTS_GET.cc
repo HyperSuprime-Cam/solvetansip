@@ -22,102 +22,102 @@ using namespace std;
 //-----------------------------------------------------------------
 std::string GET_SUM_MODECR(SLVTSState const& handle){
     SLVTSStateImpl SLVTS(handle);
-	return SLVTS.APRM->MODE_CR;
+    return SLVTS.APRM->MODE_CR;
 }
 int GET_SUM_MODEREJ(SLVTSState const& handle){
     SLVTSStateImpl SLVTS(handle);
-	return SLVTS.APRM->MODE_REJ;
+    return SLVTS.APRM->MODE_REJ;
 }
 int GET_SUM_MODECCD(SLVTSState const& handle){
     SLVTSStateImpl SLVTS(handle);
-	return SLVTS.APRM->MODE_CCDPOS;
+    return SLVTS.APRM->MODE_CCDPOS;
 }
 int GET_SUM_NUMCCD(SLVTSState const& handle){
     SLVTSStateImpl SLVTS(handle);
-	return SLVTS.CCDs->CCD.size();
+    return SLVTS.CCDs->CCD.size();
 }
 int GET_SUM_NUMREF(SLVTSState const& handle){
     SLVTSStateImpl SLVTS(handle);
-	return SLVTS.REFs->REF.size();
+    return SLVTS.REFs->REF.size();
 }
 int GET_SUM_NUMFIT(SLVTSState const& handle){
     SLVTSStateImpl SLVTS(handle);
-	return SLVTS.CCDs->GCD.NUM_FIT;
+    return SLVTS.CCDs->GCD.NUM_FIT;
 }
 std::vector< double > GET_SUM_CRPIX(SLVTSState const& handle){
     SLVTSStateImpl SLVTS(handle);
-	std::vector< double > CRPIX;
-	CRPIX.push_back(SLVTS.CCDs->GCD.CRPIX[0]);
-	CRPIX.push_back(SLVTS.CCDs->GCD.CRPIX[1]);
-	return CRPIX;
+    std::vector< double > CRPIX;
+    CRPIX.push_back(SLVTS.CCDs->GCD.CRPIX[0]);
+    CRPIX.push_back(SLVTS.CCDs->GCD.CRPIX[1]);
+    return CRPIX;
 }
 std::vector< double > GET_SUM_CRVAL(SLVTSState const& handle){
     SLVTSStateImpl SLVTS(handle);
-	std::vector< double > CRVAL;
-	CRVAL.push_back(SLVTS.CCDs->GCD.CRVAL[0]);
-	CRVAL.push_back(SLVTS.CCDs->GCD.CRVAL[1]);
-	return CRVAL;
+    std::vector< double > CRVAL;
+    CRVAL.push_back(SLVTS.CCDs->GCD.CRVAL[0]);
+    CRVAL.push_back(SLVTS.CCDs->GCD.CRVAL[1]);
+    return CRVAL;
 }
 std::vector< double > GET_SUM_OAPIX(SLVTSState const& handle){
     SLVTSStateImpl SLVTS(handle);
-	std::vector< double > OAPIX;
-	OAPIX.push_back(SLVTS.CCDs->GCD.OAPIX[0]);
-	OAPIX.push_back(SLVTS.CCDs->GCD.OAPIX[1]);
-	return OAPIX;
+    std::vector< double > OAPIX;
+    OAPIX.push_back(SLVTS.CCDs->GCD.OAPIX[0]);
+    OAPIX.push_back(SLVTS.CCDs->GCD.OAPIX[1]);
+    return OAPIX;
 }
 std::vector< double > GET_SUM_CD(SLVTSState const& handle){
     SLVTSStateImpl SLVTS(handle);
-	std::vector< double > CD;
-	CD.push_back(SLVTS.CCDs->GCD.CD[0][0]);
-	CD.push_back(SLVTS.CCDs->GCD.CD[0][1]);
-	CD.push_back(SLVTS.CCDs->GCD.CD[1][0]);
-	CD.push_back(SLVTS.CCDs->GCD.CD[1][1]);
-	return CD;
+    std::vector< double > CD;
+    CD.push_back(SLVTS.CCDs->GCD.CD[0][0]);
+    CD.push_back(SLVTS.CCDs->GCD.CD[0][1]);
+    CD.push_back(SLVTS.CCDs->GCD.CD[1][0]);
+    CD.push_back(SLVTS.CCDs->GCD.CD[1][1]);
+    return CD;
 }
 double GET_SUM_ANGLE(SLVTSState const& handle){
     SLVTSStateImpl SLVTS(handle);
-	return SLVTS.CCDs->GCD.ANGLE;
+    return SLVTS.CCDs->GCD.ANGLE;
 }
 std::vector< double > GET_SUM_MAX_CRPIX_G(SLVTSState const& handle){
     SLVTSStateImpl SLVTS(handle);
-	std::vector< double > MAX_CRPIX_G;
-	MAX_CRPIX_G.push_back(SLVTS.CCDs->MAX_CRPIX_G[0]);
-	MAX_CRPIX_G.push_back(SLVTS.CCDs->MAX_CRPIX_G[1]);
-	MAX_CRPIX_G.push_back(SLVTS.CCDs->MIN_CRPIX_G[0]);
-	MAX_CRPIX_G.push_back(SLVTS.CCDs->MIN_CRPIX_G[1]);
-	MAX_CRPIX_G.push_back(SLVTS.CCDs->AVE_CRPIX_G[0]);
-	MAX_CRPIX_G.push_back(SLVTS.CCDs->AVE_CRPIX_G[1]);
-	return MAX_CRPIX_G;
+    std::vector< double > MAX_CRPIX_G;
+    MAX_CRPIX_G.push_back(SLVTS.CCDs->MAX_CRPIX_G[0]);
+    MAX_CRPIX_G.push_back(SLVTS.CCDs->MAX_CRPIX_G[1]);
+    MAX_CRPIX_G.push_back(SLVTS.CCDs->MIN_CRPIX_G[0]);
+    MAX_CRPIX_G.push_back(SLVTS.CCDs->MIN_CRPIX_G[1]);
+    MAX_CRPIX_G.push_back(SLVTS.CCDs->AVE_CRPIX_G[0]);
+    MAX_CRPIX_G.push_back(SLVTS.CCDs->AVE_CRPIX_G[1]);
+    return MAX_CRPIX_G;
 }
 std::vector< double > GET_SUM_CD_CORANGLE(SLVTSState const& handle){
     SLVTSStateImpl SLVTS(handle);
-	double GCD[4],GANG;
-	std::vector< double > CD_COR;
-	GCD[0]=SLVTS.CCDs->GCD.CD[0][0];
-	GCD[1]=SLVTS.CCDs->GCD.CD[0][1];
-	GCD[2]=SLVTS.CCDs->GCD.CD[1][0];
-	GCD[3]=SLVTS.CCDs->GCD.CD[1][1];
-	GANG  =SLVTS.CCDs->GCD.ANGLE;
+    double GCD[4],GANG;
+    std::vector< double > CD_COR;
+    GCD[0]=SLVTS.CCDs->GCD.CD[0][0];
+    GCD[1]=SLVTS.CCDs->GCD.CD[0][1];
+    GCD[2]=SLVTS.CCDs->GCD.CD[1][0];
+    GCD[3]=SLVTS.CCDs->GCD.CD[1][1];
+    GANG  =SLVTS.CCDs->GCD.ANGLE;
 
-	CD_COR.push_back(cos(-GANG)*GCD[0]-sin(-GANG)*GCD[2]);
-	CD_COR.push_back(cos(-GANG)*GCD[1]-sin(-GANG)*GCD[3]);
-	CD_COR.push_back(sin(-GANG)*GCD[0]+cos(-GANG)*GCD[2]);
-	CD_COR.push_back(sin(-GANG)*GCD[1]+cos(-GANG)*GCD[3]);
-	return CD_COR;
+    CD_COR.push_back(cos(-GANG)*GCD[0]-sin(-GANG)*GCD[2]);
+    CD_COR.push_back(cos(-GANG)*GCD[1]-sin(-GANG)*GCD[3]);
+    CD_COR.push_back(sin(-GANG)*GCD[0]+cos(-GANG)*GCD[2]);
+    CD_COR.push_back(sin(-GANG)*GCD[1]+cos(-GANG)*GCD[3]);
+    return CD_COR;
 }
 std::vector< double > GET_SUM_RMSASIP(SLVTSState const& handle){
     SLVTSStateImpl SLVTS(handle);
-	std::vector< double > RMSASIP;
-	RMSASIP.push_back(SLVTS.CCDs->GCD.DIF_RMS_ASIP[0]);
-	RMSASIP.push_back(SLVTS.CCDs->GCD.DIF_RMS_ASIP[1]);
-	return RMSASIP;
+    std::vector< double > RMSASIP;
+    RMSASIP.push_back(SLVTS.CCDs->GCD.DIF_RMS_ASIP[0]);
+    RMSASIP.push_back(SLVTS.CCDs->GCD.DIF_RMS_ASIP[1]);
+    return RMSASIP;
 }
 std::vector< double > GET_SUM_RMSPSIP(SLVTSState const& handle){
     SLVTSStateImpl SLVTS(handle);
-	std::vector< double > RMSPSIP;
-	RMSPSIP.push_back(SLVTS.CCDs->GCD.DIF_RMS_PSIP[0]);
-	RMSPSIP.push_back(SLVTS.CCDs->GCD.DIF_RMS_PSIP[1]);
-	return RMSPSIP;
+    std::vector< double > RMSPSIP;
+    RMSPSIP.push_back(SLVTS.CCDs->GCD.DIF_RMS_PSIP[0]);
+    RMSPSIP.push_back(SLVTS.CCDs->GCD.DIF_RMS_PSIP[1]);
+    return RMSPSIP;
 }
 //-----------------------------------------------------------------
 //Getting Functions : CCD Info
@@ -178,7 +178,7 @@ namespace {
 
 std::vector< int > GET_CCD_NUMREF(SLVTSState const& handle){
     SLVTSStateImpl SLVTS(handle);
-	return GetCCDField<int>(*SLVTS.CCDs, &CCDBase::NUM_REF);
+    return GetCCDField<int>(*SLVTS.CCDs, &CCDBase::NUM_REF);
 }
 std::vector< int > GET_CCD_NUMFIT(SLVTSState const& handle){
     SLVTSStateImpl SLVTS(handle);
@@ -247,12 +247,12 @@ std::vector< std::vector< double > > GET_CCD_ERRSIP(SLVTSState const& handle){
 std::vector< std::vector< double > > GET_CCD_ERRPSIP(SLVTSState const& handle){
     SLVTSStateImpl SLVTS(handle);
     std::vector< std::vector< double > >  CCDERR(6);
-	CCDERR[0] = GetCCDField<double>(*SLVTS.CCDs, &CCDBase::DIF_AVE_PSIP, 0);
-	CCDERR[1] = GetCCDField<double>(*SLVTS.CCDs, &CCDBase::DIF_RMS_PSIP, 0);
-	CCDERR[2] = GetCCDField<double>(*SLVTS.CCDs, &CCDBase::DIF_MAX_PSIP, 0);
-	CCDERR[3] = GetCCDField<double>(*SLVTS.CCDs, &CCDBase::DIF_AVE_PSIP, 1);
-	CCDERR[4] = GetCCDField<double>(*SLVTS.CCDs, &CCDBase::DIF_RMS_PSIP, 1);
-	CCDERR[5] = GetCCDField<double>(*SLVTS.CCDs, &CCDBase::DIF_MAX_PSIP, 1);
+    CCDERR[0] = GetCCDField<double>(*SLVTS.CCDs, &CCDBase::DIF_AVE_PSIP, 0);
+    CCDERR[1] = GetCCDField<double>(*SLVTS.CCDs, &CCDBase::DIF_RMS_PSIP, 0);
+    CCDERR[2] = GetCCDField<double>(*SLVTS.CCDs, &CCDBase::DIF_MAX_PSIP, 0);
+    CCDERR[3] = GetCCDField<double>(*SLVTS.CCDs, &CCDBase::DIF_AVE_PSIP, 1);
+    CCDERR[4] = GetCCDField<double>(*SLVTS.CCDs, &CCDBase::DIF_RMS_PSIP, 1);
+    CCDERR[5] = GetCCDField<double>(*SLVTS.CCDs, &CCDBase::DIF_MAX_PSIP, 1);
 
     return CCDERR;
 }
