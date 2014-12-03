@@ -25,9 +25,9 @@ struct SLVTSState
 #ifdef SWIG
 private: // SWIG should not see the members
 #endif
-	boost::shared_ptr<void> APRM; /// pointer to AnaParam
-	boost::shared_ptr<void> CCDs; /// pointer to CL_CCDs
-	boost::shared_ptr<void> REFs; /// pointer to CL_REFs
+	boost::shared_ptr<void> APRM; ///< pointer to AnaParam
+	boost::shared_ptr<void> CCDs; ///< pointer to CL_CCDs
+	boost::shared_ptr<void> REFs; ///< pointer to CL_REFs
 };
 
 /** Solve TANSIP (The main routine)

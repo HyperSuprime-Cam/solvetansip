@@ -9,11 +9,11 @@ namespace tansip {
 */
 struct ReferenceMatch
 {
-	int    ccdId; /// on which CCD this object is
-	double x    ; /// LOCAL_L coord
-	double y    ; /// LOCAL_L coord
-	double ra   ; /// in degrees
-	double dec  ; /// in degrees
+	int    ccdId; ///< on which CCD this object is
+	double x    ; ///< LOCAL_L coord
+	double y    ; ///< LOCAL_L coord
+	double ra   ; ///< in degrees
+	double dec  ; ///< in degrees
 };
 
 } // namespace tansip
