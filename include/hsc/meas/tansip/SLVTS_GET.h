@@ -88,7 +88,6 @@ std::vector< std::vector< double > > GET_REF_POS_DETECTED_ASIP_IMWLD_G(SLVTSStat
 std::vector< std::vector< double > > GET_REF_POS_DETECTED_ASIP_RADEC_L(SLVTSState const& handle);//getting RADEC from DETECTED of all references
 std::vector< std::vector< double > > GET_REF_POS_DETECTED_ASIP_RADEC_G(SLVTSState const& handle);//getting RADEC from DETECTED of all references
 std::vector< std::vector< double > > GET_REF_DIFF(SLVTSState const& handle);//getting DIFF from SIP and PSIP fitting of all references
-std::vector< double > GET_REF_CAMERAJACOPSIP(SLVTSState const& handle);//getting DISTORTION from PSIP fitting of all references
 
 } // namespace tansip
 }} // namespace hsc::meas

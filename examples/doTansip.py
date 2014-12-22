@@ -246,7 +246,6 @@ def OUTPUT_BTBL(S_RESULT,DIR_OUT):
     REFPOS_DASIP_RADECL=SLVTS.GET_REF_POS_DETECTED_ASIP_RADEC_L(S_RESULT);
     REFPOS_DASIP_RADECG=SLVTS.GET_REF_POS_DETECTED_ASIP_RADEC_G(S_RESULT);
     REFDIFF=SLVTS.GET_REF_DIFF(S_RESULT);
-    REFJACO=SLVTS.GET_REF_CAMERAJACOPSIP(S_RESULT);
 
     REFCOL=[]
     REFCOL.append(Column(name="ID_CCD"                           ,format="J",array=REFCID))
@@ -315,7 +314,6 @@ def OUTPUT_BTBL(S_RESULT,DIR_OUT):
     REFCOL.append(Column(name="DIFF_ASIP_Y"                      ,format="D",array=REFDIFF[1]))
     REFCOL.append(Column(name="DIFF_PSIP_X"                      ,format="D",array=REFDIFF[2]))
     REFCOL.append(Column(name="DIFF_PSIP_Y"                      ,format="D",array=REFDIFF[3]))
-    REFCOL.append(Column(name="CAMERA_DIST_JACOBIAN"             ,format="D",array=REFJACO))
 
     REFhdu = pyfits.new_table(REFCOL)
     REFhdu.writeto(REFNAME,clobber=True)

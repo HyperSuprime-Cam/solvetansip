@@ -252,7 +252,6 @@ def _outputBinaryTable(slvtsState, DIR_OUT):
     REFPOS_DASIP_RADECL=tansipLib.GET_REF_POS_DETECTED_ASIP_RADEC_L(slvtsState);
     REFPOS_DASIP_RADECG=tansipLib.GET_REF_POS_DETECTED_ASIP_RADEC_G(slvtsState);
     REFDIFF=tansipLib.GET_REF_DIFF(slvtsState);
-    REFJACO=tansipLib.GET_REF_CAMERAJACOPSIP(slvtsState);
 
     REFCOL=[]
     REFCOL.append(Column(name="ID_CCD"                           ,format="J",array=REFCID))
@@ -321,7 +320,6 @@ def _outputBinaryTable(slvtsState, DIR_OUT):
     REFCOL.append(Column(name="DIFF_ASIP_Y"                      ,format="D",array=REFDIFF[1]))
     REFCOL.append(Column(name="DIFF_PSIP_X"                      ,format="D",array=REFDIFF[2]))
     REFCOL.append(Column(name="DIFF_PSIP_Y"                      ,format="D",array=REFDIFF[3]))
-    REFCOL.append(Column(name="CAMERA_DIST_JACOBIAN"             ,format="D",array=REFJACO))
 
     REFhdu = pyfits.new_table(REFCOL)
     REFhdu.writeto(REFNAME,clobber=True)

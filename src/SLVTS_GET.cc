@@ -514,17 +514,6 @@ std::vector< std::vector< double > > GET_REF_DIFF(SLVTSState const& handle){
 
     return DIFF;
 }
-std::vector< double > GET_REF_CAMERAJACOPSIP(SLVTSState const& handle){
-    SLVTSStateImpl SLVTS(handle);
-    std::vector< double > JACO;
-    for(std::vector<CL_REF>::const_iterator r = SLVTS.REFs->REF.begin();
-        r != SLVTS.REFs->REF.end(); ++r
-    ){
-         JACO.push_back(r->CAMERA_JACO);
-    }
-
-    return JACO;
-}
 
 } // namespace tansip
 }} // namespace hsc::meas

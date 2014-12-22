@@ -226,9 +226,6 @@ void CL_REFs::SET_POS_CELESTIAL_ALL(){
 void CL_REFs::SET_DIFF(){
     this->forAllRef(&CL_REF::SET_DIFF);
 }
-void CL_REFs::SET_OPTICAL_DISTORTIONbyPSIP(){
-    this->forAllRef(&CL_REF::SET_OPTICAL_DISTORTIONbyPSIP);
-}
 
 
 void CL_REFs::SET_MAXMIN_LOCAL_G(){
@@ -1121,43 +1118,83 @@ void CL_REFs::CALC_TANSIP(){
 }
 //DISTORTION
 void CL_REFs::CALC_OPTICAL_DISTORTION(){
-    Polynomial2D (&PSIP)[2] = CCDs->GCD.PSIP;
-    PSIP_DX[0] = PSIP[0].dx();
-    PSIP_DY[0] = PSIP[0].dy();
-    PSIP_DX[1] = PSIP[1].dx();
-    PSIP_DY[1] = PSIP[1].dy();
-
-    SET_OPTICAL_DISTORTIONbyPSIP();
     CALC_OPTICAL_AXIS();
 }
-Polynomial2D CL_REFs::FIT_PSIP_JACO(){
-    int const ORDER_PSIP = APRM->ORDER_PSIP;
 
-    ndarray::Array<double, 2, 2> dJ = ndarray::allocate(REF.size(),3);
+namespace {
+    class Jacobian_PSIP
+    {
+    public:
+        Jacobian_PSIP(Polynomial2D const (&PSIP)[2])
+            : dfIdx_(PSIP[0].dx())
+            , dfIdy_(PSIP[0].dy())
+            , dgIdx_(PSIP[1].dx())
+            , dgIdy_(PSIP[1].dy())
+        {}
 
-    int nRef = 0;
-    for(std::vector<CL_REF>::iterator r = REF.begin();
-        r != REF.end(); ++r
-    ){
-        if(r->FLAG_OBJ != 1) continue;
-        dJ[nRef][0] = r->POS_CELESTIAL_IMPIX_G[0];
-        dJ[nRef][1] = r->POS_CELESTIAL_IMPIX_G[1];
-        dJ[nRef][2] = r->CAMERA_JACO;
-        nRef += 1;
-    }
+        double operator()(double x, double y) const {
+            double dfIdx = dfIdx_(x, y);
+            double dfIdy = dfIdy_(x, y);
+            double dgIdx = dgIdx_(x, y);
+            double dgIdy = dgIdy_(x, y);
 
-    return CALC_FIT_LS2(nRef,ORDER_PSIP-1,dJ );
+            return (1+dfIdx)*(1+dgIdy) - dfIdy*dgIdx;
+        }
+
+    private:
+        Polynomial2D dfIdx_;
+        Polynomial2D dfIdy_;
+        Polynomial2D dgIdx_;
+        Polynomial2D dgIdy_;
+    };
+
+    template <class FnXY>
+    class Dx
+    {
+    public:
+        Dx(FnXY const& f, double h)
+            : f_(f), h_(h), I2h_(0.5 / h)
+        {}
+
+        double operator()(double x, double y) const {
+            return (f_(x+h_,y) - f_(x-h_,y)) * I2h_;
+        }
+
+    private:
+        FnXY   const& f_;
+        double const  h_;
+        double const  I2h_;
+    };
+
+    template <class FnXY>
+    class Dy
+    {
+    public:
+        Dy(FnXY const& f, double h)
+            : f_(f), h_(h), I2h_(0.5 / h)
+        {}
+
+        double operator()(double x, double y) const {
+            return (f_(x,y+h_) - f_(x,y-h_)) * I2h_;
+        }
+
+    private:
+        FnXY   const& f_;
+        double const  h_;
+        double const  I2h_;
+    };
 }
+
 void CL_REFs::CALC_OPTICAL_AXIS(){
-    Polynomial2D PSIP_JACO = FIT_PSIP_JACO();
+    Jacobian_PSIP PSIP_JACO(CCDs->GCD.PSIP);
 
-    Polynomial2D JDX = PSIP_JACO.dx();
-    Polynomial2D JDY = PSIP_JACO.dy();
+    Dx<Jacobian_PSIP> JDX(PSIP_JACO, 1.0);
+    Dy<Jacobian_PSIP> JDY(PSIP_JACO, 1.0);
 
-    Polynomial2D JDXDX = JDX.dx();
-    Polynomial2D JDXDY = JDX.dy();
-    Polynomial2D JDYDX = JDY.dx();
-    Polynomial2D JDYDY = JDY.dy();
+    Dx<Dx<Jacobian_PSIP> > JDXDX(JDX, 1.0);
+    Dy<Dx<Jacobian_PSIP> > JDXDY(JDX, 1.0);
+    Dx<Dy<Jacobian_PSIP> > JDYDX(JDY, 1.0);
+    Dy<Dy<Jacobian_PSIP> > JDYDY(JDY, 1.0);
 
     double PX=CCDs->GCD.CRPIX[0];
     double PY=CCDs->GCD.CRPIX[1];
@@ -1380,16 +1417,6 @@ void CL_REF::SET_DIFF(){
     DIFF_ASIP[1]=POS_DETECTED_ASIP_IMPIX_G[1]-POS_CELESTIAL_IMPIX_G[1];
     DIFF_PSIP[0]=POS_CELESTIAL_PSIP_CRPIX_G[0]-POS_DETECTED_CRPIX_G[0];
     DIFF_PSIP[1]=POS_CELESTIAL_PSIP_CRPIX_G[1]-POS_DETECTED_CRPIX_G[1];
-}
-void CL_REF::SET_OPTICAL_DISTORTIONbyPSIP(){
-    double dCdI[2][2];
-
-    dCdI[0][0] = REFs->PSIP_DX[0](POS_CELESTIAL_IMPIX_G[0], POS_CELESTIAL_IMPIX_G[1]);
-    dCdI[0][1] = REFs->PSIP_DY[0](POS_CELESTIAL_IMPIX_G[0], POS_CELESTIAL_IMPIX_G[1]);
-    dCdI[1][0] = REFs->PSIP_DX[1](POS_CELESTIAL_IMPIX_G[0], POS_CELESTIAL_IMPIX_G[1]);
-    dCdI[1][1] = REFs->PSIP_DY[1](POS_CELESTIAL_IMPIX_G[0], POS_CELESTIAL_IMPIX_G[1]);
-
-    CAMERA_JACO     =(1+dCdI[0][0])*(1+dCdI[1][1])-dCdI[0][1]*dCdI[1][0];
 }
 
 } // namespace tansip

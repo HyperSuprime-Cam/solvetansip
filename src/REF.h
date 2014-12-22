@@ -89,8 +89,6 @@ struct CL_REF
 //DIFF
     double  DIFF_ASIP[2];
     double  DIFF_PSIP[2];
-//DIST
-    double  CAMERA_JACO;
 
 //Run-time position selectors
     double const (&(POS(EPosDetected  d) const))[2];
@@ -128,7 +126,6 @@ struct CL_REF
     void SET_POS_CELESTIAL_PSIP_LOCAL_GfromPSIP_CRPIX_G();//setting celestial position of LOCAL_G from CRPIX_G with PSIP
     void SET_POS_CELESTIAL_PSIP_LOCAL_LfromPSIP_CRPIX_L();//setting celestial position of LOCAL_L from CRPIX_L with PSIP
     void SET_DIFF();//calculating differences from SIP and PSIP fitting
-    void SET_OPTICAL_DISTORTIONbyPSIP();//calculating distortion from PSIP
 };
 
 
@@ -209,8 +206,6 @@ public:
     AnaParam * APRM;//SLVTS->APRM
     CL_CCDs  * CCDs;//SLVTS->CCDs
     std::vector<CL_REF>  REF;
-    Polynomial2D PSIP_DX[2];
-    Polynomial2D PSIP_DY[2];
     double   MAX_LOCAL_G[2];
     double   MIN_LOCAL_G[2];
     double   AVE_LOCAL_G[2];
@@ -265,7 +260,6 @@ public:
     void SET_POS_CELESTIAL_PSIP_LOCAL_LfromPSIP_CRPIX_L();//setting celestial position of LOCAL_L from CRPIX_L with PSIP for all references
     void SET_POS_CELESTIAL_ALL();//setting all celestial positions for all references
     void SET_DIFF();//calculating differences from SIP and PSIP fitting for all references
-    void SET_OPTICAL_DISTORTIONbyPSIP();//calculating distortion from PSIP all references
     void SET_MAXMIN_LOCAL_G();//setting maximum position in global coordinate
     void SET_MAXMIN_CRPIX_G();//setting maximum position in global CRPIX coordinate
     int  GET_ID_NEAR_CRVAL();//getting ID of reference which is nearest to CRVAL
@@ -292,7 +286,6 @@ public:
     void CALC_TANSIP();//calculating CD, SIP and PSIP coefficients
 //DISTORTION
     void CALC_OPTICAL_DISTORTION();//CALC Distortion from PSIP
-    Polynomial2D FIT_PSIP_JACO(); //fitting CCDs' Jacobian with PSIP
     void CALC_OPTICAL_AXIS();//caluclationg optical axis
 
     void SHOW();//show information of references
