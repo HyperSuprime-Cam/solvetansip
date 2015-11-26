@@ -8,3 +8,5 @@ python/hsc/meas/tansip/SLVTS_SWIGLib_wrap.cc
 python/hsc/meas/tansip/version.py
 ups/solvetansip.cfgc
 python/hsc/meas/tansip/SLVTS_SWIGLib.py
+python/hsc/meas/tansip/tansipLib.py
+python/hsc/meas/tansip/tansipLib_wrap.cc
