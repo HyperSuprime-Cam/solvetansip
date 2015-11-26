@@ -15,6 +15,7 @@ Python interface to solvetansip
 #include "hsc/meas/tansip/SLVTS_LSST.h"
 #include "lsst/pex/logging.h"
 #include "lsst/afw.h"
+#include "lsst/afw/geom/polygon.h"
 %}
 
 
